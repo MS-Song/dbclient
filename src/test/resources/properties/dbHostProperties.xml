@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>DB HOST 정보 : 빌드 테스트</comment>
+	<!-- DB hosts 정보 -->
+	<entry key="host.mysql.test">local-database</entry>
+	<entry key="host.oracle.test">local-database</entry>
+	<entry key="schemaPrefix">test</entry>
+	<!-- user 정보 -->
+	<!-- Test MASTER -->
+	<entry key="account.mysql.test.master.id">root</entry>
+	<entry key="account.mysql.test.master.password">1234</entry>
+	<entry key="account.mysql.test.slave.id">root</entry>
+	<entry key="account.mysql.test.slave.password">1234</entry>
+	<!-- user 정보 끝 -->
+</properties>

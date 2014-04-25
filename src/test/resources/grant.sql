@@ -1,0 +1,1 @@
+GRANT all ON *.* TO root@192.168.0.75 IDENTIFIED BY "1234";

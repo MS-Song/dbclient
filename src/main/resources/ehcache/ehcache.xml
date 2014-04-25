@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+	updateCheck="false">
+	
+	<!-- CUD 가 모두 JAVA 에 있는 캐쉬는 기본 5분으로 적용한다. -->
+	<defaultCache 
+		eternal="false"   
+        maxElementsInMemory="1000"  
+        timeToIdleSeconds="300" 
+        timeToLiveSeconds="300" 
+        overflowToDisk="false"
+        diskPersistent="false" 
+        diskExpiryThreadIntervalSeconds="10"
+        copyOnRead="true"
+        copyOnWrite="true"
+        memoryStoreEvictionPolicy="LRU" /> 
+        
+</ehcache>

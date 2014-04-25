@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>DB 커넥션 연결정보</comment>
+	<!-- driver 정보  -->
+	<entry key="driver.mysql.test">com.mysql.jdbc.Driver</entry>
+	<entry key="driver.mysql.product">com.mysql.jdbc.Driver</entry>
+	<!-- driver 정보  끝 -->
+	
+	<!-- connect param -->
+	<entry key="connect.param.mysql.test">autoReconnect=true&amp;useUnicode=true&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf-8</entry>
+	<entry key="connect.param.mysql.product">autoReconnect=true&amp;useUnicode=true&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf-8</entry>
+	<!-- parameter 끝 -->
+
+	<!-- 접속정보 -->
+	<!-- PC -->
+	<entry key="developer.dbClient.master.driver">${driver.mysql.test}</entry>
+	<entry key="developer.dbClient.master.url">jdbc:mysql://${host.mysql.test}/${schemaPrefix}dbClient?${connect.param.mysql.test}</entry>
+	<entry key="developer.dbClient.master.username">${account.mysql.test.master.id}</entry>
+	<entry key="developer.dbClient.master.password">${account.mysql.test.master.password}</entry>
+
+	<!-- dev -->
+	<entry key="testServer.dbClient.master.driver">${driver.mysql.test}</entry>
+	<entry key="testServer.dbClient.master.url">jdbc:mysql://${host.mysql.test}/${schemaPrefix}dbClient?${connect.param.mysql.test}</entry>
+	<entry key="testServer.dbClient.master.username">${account.mysql.test.master.id}</entry>
+	<entry key="testServer.dbClient.master.password">${account.mysql.test.master.password}</entry>
+	
+	<!-- real -->
+	<entry key="realServer.dbClient.master.driver">${driver.mysql.product}</entry>
+	<entry key="realServer.dbClient.master.url">jdbc:mysql://192.168.30.14/dbClient?${connect.param.mysql.product}</entry>
+	<entry key="realServer.dbClient.master.username">${account.mysql.product.master.id}</entry>
+	<entry key="realServer.dbClient.master.password">${account.mysql.product.master.password}</entry>
+	
+</properties>
