@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- Appenders -->
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5p %C{1}.%M\(%F:%L\) - %m%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="webFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- Support multiple-JVM writing to the same log file -->
+		<!-- 다중 JVM 일 때 같은 로그 파일을 기록할 때는 prudent를 true 처리 할 것 -->
+	    <!-- <prudent>true</prudent> -->
+	
+		<file>${catalina.home}/logs/marketplace.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${catalina.home}/logs/marketplace.%d{yyyy-MM-dd}.log</fileNamePattern>
+			
+			<!-- keep 60 days' worth of history -->
+			<maxHistory>60</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5p %C{1}.%M\(%F:%L\) - %m%n</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- MyBatis Loggers -->
+	<logger name="org.apache.ibatis" level="WARN" />
+	<logger name="java.sql" level="WARN" />
+	
+	<!-- Spring Loggers -->
+	<logger name="org.springframework.core" level="ERROR" />
+	<logger name="org.springframework.beans" level="ERROR" />
+	<logger name="org.springframework.context" level="ERROR" />
+	<logger name="org.springframework.web" level="ERROR" />
+	
+	<!-- web Loggers -->
+	<logger name="com.danawa.app.marketplace" level="INFO">
+		<appender-ref ref="webFileAppender" />
+	</logger>
+	
+	<!-- swagger -->
+	<logger name="com.mangofactory" additivity="false" level="ERROR"/>
+	
+	<!-- MQ -->
+	<logger name="org.apache.activemq" level="INFO" />
+	
+	<!-- root Logger -->
+	<root level="INFO">
+		<appender-ref ref="stdout" />
+	</root>
+</configuration>
