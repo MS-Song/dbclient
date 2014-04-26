@@ -56,6 +56,8 @@ public class DatabaseController {
 			HttpServletRequest request,
 			ModelMap model){
 
+
+
 	}
 
 	@RequestMapping(value="/saveDatabases.json",method=RequestMethod.POST)
@@ -74,9 +76,9 @@ public class DatabaseController {
 
 		List<SaveServerInfoDTO> saveList = new ArrayList<SaveServerInfoDTO>();
 		List<ModifyServerInfoDTO> modifyList = new ArrayList<ModifyServerInfoDTO>();
-		for (int i = 0; i < serverInfoSeq.length; i++) {
+		for (int i = 0; i < host.length; i++) {
 			// 생성해야 하는 경우
-			if(null==serverInfoSeq[i]){
+			if(serverInfoSeq.length==0 || null==serverInfoSeq[i]){
 				saveList.add(new SaveServerInfoDTO(
 						host[i],
 						schemaName[i],

@@ -109,6 +109,32 @@ public class DatabaseControllerTest {
 	@Test
 	public void testSaveDatabases() throws Exception {
 		drb = post("/database/saveDatabases.json")
+				.param("serverInfoSeq[]","")
+				.param("host[]","local-database")
+				.param("schemaName[]","dbBilling")
+				.param("account[]","root")
+				.param("password[]","1234")
+				.param("driver[]","mysql")
+				.param("charset[]","utf-8")
+				.param("port[]","3306")
+				;
+		// 로그인 cookie 정보 추가
+		drb.cookie(cookies);
+
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 			notNullValue());
+		assertThat((Integer)responseObject.get("status"),	is(200));
+		assertThat(responseObject.get("result"), 			notNullValue());
+
+
+		drb = post("/database/saveDatabases.json")
 				.param("serverInfoSeq[]","1,")
 				.param("host[]","local-database,local-database")
 				.param("schemaName[]","dbBilling,eldanawa")
