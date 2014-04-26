@@ -19,7 +19,7 @@ public class ModifyServerInfoDTO extends Dto{
 
 	private String password;
 
-	private String dirver;
+	private String driver;
 
 	private String charset;
 
@@ -28,14 +28,14 @@ public class ModifyServerInfoDTO extends Dto{
 	public ModifyServerInfoDTO() {}
 
 	public ModifyServerInfoDTO(Integer serverInfoSeq, String host,
-			String schemaName, String account, String password, String dirver,
+			String schemaName, String account, String password, String driver,
 			String charset,String port) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.password = password;
-		this.dirver = dirver;
+		this.driver = driver;
 		this.charset = charset;
 		this.port = port;
 	}
@@ -69,11 +69,11 @@ public class ModifyServerInfoDTO extends Dto{
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getDirver() {
-		return dirver;
+	public String getDriver() {
+		return driver;
 	}
-	public void setDirver(String dirver) {
-		this.dirver = dirver;
+	public void setDriver(String driver) {
+		this.driver = driver;
 	}
 	public String getCharset() {
 		return charset;

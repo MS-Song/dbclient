@@ -1584,26 +1584,31 @@ var databaseManageForm=function(){
 
 var databaseManageGetSubHTML = function(obj){
 	// 객체 검증
-	var host		= obj != null && obj.host 			!= 'undefined' ? obj.host 		: '';
-	var schemaName 	= obj != null && obj.schemaName 	!= 'undefined' ? obj.schemaName : '';
-	var account 	= obj != null && obj.account 		!= 'undefined' ? obj.account 	: '';
-	var password 	= obj != null && obj.password 		!= 'undefined' ? obj.password 	: '';
-	var driver	 	= obj != null && obj.driver			!= 'undefined' ? obj.driver 	: null;
-	var charset	 	= obj != null && obj.charset 		!= 'undefined' ? obj.charset	: '';
-	var port 		= obj != null && obj.port 			!= 'undefined' ? obj.port 		: '';
+	
+	var serverInfoSeq	= obj != null && obj.serverInfoSeq 	!= 'undefined' ? obj.serverInfoSeq 	: '';
+	var host			= obj != null && obj.host 			!= 'undefined' ? obj.host 			: '';
+	var schemaName 		= obj != null && obj.schemaName 	!= 'undefined' ? obj.schemaName 	: '';
+	var account 		= obj != null && obj.account 		!= 'undefined' ? obj.account 		: '';
+	var password 		= obj != null && obj.password 		!= 'undefined' ? obj.password 		: '';
+	var driver	 		= obj != null && obj.driver			!= 'undefined' ? obj.driver 		: null;
+	var charset	 		= obj != null && obj.charset 		!= 'undefined' ? obj.charset		: '';
+	var port 			= obj != null && obj.port 			!= 'undefined' ? obj.port 			: '';
 	
 	
 	var subHtml="";
 	var dbdriver = createSelect(databaseDrivers,databaseDrivers,'dbdriver[]',driver,null,null,null,null);
 	subHtml+='<tr class="subHtml">';
-	subHtml+='<td><input type="text"     name="host[]" 			value="'+host+'"		size="20"></td>';
-	subHtml+='<td><input type="text"     name="schemaName[]" 	value="'+schemaName+'"	size="16"></td>';
-	subHtml+='<td><input type="text"     name="account[]" 		value="'+account+'"	size="14"></td>';
-	subHtml+='<td><input type="password" name="password[]" 		value="'+password+'"	size="14"></td>';
+	subHtml+='<td>';
+	subHtml+='	<input type="hidden"   name="serverInfoSeq[]" 	value="'+serverInfoSeq+'" />';
+	subHtml+='	<input type="text"     name="host[]" 			value="'+host+'"		size="20" />';
+	subHtml+='</td>';
+	subHtml+='<td><input type="text"     name="schemaName[]" 	value="'+schemaName+'"	size="16" /></td>';
+	subHtml+='<td><input type="text"     name="account[]" 		value="'+account+'"		size="14" /></td>';
+	subHtml+='<td><input type="password" name="password[]" 		value="'+password+'"	size="14" /></td>';
 	subHtml+='<td>'+dbdriver+'</td>';
-	subHtml+='<td><input type="text"     name="charset[]" 		value="'+charset+'" 	size="14"></td>';
-	subHtml+='<td><input type="text"     name="port[]" 			value="'+port+'" 		size="4"></td>';
-	subHtml+='<td><input type="button"   name="delete" 			value="삭제"></td>';
+	subHtml+='<td><input type="text"     name="charset[]" 		value="'+charset+'" 	size="14" /></td>';
+	subHtml+='<td><input type="text"     name="port[]" 			value="'+port+'" 		size="4" /></td>';
+	subHtml+='<td><input type="button"   name="delete" 			value="삭제" /></td>';
 	subHtml+='</tr>';
 	return subHtml; 
 };
