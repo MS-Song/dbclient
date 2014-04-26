@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.server.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
@@ -87,12 +88,48 @@ public class DatabaseControllerTest {
 
 	@Test
 	public void testGetSchemaList() throws Exception {
+		drb = get("/database/schemaList.json")
+				.param("server","local-database")
+				;
+		// 로그인 cookie 정보 추가
+		drb.cookie(cookies);
 
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 			notNullValue());
+		assertThat((Integer)responseObject.get("status"),	is(200));
+		assertThat(responseObject.get("result"), 			notNullValue());
 	}
 
 	@Test
 	public void testSaveDatabases() throws Exception {
+		drb = post("/database/saveDatabases.json")
+				.param("host[]","local-database,local-database")
+				.param("schemaName[]","dbBilling,eldanawa")
+				.param("account[]","root,root")
+				.param("password[]","1234,1234")
+				.param("driver[]","mysql,mysql")
+				.param("charset[]","utf-8,utf-8")
+				.param("port[]","3306,3306")
+				;
+		// 로그인 cookie 정보 추가
+		drb.cookie(cookies);
 
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 			notNullValue());
+		assertThat((Integer)responseObject.get("status"),	is(200));
+		assertThat(responseObject.get("result"), 			notNullValue());
 	}
-
 }
