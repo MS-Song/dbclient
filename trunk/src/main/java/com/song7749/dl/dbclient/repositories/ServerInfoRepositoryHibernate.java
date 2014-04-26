@@ -1,5 +1,7 @@
 package com.song7749.dl.dbclient.repositories;
 
+import static org.hibernate.criterion.Restrictions.eq;
+
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -58,6 +60,10 @@ public class ServerInfoRepositoryHibernate implements ServerInfoRepository{
 	@Override
 	public List<ServerInfo> findServerInfoList(FindServerInfoListDTO dto) {
 		Criteria criteria=getCriteriaOf(ServerInfo.class);
+
+		if(null!=dto.getHost()){
+			criteria.add(eq("host",dto.getHost()));
+		}
 
 		// offset 시작점
 		if(null != dto.getOffset()){

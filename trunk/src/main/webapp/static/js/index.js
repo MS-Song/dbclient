@@ -1541,7 +1541,7 @@ var databaseManageForm=function(){
 			html+='				<th>schemaName</th>';
 			html+='				<th>account</th>';
 			html+='				<th>password</th>';
-			html+='				<th>dirver</th>';
+			html+='				<th>driver</th>';
 			html+='				<th>charset</th>';
 			html+='				<th>port</th>';
 			html+='				<th><input type="button" id="add" value="추가"></th>';
@@ -1596,7 +1596,7 @@ var databaseManageGetSubHTML = function(obj){
 	
 	
 	var subHtml="";
-	var dbdriver = createSelect(databaseDrivers,databaseDrivers,'dbdriver[]',driver,null,null,null,null);
+	var dbdriver = createSelect(databaseDrivers,databaseDrivers,'driver[]',driver,null,null,null,null);
 	subHtml+='<tr class="subHtml">';
 	subHtml+='<td>';
 	subHtml+='	<input type="hidden"   name="serverInfoSeq[]" 	value="'+serverInfoSeq+'" />';
@@ -1771,7 +1771,7 @@ $(document).ready(function(){
 						$.post("/database/saveDatabases.json", $("#databaseManageTable").serializeArray(), function(data){
 							alert(data.result);
 						});
-						$( this ).dialog( "close" );
+						document.location = document.location.href;
 					};
 
 				}
