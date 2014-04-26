@@ -20,4 +20,8 @@ public interface ServerInfoManager {
 	ServerInfoVO findServerInfo(FindServerInfoDTO dto);
 
 	List<ServerInfoVO> findServerInfoList(FindServerInfoListDTO dto);
+
+	void saveServerInfoFacade(List<SaveServerInfoDTO> list);
+
+	void modifyServerInfoFacade(List<ModifyServerInfoDTO> list);
 }
