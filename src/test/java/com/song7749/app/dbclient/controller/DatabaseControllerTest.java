@@ -109,6 +109,7 @@ public class DatabaseControllerTest {
 	@Test
 	public void testSaveDatabases() throws Exception {
 		drb = post("/database/saveDatabases.json")
+				.param("serverInfoSeq[]","1,")
 				.param("host[]","local-database,local-database")
 				.param("schemaName[]","dbBilling,eldanawa")
 				.param("account[]","root,root")

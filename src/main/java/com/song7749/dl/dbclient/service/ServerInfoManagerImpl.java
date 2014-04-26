@@ -1,5 +1,7 @@
 package com.song7749.dl.dbclient.service;
 
+import static com.song7749.dl.dbclient.service.ServerInfoConvert.convert;
+
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -26,27 +28,29 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	private ServerInfoRepository serverInfoRepository;
 
 	@Override
-	@Transactional("dbClientTransactionManager")
 	@Validate
+	@Transactional("dbClientTransactionManager")
 	public void saveServerInfo(SaveServerInfoDTO dto) {
 
 		ServerInfo serverInfo = new ServerInfo(dto.getHost(),
 				dto.getSchemaName(), dto.getAccount(), dto.getPassword(),
-				dto.getDirver(), dto.getCharset(), dto.getPort());
+				dto.getDriver(), dto.getCharset(), dto.getPort());
 
 		serverInfoRepository.save(serverInfo);
 	}
 
 	@Override
 	@Validate
+	@Transactional("dbClientTransactionManager")
 	public void modifyServerInfo(ModifyServerInfoDTO dto) {
-		ServerInfo serverInfo=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
-		if(null!=serverInfo){
+		ServerInfo serverInfo = serverInfoRepository.find(new ServerInfo(dto
+				.getServerInfoSeq()));
+		if (null != serverInfo) {
 			serverInfo.setHost(dto.getHost());
 			serverInfo.setSchemaName(dto.getSchemaName());
 			serverInfo.setAccount(dto.getAccount());
 			serverInfo.setPassword(dto.getPassword());
-			serverInfo.setDirver(dto.getDirver());
+			serverInfo.setDriver(dto.getDriver());
 			serverInfo.setCharset(dto.getCharset());
 			serverInfoRepository.update(serverInfo);
 		}
@@ -60,14 +64,13 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 
 	@Override
 	public ServerInfoVO findServerInfo(FindServerInfoDTO dto) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
+	@Transactional(value="dbClientTransactionManager",readOnly=true)
 	public List<ServerInfoVO> findServerInfoList(FindServerInfoListDTO dto) {
-		// TODO Auto-generated method stub
-		return null;
+		return convert(serverInfoRepository.findServerInfoList(dto));
 	}
-
 }
