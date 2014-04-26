@@ -102,6 +102,13 @@ public class DatabaseController {
 		logger.debug("saveList : {}",saveList);
 		logger.debug("modifyList : {}",modifyList);
 
+		if(saveList.size()>0){
+			serverInfoManager.saveServerInfoFacade(saveList);
+		}
+		if(modifyList.size()>0){
+			serverInfoManager.modifyServerInfoFacade(modifyList);
+		}
+
 		model.clear();
 		model.addAttribute("message", "서버 정보가 저장되었습니다.");
 	}

@@ -73,4 +73,20 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	public List<ServerInfoVO> findServerInfoList(FindServerInfoListDTO dto) {
 		return convert(serverInfoRepository.findServerInfoList(dto));
 	}
+
+	@Override
+	@Transactional(value="dbClientTransactionManager")
+	public void saveServerInfoFacade(List<SaveServerInfoDTO> list) {
+		for (SaveServerInfoDTO saveServerInfoDTO : list) {
+			saveServerInfo(saveServerInfoDTO);
+		}
+	}
+
+	@Override
+	@Transactional(value="dbClientTransactionManager")
+	public void modifyServerInfoFacade(List<ModifyServerInfoDTO> list) {
+		for (ModifyServerInfoDTO modifyServerInfoDTO : list) {
+			modifyServerInfo(modifyServerInfoDTO);
+		}
+	}
 }
