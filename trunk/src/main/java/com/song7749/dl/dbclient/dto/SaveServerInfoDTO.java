@@ -3,6 +3,7 @@ package com.song7749.dl.dbclient.dto;
 import javax.validation.constraints.NotNull;
 
 import com.song7749.dl.base.Dto;
+import com.song7749.dl.dbclient.type.DatabaseDriver;
 
 public class SaveServerInfoDTO extends Dto{
 
@@ -17,7 +18,7 @@ public class SaveServerInfoDTO extends Dto{
 	@NotNull
 	private String password;
 	@NotNull
-	private String driver;
+	private DatabaseDriver driver;
 	@NotNull
 	private String charset;
 	@NotNull
@@ -26,7 +27,7 @@ public class SaveServerInfoDTO extends Dto{
 	public SaveServerInfoDTO(){}
 
 	public SaveServerInfoDTO(String host, String schemaName, String account,
-			String password, String driver, String charset,String port) {
+			String password, DatabaseDriver driver, String charset,String port) {
 		this.host = host;
 		this.schemaName = schemaName;
 		this.account = account;
@@ -60,10 +61,10 @@ public class SaveServerInfoDTO extends Dto{
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getDriver() {
+	public DatabaseDriver getDriver() {
 		return driver;
 	}
-	public void setDriver(String driver) {
+	public void setDriver(DatabaseDriver driver) {
 		this.driver = driver;
 	}
 	public String getCharset() {

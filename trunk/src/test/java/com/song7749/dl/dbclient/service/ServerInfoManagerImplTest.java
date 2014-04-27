@@ -20,6 +20,7 @@ import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
 import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.repositories.ServerInfoRepository;
+import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.util.ProxyUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,8 +42,8 @@ public class ServerInfoManagerImplTest {
 	ModifyServerInfoDTO modifyServerInfoDTO;
 	@Before
 	public void setup(){
-		saveServerInfoDTO = new SaveServerInfoDTO("local-database", "dbBilling", "root", "1234", "mysql", "utf-8","3306");
-		modifyServerInfoDTO = new ModifyServerInfoDTO(1,"local-database", "dbBilling", "root", "1234", "mysql", "utf-8","3306");
+		saveServerInfoDTO = new SaveServerInfoDTO("local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "utf-8","3306");
+		modifyServerInfoDTO = new ModifyServerInfoDTO(1,"local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "utf-8","3306");
 	}
 
 	@Before
@@ -63,7 +64,7 @@ public class ServerInfoManagerImplTest {
 	@Test
 	public void testModifyServerInfo() throws Exception {
 		// give
-		ServerInfo serverInfo = new ServerInfo(1, "local-database", "dbBilling", "root", "1234", "mysql", "utf-8","3306");
+		ServerInfo serverInfo = new ServerInfo(1, "local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "utf-8","3306");
 		given(serverInfoRepository.find(any(ServerInfo.class))).willReturn(serverInfo);
 		// when
 		serverInfoManager.modifyServerInfo(modifyServerInfoDTO);

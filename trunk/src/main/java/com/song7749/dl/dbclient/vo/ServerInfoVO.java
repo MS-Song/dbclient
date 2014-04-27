@@ -1,6 +1,7 @@
 package com.song7749.dl.dbclient.vo;
 
 import com.song7749.dl.base.Vo;
+import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("ServerInfo")
@@ -18,7 +19,7 @@ public class ServerInfoVO extends Vo{
 
 	private String password;
 
-	private String dirver;
+	private DatabaseDriver dirver;
 
 	private String charset;
 
@@ -27,7 +28,7 @@ public class ServerInfoVO extends Vo{
 	public ServerInfoVO(){}
 
 	public ServerInfoVO(Integer serverInfoSeq, String host, String schemaName,
-			String account, String password, String dirver, String charset,String port) {
+			String account, String password, DatabaseDriver dirver, String charset,String port) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
 		this.schemaName = schemaName;
@@ -78,11 +79,11 @@ public class ServerInfoVO extends Vo{
 		this.password = password;
 	}
 
-	public String getDirver() {
+	public DatabaseDriver getDirver() {
 		return dirver;
 	}
 
-	public void setDirver(String dirver) {
+	public void setDirver(DatabaseDriver dirver) {
 		this.dirver = dirver;
 	}
 

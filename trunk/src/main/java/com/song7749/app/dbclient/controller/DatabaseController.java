@@ -18,6 +18,7 @@ import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
 import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
 import com.song7749.dl.dbclient.service.ServerInfoManager;
+import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 
 @Controller
@@ -67,7 +68,7 @@ public class DatabaseController {
 			@RequestParam(value="schemaName[]",required=true) String[]  schemaName,
 			@RequestParam(value="account[]",required=true) String[]  account,
 			@RequestParam(value="password[]",required=true) String[]  password,
-			@RequestParam(value="driver[]",required=true) String[]  driver,
+			@RequestParam(value="driver[]",required=true) DatabaseDriver[]  driver,
 			@RequestParam(value="charset[]",required=true) String[]  charset,
 			@RequestParam(value="port[]",required=true) String[]  port,
 			HttpServletRequest request,
