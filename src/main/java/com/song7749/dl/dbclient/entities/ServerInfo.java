@@ -2,6 +2,8 @@ package com.song7749.dl.dbclient.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -9,6 +11,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.song7749.dl.base.Entities;
+import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.util.validate.ValidateGroupDelete;
 import com.song7749.util.validate.ValidateGroupUpdate;
 
@@ -41,8 +44,9 @@ public class ServerInfo extends Entities {
 	private String password;
 
 	@Column
+	@Enumerated(EnumType.STRING)
 	@NotNull
-	private String driver;
+	private DatabaseDriver driver;
 
 	@Column
 	@NotNull
@@ -59,7 +63,7 @@ public class ServerInfo extends Entities {
 	}
 
 	public ServerInfo(String host, String schemaName,
-			String account, String password, String driver, String charset,String port) {
+			String account, String password, DatabaseDriver driver, String charset,String port) {
 		this.host = host;
 		this.schemaName = schemaName;
 		this.account = account;
@@ -70,7 +74,7 @@ public class ServerInfo extends Entities {
 	}
 
 	public ServerInfo(Integer serverInfoSeq, String host, String schemaName,
-			String account, String password, String driver, String charset,String port) {
+			String account, String password, DatabaseDriver driver, String charset,String port) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
 		this.schemaName = schemaName;
@@ -121,11 +125,11 @@ public class ServerInfo extends Entities {
 		this.password = password;
 	}
 
-	public String getDriver() {
+	public DatabaseDriver getDriver() {
 		return driver;
 	}
 
-	public void setDriver(String driver) {
+	public void setDriver(DatabaseDriver driver) {
 		this.driver = driver;
 	}
 

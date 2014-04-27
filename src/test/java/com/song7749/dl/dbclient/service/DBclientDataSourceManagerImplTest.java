@@ -1,10 +1,9 @@
-package com.song7749.dl.dbclient.repositories;
-
-import javax.annotation.Resource;
+package com.song7749.dl.dbclient.service;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -17,22 +16,24 @@ import com.song7749.dl.dbclient.type.DatabaseDriver;
 @ContextConfiguration(locations = { "classpath*:spring/application-context.xml" })
 @TransactionConfiguration(transactionManager="dbClientTransactionManager",defaultRollback=true)
 @Transactional("dbClientTransactionManager")
-public class ServerInfoRepositoryHibernateTest {
+public class DBclientDataSourceManagerImplTest {
 
-	@Resource
-	ServerInfoRepository serverInfoRepository;
+	@Autowired
+	DBclientDataSourceManager dbClientDataSourceManager;
 
 	/**
 	 * fixture
 	 */
 	ServerInfo serverInfo;
+
 	@Before
-	public void setUp(){
-		serverInfo = new ServerInfo("local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "UTF-8","3306");
+	public void setUp() throws Exception {
+		serverInfo = new ServerInfo(1, "local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "utf-8","3306");
 	}
 
 	@Test
-	public void testSave() throws Exception {
-		serverInfoRepository.save(serverInfo);
+	public void testGetDataSource() throws Exception {
+		dbClientDataSourceManager.getDataSource(serverInfo);
 	}
+
 }
