@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
+import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,6 +46,15 @@ public class DBclientDataSourceManagerImplTest {
 		List<TableVO> list = dbClientDataSourceManager.selectTableVOList(serverInfo);
 		// then
 		// TODO test code
+	}
+
+	@Test
+	public void testSelectTableFieldVOList() throws Exception {
+		// give // when
+		List<FieldVO> list = dbClientDataSourceManager.selectTableFieldVOList(serverInfo, "taccountingcycle");
+		// then
+		// TODO test code
+
 	}
 
 }
