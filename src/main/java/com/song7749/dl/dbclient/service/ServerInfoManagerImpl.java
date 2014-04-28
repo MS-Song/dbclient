@@ -10,14 +10,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.song7749.dl.dbclient.dao.DatabaseInfoDao;
 import com.song7749.dl.dbclient.dto.DeleteServerInfoDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
+import com.song7749.dl.dbclient.dto.FindTableDTO;
 import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
 import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.repositories.ServerInfoRepository;
+import com.song7749.dl.dbclient.vo.FieldVO;
+import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
+import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.util.validate.ValidateGroupSelect;
 import com.song7749.util.validate.annotation.Validate;
 
 @Service("serverInfoManager")
@@ -26,6 +32,9 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 
 	@Resource
 	private ServerInfoRepository serverInfoRepository;
+
+	@Resource
+	private DatabaseInfoDao databaseInfoDao;
 
 	@Override
 	@Validate
@@ -63,19 +72,21 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	}
 
 	@Override
+	@Validate
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
 	public ServerInfoVO findServerInfo(FindServerInfoDTO dto) {
-
-		return null;
+		ServerInfo serverInfo = new ServerInfo(dto.getServerInfoSeq());
+		return convert(serverInfoRepository.find(serverInfo));
 	}
 
 	@Override
-	@Transactional(value="dbClientTransactionManager",readOnly=true)
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
 	public List<ServerInfoVO> findServerInfoList(FindServerInfoListDTO dto) {
 		return convert(serverInfoRepository.findServerInfoList(dto));
 	}
 
 	@Override
-	@Transactional(value="dbClientTransactionManager")
+	@Transactional(value = "dbClientTransactionManager")
 	public void saveServerInfoFacade(List<SaveServerInfoDTO> list) {
 		for (SaveServerInfoDTO saveServerInfoDTO : list) {
 			saveServerInfo(saveServerInfoDTO);
@@ -83,10 +94,39 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	}
 
 	@Override
-	@Transactional(value="dbClientTransactionManager")
+	@Transactional(value = "dbClientTransactionManager")
 	public void modifyServerInfoFacade(List<ModifyServerInfoDTO> list) {
 		for (ModifyServerInfoDTO modifyServerInfoDTO : list) {
 			modifyServerInfo(modifyServerInfoDTO);
 		}
+	}
+
+	@Override
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Validate(VG = { ValidateGroupSelect.class })
+	public List<TableVO> findTableVOList(FindTableDTO dto) {
+
+		return databaseInfoDao.selectTableVOList(serverInfoRepository
+				.find(new ServerInfo(dto.getServerInfoSeq())));
+	}
+
+	@Override
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Validate
+	public List<FieldVO> findTableFieldVOList(FindTableDTO dto) {
+
+		return databaseInfoDao.selectTableFieldVOList(serverInfoRepository
+				.find(new ServerInfo(dto.getServerInfoSeq())), dto
+				.getTableName());
+	}
+
+	@Override
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Validate
+	public List<IndexVO> findTableIndexVOList(FindTableDTO dto) {
+
+		return databaseInfoDao.selectTableIndexVOList(serverInfoRepository
+				.find(new ServerInfo(dto.getServerInfoSeq())), dto
+				.getTableName());
 	}
 }

@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.song7749.dl.dbclient.entities.ServerInfo;
 
-@Service("dbClientDataSourceManagerImpl")
+@Service("dbClientDataSourceManager")
 public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager{
 
-	private Map<ServerInfo,DataSource> dataSourceMap = new HashMap<ServerInfo, DataSource>();
+	private final Map<ServerInfo,DataSource> dataSourceMap = new HashMap<ServerInfo, DataSource>();
 
 	@Override
 	public DataSource getDataSource(ServerInfo serverInfo) {
