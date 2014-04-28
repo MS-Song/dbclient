@@ -76,6 +76,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			logger.debug(getTableListQuery(serverInfo));
+
 			conn = getDataSource(serverInfo).getConnection();
 			ps = conn.prepareStatement(getTableListQuery(serverInfo));
 			rs = ps.executeQuery();
@@ -99,7 +101,43 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	public List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo,
 			String tableName) {
 
-		return null;
+		List<FieldVO> list = new ArrayList<FieldVO>();
+
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			logger.debug(getTableFieldListQuery(serverInfo,tableName));
+
+			conn = getDataSource(serverInfo).getConnection();
+			ps = conn.prepareStatement(getTableFieldListQuery(serverInfo,tableName));
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				list.add(new FieldVO(
+						rs.getString("COLUMN_ID"),
+						rs.getString("COLUMN_NAME"),
+						rs.getString("NULLABLE"),
+						rs.getString("COLUMN_KEY"),
+						rs.getString("DATA_TYPE"),
+						rs.getString("DATA_LENGTH"),
+						rs.getString("CHARACTER_SET"),
+						rs.getString("EXTRA"),
+						rs.getString("DEFAULT_VALUE"),
+						rs.getString("COMMENT")));
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(conn, ps, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
 	}
 
 	@Override
@@ -127,16 +165,21 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			// 필드를 읽기 가능한 상태로 변경
 			f.setAccessible(true);
 			// 커넥션 변경
-			url = StringUtils.replace(f.getName(),
-					f.get(serverInfo).toString(), url);
+			url = StringUtils.replace("\\{"+f.getName()+"\\}",f.get(serverInfo).toString(), url);
 		}
-		return url.replace("{", "").replace("}", "");
+		return url;
 	}
 
 	private String getTableListQuery(ServerInfo serverInfo){
 		return StringUtils
-			.replace("{schemaName}", serverInfo.getSchemaName(),serverInfo.getDriver().getTableListQuery());
-//			.replace("{", "").replace("}", "");
+			.replace("\\{schemaName\\}", serverInfo.getSchemaName(),serverInfo.getDriver().getTableListQuery());
+	}
+
+	private String getTableFieldListQuery(ServerInfo serverInfo,String tableName){
+		String query;
+		query = StringUtils.replace("\\{schemaName\\}", serverInfo.getSchemaName(),serverInfo.getDriver().getFieldListQueryQuery());
+		query = StringUtils.replace("\\{tableName\\}", tableName ,query);
+		return query;
 	}
 
 	/**

@@ -351,13 +351,6 @@
 			<version>1.4.2</version>
 		</dependency>
 
-		<!-- javamelody-core -->
-		<dependency>
-			<groupId>net.bull.javamelody</groupId>
-			<artifactId>javamelody-core</artifactId>
-			<version>1.47.0</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.jrobin</groupId>
 			<artifactId>jrobin</artifactId>

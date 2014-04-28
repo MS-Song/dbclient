@@ -78,7 +78,7 @@ var showDatabase=function(serverName){
 			var optionAppend='';
 			$.each(data.result,function(){
 				if(inArray(this.host,values)!=true){
-					values.push(this.schemaName+'|'+this.account);
+					values.push(this.schemaName+'|'+this.account+'|'+this.driver);
 					textes.push(this.schemaName+' ['+this.account+']');
 				}
 			});
@@ -110,7 +110,7 @@ var showTables=function(databaseName){
 			var tmp=$("[name=database]").val().split("|");
 			var schema=tmp[0];
 			var account=tmp[1];
-			
+			var driver=tmp[2];
 			$.get("/database/tableList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account}, function(data){
 				var values = new Array();
 				var textes = new Array();
@@ -125,8 +125,11 @@ var showTables=function(databaseName){
 						textes.push(this.tableName+ (this.tableComment!="" ? ' ['+this.tableComment+']' : ''));	
 					}
 				});
+				
+				var html=createSelect(values,textes,name,selectedValue,firsetOpetionValue,selectAppend,optionAppend);
+				html+='<input type="hidden" name="driver" value="'+driver+'" />';
 
-				$("#databaseName").data($("[name=database]").val(),createSelect(values,textes,name,selectedValue,firsetOpetionValue,selectAppend,optionAppend));
+				$("#databaseName").data($("[name=database]").val(),html);
 				$("#tablesList").html($("#databaseName").data($("[name=database]").val()));
 				hideLoading();
 			});
@@ -164,16 +167,71 @@ var showFieldes=function(tableName){
 			var schema=tmp[0];
 			var account=tmp[1];
 			
+			var html='';
+			html+='<table id="table_columns" class="table-list">'+"\n";
+			html+='	<tr>'+"\n";
+			html+='		<th colspan="14" class="layout_fixed">'+"\n";
+			html+='			<input type="button" onclick="copyColumns()" value="copy columnName" />';
+			html+='		</th>'+"\n";
+			html+='	</tr>'+"\n";
+			html+='	<tr>'+"\n";
+			html+='		<th class="layout_fixed">columnId</th>'+"\n";
+			html+='		<th class="layout_fixed">columnName</th>'+"\n";
+			html+='		<th class="layout_fixed">nullable</th>'+"\n";
+			html+='		<th class="layout_fixed">columnKey</th>'+"\n";
+			html+='		<th class="layout_fixed">dataType</th>'+"\n";
+			html+='		<th class="layout_fixed">dataLegnth</th>'+"\n";
+			html+='		<th class="layout_fixed">characterset</th>'+"\n";
+			html+='		<th class="layout_fixed">extra</th>'+"\n";
+			html+='		<th class="layout_fixed">defaultValue</th>'+"\n";
+			html+='		<th class="layout_fixed">comment</th>'+"\n";
+			html+='		<th class="layout_fixed" title="select"><input type="checkbox" name="select_all" onclick="checkedAll(this);" checked></th>'+"\n";
+			html+='		<th class="layout_fixed" title="set"><input type="button" onclick="clearAll(\'setValue[]\');" title="clear" value="set" 			style="width: 60px;height: 30px;"></th>'+"\n";
+			html+='		<th class="layout_fixed" title="where"><input type="button" onclick="clearAll(\'whereValue[]\');" title="clear" value="where" 	style="width: 60px;height: 30px;"></th>'+"\n";
+			html+='		<th class="layout_fixed" title="operator">operator</th>'+"\n";
+			html+='	</tr>'+"\n";
 			$.get("/database/fieldList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account,"table":$("[name=table]").val()}, function(data){
-
+				var values = new Array("=",">=","<=","%like","like%","%like%","IN()");
+				var name='whereOperator[]';
+				var selectedValue = null;
+				var firsetOpetionValue=null;
+				var selectAppend='style="width:100%"';
+				var optionAppend='';
+				$.each(data.result,function(){
+					html+='<tr onmouseover="this.style.background=\'#D7ECFE\';" onmouseout="this.style.background=\'#FFFFFF\';" >'+"\n";
+					html+='<td class="layout_fixed">'+this.columnId+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.columnName+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.nullable+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.columnKey+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.dataType+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.dataLegnth+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.characterset+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.extra+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.defaultValue+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.comment+'</td>'+"\n";
+					html+='<td title="select"><input type="checkbox" name="select[]" value="1" checked /></td>'+"\n";
+					html+='<td title="setValue"><input type="text" name="setValue[]" value="" size="8" '+ (this.dataType.toLowerCase() == 'date' ? 'onclick="addDate(this)"' : '')+' /></td>'+"\n";
+					html+='<td title="whereValue"><input type="text" name="whereValue[]" value="" size="8" '+ (this.dataType.toLowerCase() == 'date' ? 'onclick="addDate(this)"' : '')+' /></td>'+"\n";
+					html+='<td title="operator">'+"\n";
+					html+=createSelect(values,values,name,selectedValue,firsetOpetionValue,selectAppend,optionAppend);
+					html+='</td>'+"\n";
+					html+='</tr>'+"\n";
+				});
+				html+='<tr>';
+				html+='	<th colspan="11">쿼리 생성시 prepare 된 변수를 생성해준다. java style 과 php style 을 지원한다</th>';
+				html+='	<th title="prepare"><input type="button" id="prepare_set_all" onclick="prepareAll(\'prepare_set_all\');" value="prepare" style="width: 60px;height: 30px;"></th>';
+				html+='	<th title="prepare"><input type="button" id="prepare_where_all" onclick="prepareAll(\'prepare_where_all\');" value="prepare" style="width: 60px;height: 30px;"></th>';
+				html+='	<th></th>';
+				html+='</tr>';
+				
+				html+='</table>'+"\n";
 				
 				
-				$("#tableName").data($("[name=table]").val(),data);
-				var html = data.split('{{{^^^}}}}');
-				$("#fieldList").html(html[0]);
-				$("#showCreateTable").html(html[1]);
-				$("#spanTableName").html(html[2]);
-				$("#hTableName").val(html[2]);
+				$("#tableName").data($("[name=table]").val(),html);
+				$("#fieldList").html(html);
+				$("#spanTableName").html($("[name=table]").val());
+				$("#hTableName").val($("[name=table]").val());
+//				$("#showCreateTable").html(html[1]);
 				hideLoading();
 			});
 		}
@@ -1043,13 +1101,13 @@ var columns=function(mode,tableName){
 		}
 		if(mainLoop>1){
 			$(this).find("td").each(function(loop){
-				if(columnNameList[loop]=='COLUMN_NAME'){
+				if(columnNameList[loop]=='columnName'){
 					columnList[listCount] = $(this).text();
 				}
-				if(columnNameList[loop] == 'COLUMN_COMMENT' || columnNameList[loop] == 'COMMENTS'){
+				if(columnNameList[loop] == 'comment'){
 					columnCommentList[listCount]= $(this).text();
 				}
-				if(columnNameList[loop]=='COLUMN_TYPE' || columnNameList[loop]=='DATA_TYPE'){
+				if(columnNameList[loop]=='dataType'){
 					columnTypeFullList[listCount]= $(this).text();
 					var type=null;
 					if($(this).text().indexOf("NUMBER")>=0 || $(this).text().indexOf("int")>=0)
@@ -1058,11 +1116,11 @@ var columns=function(mode,tableName){
 						type='S';
 					columnTypeList[listCount] =type;
 				}
-				if(columnNameList[loop]=='IS_NULLABLE'){
+				if(columnNameList[loop]=='nullable'){
 					columnIsNullAbleList[listCount] = $(this).text();
 				}
 
-				if(columnNameList[loop]=='PK' || columnNameList[loop]=='COLUMN_KEY'){
+				if(columnNameList[loop]=='columnKey'){
 					if($(this).text()=="PRI" || $(this).text()=="MUL" || $(this).text()=="UNI" || $(this).text()=="Y"){
 						columnIndexList[indexCount] = columnList[listCount];
 						indexCount++;
@@ -1070,7 +1128,7 @@ var columns=function(mode,tableName){
 					columnPKList[listCount]=$(this).text();
 				}
 				
-				if(columnNameList[loop]=='EXTRA'){
+				if(columnNameList[loop]=='extra'){
 					columnAIList[listCount]=$(this).text();	
 				}
 

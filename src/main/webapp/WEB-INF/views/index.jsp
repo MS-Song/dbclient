@@ -25,6 +25,7 @@
 	<input type="hidden" name="autoCommit" value="false">
 	<input type="hidden" name="contents" value="">
 	<input type="hidden" id="tableComment" value=""/>
+	
 	<table class="table-list" id="tblSelectServerInfo">
 		<thead>
 			<tr>

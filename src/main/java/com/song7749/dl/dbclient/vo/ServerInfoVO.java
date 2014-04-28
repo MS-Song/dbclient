@@ -19,7 +19,7 @@ public class ServerInfoVO extends Vo{
 
 	private String password;
 
-	private DatabaseDriver dirver;
+	private DatabaseDriver driver;
 
 	private String charset;
 
@@ -28,13 +28,13 @@ public class ServerInfoVO extends Vo{
 	public ServerInfoVO(){}
 
 	public ServerInfoVO(Integer serverInfoSeq, String host, String schemaName,
-			String account, String password, DatabaseDriver dirver, String charset,String port) {
+			String account, String password, DatabaseDriver driver, String charset,String port) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.password = password;
-		this.dirver = dirver;
+		this.driver = driver;
 		this.charset = charset;
 		this.port = port;
 	}
@@ -79,12 +79,12 @@ public class ServerInfoVO extends Vo{
 		this.password = password;
 	}
 
-	public DatabaseDriver getDirver() {
-		return dirver;
+	public DatabaseDriver getDriver() {
+		return driver;
 	}
 
-	public void setDirver(DatabaseDriver dirver) {
-		this.dirver = dirver;
+	public void setDriver(DatabaseDriver driver) {
+		this.driver = driver;
 	}
 
 	public String getCharset() {
