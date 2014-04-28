@@ -8,10 +8,20 @@ public class FindServerInfoListDTO extends Dto{
 
 	private String host;
 
+	private String schemaName;
+
+	private String account;
+
 	public FindServerInfoListDTO() {}
 
 	public FindServerInfoListDTO(String host) {
 		this.host = host;
+	}
+
+	public FindServerInfoListDTO(String host, String schemaName, String account) {
+		this.host = host;
+		this.schemaName = schemaName;
+		this.account = account;
 	}
 
 	public String getHost() {
@@ -22,4 +32,19 @@ public class FindServerInfoListDTO extends Dto{
 		this.host = host;
 	}
 
+	public String getSchemaName() {
+		return schemaName;
+	}
+
+	public void setSchemaName(String schemaName) {
+		this.schemaName = schemaName;
+	}
+
+	public String getAccount() {
+		return account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
 }
