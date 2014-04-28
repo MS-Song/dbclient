@@ -70,13 +70,12 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	@Override
 	public List<TableVO> selectTableVOList(ServerInfo serverInfo) {
-		List<TableVO> list = new ArrayList<TableVO>();
 
+		List<TableVO> list = new ArrayList<TableVO>();
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-
 			conn = getDataSource(serverInfo).getConnection();
 			ps = conn.prepareStatement(getTableListQuery(serverInfo));
 			rs = ps.executeQuery();

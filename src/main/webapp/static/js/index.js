@@ -106,9 +106,28 @@ var showTables=function(databaseName){
 		// ajax 호출이 가지 않도록 리퀘스트 데이터를 저장 처리
 		if($("#databaseName").data($("[name=database]").val()) == null){
 			showLoading();
-			$.get("/query/DatabaseViewContoller.php", $("#selectDatabaseServer").serializeArray(), function(data){
-				$("#databaseName").data($("[name=database]").val(),data);
-				$("#tablesList").html(data);
+			var tmp=$("[name=database]").val().split("|");
+			var schema=tmp[0];
+			var account=tmp[1];
+			
+			
+			$.get("/database/tableList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account}, function(data){
+				var values = new Array();
+				var textes = new Array();
+				var name='table';
+				var selectedValue = '';
+				var firsetOpetionValue='--데이터베이스 선택--';
+				var selectAppend=' onchange="showFieldes(this.value);" ondblclick="addJoin(this);" oncontextmenu="addJoin(this);" id="table" size="8" style="width:100%" ';
+				var optionAppend='';
+				$.each(data.result,function(){
+					if(inArray(this.host,values)!=true){
+						values.push(this.tableName);
+						textes.push(this.tableName+ (this.tableComment!="" ? ' ['+this.tableComment+']' : ''));	
+					}
+				});
+
+				$("#databaseName").data($("[name=database]").val(),createSelect(values,textes,name,selectedValue,firsetOpetionValue,selectAppend,optionAppend));
+				$("#tablesList").html($("#databaseName").data($("[name=database]").val()));
 				hideLoading();
 			});
 		}
@@ -135,7 +154,6 @@ var showTables=function(databaseName){
 };
 
 var showFieldes=function(tableName){
-	$("[name=mode]").val(3);
 	$("[name=table]").val(tableName);
 	if($("[name=table]").val()!=""   && $("[name=table]").val() != null){
 		// ajax 호출이 가지 않도록 리퀘스트 데이터를 저장 처리

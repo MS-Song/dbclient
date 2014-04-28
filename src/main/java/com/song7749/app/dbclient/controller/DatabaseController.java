@@ -20,6 +20,8 @@ import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
 import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
 import com.song7749.dl.dbclient.service.ServerInfoManager;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
+import com.song7749.dl.dbclient.vo.FieldVO;
+import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 
@@ -53,14 +55,14 @@ public class DatabaseController {
 
 	@RequestMapping(value="/tableList.json",method=RequestMethod.GET)
 	public void getTableList(
-			@RequestParam(value="host",required=true) String host,
-			@RequestParam(value="schema",required=true) String  schema,
+			@RequestParam(value="server",required=true) String host,
+			@RequestParam(value="schema",required=true) String  schemaName,
 			@RequestParam(value="account",required=true) String  account,
 			HttpServletRequest request,
 			ModelMap model){
 
 
-		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schema, account);
+		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schemaName, account);
 		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(findServerInfoListDTO);
 
 		List<TableVO> tableList=null;
@@ -68,8 +70,52 @@ public class DatabaseController {
 			tableList=serverInfoManager.findTableVOList(new FindTableDTO(list.get(0).getServerInfoSeq()));
 		}
 
+		logger.debug("tableList : {}",tableList);
+		model.addAttribute("tableList", tableList);
+	}
+
+	@RequestMapping(value="/fieldList.json",method=RequestMethod.GET)
+	public void getFieldList(
+			@RequestParam(value="server",required=true) String host,
+			@RequestParam(value="schema",required=true) String  schemaName,
+			@RequestParam(value="account",required=true) String  account,
+			@RequestParam(value="table",required=true) String  tableName,
+			HttpServletRequest request,
+			ModelMap model){
 
 
+		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schemaName, account);
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(findServerInfoListDTO);
+
+		List<FieldVO> fieldList=null;
+		if(null!=list & list.size()>0){
+			fieldList=serverInfoManager.findTableFieldVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),tableName));
+		}
+
+		logger.debug("fieldList : {}",fieldList);
+		model.addAttribute("fieldList", fieldList);
+	}
+
+	@RequestMapping(value="/indexList.json",method=RequestMethod.GET)
+	public void getIndexList(
+			@RequestParam(value="server",required=true) String host,
+			@RequestParam(value="schema",required=true) String  schemaName,
+			@RequestParam(value="account",required=true) String  account,
+			@RequestParam(value="table",required=true) String  tableName,
+			HttpServletRequest request,
+			ModelMap model){
+
+
+		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schemaName, account);
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(findServerInfoListDTO);
+
+		List<IndexVO> indexList=null;
+		if(null!=list & list.size()>0){
+			indexList=serverInfoManager.findTableIndexVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),tableName));
+		}
+
+		logger.debug("indexList : {}",indexList);
+		model.addAttribute("indexList", indexList);
 	}
 
 	@RequestMapping(value="/saveDatabases.json",method=RequestMethod.POST)
