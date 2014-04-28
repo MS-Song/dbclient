@@ -106,10 +106,10 @@ var showTables=function(databaseName){
 		// ajax 호출이 가지 않도록 리퀘스트 데이터를 저장 처리
 		if($("#databaseName").data($("[name=database]").val()) == null){
 			showLoading();
+			
 			var tmp=$("[name=database]").val().split("|");
 			var schema=tmp[0];
 			var account=tmp[1];
-			
 			
 			$.get("/database/tableList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account}, function(data){
 				var values = new Array();
@@ -159,7 +159,15 @@ var showFieldes=function(tableName){
 		// ajax 호출이 가지 않도록 리퀘스트 데이터를 저장 처리
 		if($("#tableName").data($("[name=table]").val()) == null){
 			showLoading();
-			$.get("/query/DatabaseViewContoller.php", $("#selectDatabaseServer").serializeArray(), function(data){
+
+			var tmp=$("[name=database]").val().split("|");
+			var schema=tmp[0];
+			var account=tmp[1];
+			
+			$.get("/database/fieldList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account,"table":$("[name=table]").val()}, function(data){
+
+				
+				
 				$("#tableName").data($("[name=table]").val(),data);
 				var html = data.split('{{{^^^}}}}');
 				$("#fieldList").html(html[0]);
@@ -170,7 +178,6 @@ var showFieldes=function(tableName){
 			});
 		}
 		else{
-
 			var data = $("#tableName").data($("[name=table]").val());
 			var html = data.split('{{{^^^}}}}');
 			$("#fieldList").html(html[0]);
