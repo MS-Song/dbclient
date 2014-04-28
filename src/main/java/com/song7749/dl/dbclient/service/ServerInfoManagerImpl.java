@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.song7749.dl.dbclient.dao.DatabaseInfoDao;
 import com.song7749.dl.dbclient.dto.DeleteServerInfoDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
@@ -34,7 +33,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	private ServerInfoRepository serverInfoRepository;
 
 	@Resource
-	private DatabaseInfoDao databaseInfoDao;
+	private DBclientDataSourceManager dbClientDataSourceManager;
 
 	@Override
 	@Validate
@@ -80,6 +79,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	}
 
 	@Override
+	@Validate
 	@Transactional(value = "dbClientTransactionManager", readOnly = true)
 	public List<ServerInfoVO> findServerInfoList(FindServerInfoListDTO dto) {
 		return convert(serverInfoRepository.findServerInfoList(dto));
@@ -106,7 +106,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Validate(VG = { ValidateGroupSelect.class })
 	public List<TableVO> findTableVOList(FindTableDTO dto) {
 
-		return databaseInfoDao.selectTableVOList(serverInfoRepository
+		return dbClientDataSourceManager.selectTableVOList(serverInfoRepository
 				.find(new ServerInfo(dto.getServerInfoSeq())));
 	}
 
@@ -115,7 +115,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Validate
 	public List<FieldVO> findTableFieldVOList(FindTableDTO dto) {
 
-		return databaseInfoDao.selectTableFieldVOList(serverInfoRepository
+		return dbClientDataSourceManager.selectTableFieldVOList(serverInfoRepository
 				.find(new ServerInfo(dto.getServerInfoSeq())), dto
 				.getTableName());
 	}
@@ -125,7 +125,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Validate
 	public List<IndexVO> findTableIndexVOList(FindTableDTO dto) {
 
-		return databaseInfoDao.selectTableIndexVOList(serverInfoRepository
+		return dbClientDataSourceManager.selectTableIndexVOList(serverInfoRepository
 				.find(new ServerInfo(dto.getServerInfoSeq())), dto
 				.getTableName());
 	}

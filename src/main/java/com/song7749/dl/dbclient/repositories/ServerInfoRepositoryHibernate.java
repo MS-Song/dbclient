@@ -65,6 +65,13 @@ public class ServerInfoRepositoryHibernate implements ServerInfoRepository{
 			criteria.add(eq("host",dto.getHost()));
 		}
 
+		if(null!=dto.getSchemaName()){
+			criteria.add(eq("schemaName",dto.getSchemaName()));
+		}
+		if(null!=dto.getAccount()){
+			criteria.add(eq("account",dto.getAccount()));
+		}
+
 		// offset 시작점
 		if(null != dto.getOffset()){
 			criteria.setFirstResult(dto.getOffset().intValue());

@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
+import com.song7749.dl.dbclient.dto.FindTableDTO;
 import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
 import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
 import com.song7749.dl.dbclient.service.ServerInfoManager;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
+import com.song7749.dl.dbclient.vo.TableVO;
 
 @Controller
 @RequestMapping("/database")
@@ -56,6 +58,15 @@ public class DatabaseController {
 			@RequestParam(value="account",required=true) String  account,
 			HttpServletRequest request,
 			ModelMap model){
+
+
+		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schema, account);
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(findServerInfoListDTO);
+
+		List<TableVO> tableList=null;
+		if(null!=list & list.size()>0){
+			tableList=serverInfoManager.findTableVOList(new FindTableDTO(list.get(0).getServerInfoSeq()));
+		}
 
 
 

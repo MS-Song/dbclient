@@ -17,6 +17,10 @@ public class FindTableDTO extends Dto{
 
 	public FindTableDTO() {}
 
+	public FindTableDTO(Integer serverInfoSeq) {
+		this.serverInfoSeq = serverInfoSeq;
+	}
+
 	public FindTableDTO(Integer serverInfoSeq, String tableName) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.tableName = tableName;

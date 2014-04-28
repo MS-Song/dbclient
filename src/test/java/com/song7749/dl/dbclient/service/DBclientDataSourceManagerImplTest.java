@@ -1,5 +1,7 @@
 package com.song7749.dl.dbclient.service;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
+import com.song7749.dl.dbclient.vo.TableVO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:spring/application-context.xml" })
@@ -34,6 +37,14 @@ public class DBclientDataSourceManagerImplTest {
 	@Test
 	public void testGetDataSource() throws Exception {
 		dbClientDataSourceManager.getDataSource(serverInfo);
+	}
+
+	@Test
+	public void testSelectTableVOList() throws Exception {
+		// give // when
+		List<TableVO> list = dbClientDataSourceManager.selectTableVOList(serverInfo);
+		// then
+		// TODO test code
 	}
 
 }
