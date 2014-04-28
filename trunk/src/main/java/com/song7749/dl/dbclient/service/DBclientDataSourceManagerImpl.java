@@ -98,7 +98,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	@Override
 	public List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo,
 			String tableName) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
@@ -135,8 +135,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	private String getTableListQuery(ServerInfo serverInfo){
 		return StringUtils
-			.replace("schemaName", serverInfo.getSchemaName(),serverInfo.getDriver().getTableListQuery())
-			.replace("{", "").replace("}", "");
+			.replace("{schemaName}", serverInfo.getSchemaName(),serverInfo.getDriver().getTableListQuery());
+//			.replace("{", "").replace("}", "");
 	}
 
 	/**
