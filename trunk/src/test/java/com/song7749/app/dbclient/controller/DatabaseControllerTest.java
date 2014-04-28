@@ -107,6 +107,29 @@ public class DatabaseControllerTest {
 	}
 
 	@Test
+	public void testGetTableList() throws Exception {
+		drb = get("/database/tableList.json")
+				.param("server","local-database")
+				.param("schema","dbBilling")
+				.param("account","root")
+				;
+
+		// 로그인 cookie 정보 추가
+		drb.cookie(cookies);
+
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 			notNullValue());
+		assertThat((Integer)responseObject.get("status"),	is(200));
+		assertThat(responseObject.get("result"), 			notNullValue());
+	}
+
+	@Test
 	public void testSaveDatabases() throws Exception {
 		drb = post("/database/saveDatabases.json")
 				.param("serverInfoSeq[]","")
@@ -159,4 +182,5 @@ public class DatabaseControllerTest {
 		assertThat((Integer)responseObject.get("status"),	is(200));
 		assertThat(responseObject.get("result"), 			notNullValue());
 	}
+
 }

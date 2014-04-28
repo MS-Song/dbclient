@@ -54,7 +54,7 @@ public class ServerInfoRepositoryHibernate implements ServerInfoRepository{
 
 	@Override
 	public ServerInfo find(ServerInfo serverInfo) {
-		return null;
+		return 	(ServerInfo)getSesson().byId(ServerInfo.class).load(serverInfo.getServerInfoSeq());
 	}
 
 	@Override

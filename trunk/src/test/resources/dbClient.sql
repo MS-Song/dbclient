@@ -1,0 +1,2 @@
+insert into ServerInfo set account='root', charset='utf-8',host='local-database',password='1234',schemaName='dbBilling',port='3306',driver='mysql';
+insert into ServerInfo set account='root', charset='utf-8',host='local-database',password='1234',schemaName='eldanawa',port='3306',driver='mysql';
