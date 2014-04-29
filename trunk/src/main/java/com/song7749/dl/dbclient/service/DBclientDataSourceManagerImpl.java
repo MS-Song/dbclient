@@ -143,8 +143,55 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	@Override
 	public List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo,
 			String tableName) {
-		// TODO Auto-generated method stub
-		return null;
+
+		List<IndexVO> list = new ArrayList<IndexVO>();
+
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			logger.debug(getTableFieldListQuery(serverInfo,tableName));
+
+			conn = getDataSource(serverInfo).getConnection();
+			ps = conn.prepareStatement(getTableIndexListQuery(serverInfo,tableName));
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				switch (serverInfo.getDriver()) {
+				case mysql:
+					list.add(new IndexVO(
+							rs.getString("Table"),
+							rs.getString("Key_name"),
+							rs.getString("Column_name"),
+							rs.getString("Seq_in_index"),
+							rs.getString("Cardinality"),
+							rs.getString("Non_unique").equals("0") ? "UNIQUE" : "NOT_UNIQUE",
+							"asc"));
+					break;
+				case oracle:
+					list.add(new IndexVO(
+							rs.getString("OWNER") ,
+							rs.getString("INDEX_NAME") ,
+							rs.getString("COLUMN_NAME"),
+							rs.getString("COLUMN_POSITION"),
+							rs.getString("NUM_ROWS"),
+							rs.getString("UNIQUENESS"),
+							rs.getString("DESCEND")));
+					break;
+
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(conn, ps, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
 	}
 
 	/**
@@ -181,6 +228,14 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		query = StringUtils.replace("\\{tableName\\}", tableName ,query);
 		return query;
 	}
+
+	private String getTableIndexListQuery(ServerInfo serverInfo,String tableName){
+		String query;
+		query = StringUtils.replace("\\{schemaName\\}", serverInfo.getSchemaName(),serverInfo.getDriver().getIndexListQuery());
+		query = StringUtils.replace("\\{tableName\\}", tableName ,query);
+		return query;
+	}
+
 
 	/**
 	 * 연결 모두 닫기
