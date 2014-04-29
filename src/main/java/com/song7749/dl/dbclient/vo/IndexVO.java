@@ -8,6 +8,7 @@ public class IndexVO extends Vo{
 
 	private String owner;
 	private String indexName;
+	private String indexType;
 	private String columnName;
 	private String columnPosition;
 	private String cardinality;
@@ -16,11 +17,12 @@ public class IndexVO extends Vo{
 
 	public IndexVO() {}
 
-	public IndexVO(String owner, String indexName, String columnName,
-			String columnPosition, String cardinality, String unique,
-			String descend) {
+	public IndexVO(String owner, String indexName, String indexType,
+			String columnName, String columnPosition, String cardinality,
+			String unique, String descend) {
 		this.owner = owner;
 		this.indexName = indexName;
+		this.indexType = indexType;
 		this.columnName = columnName;
 		this.columnPosition = columnPosition;
 		this.cardinality = cardinality;
@@ -42,6 +44,14 @@ public class IndexVO extends Vo{
 
 	public void setIndexName(String indexName) {
 		this.indexName = indexName;
+	}
+
+	public String getIndexType() {
+		return indexType;
+	}
+
+	public void setIndexType(String indexType) {
+		this.indexType = indexType;
 	}
 
 	public String getColumnName() {
