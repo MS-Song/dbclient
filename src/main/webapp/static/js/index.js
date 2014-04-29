@@ -460,9 +460,10 @@ var selectInsertQuery=function(mode){
 var selectJoinQuery=function(){
 	var count=0;
 	$("[name='joinList[]'").each(function(){
-		if($(this).attr("checked")=="checked")
+		if($(this).prop("checked"))
 			count++;
 	});
+
 	if(count>0){
 		if($("[name=driver]").val()=='mysql')
 			$("[name=query]").val('select 필드입력 from '+ columns('table', $("#tableName").html()) + ' ' + columns('where',$("#tableName").html()) +  ' limit 10');
