@@ -235,13 +235,14 @@ var showFieldes=function(tableName){
 					html+='<br/><br/>';
 					html+='<table id="table_indexes" class="table-list">'+"\n";
 					html+='	<tr>'+"\n";
-					html+='		<th colspan="7" class="layout_fixed">'+"\n";
+					html+='		<th colspan="8" class="layout_fixed">'+"\n";
 					html+='			indexes';
 					html+='		</th>'+"\n";
 					html+='	</tr>'+"\n";
 					html+='	<tr>'+"\n";
 					html+='		<th class="layout_fixed">owner</th>'+"\n";
 					html+='		<th class="layout_fixed">indexName</th>'+"\n";
+					html+='		<th class="layout_fixed">indexType</th>'+"\n";					
 					html+='		<th class="layout_fixed">columnName</th>'+"\n";
 					html+='		<th class="layout_fixed">columnPosition</th>'+"\n";
 					html+='		<th class="layout_fixed">cardinality</th>'+"\n";
@@ -252,6 +253,7 @@ var showFieldes=function(tableName){
 						html+='<tr onmouseover="this.style.background=\'#D7ECFE\';" onmouseout="this.style.background=\'#FFFFFF\';" >'+"\n";
 						html+='<td class="layout_fixed">'+this.owner+'</td>'+"\n";
 						html+='<td class="layout_fixed">'+this.indexName+'</td>'+"\n";
+						html+='<td class="layout_fixed">'+this.indexType+'</td>'+"\n";
 						html+='<td class="layout_fixed">'+this.columnName+'</td>'+"\n";
 						html+='<td class="layout_fixed">'+this.columnPosition+'</td>'+"\n";
 						html+='<td class="layout_fixed">'+this.cardinality+'</td>'+"\n";

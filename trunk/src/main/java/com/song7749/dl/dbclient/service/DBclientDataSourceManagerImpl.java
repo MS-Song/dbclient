@@ -151,36 +151,23 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		ResultSet rs = null;
 
 		try {
-			logger.debug(getTableFieldListQuery(serverInfo,tableName));
+
+			logger.debug(getTableIndexListQuery(serverInfo,tableName));
 
 			conn = getDataSource(serverInfo).getConnection();
 			ps = conn.prepareStatement(getTableIndexListQuery(serverInfo,tableName));
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				switch (serverInfo.getDriver()) {
-				case mysql:
-					list.add(new IndexVO(
-							rs.getString("Table"),
-							rs.getString("Key_name"),
-							rs.getString("Column_name"),
-							rs.getString("Seq_in_index"),
-							rs.getString("Cardinality"),
-							rs.getString("Non_unique").equals("0") ? "UNIQUE" : "NOT_UNIQUE",
-							"asc"));
-					break;
-				case oracle:
-					list.add(new IndexVO(
-							rs.getString("OWNER") ,
-							rs.getString("INDEX_NAME") ,
-							rs.getString("COLUMN_NAME"),
-							rs.getString("COLUMN_POSITION"),
-							rs.getString("NUM_ROWS"),
-							rs.getString("UNIQUENESS"),
-							rs.getString("DESCEND")));
-					break;
-
-				}
+				list.add(new IndexVO(
+					rs.getString("OWNER") ,
+					rs.getString("INDEX_NAME") ,
+					rs.getString("INDEX_TYPE"),
+					rs.getString("COLUMN_NAME"),
+					rs.getString("COLUMN_POSITION"),
+					rs.getString("CARDINALITY"),
+					rs.getString("UNIQUENESS"),
+					rs.getString("DESCEND")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
