@@ -225,15 +225,48 @@ var showFieldes=function(tableName){
 				html+='</tr>';
 				
 				html+='</table>'+"\n";
-				
-				
 				$("#tableName").data($("[name=table]").val(),html);
 				$("#fieldList").html(html);
 				$("#spanTableName").html($("[name=table]").val());
 				$("#hTableName").val($("[name=table]").val());
-//				$("#showCreateTable").html(html[1]);
-				hideLoading();
+
+				// 인덱스 추가 
+				$.get("/database/indexList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account,"table":$("[name=table]").val()}, function(data){
+					html+='<br/><br/>';
+					html+='<table id="table_indexes" class="table-list">'+"\n";
+					html+='	<tr>'+"\n";
+					html+='		<th colspan="7" class="layout_fixed">'+"\n";
+					html+='			indexes';
+					html+='		</th>'+"\n";
+					html+='	</tr>'+"\n";
+					html+='	<tr>'+"\n";
+					html+='		<th class="layout_fixed">owner</th>'+"\n";
+					html+='		<th class="layout_fixed">indexName</th>'+"\n";
+					html+='		<th class="layout_fixed">columnName</th>'+"\n";
+					html+='		<th class="layout_fixed">columnPosition</th>'+"\n";
+					html+='		<th class="layout_fixed">cardinality</th>'+"\n";
+					html+='		<th class="layout_fixed">unique</th>'+"\n";
+					html+='		<th class="layout_fixed">descend</th>'+"\n";
+					html+='	</tr>'+"\n";
+					$.each(data.result,function(){
+						html+='<tr onmouseover="this.style.background=\'#D7ECFE\';" onmouseout="this.style.background=\'#FFFFFF\';" >'+"\n";
+						html+='<td class="layout_fixed">'+this.owner+'</td>'+"\n";
+						html+='<td class="layout_fixed">'+this.indexName+'</td>'+"\n";
+						html+='<td class="layout_fixed">'+this.columnName+'</td>'+"\n";
+						html+='<td class="layout_fixed">'+this.columnPosition+'</td>'+"\n";
+						html+='<td class="layout_fixed">'+this.cardinality+'</td>'+"\n";
+						html+='<td class="layout_fixed">'+this.unique+'</td>'+"\n";
+						html+='<td class="layout_fixed">'+this.descend+'</td>'+"\n";
+						html+='</tr>'+"\n";
+					});
+					html+='</table>'+"\n";
+					$("#tableName").data($("[name=table]").val(),html);
+					$("#fieldList").html(html);
+				});
 			});
+			
+//			$("#showCreateTable").html(html[1]);
+			hideLoading();
 		}
 		else{
 			var data = $("#tableName").data($("[name=table]").val());
