@@ -242,6 +242,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	public List<Map<String, String>> executeQueryList(ServerInfo serverInfo,
 			String Query, boolean isAutocommit) {
 
+		// TODO CUD 인가 R 인가 분기한다.
+
 		return null;
 	}
 }
