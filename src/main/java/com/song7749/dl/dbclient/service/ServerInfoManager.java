@@ -1,8 +1,10 @@
 package com.song7749.dl.dbclient.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.song7749.dl.dbclient.dto.DeleteServerInfoDTO;
+import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.dto.FindTableDTO;
@@ -34,4 +36,6 @@ public interface ServerInfoManager {
 	List<FieldVO> findTableFieldVOList(FindTableDTO dto);
 
 	List<IndexVO> findTableIndexVOList(FindTableDTO dto);
+
+	List<Map<String,String>> executeResultList(ExecuteResultListDTO dto);
 }

@@ -3,6 +3,7 @@ package com.song7749.dl.dbclient.service;
 import static com.song7749.dl.dbclient.service.ServerInfoConvert.convert;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -11,6 +12,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.dbclient.dto.DeleteServerInfoDTO;
+import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.dto.FindTableDTO;
@@ -115,8 +117,10 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Validate
 	public List<FieldVO> findTableFieldVOList(FindTableDTO dto) {
 
-		return dbClientDataSourceManager.selectTableFieldVOList(serverInfoRepository
-				.find(new ServerInfo(dto.getServerInfoSeq())),dto.getTableName());
+		return dbClientDataSourceManager
+				.selectTableFieldVOList(serverInfoRepository
+						.find(new ServerInfo(dto.getServerInfoSeq())), dto
+						.getTableName());
 	}
 
 	@Override
@@ -124,7 +128,16 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Validate
 	public List<IndexVO> findTableIndexVOList(FindTableDTO dto) {
 
-		return dbClientDataSourceManager.selectTableIndexVOList(serverInfoRepository
-				.find(new ServerInfo(dto.getServerInfoSeq())),dto.getTableName());
+		return dbClientDataSourceManager
+				.selectTableIndexVOList(serverInfoRepository
+						.find(new ServerInfo(dto.getServerInfoSeq())), dto
+						.getTableName());
+	}
+
+	@Override
+	public List<Map<String, String>> executeResultList(ExecuteResultListDTO dto) {
+		return dbClientDataSourceManager.executeQueryList(serverInfoRepository
+				.find(new ServerInfo(dto.getServerInfoSeq())), dto.getQuery(),
+				dto.isAutoCommit());
 	}
 }
