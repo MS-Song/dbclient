@@ -2,6 +2,7 @@ package com.song7749.app.dbclient.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.dto.FindTableDTO;
 import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
@@ -179,11 +181,28 @@ public class DatabaseController {
 			@RequestParam(value="server",required=true) String host,
 			@RequestParam(value="schema",required=true) String  schemaName,
 			@RequestParam(value="account",required=true) String  account,
+			@RequestParam(value="autoCommit",required=true) boolean  autoCommit,
 			@RequestParam(value="query",required=true) String  query,
 			HttpServletRequest request,
 			ModelMap model){
 
-//		logger.debug("indexList : {}",indexList);
-//		model.addAttribute("indexList", indexList);
+
+
+		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schemaName, account);
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(findServerInfoListDTO);
+
+		List<Map<String,String>> resultList=null;
+		if(null!=list & list.size()>0){
+			ExecuteResultListDTO dto = new ExecuteResultListDTO(list.get(0).getServerInfoSeq(),
+					host,
+					schemaName,
+					account,
+					autoCommit,
+					query);
+			resultList=serverInfoManager.executeResultList(dto);
+		}
+
+		logger.debug("indexList : {}",resultList);
+		model.addAttribute("indexList", resultList);
 	}
 }

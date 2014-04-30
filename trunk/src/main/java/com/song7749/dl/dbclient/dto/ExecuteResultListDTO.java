@@ -1,0 +1,81 @@
+package com.song7749.dl.dbclient.dto;
+
+import com.song7749.dl.base.Dto;
+
+
+public class ExecuteResultListDTO extends Dto{
+
+	private static final long serialVersionUID = 7378998437614912567L;
+
+	private Integer serverInfoSeq;
+	private String host;
+	private String schemaName;
+	private String account;
+	private boolean autoCommit;
+	private String  query;
+
+
+	public ExecuteResultListDTO() {}
+
+	public ExecuteResultListDTO(Integer serverInfoSeq) {
+		this.serverInfoSeq = serverInfoSeq;
+	}
+
+	public ExecuteResultListDTO(Integer serverInfoSeq, String host,
+			String schemaName, String account, boolean autoCommit, String query) {
+		this.serverInfoSeq = serverInfoSeq;
+		this.host = host;
+		this.schemaName = schemaName;
+		this.account = account;
+		this.autoCommit = autoCommit;
+		this.query = query;
+	}
+
+	public Integer getServerInfoSeq() {
+		return serverInfoSeq;
+	}
+
+	public void setServerInfoSeq(Integer serverInfoSeq) {
+		this.serverInfoSeq = serverInfoSeq;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getSchemaName() {
+		return schemaName;
+	}
+
+	public void setSchemaName(String schemaName) {
+		this.schemaName = schemaName;
+	}
+
+	public String getAccount() {
+		return account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public boolean isAutoCommit() {
+		return autoCommit;
+	}
+
+	public void setAutoCommit(boolean autoCommit) {
+		this.autoCommit = autoCommit;
+	}
+
+	public String getQuery() {
+		return query;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
+	}
+}

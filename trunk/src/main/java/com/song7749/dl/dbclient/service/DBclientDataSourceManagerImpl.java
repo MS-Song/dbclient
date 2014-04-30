@@ -70,27 +70,19 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	public List<TableVO> selectTableVOList(ServerInfo serverInfo) {
 
 		List<TableVO> list = new ArrayList<TableVO>();
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+
+		List<Map<String, String>> resultList = null;
 		try {
-
-			conn = getDataSource(serverInfo).getConnection();
-			ps = conn.prepareStatement(serverInfo.getDriver().getTableListQuery(serverInfo));
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				list.add(new TableVO(rs.getString("TABLE_NAME"), rs.getString("TABLE_COMMENT")));
-			}
+			resultList = executeQueryList(getDataSource(serverInfo).getConnection(), serverInfo.getDriver().getTableListQuery(serverInfo));
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				closeAll(conn, ps, rs);
-			} catch (SQLException e) {
-				nullAll(conn, ps, rs);
-				e.printStackTrace();
-			}
+			throw new IllegalArgumentException(e.getCause());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(new TableVO(
+				map.get("TABLE_NAME"),
+				map.get("TABLE_COMMENT")));
 		}
 		return list;
 	}
@@ -101,38 +93,26 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		List<FieldVO> list = new ArrayList<FieldVO>();
 
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
+		List<Map<String, String>> resultList = null;
 		try {
-
-			conn = getDataSource(serverInfo).getConnection();
-			ps = conn.prepareStatement(serverInfo.getDriver().getFieldListQueryQuery(serverInfo));
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				list.add(new FieldVO(
-						rs.getString("COLUMN_ID"),
-						rs.getString("COLUMN_NAME"),
-						rs.getString("NULLABLE"),
-						rs.getString("COLUMN_KEY"),
-						rs.getString("DATA_TYPE"),
-						rs.getString("DATA_LENGTH"),
-						rs.getString("CHARACTER_SET"),
-						rs.getString("EXTRA"),
-						rs.getString("DEFAULT_VALUE"),
-						rs.getString("COMMENT")));
-			}
+			resultList = executeQueryList(getDataSource(serverInfo).getConnection(), serverInfo.getDriver().getFieldListQueryQuery(serverInfo));
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				closeAll(conn, ps, rs);
-			} catch (SQLException e) {
-				nullAll(conn, ps, rs);
-				e.printStackTrace();
-			}
+			throw new IllegalArgumentException(e.getCause());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(new FieldVO(
+				map.get("COLUMN_ID"),
+				map.get("COLUMN_NAME"),
+				map.get("NULLABLE"),
+				map.get("COLUMN_KEY"),
+				map.get("DATA_TYPE"),
+				map.get("DATA_LENGTH"),
+				map.get("CHARACTER_SET"),
+				map.get("EXTRA"),
+				map.get("DEFAULT_VALUE"),
+				map.get("COMMENT")));
 		}
 		return list;
 	}
@@ -143,38 +123,86 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		List<IndexVO> list = new ArrayList<IndexVO>();
 
-		Connection conn = null;
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getDataSource(serverInfo).getConnection(), serverInfo.getDriver().getIndexListQuery(serverInfo));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e.getCause());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(new IndexVO(
+				map.get("OWNER") ,
+				map.get("INDEX_NAME") ,
+				map.get("INDEX_TYPE"),
+				map.get("COLUMN_NAME"),
+				map.get("COLUMN_POSITION"),
+				map.get("CARDINALITY"),
+				map.get("UNIQUENESS"),
+				map.get("DESCEND")));
+		}
+		return list;
+	}
+
+	/**
+	 * 커넥션과 쿼리를 넘겨받고 실행 결과를 리턴한다.
+	 * 조회에서 사용한다.
+	 * @param conn
+	 * @param executeQuery
+	 * @return List<Map<String,String>>
+	 */
+	private List<Map<String,String>> executeQueryList(Connection conn,String executeQuery){
+
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 
 		try {
-
-			conn = getDataSource(serverInfo).getConnection();
-			ps = conn.prepareStatement(serverInfo.getDriver().getIndexListQuery(serverInfo));
+			ps = conn.prepareStatement(executeQuery);
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				list.add(new IndexVO(
-					rs.getString("OWNER") ,
-					rs.getString("INDEX_NAME") ,
-					rs.getString("INDEX_TYPE"),
-					rs.getString("COLUMN_NAME"),
-					rs.getString("COLUMN_POSITION"),
-					rs.getString("CARDINALITY"),
-					rs.getString("UNIQUENESS"),
-					rs.getString("DESCEND")));
+				Map<String, String> map=new HashMap<String, String>();
+				for(int i=1;i<=rs.getMetaData().getColumnCount();i++){
+					map.put(rs.getMetaData().getColumnLabel(i), rs.getString(rs.getMetaData().getColumnLabel(i)));
+				}
+				list.add(map);
 			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			try {
 				closeAll(conn, ps, rs);
-				nullAll(conn, ps, rs);
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+				nullAll(conn, ps, rs);
 			}
 		}
 		return list;
+	}
+
+	private int executeQuery(Connection conn,String executeQuery,boolean isAutoCommit) throws SQLException{
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn.setAutoCommit(isAutoCommit);
+			ps = conn.prepareStatement(executeQuery);
+			rs = ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(conn, ps, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				nullAll(conn, ps, rs);
+			}
+		}
+		return rs.getRow();
 	}
 
 	/**
@@ -208,5 +236,12 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		conn=null;
 		ps=null;
 		rs=null;
+	}
+
+	@Override
+	public List<Map<String, String>> executeQueryList(ServerInfo serverInfo,
+			String Query, boolean isAutocommit) {
+
+		return null;
 	}
 }
