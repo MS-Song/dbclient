@@ -1,6 +1,5 @@
 package com.song7749.dl.dbclient.service;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +20,6 @@ import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.TableVO;
-import com.song7749.util.StringUtils;
 
 @Service("dbClientDataSourceManager")
 public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager {
@@ -39,7 +37,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		BasicDataSource bds = new BasicDataSource();
 		bds.setDriverClassName(serverInfo.getDriver().getDriverName());
 		try {
-			bds.setUrl(getUrl(serverInfo));
+			bds.setUrl(serverInfo.getDriver().getUrl(serverInfo));
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
@@ -76,10 +74,9 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			logger.debug(getTableListQuery(serverInfo));
 
 			conn = getDataSource(serverInfo).getConnection();
-			ps = conn.prepareStatement(getTableListQuery(serverInfo));
+			ps = conn.prepareStatement(serverInfo.getDriver().getTableListQuery(serverInfo));
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -91,6 +88,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			try {
 				closeAll(conn, ps, rs);
 			} catch (SQLException e) {
+				nullAll(conn, ps, rs);
 				e.printStackTrace();
 			}
 		}
@@ -98,8 +96,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
-	public List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo,
-			String tableName) {
+	public List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo, String tableName) {
+		serverInfo.setTableName(tableName);
 
 		List<FieldVO> list = new ArrayList<FieldVO>();
 
@@ -108,10 +106,9 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		ResultSet rs = null;
 
 		try {
-			logger.debug(getTableFieldListQuery(serverInfo,tableName));
 
 			conn = getDataSource(serverInfo).getConnection();
-			ps = conn.prepareStatement(getTableFieldListQuery(serverInfo,tableName));
+			ps = conn.prepareStatement(serverInfo.getDriver().getFieldListQueryQuery(serverInfo));
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -126,7 +123,6 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 						rs.getString("EXTRA"),
 						rs.getString("DEFAULT_VALUE"),
 						rs.getString("COMMENT")));
-
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -134,6 +130,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			try {
 				closeAll(conn, ps, rs);
 			} catch (SQLException e) {
+				nullAll(conn, ps, rs);
 				e.printStackTrace();
 			}
 		}
@@ -141,8 +138,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
-	public List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo,
-			String tableName) {
+	public List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo, String tableName) {
+		serverInfo.setTableName(tableName);
 
 		List<IndexVO> list = new ArrayList<IndexVO>();
 
@@ -152,10 +149,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		try {
 
-			logger.debug(getTableIndexListQuery(serverInfo,tableName));
-
 			conn = getDataSource(serverInfo).getConnection();
-			ps = conn.prepareStatement(getTableIndexListQuery(serverInfo,tableName));
+			ps = conn.prepareStatement(serverInfo.getDriver().getIndexListQuery(serverInfo));
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -174,55 +169,13 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		} finally {
 			try {
 				closeAll(conn, ps, rs);
+				nullAll(conn, ps, rs);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
 		return list;
 	}
-
-	/**
-	 * 서버 정보를 이용해서 DB CONNECT URL 을 치환한다.
-	 *
-	 * @param serverInfo
-	 * @return String DB 커넥션 URL
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 */
-	private String getUrl(ServerInfo serverInfo)
-			throws IllegalArgumentException, IllegalAccessException {
-		// 커넥션 정보 조합
-		String url = serverInfo.getDriver().getUrl()
-				+ serverInfo.getDriver().getParameter();
-		// 필드 매치
-		for (Field f : serverInfo.getClass().getDeclaredFields()) {
-			// 필드를 읽기 가능한 상태로 변경
-			f.setAccessible(true);
-			// 커넥션 변경
-			url = StringUtils.replace("\\{"+f.getName()+"\\}",f.get(serverInfo).toString(), url);
-		}
-		return url;
-	}
-
-	private String getTableListQuery(ServerInfo serverInfo){
-		return StringUtils
-			.replace("\\{schemaName\\}", serverInfo.getSchemaName(),serverInfo.getDriver().getTableListQuery());
-	}
-
-	private String getTableFieldListQuery(ServerInfo serverInfo,String tableName){
-		String query;
-		query = StringUtils.replace("\\{schemaName\\}", serverInfo.getSchemaName(),serverInfo.getDriver().getFieldListQueryQuery());
-		query = StringUtils.replace("\\{tableName\\}", tableName ,query);
-		return query;
-	}
-
-	private String getTableIndexListQuery(ServerInfo serverInfo,String tableName){
-		String query;
-		query = StringUtils.replace("\\{schemaName\\}", serverInfo.getSchemaName(),serverInfo.getDriver().getIndexListQuery());
-		query = StringUtils.replace("\\{tableName\\}", tableName ,query);
-		return query;
-	}
-
 
 	/**
 	 * 연결 모두 닫기
@@ -243,5 +196,17 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		if (null != rs) {
 			rs.close();
 		}
+	}
+
+	/**
+	 * null 로 변경하여 GC 가 일어나도록 유도
+	 * @param conn
+	 * @param ps
+	 * @param rs
+	 */
+	private void nullAll(Connection conn, PreparedStatement ps, ResultSet rs){
+		conn=null;
+		ps=null;
+		rs=null;
 	}
 }

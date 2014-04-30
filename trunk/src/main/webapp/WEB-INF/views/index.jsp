@@ -2,15 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
-<script type="text/javascript" src="/static/js/index.js"></script>
-<script type="text/javascript" src="/static/js/clipboard.js"></script>
-<link href="/static/js/textComplete/bootstrap.css" rel="stylesheet"/>
-<style>
-<!--
- textarea{width: 100%;resize: horizontal }
--->
-</style>
 <div id="databasePopup" title=""></div>
 <div id="userPopup" title=""></div>
 <div id="changePasswordPopup" title=""></div>

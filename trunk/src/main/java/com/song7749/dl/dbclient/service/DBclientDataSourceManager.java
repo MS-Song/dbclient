@@ -15,7 +15,7 @@ public interface DBclientDataSourceManager {
 
 	List<TableVO> selectTableVOList(ServerInfo serverInfo);
 
-	List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo,String tableName);
+	List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo, String tableName);
 
-	List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo,String tableName);
+	List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo, String tableName);
 }

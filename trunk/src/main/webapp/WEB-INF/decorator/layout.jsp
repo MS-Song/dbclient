@@ -14,8 +14,17 @@
 	<title>Danawa db Client</title>
 	<link rel="stylesheet" href="/static/css/global.css"/>
 	<link rel="stylesheet" href="/static/css/smoothness/jquery-ui-1.10.4.custom.css" />
+	<link rel="stylesheet" href="/static/js/textComplete/bootstrap.css"/>
 	<script type='text/javascript' src='/static/js/jquery-1.11.0.js' ></script>
 	<script type='text/javascript' src='/static/js/jquery-ui-1.10.4.js' ></script>
+	<script type="text/javascript" src="/static/js/index.js"></script>
+	<script type="text/javascript" src="/static/js/clipboard.js"></script>
+<style>
+<!--
+ textarea{width: 100%;resize: horizontal }
+-->
+</style>
+
 </head>
 <body>
 	<div class="header">
