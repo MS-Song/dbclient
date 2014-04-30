@@ -172,4 +172,18 @@ public class DatabaseController {
 		model.clear();
 		model.addAttribute("message", "서버 정보가 저장되었습니다.");
 	}
+
+
+	@RequestMapping(value="/executeQuery.json",method=RequestMethod.POST)
+	public void executeQuery(
+			@RequestParam(value="server",required=true) String host,
+			@RequestParam(value="schema",required=true) String  schemaName,
+			@RequestParam(value="account",required=true) String  account,
+			@RequestParam(value="query",required=true) String  query,
+			HttpServletRequest request,
+			ModelMap model){
+
+//		logger.debug("indexList : {}",indexList);
+//		model.addAttribute("indexList", indexList);
+	}
 }

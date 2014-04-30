@@ -90,7 +90,7 @@
 			<th valign="top" width="50%">
 				<span id="spanTableName"></span>
 			</th>
-			<th valign="top" width="50%">쿼리 [엔터=\n | ';'엔터=excute | TAB=TAB] [ctrl+1|2|3|... 상단기능] [ctrl+0:excute] </th>
+			<th valign="top" width="50%">쿼리 [엔터=\n | ';'엔터=execute | TAB=TAB] [ctrl+1|2|3|... 상단기능] [ctrl+0:execute] </th>
 		</tr>
 		<tr>
 			<td rowspan="3" id="fieldList" valign="top" > &nbsp; </td>
@@ -150,7 +150,7 @@
 								<input type="button" id="bntHtmlAllow" value="결과HTML불가" onclick="showHTML()" 					style="width: 100px;height: 50px;" title="결과에 HTML 테그 표현 여부"><br/>
 								<input type="button" id="bntShowProcesslist" value="processlist" onclick="showProcesslist();"	style="width: 100px;height: 50px;" title="프로세스 리스트 뷰"><br/>
 								<input type="button" id="bntExplainQuery" value="explain" onclick="explainQuery();"				style="width: 100px;height: 50px;" title="explain query"><br/>
-								<input type="button" id="bntExcuteQuery" value="excute" onclick="excuteQuery();"				style="width: 100px;height: 50px;" title="입력 쿼리 실행"><br/>
+								<input type="button" id="bntExecuteQuery" value="execute" onclick="executeQuery();"				style="width: 100px;height: 50px;" title="입력 쿼리 실행"><br/>
 							</td>
 						</tr>
 						<tr>

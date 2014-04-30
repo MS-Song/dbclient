@@ -227,8 +227,6 @@ var showFieldes=function(tableName){
 				html+='</table>'+"\n";
 				$("#tableName").data($("[name=table]").val(),html);
 				$("#fieldList").html(html);
-				$("#spanTableName").html($("[name=table]").val());
-				$("#hTableName").val($("[name=table]").val());
 
 				// 인덱스 추가 
 				$.get("/database/indexList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account,"table":$("[name=table]").val()}, function(data){
@@ -267,24 +265,15 @@ var showFieldes=function(tableName){
 				});
 			});
 			
-//			$("#showCreateTable").html(html[1]);
 			hideLoading();
+		} else {
+			$("#fieldList").html($("#tableName").data($("[name=table]").val()));
 		}
-		else{
-			var data = $("#tableName").data($("[name=table]").val());
-			var html = data.split('{{{^^^}}}}');
-			$("#fieldList").html(html[0]);
-			$("#showCreateTable").html(html[1]);
-			$("#spanTableName").html(" [ "+html[2]+" ]");
-
-			// 테이블 명칭이 같지 않으면 리셋시킨다.
-			if($("[name=table]").val() != html[2] ){
-				 $("#tableName").data($("[name=table]").val(),null);
-				 showFieldes($("[name=table]").val());
-				 return;
-			}
-		}
-		$("#tableName").html(tableName);
+		$("#tableName").html($("[name=table]").val());
+		$("#spanTableName").html($("[name=table]").val());
+		
+//		$("#showCreateTable").html(html[1]);
+		
 		// 넘겨받은 테이블 명칭을 통해 테이블의  comment 를 획득한다.
 		$("[name='table'] > option").each(function(){
 			if($(this).val() == tableName){
@@ -313,33 +302,42 @@ var showHTML=function(){
 	}
 };
 
-var excuteQuery=function(){
-	$("[name=mode]").val('excute');
+var executeQuery=function(){
 	showLoading();
+
+	var tmp=$("[name=database]").val().split("|");
+	var schema=tmp[0];
+	var account=tmp[1];
+
+	var param = {};
+	param.server=$("[name='server']").val();
+	param.schema=schema;
+	param.account=account;
+	param.query=encodeURIComponent($("[name='query']").val());
+	param.autoCommit=$("[name='autoCommit']").val();
+	param.table=$("[name='table']").val();
 
 	if($("[name=driver]").val()=='mysql'){
 		setTimeout(processQuery, 1000);
 		TIME=1;
 	}
 
-	// ajax 호출시 인코딩
-	$("[name='query']").val(encodeURIComponent($("[name='query']").val()));
-	$.post("/query/QueryExcuteContoller.php", $("#selectDatabaseServer").serializeArray(), function(data){
-		var html = data.split('{{{^^^}}}}');
-		printQuery(html[0]);
-		$("#queryResult").html(html[1]);
-		$("#queryResultTime").html(html[2]);
-		$("[name='resueltHistoryData[]']:eq(0)").data("result", html[1]);
-		$("[name='resueltHistoryData[]']:eq(0)").data("resultTime", html[2]);
-		resizeQueryResult();
-		if($("#queryResult").css("display") == 'none'){
-			displayResult();
-		}
+	
+	
+	$.post("/database/executeQuery.json", param, function(data){
+//		var html = data.split('{{{^^^}}}}');
+//		printQuery(html[0]);
+//		$("#queryResult").html(html[1]);
+//		$("#queryResultTime").html(html[2]);
+//		$("[name='resueltHistoryData[]']:eq(0)").data("result", html[1]);
+//		$("[name='resueltHistoryData[]']:eq(0)").data("resultTime", html[2]);
+//		resizeQueryResult();
+//		if($("#queryResult").css("display") == 'none'){
+//			displayResult();
+//		}
 		hideLoading();
 		TIME=0;
 	});
-	// ajax 호출끝나면 디코딩
-	$("[name='query']").val(decodeURIComponent($("[name='query']").val()));
 };
 
 var processQuery=function(){
