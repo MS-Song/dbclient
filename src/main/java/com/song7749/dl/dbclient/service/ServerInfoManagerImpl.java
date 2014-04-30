@@ -116,8 +116,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	public List<FieldVO> findTableFieldVOList(FindTableDTO dto) {
 
 		return dbClientDataSourceManager.selectTableFieldVOList(serverInfoRepository
-				.find(new ServerInfo(dto.getServerInfoSeq())), dto
-				.getTableName());
+				.find(new ServerInfo(dto.getServerInfoSeq())),dto.getTableName());
 	}
 
 	@Override
@@ -126,7 +125,6 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	public List<IndexVO> findTableIndexVOList(FindTableDTO dto) {
 
 		return dbClientDataSourceManager.selectTableIndexVOList(serverInfoRepository
-				.find(new ServerInfo(dto.getServerInfoSeq())), dto
-				.getTableName());
+				.find(new ServerInfo(dto.getServerInfoSeq())),dto.getTableName());
 	}
 }

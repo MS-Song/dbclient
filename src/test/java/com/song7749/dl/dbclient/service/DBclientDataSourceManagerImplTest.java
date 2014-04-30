@@ -52,7 +52,7 @@ public class DBclientDataSourceManagerImplTest {
 	@Test
 	public void testSelectTableFieldVOList() throws Exception {
 		// give // when
-		List<FieldVO> list = dbClientDataSourceManager.selectTableFieldVOList(serverInfo, "tOrder");
+		List<FieldVO> list = dbClientDataSourceManager.selectTableFieldVOList(serverInfo,"tOrder");
 		// then
 		// TODO test code
 
@@ -61,7 +61,7 @@ public class DBclientDataSourceManagerImplTest {
 	@Test
 	public void testSelectTableIndexVOList() throws Exception {
 		// give // when
-		List<IndexVO> list = dbClientDataSourceManager.selectTableIndexVOList(serverInfo, "tOrder");
+		List<IndexVO> list = dbClientDataSourceManager.selectTableIndexVOList(serverInfo,"tOrder");
 		// then
 		// TODO test code
 	}

@@ -1,12 +1,12 @@
 package com.song7749.dl.base;
 
+import static com.song7749.util.LogMessageFormatter.logFormat;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.song7749.util.LogMessageFormatter;
 
 public class EnviromentCheck {
 
@@ -24,7 +24,7 @@ public class EnviromentCheck {
 
 		if(System.getenv("DEV_ADOPTED_ENV")==null) {
 			logger.info(
-					LogMessageFormatter.format(
+					logFormat(
 							"환경변수 DEV_ADOPTED_ENV 의 값이 설정되지 않았습니다.허용되는 환경변수 값 : ( {} ) 중 선택이 필요합니다.",
 							"환경변수 확인"),
 					serviceableEnviromentList.toString());
@@ -32,7 +32,7 @@ public class EnviromentCheck {
 
 		if(System.getenv("DEV_ADOPTED_ENV")!=null) {
 			logger.info(
-					LogMessageFormatter.format(
+					logFormat(
 							"DEV_ADOPTED_ENV : {}",
 							"환경변수 확인"),
 					System.getenv("DEV_ADOPTED_ENV"));
@@ -40,7 +40,7 @@ public class EnviromentCheck {
 
 		if(System.getenv("DEV_ADOPTED_ENV") == null || ! serviceableEnviromentList.contains(System.getenv("DEV_ADOPTED_ENV"))) {
 			logger.info(
-					LogMessageFormatter.format(
+					logFormat(
 							"DEV_ADOPTED_ENV가 바르게 설정되지 않았습니다.[현재값 : {}]",
 							"환경변수 확인"),
 					System.getenv("DEV_ADOPTED_ENV"));

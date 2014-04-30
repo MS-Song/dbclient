@@ -1,5 +1,7 @@
 package com.song7749.util.validate;
 
+import static com.song7749.util.LogMessageFormatter.logFormat;
+
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -12,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import com.song7749.util.LogMessageFormatter;
 import com.song7749.util.validate.annotation.Validate;
 
 
@@ -49,12 +50,12 @@ public class ValidateInterceptor<T> implements MethodInterceptor{
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 
-		logger.trace(LogMessageFormatter.format(invocation.getMethod().toString(), "Validate AOP START"));
+		logger.trace(logFormat(invocation.getMethod().toString(), "Validate AOP START"));
 
 
 		// 파라메터가 존재하는 경우
 		if(null!=invocation.getArguments() && invocation.getArguments().length>0){
-			logger.trace(LogMessageFormatter.format("find params , size : {}", "Validate AOP"),invocation.getArguments().length);
+			logger.trace(logFormat("find params , size : {}", "Validate AOP"),invocation.getArguments().length);
 
 
 			Validate validate=null;
@@ -130,7 +131,7 @@ public class ValidateInterceptor<T> implements MethodInterceptor{
 				}
 			}
 		}
-		logger.trace(LogMessageFormatter.format(invocation.getMethod().toString(), "Validate AOP END"));
+		logger.trace(logFormat(invocation.getMethod().toString(), "Validate AOP END"));
 
 		try {
 			return invocation.proceed();

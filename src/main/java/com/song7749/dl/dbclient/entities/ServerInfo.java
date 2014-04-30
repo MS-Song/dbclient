@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.song7749.dl.base.Entities;
@@ -56,10 +57,18 @@ public class ServerInfo extends Entities {
 	@NotNull
 	private String port;
 
+	@Transient
+	private String tableName;
+
 	public ServerInfo() {}
 
 	public ServerInfo(Integer serverInfoSeq) {
 		this.serverInfoSeq = serverInfoSeq;
+	}
+
+	public ServerInfo(Integer serverInfoSeq , String tableName) {
+		this.serverInfoSeq = serverInfoSeq;
+		this.tableName = tableName;
 	}
 
 	public ServerInfo(String host, String schemaName,
@@ -147,5 +156,13 @@ public class ServerInfo extends Entities {
 
 	public void setPort(String port) {
 		this.port = port;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
 	}
 }
