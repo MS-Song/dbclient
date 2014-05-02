@@ -190,6 +190,8 @@ public class DatabaseController {
 			new IllegalArgumentException("query 데이터의 디코딩 실패. 쿼리 내용에 디코딩이 안되는 문자열이 존재합니다");
 		}
 
+		Long startTime = System.currentTimeMillis();
+
 		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
 
 		// reference 를 이용해서 실행시간, query 시간을 측정한다.
@@ -204,7 +206,17 @@ public class DatabaseController {
 			resultList=serverInfoManager.executeResultList(dto);
 		}
 
+		Long processTime = System.currentTimeMillis() - startTime;
+
 		logger.debug("resultList : {}",resultList);
+		logger.debug("processTime : {}",processTime);
+		logger.debug("rowCount : {}",resultList.size());
+		logger.debug("query : {}",query);
+
 		model.addAttribute("resultList", resultList);
+		model.addAttribute("processTime", processTime);
+		model.addAttribute("rowCount", resultList.size());
+		model.addAttribute("query", query);
+
 	}
 }

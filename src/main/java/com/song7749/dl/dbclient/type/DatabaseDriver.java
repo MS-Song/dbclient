@@ -1,7 +1,5 @@
 package com.song7749.dl.dbclient.type;
 
-import static com.song7749.util.LogMessageFormatter.logFormat;
-
 import java.lang.reflect.Field;
 
 import org.slf4j.Logger;
@@ -119,8 +117,6 @@ public enum DatabaseDriver {
 				str = StringUtils.replace("\\{" + f.getName() + "\\}",f.get(serverInfo).toString(), str);
 			}
 		}
-
-		logger.debug(logFormat("excute Query : {} ","databaseInfo"),str);
 		return str;
 	}
 }

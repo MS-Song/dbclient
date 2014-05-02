@@ -1,5 +1,7 @@
 package com.song7749.dl.dbclient.service;
 
+import static com.song7749.util.LogMessageFormatter.logFormat;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -157,6 +159,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
+
+		logger.debug(logFormat("excute Query : {} ","databaseInfo"),executeQuery);
 
 		try {
 			ps = conn.prepareStatement(executeQuery);
