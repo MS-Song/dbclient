@@ -20,5 +20,5 @@ public interface DBclientDataSourceManager {
 
 	List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo, String tableName);
 
-	List<Map<String,String>> executeQueryList(ServerInfo serverInfo, String Query, boolean isAutocommit);
+	List<Map<String,String>> executeQueryList(ServerInfo serverInfo, String query, boolean isAutocommit);
 }

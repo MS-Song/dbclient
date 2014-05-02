@@ -1,5 +1,7 @@
 package com.song7749.dl.dbclient.dto;
 
+import javax.validation.constraints.NotNull;
+
 import com.song7749.dl.base.Dto;
 
 
@@ -7,11 +9,17 @@ public class ExecuteResultListDTO extends Dto{
 
 	private static final long serialVersionUID = 7378998437614912567L;
 
+	@NotNull
 	private Integer serverInfoSeq;
+	@NotNull
 	private String host;
+	@NotNull
 	private String schemaName;
+	@NotNull
 	private String account;
+	@NotNull
 	private boolean autoCommit;
+	@NotNull
 	private String  query;
 
 

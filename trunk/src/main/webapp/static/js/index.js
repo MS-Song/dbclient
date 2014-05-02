@@ -55,7 +55,7 @@ var showHost=function(){
 		var firsetOpetionValue='--서버선택--';
 		var selectAppend=' onchange="showDatabase(this.value)"  id="'+name+'" size="8" style="width:100%" ';
 		var optionAppend='';
-		$.each(data.result,function(){
+		$.each(data.result.serverInfo,function(){
 			if(inArray(this.host,values)!=true){
 				values.push(this.host);
 				textes.push(this.host);
@@ -76,7 +76,7 @@ var showDatabase=function(serverName){
 			var firsetOpetionValue='--데이터베이스 선택--';
 			var selectAppend=' onchange="showTables(this.value)"  id="'+name+'" size="8" style="width:100%" ';
 			var optionAppend='';
-			$.each(data.result,function(){
+			$.each(data.result.serverInfo,function(){
 				if(inArray(this.host,values)!=true){
 					values.push(this.schemaName+'|'+this.account+'|'+this.driver);
 					textes.push(this.schemaName+' ['+this.account+']');
@@ -119,7 +119,7 @@ var showTables=function(databaseName){
 				var firsetOpetionValue='--데이터베이스 선택--';
 				var selectAppend=' onchange="showFieldes(this.value);" ondblclick="addJoin(this);" oncontextmenu="addJoin(this);" id="table" size="8" style="width:100%" ';
 				var optionAppend='';
-				$.each(data.result,function(){
+				$.each(data.result.tableList,function(){
 					if(inArray(this.host,values)!=true){
 						values.push(this.tableName);
 						textes.push(this.tableName+ (this.tableComment!="" ? ' ['+this.tableComment+']' : ''));	
@@ -197,7 +197,7 @@ var showFieldes=function(tableName){
 				var firsetOpetionValue=null;
 				var selectAppend='style="width:100%"';
 				var optionAppend='';
-				$.each(data.result,function(){
+				$.each(data.result.fieldList,function(){
 					html+='<tr onmouseover="this.style.background=\'#D7ECFE\';" onmouseout="this.style.background=\'#FFFFFF\';" >'+"\n";
 					html+='<td class="layout_fixed">'+this.columnId+'</td>'+"\n";
 					html+='<td class="layout_fixed">'+this.columnName+'</td>'+"\n";
@@ -247,7 +247,7 @@ var showFieldes=function(tableName){
 					html+='		<th class="layout_fixed">unique</th>'+"\n";
 					html+='		<th class="layout_fixed">descend</th>'+"\n";
 					html+='	</tr>'+"\n";
-					$.each(data.result,function(){
+					$.each(data.result.indexList,function(){
 						html+='<tr onmouseover="this.style.background=\'#D7ECFE\';" onmouseout="this.style.background=\'#FFFFFF\';" >'+"\n";
 						html+='<td class="layout_fixed">'+this.owner+'</td>'+"\n";
 						html+='<td class="layout_fixed">'+this.indexName+'</td>'+"\n";
@@ -325,6 +325,7 @@ var executeQuery=function(){
 	
 	
 	$.post("/database/executeQuery.json", param, function(data){
+		console.log(data);
 //		var html = data.split('{{{^^^}}}}');
 //		printQuery(html[0]);
 //		$("#queryResult").html(html[1]);

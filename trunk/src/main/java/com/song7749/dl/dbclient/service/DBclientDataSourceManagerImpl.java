@@ -46,10 +46,10 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		bds.setValidationQuery("SELECT 1 FROM DUAL");
 		bds.setValidationQueryTimeout(60);
 		bds.setDefaultAutoCommit(false);
-		bds.setMaxActive(3);
-		bds.setInitialSize(3);
-		bds.setMinIdle(1);
-		bds.setMaxIdle(3);
+		bds.setMaxActive(20);
+		bds.setInitialSize(10);
+		bds.setMinIdle(10);
+		bds.setMaxIdle(20);
 		bds.setMaxWait(5000);
 		bds.setTestOnReturn(true);
 		bds.setTestOnReturn(false);
@@ -186,23 +186,23 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	private int executeQuery(Connection conn,String executeQuery,boolean isAutoCommit) throws SQLException{
 		PreparedStatement ps = null;
-		ResultSet rs = null;
+		int affectedRows=0;
 		try {
 			conn.setAutoCommit(isAutoCommit);
 			ps = conn.prepareStatement(executeQuery);
-			rs = ps.executeQuery();
+			affectedRows = ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			try {
-				closeAll(conn, ps, rs);
+				closeAll(conn, ps, null);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
-				nullAll(conn, ps, rs);
+				nullAll(conn, ps, null);
 			}
 		}
-		return rs.getRow();
+		return affectedRows;
 	}
 
 	/**
@@ -239,11 +239,50 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
-	public List<Map<String, String>> executeQueryList(ServerInfo serverInfo,
-			String Query, boolean isAutocommit) {
+	public List<Map<String, String>> executeQueryList(ServerInfo serverInfo,String query, boolean isAutocommit) {
+		List<Map<String, String>> list = null;
 
-		// TODO CUD 인가 R 인가 분기한다.
+		if(query.toLowerCase().startsWith("explain")){
+			// 별도의 explain 쿼리가 존재하지 않으면..
+			if(serverInfo.getDriver().getExplainQuery().equals("")){
+				try{
+					list = executeQueryList(getDataSource(serverInfo).getConnection(), query);
+				} catch (SQLException e) {
+					e.printStackTrace();
+					throw new IllegalArgumentException(e.getCause());
+				}
+			} else {
+			// 별도의 explain 쿼리가 존재하면 쿼리를 실행한 뒤에 explain query 를 다시 실행한다.
+				try{
+					Connection conn = getDataSource(serverInfo).getConnection();
+					conn.prepareStatement(query).execute();
+					list = executeQueryList(conn, serverInfo.getDriver().getExplainQuery());
+				} catch (SQLException e) {
+					e.printStackTrace();
+					throw new IllegalArgumentException(e.getCause());
+				}
+			}
+		} else if(query.toLowerCase().startsWith("select")){
+			try{
+				list=executeQueryList(getDataSource(serverInfo).getConnection(), query);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new IllegalArgumentException(e.getCause());
+			}
+		} else {
+			try{
+				int affectRows = executeQuery(getDataSource(serverInfo).getConnection(), query, isAutocommit);
 
-		return null;
+				Map<String, String> affectedRowMap = new HashMap<String, String>();
+				affectedRowMap.put("affectedRows", new Integer(affectRows).toString());
+
+				list = new ArrayList<Map<String,String>>();
+				list.add(affectedRowMap);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new IllegalArgumentException(e.getCause());
+			}
+		}
+		return list;
 	}
 }

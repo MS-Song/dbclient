@@ -1,10 +1,16 @@
 package com.song7749.dl.dbclient.service;
 
+import static com.song7749.util.LogMessageFormatter.logFormat;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -22,6 +28,8 @@ import com.song7749.dl.dbclient.vo.TableVO;
 @TransactionConfiguration(transactionManager="dbClientTransactionManager",defaultRollback=true)
 @Transactional("dbClientTransactionManager")
 public class DBclientDataSourceManagerImplTest {
+
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	DBclientDataSourceManager dbClientDataSourceManager;
@@ -64,5 +72,22 @@ public class DBclientDataSourceManagerImplTest {
 		List<IndexVO> list = dbClientDataSourceManager.selectTableIndexVOList(serverInfo,"tOrder");
 		// then
 		// TODO test code
+	}
+
+	@Test
+	public void testExecuteQueryListServerInfoStringBoolean() throws Exception {
+		List<Map<String,String>> list=null;
+		List<String> queryList = new ArrayList<String>();
+		queryList.add("INSERT INTO tService SET nServiceSeq=1, sServiceName='다나와'");
+		queryList.add("select * from tService");
+		queryList.add("explain select * from tService");
+		queryList.add("update tService set sServiceName='너나와'");
+		queryList.add("delete from tService where nServiceSeq=1");
+
+		for(String query:queryList){
+			list =dbClientDataSourceManager.executeQueryList(serverInfo,query, true);
+			logger.debug(logFormat("result : {} ","test code"),list);
+		}
+
 	}
 }

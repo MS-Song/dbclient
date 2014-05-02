@@ -1,5 +1,8 @@
 package com.song7749.app.interceptor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,17 +46,16 @@ public class ModelInterceptorHandle extends HandlerInterceptorAdapter {
 					ResponseResult responseResult = new ResponseResult(
 							HttpServletResponse.SC_NO_CONTENT, "데이터가 없습니다.");
 					modelAndView.addObject(responseResult);
-				}
-
-				// 이미 WRAPPER 를 쓰지 않은 경우에만..
-				if (null == modelAndView.getModel().get("responseResult")) {
+				}else {
 					ResponseResult responseResult = new ResponseResult(
 							HttpServletResponse.SC_OK);
-					// 모델에 반드시 1개의 객체만 넣도록 개발자들과 약속을 한다.
+
+					Map<Object,Object> rMap = new HashMap<Object, Object>();
 					for (Object key : modelAndView.getModel().keySet()) {
-						responseResult.setResult(modelAndView.getModel().get(
-								key));
+						rMap.put(key, modelAndView.getModel().get(key));
 					}
+					responseResult.setResult(rMap);
+
 					// 기존 객체를 지우고 포장한 객체를 다시 넣는다.
 					modelAndView.getModelMap().clear();
 					modelAndView.addObject(responseResult);
