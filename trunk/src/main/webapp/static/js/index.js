@@ -321,12 +321,10 @@ var executeQuery=function(){
 		setTimeout(processQuery, 1000);
 		TIME=1;
 	}
-
-	
 	
 	$.post("/database/executeQuery.json", param, function(data){
 		
-		console.log(data);
+//		console.log(data);
 		
 		var html='';
 		var thead='';
@@ -348,7 +346,7 @@ var executeQuery=function(){
 		}
 		$("#queryResult").html(html);
 		$("#queryResultTime").html('Row Count : '+data.result.rowCount + ' Total Time  : '+data.result.processTime + 'ms');
-		printQuery(data.result.query);
+		printQuery(decodeURIComponent(data.result.query));
 		$("[name='resueltHistoryData[]']:eq(0)").data("result", $("#queryResult").html());
 		$("[name='resueltHistoryData[]']:eq(0)").data("resultTime", $("#queryResultTime").html());
 
@@ -363,50 +361,25 @@ var executeQuery=function(){
 
 var processQuery=function(){
 	if(TIME==1){
-		$("[name=mode]").val('processlist');
-		var time=new Date();
-		$.post("/query/QueryExcuteContoller.php", $("#selectDatabaseServer").serializeArray(), function(data){
-			if(data!='noResult'){
-				var html="<tr><td class=\"layout_fixed\">"+data+"</td><td width=\"120\" class=\"layout_fixed\">"+time.getDate()+'일 '+time.getHours()+'시 '+time.getMinutes()+'분 '+time.getSeconds()+'초 '+"</td><td class=\"layout_fixed\"></td></tr>";
-				$("#printQueryPrepend").after(html);
-			}
-		});
+
 	}
 };
 
 var explainQuery=function(){
-	$("[name=mode]").val('explain');
-	showLoading();
-	$.post("/query/QueryExcuteContoller.php", $("#selectDatabaseServer").serializeArray(), function(data){
-		var html = data.split('{{{^^^}}}}');
-		printQuery(html[0]);
-		$("#queryResult").html(html[1]);
-		$("#queryResultTime").html(html[2]);
-		$("[name='resueltHistoryData[]']:eq(0)").data("result", html[1]);
-		$("[name='resueltHistoryData[]']:eq(0)").data("resultTime", html[2]);
-		resizeQueryResult();
-		if($("#queryResult").css("display") == 'none'){
-			displayResult();
-		}
-		hideLoading();
-	});
+	if($("[name=driver]").val()=='mysql'){
+		$("[name=query]").val('explain '+$("[name=query]").val());
+		executeQuery();
+	} else if($("[name=driver]").val()=='mysql'){
+		$("[name=query]").val('explain plan for '+$("[name=query]").val());
+		executeQuery();
+	}
 };
 
 var showProcesslist=function(){
-	$("[name=mode]").val('excute');
-	$("[name=query]").val('show full processlist');
-	showLoading();
-	$.post("/query/QueryExcuteContoller.php", $("#selectDatabaseServer").serializeArray(), function(data){
-		var html = data.split('{{{^^^}}}}');
-		printQuery(html[0]);
-		$("#queryResult").html(html[1]);
-		$("#queryResultTime").html(html[2]);
-		resizeQueryResult();
-		if($("#queryResult").css("display") == 'none'){
-			displayResult();
-		}
-		hideLoading();
-	});
+	if($("[name=driver]").val()=='mysql'){
+		$("[name=query]").val('show full processlist');
+		executeQuery();
+	}
 };
 
 var resizeQueryResult=function(){

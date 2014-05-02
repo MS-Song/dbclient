@@ -266,7 +266,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 					throw new IllegalArgumentException(e.getCause());
 				}
 			}
-		} else if(query.toLowerCase().startsWith("select")){
+		} else if(query.toLowerCase().startsWith("select")
+				|| query.toLowerCase().startsWith("show")){
 			try{
 				list=executeQueryList(getDataSource(serverInfo).getConnection(), query);
 			} catch (SQLException e) {
