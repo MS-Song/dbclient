@@ -1,5 +1,7 @@
 package com.song7749.app.dbclient.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,9 +65,7 @@ public class DatabaseController {
 			HttpServletRequest request,
 			ModelMap model){
 
-
-		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schemaName, account);
-		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(findServerInfoListDTO);
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
 
 		List<TableVO> tableList=null;
 		if(null!=list & list.size()>0){
@@ -86,8 +86,7 @@ public class DatabaseController {
 			ModelMap model){
 
 
-		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schemaName, account);
-		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(findServerInfoListDTO);
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
 
 		List<FieldVO> fieldList=null;
 		if(null!=list & list.size()>0){
@@ -107,9 +106,7 @@ public class DatabaseController {
 			HttpServletRequest request,
 			ModelMap model){
 
-
-		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schemaName, account);
-		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(findServerInfoListDTO);
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
 
 		List<IndexVO> indexList=null;
 		if(null!=list & list.size()>0){
@@ -186,11 +183,16 @@ public class DatabaseController {
 			HttpServletRequest request,
 			ModelMap model){
 
+		String decodedQuery=null;
+		try {
+			decodedQuery=URLDecoder.decode(query, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			new IllegalArgumentException("query 데이터의 디코딩 실패. 쿼리 내용에 디코딩이 안되는 문자열이 존재합니다");
+		}
 
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
 
-		FindServerInfoListDTO findServerInfoListDTO = new FindServerInfoListDTO(host, schemaName, account);
-		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(findServerInfoListDTO);
-
+		// reference 를 이용해서 실행시간, query 시간을 측정한다.
 		List<Map<String,String>> resultList=null;
 		if(null!=list & list.size()>0){
 			ExecuteResultListDTO dto = new ExecuteResultListDTO(list.get(0).getServerInfoSeq(),
@@ -198,11 +200,11 @@ public class DatabaseController {
 					schemaName,
 					account,
 					autoCommit,
-					query);
+					decodedQuery);
 			resultList=serverInfoManager.executeResultList(dto);
 		}
 
-		logger.debug("indexList : {}",resultList);
-		model.addAttribute("indexList", resultList);
+		logger.debug("resultList : {}",resultList);
+		model.addAttribute("resultList", resultList);
 	}
 }
