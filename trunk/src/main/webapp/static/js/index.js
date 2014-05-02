@@ -325,17 +325,37 @@ var executeQuery=function(){
 	
 	
 	$.post("/database/executeQuery.json", param, function(data){
+		
 		console.log(data);
-//		var html = data.split('{{{^^^}}}}');
-//		printQuery(html[0]);
-//		$("#queryResult").html(html[1]);
-//		$("#queryResultTime").html(html[2]);
-//		$("[name='resueltHistoryData[]']:eq(0)").data("result", html[1]);
-//		$("[name='resueltHistoryData[]']:eq(0)").data("resultTime", html[2]);
-//		resizeQueryResult();
-//		if($("#queryResult").css("display") == 'none'){
-//			displayResult();
-//		}
+		
+		var html='';
+		var thead='';
+		var tbody='';
+		if(data.result.resultList.length>0){
+			$.each(data.result.resultList,function(loop){
+				tbody+='<tr>';
+				$.each(this,function(key,value){
+					if(loop==0){
+						thead+='<th class=\"layout_fixed\">'+key+'</th>';	
+					}
+					tbody+='<td class=\"layout_fixed\">'+value+'</td>';
+				});
+				tbody+='</tr>';
+			});
+			html='<table><tr>'+thead+'</tr>'+tbody+'</table>';
+		} else {
+			html='<table><tr><td>데이터가 없습니다.</td></tr></table>';
+		}
+		$("#queryResult").html(html);
+		$("#queryResultTime").html('Row Count : '+data.result.rowCount + ' Total Time  : '+data.result.processTime + 'ms');
+		printQuery(data.result.query);
+		$("[name='resueltHistoryData[]']:eq(0)").data("result", $("#queryResult").html());
+		$("[name='resueltHistoryData[]']:eq(0)").data("resultTime", $("#queryResultTime").html());
+
+		resizeQueryResult();
+		if($("#queryResult").css("display") == 'none'){
+			displayResult();
+		}
 		hideLoading();
 		TIME=0;
 	});
