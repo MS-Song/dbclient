@@ -3,19 +3,23 @@ package com.song7749.app.dbclient.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
@@ -217,6 +221,42 @@ public class DatabaseController {
 		model.addAttribute("processTime", processTime);
 		model.addAttribute("rowCount", resultList.size());
 		model.addAttribute("query", query);
+
+	}
+
+	@RequestMapping(value={"/getExcel.xls","/getExcel.csv"},
+			produces= {"application/vnd.ms-excel;charset=UTF-8", "text/csv;charset=UTF-8"},
+			method=RequestMethod.POST)
+	@ResponseBody
+	public String getExcel(
+			@RequestHeader(value="User-Agent") String clientBrowser,
+			HttpServletRequest request,
+			HttpServletResponse response){
+
+		Calendar cal=Calendar.getInstance();
+		String titleName = "excel"+ cal.getTimeInMillis();
+
+//		try {
+//			titleName = new String(titleName.getBytes("KSC5601"), "8859_1");
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//		}
+
+		if(clientBrowser.indexOf("MSIE 5.5")>-1 || clientBrowser.indexOf("MSIE 6.0") > -1 ){
+		  response.setHeader("Content-Type", "doesn/matter;");
+		  response.setHeader("Content-Disposition", "filename="+titleName+".xls");
+		}else{
+		  response.setHeader("Content-Type", "application/vnd.ms-excel;charset=UTF-8");
+		  response.setHeader("Content-Disposition", "attachment; filename="+titleName+".xls");
+		}
+
+		response.setHeader("Content-Transfer-Encoding", "binary;");
+		response.setHeader("Pragma", "no-cache;");
+		response.setHeader("Expires", "-1;");
+
+
+
+		return "<html><table><tr><td> 엑셀셈플데이터 </td></tr></table></html>";
 
 	}
 }

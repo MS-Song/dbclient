@@ -84,6 +84,8 @@
 		<property name="supportedClasses">
 			<list>
 				<value>java.util.List</value>
+				<value>java.util.Map</value>
+				<value>java.util.Set</value>
 				<value>java.lang.Integer</value>
 				<value>java.lang.Long</value>
 				<value>java.lang.String</value>

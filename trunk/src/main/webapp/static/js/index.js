@@ -1184,7 +1184,7 @@ var columns=function(mode,tableName){
 		var checkedCount=0;
 		var tableString="";
 		$("[name='joinList[]']").each(function(loop){
-			if($(this).attr("checked")=="checked"){
+			if($(this).prop("checked")){
 				if(checkedCount==0){
 					tableString+="\n " + $("[name='joinTableNameList[]']:eq("+loop+")").val() + " " + $("[name='aliasTableName[]']:eq("+loop+")").val();
 				}
@@ -1398,7 +1398,7 @@ var copyHistoryResult=function(obj){
 
 var excelDown=function(){
 	$("#selectDatabaseServer").attr("method","POST");
-	$("#selectDatabaseServer").attr("action",'/util/excelDown.php');
+	$("#selectDatabaseServer").attr("action",'/database/getExcel.xls');
 	$("[name='contents']").val(copyResult('excel'));
 	$("#selectDatabaseServer").submit();
 };
