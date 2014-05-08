@@ -14,7 +14,6 @@
 	<input type="hidden" name="pid">
 	<input type="hidden" name="time">
 	<input type="hidden" name="autoCommit" value="false">
-	<input type="hidden" name="contents" value="">
 	<input type="hidden" id="tableComment" value=""/>
 	
 	<table class="table-list" id="tblSelectServerInfo">

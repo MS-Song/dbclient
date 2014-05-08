@@ -334,9 +334,9 @@ var executeQuery=function(){
 				tbody+='<tr>';
 				$.each(this,function(key,value){
 					if(loop==0){
-						thead+='<th class=\"layout_fixed\">'+key+'</th>';	
+						thead+='<th class=\"layout_fixed\">'+key+'<input type="hidden" name="titles[]" value="'+key+'"/></th>';	
 					}
-					tbody+='<td class=\"layout_fixed\">'+value+'</td>';
+					tbody+='<td class=\"layout_fixed\">'+value+'<input type="hidden" name="values[]" value="'+value+'"/></td>';
 				});
 				tbody+='</tr>';
 			});
@@ -1399,7 +1399,6 @@ var copyHistoryResult=function(obj){
 var excelDown=function(){
 	$("#selectDatabaseServer").attr("method","POST");
 	$("#selectDatabaseServer").attr("action",'/database/getExcel.xls');
-	$("[name='contents']").val(copyResult('excel'));
 	$("#selectDatabaseServer").submit();
 };
 
