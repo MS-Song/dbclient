@@ -1,6 +1,7 @@
 package com.song7749.dl.dbclient.service;
 
 import static com.song7749.util.LogMessageFormatter.logFormat;
+import static com.song7749.util.StringUtils.htmlentities;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
@@ -156,13 +158,24 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	 * @return List<Map<String,String>>
 	 */
 	private List<Map<String,String>> executeQueryList(Connection conn,String executeQuery){
+		return executeQueryList(conn,executeQuery,true);
+	}
+
+	/**
+	 * 커넥션과 쿼리를 넘겨받고 실행 결과를 리턴한다.
+	 * 조회에서 사용한다.
+	 * @param conn
+	 * @param executeQuery
+	 * @param isHtmlAllow
+	 * @return List<Map<String,String>>
+	 */
+	private List<Map<String,String>> executeQueryList(Connection conn,String executeQuery, boolean isHtmlAllow){
 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 
 		logger.debug(logFormat("excute Query : {} ","databaseInfo"),executeQuery);
-
 		try {
 			ps = conn.prepareStatement(executeQuery);
 			rs = ps.executeQuery();
@@ -170,7 +183,13 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			while (rs.next()) {
 				Map<String, String> map=new LinkedHashMap<String, String>();
 				for(int i=1;i<=rs.getMetaData().getColumnCount();i++){
-					map.put(rs.getMetaData().getColumnLabel(i), rs.getString(rs.getMetaData().getColumnLabel(i)));
+					// 내용물에 html 허용
+					if(isHtmlAllow){
+						map.put(rs.getMetaData().getColumnLabel(i), rs.getString(rs.getMetaData().getColumnLabel(i)));
+					} else {
+						// 허용 안함
+						map.put(rs.getMetaData().getColumnLabel(i), htmlentities(rs.getString(rs.getMetaData().getColumnLabel(i))));
+					}
 				}
 				list.add(map);
 			}
@@ -244,14 +263,14 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
-	public List<Map<String, String>> executeQueryList(ServerInfo serverInfo,String query, boolean isAutocommit) {
+	public List<Map<String, String>> executeQueryList(ServerInfo serverInfo,ExecuteResultListDTO dto) {
 		List<Map<String, String>> list = null;
 
-		if(query.toLowerCase().startsWith("explain")){
+		if(dto.getQuery().toLowerCase().startsWith("explain")){
 			// 별도의 explain 쿼리가 존재하지 않으면..
 			if(serverInfo.getDriver().getExplainQuery().equals("")){
 				try{
-					list = executeQueryList(getDataSource(serverInfo).getConnection(), query);
+					list = executeQueryList(getDataSource(serverInfo).getConnection(), dto.getQuery(),dto.isHtmlAllow());
 				} catch (SQLException e) {
 					e.printStackTrace();
 					throw new IllegalArgumentException(e.getCause());
@@ -260,24 +279,24 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			// 별도의 explain 쿼리가 존재하면 쿼리를 실행한 뒤에 explain query 를 다시 실행한다.
 				try{
 					Connection conn = getDataSource(serverInfo).getConnection();
-					conn.prepareStatement(query).execute();
+					conn.prepareStatement(dto.getQuery()).execute();
 					list = executeQueryList(conn, serverInfo.getDriver().getExplainQuery());
 				} catch (SQLException e) {
 					e.printStackTrace();
 					throw new IllegalArgumentException(e.getCause());
 				}
 			}
-		} else if(query.toLowerCase().startsWith("select")
-				|| query.toLowerCase().startsWith("show")){
+		} else if(dto.getQuery().toLowerCase().startsWith("select")
+				|| dto.getQuery().toLowerCase().startsWith("show")){
 			try{
-				list=executeQueryList(getDataSource(serverInfo).getConnection(), query);
+				list=executeQueryList(getDataSource(serverInfo).getConnection(), dto.getQuery(),dto.isHtmlAllow());
 			} catch (SQLException e) {
 				e.printStackTrace();
 				throw new IllegalArgumentException(e.getCause());
 			}
 		} else {
 			try{
-				int affectRows = executeQuery(getDataSource(serverInfo).getConnection(), query, isAutocommit);
+				int affectRows = executeQuery(getDataSource(serverInfo).getConnection(), dto.getQuery(), dto.isAutoCommit());
 
 				Map<String, String> affectedRowMap = new HashMap<String, String>();
 				affectedRowMap.put("affectedRows", new Integer(affectRows).toString());

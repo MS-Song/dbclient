@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
@@ -20,5 +21,5 @@ public interface DBclientDataSourceManager {
 
 	List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo, String tableName);
 
-	List<Map<String,String>> executeQueryList(ServerInfo serverInfo, String query, boolean isAutocommit);
+	List<Map<String,String>> executeQueryList(ServerInfo serverInfo, ExecuteResultListDTO dto);
 }

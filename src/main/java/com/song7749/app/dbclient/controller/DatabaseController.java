@@ -191,6 +191,7 @@ public class DatabaseController {
 			@RequestParam(value="account",required=true) String  account,
 			@RequestParam(value="autoCommit",required=true) boolean  autoCommit,
 			@RequestParam(value="query",required=true) String  query,
+			@RequestParam(value="htmlAllow",required=true) boolean  htmlAllow,
 			HttpServletRequest request,
 			ModelMap model){
 
@@ -213,7 +214,8 @@ public class DatabaseController {
 					schemaName,
 					account,
 					autoCommit,
-					decodedQuery);
+					decodedQuery,
+					htmlAllow);
 			resultList=serverInfoManager.executeResultList(dto);
 		}
 

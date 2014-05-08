@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.dl.dbclient.vo.FieldVO;
@@ -85,7 +86,7 @@ public class DBclientDataSourceManagerImplTest {
 		queryList.add("delete from tService where nServiceSeq=1");
 
 		for(String query:queryList){
-			list =dbClientDataSourceManager.executeQueryList(serverInfo,query, true);
+			list =dbClientDataSourceManager.executeQueryList(serverInfo,new ExecuteResultListDTO(query));
 			logger.debug(logFormat("result : {} ","test code"),list);
 		}
 

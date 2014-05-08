@@ -138,6 +138,6 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Transactional(value = "dbClientTransactionManager")
 	@Validate
 	public List<Map<String, String>> executeResultList(ExecuteResultListDTO dto) {
-		return dbClientDataSourceManager.executeQueryList(serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq())), dto.getQuery(),dto.isAutoCommit());
+		return dbClientDataSourceManager.executeQueryList(serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq())), dto);
 	}
 }

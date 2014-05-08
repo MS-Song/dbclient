@@ -142,7 +142,7 @@
 								<input type="button" id="bntResultMap" 				value="ResultMap XML"			onclick="resultMap();" 			style="width: 100px;height: 40px;" title="Mybatis 에서 ResultMap">
 							</td>
 							<td valign="top">
-								<input type="hidden" name="htmlAllow" value="1"/>
+								<input type="hidden" name="htmlAllow" value="false"/>
 								<input type="button" id="bntEmpty" value="내용지우기"
 									onclick="this.form.query.value='';document.getElementById('queryResult').innerHTML='';document.getElementById('queryResultTime').innerHTML;resizeQueryResult();"
 									style="width: 100px;height: 50px;" title="쿼리 내용 삭제 및 결과 삭제">
