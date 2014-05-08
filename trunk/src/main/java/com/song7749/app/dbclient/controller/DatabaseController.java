@@ -52,6 +52,7 @@ public class DatabaseController {
 
 		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(new FindServerInfoListDTO());
 
+		logger.debug("serverList {}",infoList);
 		model.addAttribute("serverInfo", infoList);
 	}
 
@@ -62,6 +63,8 @@ public class DatabaseController {
 			ModelMap model){
 		// 테스트 데이터 설정
 		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host));
+
+		logger.debug("serverList {}",infoList);
 		model.addAttribute("serverInfo", infoList);
 	}
 

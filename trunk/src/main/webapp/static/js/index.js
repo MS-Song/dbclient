@@ -1662,7 +1662,7 @@ var databaseManageForm=function(){
 			html+='	<tbody id="rowBody">';;
 		
 		var subHtml = '';
-		$.each(data.result,function(){
+		$.each(data.result.serverInfo,function(){
 			html+=databaseManageGetSubHTML(this);
 		});
 		
@@ -1881,7 +1881,7 @@ $(document).ready(function(){
 				click: function() {
 					if(confirm("변경 내용을 저장 하시겠습니까?")){
 						$.post("/database/saveDatabases.json", $("#databaseManageTable").serializeArray(), function(data){
-							alert(data.result);
+							alert(data.result.message);
 						});
 						document.location = document.location.href;
 					};
