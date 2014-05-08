@@ -20,7 +20,9 @@ public class ExecuteResultListDTO extends Dto{
 	@NotNull
 	private boolean autoCommit;
 	@NotNull
-	private String  query;
+	private String query;
+	@NotNull
+	private boolean htmlAllow;
 
 
 	public ExecuteResultListDTO() {}
@@ -29,14 +31,19 @@ public class ExecuteResultListDTO extends Dto{
 		this.serverInfoSeq = serverInfoSeq;
 	}
 
+	public ExecuteResultListDTO(String query) {
+		this.query = query;
+	}
+
 	public ExecuteResultListDTO(Integer serverInfoSeq, String host,
-			String schemaName, String account, boolean autoCommit, String query) {
+			String schemaName, String account, boolean autoCommit, String query,boolean htmlAllow) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.autoCommit = autoCommit;
 		this.query = query;
+		this.htmlAllow = htmlAllow;
 	}
 
 	public Integer getServerInfoSeq() {
@@ -85,5 +92,13 @@ public class ExecuteResultListDTO extends Dto{
 
 	public void setQuery(String query) {
 		this.query = query;
+	}
+
+	public boolean isHtmlAllow() {
+		return htmlAllow;
+	}
+
+	public void setHtmlAllow(boolean htmlAllow) {
+		this.htmlAllow = htmlAllow;
 	}
 }

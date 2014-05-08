@@ -292,12 +292,12 @@ var showFieldes=function(tableName){
 };
 
 var showHTML=function(){
-	if($("[name='htmlAllow']").val() ==1){
-		$("[name='htmlAllow']").val(2);
+	if($("[name='htmlAllow']").val() == "false"){
+		$("[name='htmlAllow']").val("true");
 		$("#bntHtmlAllow").val('결과HTML표현');
 	}
 	else{
-		$("[name='htmlAllow']").val(1);
+		$("[name='htmlAllow']").val("false");
 		$("#bntHtmlAllow").val('결과HTML불가');
 	}
 };
@@ -315,8 +315,8 @@ var executeQuery=function(){
 	param.account=account;
 	param.query=encodeURIComponent($("[name='query']").val());
 	param.autoCommit=$("[name='autoCommit']").val();
-	param.table=$("[name='table']").val();
-
+	param.htmlAllow=$("[name='htmlAllow']").val();
+	
 	if($("[name=driver]").val()=='mysql'){
 		setTimeout(processQuery, 1000);
 		TIME=1;
