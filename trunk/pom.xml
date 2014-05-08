@@ -158,6 +158,14 @@
 			<version>1.6</version>
 		</dependency>
 
+		<!-- excel -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.6</version>
+		</dependency>
+
+
 		<!-- spring framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>

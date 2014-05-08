@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -167,7 +168,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				Map<String, String> map=new HashMap<String, String>();
+				Map<String, String> map=new LinkedHashMap<String, String>();
 				for(int i=1;i<=rs.getMetaData().getColumnCount();i++){
 					map.put(rs.getMetaData().getColumnLabel(i), rs.getString(rs.getMetaData().getColumnLabel(i)));
 				}

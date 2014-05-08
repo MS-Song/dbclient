@@ -3,10 +3,11 @@ package com.song7749.app.dbclient.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.View;
 
+import com.song7749.app.dbclient.view.GenericExcelView;
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.dto.FindTableDTO;
@@ -40,6 +41,9 @@ public class DatabaseController {
 
 	@Autowired
 	ServerInfoManager serverInfoManager;
+
+	@Resource(name="genericExcelView")
+	GenericExcelView genericExcelView;
 
 	@RequestMapping(value="/serverList.json",method=RequestMethod.GET)
 	public void getServerList(
@@ -224,39 +228,41 @@ public class DatabaseController {
 
 	}
 
-	@RequestMapping(value={"/getExcel.xls","/getExcel.csv"},
+	@RequestMapping(value={"/getExcel.xls"},
 			produces= {"application/vnd.ms-excel;charset=UTF-8", "text/csv;charset=UTF-8"},
 			method=RequestMethod.POST)
-	@ResponseBody
-	public String getExcel(
-			@RequestHeader(value="User-Agent") String clientBrowser,
+	public View getExcel(
+			@RequestParam(value="titles[]",required=true) String[] titles,
+			@RequestParam(value="values[]",required=true) String[] values,
+			ModelMap model,
 			HttpServletRequest request,
 			HttpServletResponse response){
 
-		Calendar cal=Calendar.getInstance();
-		String titleName = "excel"+ cal.getTimeInMillis();
-
-//		try {
-//			titleName = new String(titleName.getBytes("KSC5601"), "8859_1");
-//		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//		}
-
-		if(clientBrowser.indexOf("MSIE 5.5")>-1 || clientBrowser.indexOf("MSIE 6.0") > -1 ){
-		  response.setHeader("Content-Type", "doesn/matter;");
-		  response.setHeader("Content-Disposition", "filename="+titleName+".xls");
-		}else{
-		  response.setHeader("Content-Type", "application/vnd.ms-excel;charset=UTF-8");
-		  response.setHeader("Content-Disposition", "attachment; filename="+titleName+".xls");
+		if(null==titles || titles.length==0){
+			throw new IllegalArgumentException("excel 출력할 데이터가 없습닏.");
 		}
 
-		response.setHeader("Content-Transfer-Encoding", "binary;");
-		response.setHeader("Pragma", "no-cache;");
-		response.setHeader("Expires", "-1;");
+		List<String> colNameList = new ArrayList<String>();
+		colNameList.addAll(Arrays.asList(titles));
 
 
+		List<List<String>> colValueList = new ArrayList<List<String>>();
+		if(null!=values && values.length>0){
+			List<String> subList = new ArrayList<String>();
+			for(int i=0;i<values.length;i++){
+				if(i>0 && i%titles.length==0){
+					colValueList.add(subList);
+					subList = new ArrayList<String>();
+				}
+				subList.add(values[i]);
+			}
+			colValueList.add(subList);
+		}
 
-		return "<html><table><tr><td> 엑셀셈플데이터 </td></tr></table></html>";
 
+		model.addAttribute("excelName", "dbClient"+System.currentTimeMillis());
+		model.addAttribute("colName",colNameList);
+		model.addAttribute("colValue",colValueList);
+		return genericExcelView;
 	}
 }
