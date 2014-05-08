@@ -77,6 +77,7 @@
 				<td>
 					<div id="queryResult"></div><br/>
 					<div id="queryResultTime"></div>
+					<div id="queryResultData"></div>
 				</td>
 			</tr>
 		</tbody>

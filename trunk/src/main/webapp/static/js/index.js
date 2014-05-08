@@ -324,19 +324,20 @@ var executeQuery=function(){
 	
 	$.post("/database/executeQuery.json", param, function(data){
 		
-//		console.log(data);
-		
 		var html='';
 		var thead='';
 		var tbody='';
+		var inputData='';
 		if(data.result.resultList.length>0){
 			$.each(data.result.resultList,function(loop){
 				tbody+='<tr>';
 				$.each(this,function(key,value){
 					if(loop==0){
-						thead+='<th class=\"layout_fixed\">'+key+'<input type="hidden" name="titles[]" value="'+key+'"/></th>';	
+						thead+='<th class=\"layout_fixed\">'+key+'</th>';	
+						inputData+='<input type="hidden" name="titles[]" value="'+key+'"/>';
 					}
-					tbody+='<td class=\"layout_fixed\">'+value+'<input type="hidden" name="values[]" value="'+value+'"/></td>';
+					tbody+='<td class=\"layout_fixed\">'+value+'</td>';
+					inputData+='<input type="hidden" name="values[]" value="'+value+'"/>';
 				});
 				tbody+='</tr>';
 			});
@@ -346,6 +347,7 @@ var executeQuery=function(){
 		}
 		$("#queryResult").html(html);
 		$("#queryResultTime").html('Row Count : '+data.result.rowCount + ' Total Time  : '+data.result.processTime + 'ms');
+		$("#queryResultData").html(inputData);
 		printQuery(decodeURIComponent(data.result.query));
 		$("[name='resueltHistoryData[]']:eq(0)").data("result", $("#queryResult").html());
 		$("[name='resueltHistoryData[]']:eq(0)").data("resultTime", $("#queryResultTime").html());
@@ -1370,19 +1372,19 @@ var copyResult=function(mode){
 	else{
 		var html=$("#queryResult").html();
 			html=html.replace(new RegExp("<table>", "gi"),"");
-			html=html.replace(new RegExp("<TABLE class=\"layout_fixed\">", "gi"),"");
+			html=html.replace(new RegExp("<table class=\"layout_fixed\">", "gi"),"");
 			html=html.replace(new RegExp("</table>", "gi"),"");
 			html=html.replace(new RegExp("<tbody>", "gi"),	"");
 			html=html.replace(new RegExp("</tbody>", "gi"),	"");
 			html=html.replace(/\s/g,'');
 			html=html.replace(new RegExp("<tr>", "gi"),		"\n");
 			html=html.replace(new RegExp("</tr>", "gi"),	"");
-			html=html.replace(new RegExp("<TH class=\"layout_fixed\">", "gi")," | ");
-			html=html.replace(new RegExp("<TH>", "gi")," | ");
-			html=html.replace(new RegExp("</TH>", "gi"),"");
-			html=html.replace(new RegExp("<TD class=\"layout_fixed\">", "gi")," | ");
-			html=html.replace(new RegExp("<TD>", "gi")," | ");
-			html=html.replace(new RegExp("</TD>", "gi"), "");
+			html=html.replace(new RegExp("<thclass=\"layout_fixed\">", "gi")," | ");
+			html=html.replace(new RegExp("<th>", "gi")," | ");
+			html=html.replace(new RegExp("</th>", "gi")," | ");
+			html=html.replace(new RegExp("<tdclass=\"layout_fixed\">", "gi")," | ");
+			html=html.replace(new RegExp("<td>", "gi")," | ");
+			html=html.replace(new RegExp("</td>", "gi"), " | ");
 
 			//alert(html);
 			copy_clip(html);
