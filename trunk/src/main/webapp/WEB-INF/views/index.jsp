@@ -27,7 +27,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td>서버 	검색 <input id="ALT1" type="text" onkeyup="searchServer(this.value);" 	onclick="this.select();" 	style="width: 70%;" title="[ALT+1]" /></td>
+				<td>서버 	검색 <input id="ALT1" type="text" onkeyup="searchServer(this.value);" 		onclick="this.select();" 	style="width: 70%;" title="[ALT+1]" /></td>
 				<td>DB		검색 <input id="ALT2" type="text" onkeyup="searchDatabase(this.value);" 	onclick="this.select();"	style="width: 70%;" title="[ALT+2]" /></td>
 				<td>TABLE 	검색 <input id="ALT3" type="text" onkeyup="searchTable(this.value);"		onclick="this.select();"	style="width: 70%;" title="[ALT+3]" /></td>
 				<td rowspan="3" valign="top">
@@ -102,13 +102,13 @@
 								<input type="button" id="bntSelectCount"		value="select count(PK)"	onclick="selectCountQuery();" 			style="width: 100px;height: 40px;" title="select count(pk) from table | ctrl+1">
 								<input type="button" id="bntSelectColumn" 		value="select 필드명 " 		onclick="selectNameQuery();" 			style="width: 80px;	height: 40px;" title="select 필드명 from table | ctrl+2">
 								<input type="button" id="bntJoinSelectAll" 		value="join select" 		onclick="selectJoinQuery();" 			style="width: 70px;	height: 40px;" title="select 필드입력 from table join | ctrl+3">
+								<input type="button" id="bntSelectInsertFrom" 	value="select Insert SET"	onclick="selectInsertQuery('SET');" 	style="width: 100px;height: 40px;" title="select 를 실행해서 insert 구문을 생성한다.">
+								<input type="button" id="bntSelectInsertFrom" 	value="select Insert VAL"	onclick="selectInsertQuery('VALUE');" 	style="width: 100px;height: 40px;" title="select 를 실행해서 insert 구문을 생성한다.">
+								<hr/>								
 								<input type="button" id="bntInsertInto" 		value="insert into" 		onclick="insertQuery('into');" 			style="width: 70px;	height: 40px;" title="">
 								<input type="button" id="bntInsertSet" 			value="insert set" 			onclick="insertQuery('set');" 			style="width: 70px;	height: 40px;" title="">
 								<input type="button" id="bntUpdateSet" 			value="update" 				onclick="updateQuery();" 				style="width: 60px;	height: 40px;" title="">
 								<input type="button" id="bntDeleteFrom" 		value="delete" 				onclick="deleteQuery();" 				style="width: 60px;	height: 40px;" title="">
-								<hr/>
-								<input type="button" id="bntSelectInsertFrom" 	value="select for Insert SET "		onclick="selectInsertQuery('SET');" 	style="width: 140px;height: 40px;" title="select 를 실행해서 insert 구문을 생성한다.">
-								<input type="button" id="bntSelectInsertFrom" 	value="select for Insert VALUE "	onclick="selectInsertQuery('VALUE');" 	style="width: 140px;height: 40px;" title="select 를 실행해서 insert 구문을 생성한다.">
 								<br/>
 								<textarea rows="14" name="query" onkeydown="useTab(this)" cols="100%"></textarea>
 								<table>
@@ -128,11 +128,6 @@
 								</table>
 								<input type="hidden" name="preparedStyle" id="preparedStyle" 	value="JAVA">
 								<hr/>
-								<input type="button" name="bntPreparedStylePHP" 	value="prepare PHP" 	 		onclick="this.form.preparedStyle.value='PHP';document.getElementById('prepareStyle').innerHTML='PHP prepare 스타일'" style="width: 90px;height: 40px;" title="prepare style php">
-								<input type="button" id="bntPhpModel" 				value="PHP MODEL" 				onclick="phpModel();" 			style="width: 90px;height: 40px;" title="php에서 사용될 MODEL">
-								<input type="button" id="bntPhpModelSet" 			value="PHP SET" 				onclick="phpModelSet();"		style="width: 90px;height: 40px;" title="php에서 사용될 MODEL SET">
-								<input type="button" id="bntPhpModelGet" 			value="PHP GET" 				onclick="phpModelGet();"		style="width: 90px;height: 40px;" title="php에서 사용될 MODEL GET">
-								<hr/>
 								<input type="button" name="bntPreparedStyleJava" 	value="prepare JAVA"  			onclick="this.form.preparedStyle.value='JAVA';document.getElementById('prepareStyle').innerHTML='JAVA prepare 스타일'" style="width: 90px;height: 40px;" title="prepare style java">
 								<input type="button" id="bntJavaModel" 				value="JAVA MODEL"				onclick="javaModel();" 			style="width: 90px;height: 40px;" title="java에서 사용될 MODEL">
 								<input type="button" id="bntJavaHibernateModel" 	value="JAVA H-Model"			onclick="javaHibernateModel();" style="width: 90px;height: 40px;" title="java + Hibernate 에서 사용될 MODEL">
@@ -140,6 +135,11 @@
 								<input type="button" id="bntJavaModelGet" 			value="JAVA GET" 				onclick="javaModelGet();"		style="width: 90px;height: 40px;" title="java에서 사용될 MODEL GET">
 								<input type="button" id="bntDBUnit" 				value="DBUnit XML" 				onclick="dbunitXML();" 			style="width: 90px;height: 40px;" title="DB 유닛에서 사용될 XML">
 								<input type="button" id="bntResultMap" 				value="ResultMap XML"			onclick="resultMap();" 			style="width: 100px;height: 40px;" title="Mybatis 에서 ResultMap">
+								<hr/>
+								<input type="button" name="bntPreparedStylePHP" 	value="prepare PHP" 	 		onclick="this.form.preparedStyle.value='PHP';document.getElementById('prepareStyle').innerHTML='PHP prepare 스타일'" style="width: 90px;height: 40px;" title="prepare style php">
+								<input type="button" id="bntPhpModel" 				value="PHP MODEL" 				onclick="phpModel();" 			style="width: 90px;height: 40px;" title="php에서 사용될 MODEL">
+								<input type="button" id="bntPhpModelSet" 			value="PHP SET" 				onclick="phpModelSet();"		style="width: 90px;height: 40px;" title="php에서 사용될 MODEL SET">
+								<input type="button" id="bntPhpModelGet" 			value="PHP GET" 				onclick="phpModelGet();"		style="width: 90px;height: 40px;" title="php에서 사용될 MODEL GET">
 							</td>
 							<td valign="top">
 								<input type="hidden" name="htmlAllow" value="false"/>
