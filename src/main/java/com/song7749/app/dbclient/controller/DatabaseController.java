@@ -270,4 +270,10 @@ public class DatabaseController {
 		model.addAttribute("colValue",colValueList);
 		return genericExcelView;
 	}
+
+	@RequestMapping(value="/getDatabaseDriver.json",method=RequestMethod.GET)
+	public void getDatabaseDriver(
+			ModelMap model){
+		model.addAttribute("databaseDriverList", DatabaseDriver.values());
+	}
 }
