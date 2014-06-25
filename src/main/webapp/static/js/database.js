@@ -1,5 +1,5 @@
 var databaseManageForm=function(){
-	$.get("/database/serverList.json", null, function(data){
+	$.get("./database/serverList.json", null, function(data){
 		var html='<form name="databaseManageTable" id="databaseManageTable">';
 			html+='	<table class="table-list">';
 			html+='		<thead>';
@@ -92,7 +92,7 @@ $(document).ready(function(){
 				text: "저장",
 				click: function() {
 					if(confirm("변경 내용을 저장 하시겠습니까?")){
-						$.post("/database/saveDatabases.json", $("#databaseManageTable").serializeArray(), function(data){
+						$.post("./database/saveDatabases.json", $("#databaseManageTable").serializeArray(), function(data){
 							alert(data.result.message);
 						});
 						document.location = document.location.href;

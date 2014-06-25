@@ -3,7 +3,7 @@ var TIME=0;
 var databaseDrivers={};
 
 var showHost=function(){
-	$.get("/database/serverList.json", null, function(data){
+	$.get("./database/serverList.json", null, function(data){
 		var values = new Array();
 		var textes = new Array();
 		var name='server';
@@ -24,7 +24,7 @@ var showHost=function(){
 var showDatabase=function(serverName){
 	if($("[name=server]").val()!=""  && $("[name=server]").val() != null){
 		$("#serverName").html(serverName);
-		$.get("/database/schemaList.json", {"server":$("[name=server]").val()}, function(data){
+		$.get("./database/schemaList.json", {"server":$("[name=server]").val()}, function(data){
 			var values = new Array();
 			var textes = new Array();
 			var name='database';
@@ -67,7 +67,7 @@ var showTables=function(databaseName){
 			var schema=tmp[0];
 			var account=tmp[1];
 			var driver=tmp[2];
-			$.get("/database/tableList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account}, function(data){
+			$.get("./database/tableList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account}, function(data){
 				var values = new Array();
 				var textes = new Array();
 				var name='table';
@@ -146,7 +146,7 @@ var showFieldes=function(tableName){
 			html+='		<th class="layout_fixed" title="where"><input type="button" onclick="clearAll(\'whereValue[]\');" title="clear" value="where" 	style="width: 60px;height: 30px;"></th>'+"\n";
 			html+='		<th class="layout_fixed" title="operator">operator</th>'+"\n";
 			html+='	</tr>'+"\n";
-			$.get("/database/fieldList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account,"table":$("[name=table]").val()}, function(data){
+			$.get("./database/fieldList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account,"table":$("[name=table]").val()}, function(data){
 				var values = new Array("=",">=","<=","%like","like%","%like%","IN()");
 				var name='whereOperator[]';
 				var selectedValue = null;
@@ -164,7 +164,7 @@ var showFieldes=function(tableName){
 					html+='<td class="layout_fixed">'+this.characterset+'</td>'+"\n";
 					html+='<td class="layout_fixed">'+this.extra+'</td>'+"\n";
 					html+='<td class="layout_fixed">'+this.defaultValue+'</td>'+"\n";
-					html+='<td class="layout_fixed">'+this.comment+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.comments+'</td>'+"\n";
 					html+='<td title="select"><input type="checkbox" name="select[]" value="1" checked /></td>'+"\n";
 					html+='<td title="setValue"><input type="text" name="setValue[]" value="" size="8" '+ (this.dataType.toLowerCase() == 'date' ? 'onclick="addDate(this)"' : '')+' /></td>'+"\n";
 					html+='<td title="whereValue"><input type="text" name="whereValue[]" value="" size="8" '+ (this.dataType.toLowerCase() == 'date' ? 'onclick="addDate(this)"' : '')+' /></td>'+"\n";
@@ -278,7 +278,7 @@ var executeQuery=function(){
 		TIME=1;
 	}
 	
-	$.post("/database/executeQuery.json", param, function(data){
+	$.post("./database/executeQuery.json", param, function(data){
 		
 		var html='';
 		var thead='';
@@ -1605,7 +1605,7 @@ $(document).ready(function(){
 	showHost();
 
 	// database drivers
-	$.get("/database/getDatabaseDriver.json", null, function(data){
+	$.get("./database/getDatabaseDriver.json", null, function(data){
 		databaseDrivers=data.result.databaseDriverList;
 	});
 	
