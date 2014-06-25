@@ -27,7 +27,7 @@
 	
 	<!-- real -->
 	<entry key="realServer.dbClient.master.driver">${driver.mysql.product}</entry>
-	<entry key="realServer.dbClient.master.url">jdbc:mysql://192.168.30.14/dbClient?${connect.param.mysql.product}</entry>
+	<entry key="realServer.dbClient.master.url">jdbc:mysql://127.0.0.1/dbClient?${connect.param.mysql.product}</entry>
 	<entry key="realServer.dbClient.master.username">${account.mysql.product.master.id}</entry>
 	<entry key="realServer.dbClient.master.password">${account.mysql.product.master.password}</entry>
 	

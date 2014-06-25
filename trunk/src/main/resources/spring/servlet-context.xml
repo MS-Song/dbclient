@@ -101,6 +101,6 @@
 	
 	<!-- Exception Resolver-->
 	<bean class="com.song7749.dl.base.BaseExceptionResolver" >
-		<property name="order" value="1" />
+		<property name="order" value="1" />	
 	</bean>
 </beans>

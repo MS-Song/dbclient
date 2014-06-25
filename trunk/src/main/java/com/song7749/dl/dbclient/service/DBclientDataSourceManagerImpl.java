@@ -117,7 +117,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 				map.get("CHARACTER_SET"),
 				map.get("EXTRA"),
 				map.get("DEFAULT_VALUE"),
-				map.get("COMMENT")));
+				map.get("COMMENTS")));
 		}
 		return list;
 	}
