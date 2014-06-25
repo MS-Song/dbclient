@@ -3,8 +3,8 @@
 <properties>
 	<comment>DB HOST 정보 : 테스트 구동</comment>
 	<!-- DB hosts 정보 -->
-	<entry key="host.mysql.test">10.10.38.129</entry>
-	<entry key="host.oracle.test">10.10.38.129</entry>
+	<entry key="host.mysql.test">127.0.0.1</entry>
+	<entry key="host.oracle.test">127.0.0.1</entry>
 	<entry key="schemaPrefix"></entry>
 	
 	<!-- user 정보 -->

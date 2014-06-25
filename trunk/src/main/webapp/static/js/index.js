@@ -185,7 +185,7 @@ var showFieldes=function(tableName){
 				$("#fieldList").html(html);
 
 				// 인덱스 추가 
-				$.get("/database/indexList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account,"table":$("[name=table]").val()}, function(data){
+				$.get("./database/indexList.json", {"server":$("[name=server]").val(),"schema":schema,"account":account,"table":$("[name=table]").val()}, function(data){
 					html+='<br/><br/>';
 					html+='<table id="table_indexes" class="table-list">'+"\n";
 					html+='	<tr>'+"\n";
