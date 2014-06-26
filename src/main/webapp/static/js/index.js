@@ -579,14 +579,14 @@ var javaModel=function(){
 				var columnComment=columnCommentList[i];
 				var dataType=columnTypeSearch(columnTypeFullList[i]);
 
-				html+='\n\t/**\n\t* '+columnComment+'\n\t*/';
+				html+='\n\t/**\n\t* column name : '+ columnList[i] +'\n\t* '+columnComment+'\n\t*/';
 				html+='\n\tprivate '+dataType+ ' ' + column +';\n';
 
 				// getset
 				columnGetSet=column.substring(0,1).toUpperCase()+column.substring(1, column.length);
 				getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' setter \n\t*/';
 				getterSetters+='\n\tpublic void set'+columnGetSet+'('+dataType+' '+column+'){\n\t\tthis.'+column+' = '+column+';\n\t}';
-				getterSetters+='\n\t/**\n\t* '+columnComment+' getter \n\t*/';
+				getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' getter \n\t*/';
 				getterSetters+='\n\tpublic '+dataType+' get'+columnGetSet+'(){\n\t\treturn this.'+column+';\n\t}';
 			}
 			html+=getterSetters;
@@ -698,7 +698,7 @@ var javaHibernateModel=function(){
 				getterSetters+='\n\t* @param '+column;
 				getterSetters+='\n\t*/';
 				getterSetters+='\n\tpublic void set'+columnGetSet+'('+dataType+' '+column+'){\n\t\tthis.'+column+' = '+column+';\n\t}';
-				getterSetters+='\n\t/**\n\t* '+columnComment+' getter';
+				getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' getter';
 				getterSetters+='\n\t* @return '+dataType;
 				getterSetters+='\n\t*/';
 				getterSetters+='\n\tpublic '+dataType+' get'+columnGetSet+'(){\n\t\treturn this.'+column+';\n\t}';
