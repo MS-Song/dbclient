@@ -164,7 +164,7 @@ var showFieldes=function(tableName){
 					html+='<td class="layout_fixed">'+this.characterset+'</td>'+"\n";
 					html+='<td class="layout_fixed">'+this.extra+'</td>'+"\n";
 					html+='<td class="layout_fixed">'+this.defaultValue+'</td>'+"\n";
-					html+='<td class="layout_fixed">'+this.comments+'</td>'+"\n";
+					html+='<td class="layout_fixed">'+this.comment+'</td>'+"\n";
 					html+='<td title="select"><input type="checkbox" name="select[]" value="1" checked /></td>'+"\n";
 					html+='<td title="setValue"><input type="text" name="setValue[]" value="" size="8" '+ (this.dataType.toLowerCase() == 'date' ? 'onclick="addDate(this)"' : '')+' /></td>'+"\n";
 					html+='<td title="whereValue"><input type="text" name="whereValue[]" value="" size="8" '+ (this.dataType.toLowerCase() == 'date' ? 'onclick="addDate(this)"' : '')+' /></td>'+"\n";
@@ -563,7 +563,8 @@ var javaModel=function(){
 			if(tableName.indexOf('t')==0){
 				tableName=tableName.substring(1, tableName.length);
 			}
-			var html='public class '+tableName + " { \n";
+			var html='\n/**\n\r* Table Name '+tableName+'\n\r*/\n\r';
+				html+='public class '+ tableStyleConverter(tableName) + " { \n";
 			var getterSetters="";
 			// 컬럼명칭
 			var columnList=columns('columnList',$("#tableName").html());
@@ -583,7 +584,7 @@ var javaModel=function(){
 
 				// getset
 				columnGetSet=column.substring(0,1).toUpperCase()+column.substring(1, column.length);
-				getterSetters+='\n\t/**\n\t* '+columnComment+' setter \n\t*/';
+				getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' setter \n\t*/';
 				getterSetters+='\n\tpublic void set'+columnGetSet+'('+dataType+' '+column+'){\n\t\tthis.'+column+' = '+column+';\n\t}';
 				getterSetters+='\n\t/**\n\t* '+columnComment+' getter \n\t*/';
 				getterSetters+='\n\tpublic '+dataType+' get'+columnGetSet+'(){\n\t\treturn this.'+column+';\n\t}';
@@ -613,7 +614,7 @@ var javaHibernateModel=function(){
 				tableName=tableName.substring(1, tableName.length);
 			}
 			
-			var html=tableAnnotation+'public class '+tableName + " extends BaseObject { \n";
+			var html=tableAnnotation+'public class '+ tableStyleConverter(tableName) +" extends BaseObject { \n";
 			// 기본 생성자
 			var constructBase ='\n\t/**\n\t* 기본 생성자 \n\t*/'+'\n\tpublic '+tableName +'(){}';
 
@@ -693,7 +694,7 @@ var javaHibernateModel=function(){
 				
 				// getset
 				columnGetSet=column.substring(0,1).toUpperCase()+column.substring(1, column.length);
-				getterSetters+='\n\t/**\n\t* '+columnComment+' setter'; 
+				getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' setter '; 
 				getterSetters+='\n\t* @param '+column;
 				getterSetters+='\n\t*/';
 				getterSetters+='\n\tpublic void set'+columnGetSet+'('+dataType+' '+column+'){\n\t\tthis.'+column+' = '+column+';\n\t}';
@@ -1478,23 +1479,65 @@ var aliasTable=function(tableName){
  * DB 필드를 java/php 스타일로 변경해준다.
  */
 var columnStyleConverter=function(column){
-	if(column.indexOf('n')==0){
-		column=column.substring(1,2).toLowerCase()+column.substring(2, column.length);
+	var columnName="";
+// 네이밍 룰이 일정하지 않아 해결이 안된다.
+//	if(column.indexOf('n')==0){
+//		columnName=column.substring(1,2).toLowerCase()+column.substring(2, column.length);
+//	}
+//	else if(column.indexOf('f')==0){
+//		columnName=column.substring(1,2).toLowerCase()+column.substring(2, column.length);
+//	}
+//	else if(column.indexOf('s')==0){
+//		columnName=column.substring(1,2).toLowerCase()+column.substring(2, column.length);
+//	}
+//	else if(column.indexOf('dt')==0){
+//		columnName=column.substring(2,3).toLowerCase()+column.substring(3, column.length);
+//	}
+//	else if(column.indexOf('em')==0){
+//		columnName=column.substring(2,3).toLowerCase()+column.substring(3, column.length);
+//	}
+	
+	// 컬럼 명칭을 변경하기 위한 처리
+	if(column.indexOf('_')>=0){
+		var names = column.split('_');
+		for(var i=0;i<names.length;i++){
+			if(i==0){
+				if(names[i].length>1){
+					columnName+=names[i].toLowerCase();					
+				}
+			} else{
+				if(columnName==""){
+					columnName+=names[i].toLowerCase();					
+				}
+				else{
+					columnName+=names[i].substring(0,1)+names[i].substring(1, names[i].length).toLowerCase();	
+				}
+			}
+		}
+	} else {
+		columnName=column.toLowerCase();
 	}
-	else if(column.indexOf('f')==0){
-		column=column.substring(1,2).toLowerCase()+column.substring(2, column.length);
-	}
-	else if(column.indexOf('s')==0){
-		column=column.substring(1,2).toLowerCase()+column.substring(2, column.length);
-	}
-	else if(column.indexOf('dt')==0){
-		column=column.substring(2,3).toLowerCase()+column.substring(3, column.length);
-	}
-	else if(column.indexOf('em')==0){
-		column=column.substring(2,3).toLowerCase()+column.substring(3, column.length);
-	}
+	
+	return columnName;
+};
 
-	return column;
+
+/**
+ * DB 테이블을 java/php 스타일로 변경해준다.
+ */
+var tableStyleConverter=function(table){
+	var tableName="";
+	// 컬럼 명칭을 변경하기 위한 처리
+	if(table.indexOf('_')>=0){
+		var names = table.split('_');
+		for(var i=0;i<names.length;i++){
+			tableName+=names[i].substring(0,1).toUpperCase()+names[i].substring(1, names[i].length).toLowerCase();	
+		}
+	} else {
+		tableName+=table.substring(0,1).toUpperCase()+table.substring(1, table.length).toLowerCase();
+	}
+	
+	return tableName;
 };
 
 /**
@@ -1503,6 +1546,8 @@ var columnStyleConverter=function(column){
 var columnTypeSearch=function(columnTypeFull){
 	// datatype
 	var dataType="";
+	
+	// MYSQL 
 	if(columnTypeFull.indexOf('float')>=0){
 		dataType='Float';
 	}
@@ -1520,7 +1565,10 @@ var columnTypeSearch=function(columnTypeFull){
 			dataType='Integer';
 		}
 	}
-	else if(columnTypeFull.indexOf('varchar')>=0 || columnTypeFull.indexOf('char')>=0 || columnTypeFull.indexOf('text')>=0 || columnTypeFull.indexOf('enum')>=0 ){
+	else if(columnTypeFull.indexOf('varchar')>=0 
+			|| columnTypeFull.indexOf('char')>=0 
+			|| columnTypeFull.indexOf('text')>=0 
+			|| columnTypeFull.indexOf('enum')>=0 ){
 		dataType='String';
 	}
 	else if(columnTypeFull.indexOf('datetime')>=0){
@@ -1532,6 +1580,23 @@ var columnTypeSearch=function(columnTypeFull){
 	else if(columnTypeFull.indexOf('time')>=0){
 		dataType='Time';
 	}
+	// MYSQL END
+	
+	// ORACLE 
+	if(columnTypeFull.indexOf('NUMBER')>=0){
+		dataType='Integer';
+	}
+	else if(columnTypeFull.indexOf('DATE')>=0){
+		dataType='Date';
+	}
+	else if(columnTypeFull.indexOf('VARCHAR2')>=0 
+			|| columnTypeFull.indexOf('CHAR')>=0 
+			|| columnTypeFull.indexOf('CLOB')>=0 
+			|| columnTypeFull.indexOf('enum')>=0 ){
+		dataType='String';
+	}
+	// ORACLE END
+		
 	return dataType;
 };
 
