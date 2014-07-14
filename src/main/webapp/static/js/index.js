@@ -1498,12 +1498,18 @@ var columnStyleConverter=function(column){
 //	}
 	
 	// 컬럼 명칭을 변경하기 위한 처리
+	var postFix = "";
 	if(column.indexOf('_')>=0){
 		var names = column.split('_');
+		
 		for(var i=0;i<names.length;i++){
 			if(i==0){
-				if(names[i].length>1){
-					columnName+=names[i].toLowerCase();					
+				if(names[i].length==1){
+					if(names[i].toLowerCase() == 'i'){
+						postFix="Number";
+					} else if(names[i].toLowerCase() == 'd'){
+						postFix="Date";
+					}					
 				}
 			} else{
 				if(columnName==""){
@@ -1518,7 +1524,7 @@ var columnStyleConverter=function(column){
 		columnName=column.toLowerCase();
 	}
 	
-	return columnName;
+	return columnName+postFix;
 };
 
 
