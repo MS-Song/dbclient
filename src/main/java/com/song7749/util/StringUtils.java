@@ -16,30 +16,32 @@ public class StringUtils {
 	 * @return String
 	 */
 	public static String htmlentities(String content) {
-
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < content.length(); i++) {
-			char c = content.charAt(i);
-			switch (c) {
-			case '<':
-				sb.append("&lt;");
-				break;
-			case '>':
-				sb.append("&gt;");
-				break;
-			case '&':
-				sb.append("&amp;");
-				break;
-			case '"':
-				sb.append("&quot;");
-				break;
-			case '\'':
-				sb.append("&apos;");
-				break;
-			default:
-				sb.append(c);
+		if(null!=content){
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < content.length(); i++) {
+				char c = content.charAt(i);
+				switch (c) {
+				case '<':
+					sb.append("&lt;");
+					break;
+				case '>':
+					sb.append("&gt;");
+					break;
+				case '&':
+					sb.append("&amp;");
+					break;
+				case '"':
+					sb.append("&quot;");
+					break;
+				case '\'':
+					sb.append("&apos;");
+					break;
+				default:
+					sb.append(c);
+				}
 			}
+			return sb.toString();
 		}
-		return sb.toString();
+		return null;
 	}
 }

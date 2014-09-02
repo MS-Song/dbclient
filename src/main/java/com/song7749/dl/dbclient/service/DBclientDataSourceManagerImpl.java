@@ -35,9 +35,26 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	@Override
 	public DataSource getDataSource(ServerInfo serverInfo) {
-		if (dataSourceMap.containsKey(serverInfo)) {
-			return dataSourceMap.get(serverInfo);
+
+		/**
+		 * 테이블 정보를 제거하기 위해 추가함. 추후 변경 고려
+		 */
+		ServerInfo keyServerInfo = new ServerInfo();
+		keyServerInfo.setServerInfoSeq(serverInfo.getServerInfoSeq());
+		keyServerInfo.setHost(serverInfo.getHost());
+		keyServerInfo.setSchemaName(serverInfo.getSchemaName());
+		keyServerInfo.setPort(serverInfo.getPort());
+		keyServerInfo.setDriver(serverInfo.getDriver());
+		keyServerInfo.setAccount(serverInfo.getAccount());
+		keyServerInfo.setCharset(serverInfo.getCharset());
+
+		if (dataSourceMap.containsKey(keyServerInfo)) {
+
+			logger.debug(logFormat("Return Saved Connection!"));
+			return dataSourceMap.get(keyServerInfo);
 		}
+
+		logger.debug(logFormat("Return New Connection!"));
 
 		BasicDataSource bds = new BasicDataSource();
 		bds.setDriverClassName(serverInfo.getDriver().getDriverName());
@@ -66,7 +83,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		bds.setRemoveAbandonedTimeout(60);
 		bds.setLogAbandoned(true);
 		bds.setPoolPreparedStatements(true);
-		dataSourceMap.put(serverInfo, bds);
+		dataSourceMap.put(keyServerInfo, bds);
 
 		return bds;
 	}

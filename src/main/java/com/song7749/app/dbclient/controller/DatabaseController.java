@@ -52,7 +52,7 @@ public class DatabaseController {
 
 		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(new FindServerInfoListDTO());
 
-		logger.debug("serverList {}",infoList);
+		logger.trace("serverList {}",infoList);
 		model.addAttribute("serverInfo", infoList);
 	}
 
@@ -64,7 +64,7 @@ public class DatabaseController {
 		// 테스트 데이터 설정
 		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host));
 
-		logger.debug("serverList {}",infoList);
+		logger.trace("serverList {}",infoList);
 		model.addAttribute("serverInfo", infoList);
 	}
 
@@ -83,7 +83,7 @@ public class DatabaseController {
 			tableList=serverInfoManager.findTableVOList(new FindTableDTO(list.get(0).getServerInfoSeq()));
 		}
 
-		logger.debug("tableList : {}",tableList);
+		logger.trace("tableList : {}",tableList);
 		model.addAttribute("tableList", tableList);
 	}
 
@@ -104,7 +104,7 @@ public class DatabaseController {
 			fieldList=serverInfoManager.findTableFieldVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),tableName));
 		}
 
-		logger.debug("fieldList : {}",fieldList);
+		logger.trace("fieldList : {}",fieldList);
 		model.addAttribute("fieldList", fieldList);
 	}
 
@@ -124,7 +124,7 @@ public class DatabaseController {
 			indexList=serverInfoManager.findTableIndexVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),tableName));
 		}
 
-		logger.debug("indexList : {}",indexList);
+		logger.trace("indexList : {}",indexList);
 		model.addAttribute("indexList", indexList);
 	}
 
@@ -169,8 +169,8 @@ public class DatabaseController {
 			}
 		}
 
-		logger.debug("saveList : {}",saveList);
-		logger.debug("modifyList : {}",modifyList);
+		logger.trace("saveList : {}",saveList);
+		logger.trace("modifyList : {}",modifyList);
 
 		if(saveList.size()>0){
 			serverInfoManager.saveServerInfoFacade(saveList);
@@ -221,10 +221,10 @@ public class DatabaseController {
 
 		Long processTime = System.currentTimeMillis() - startTime;
 
-		logger.debug("resultList : {}",resultList);
-		logger.debug("processTime : {}",processTime);
-		logger.debug("rowCount : {}",resultList.size());
-		logger.debug("query : {}",query);
+		logger.trace("resultList : {}",resultList);
+		logger.trace("processTime : {}",processTime);
+		logger.trace("rowCount : {}",resultList.size());
+		logger.trace("query : {}",query);
 
 		model.addAttribute("resultList", resultList);
 		model.addAttribute("processTime", processTime);
