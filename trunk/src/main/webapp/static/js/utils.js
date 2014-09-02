@@ -27,8 +27,8 @@ var createSelect = function (values,textes,name,selectedValue,firsetOpetionValue
 		sb.push("<option value=''>"+firsetOpetionValue+"</option>"+"\n");
 	
 	$.each(values,function(loop){
-		sb.push("<option value='"+this+"' ");
-		if(values==selectedValue){
+		sb.push("<option value='"+this+"'");
+		if(values[loop]==selectedValue){
 			sb.push(" selected ");
 		}
 		sb.push(optionAppend+">");
