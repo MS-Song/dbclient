@@ -167,7 +167,11 @@ public class DatabaseController {
 						charset[i],
 						port[i]));
 			}
+
+			// TODO 삭제 해야하는 경우 조회해서 SEQ 가 없는 경우는 삭제한다.
+
 		}
+
 
 		logger.trace("saveList : {}",saveList);
 		logger.trace("modifyList : {}",modifyList);
