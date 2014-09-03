@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -86,6 +87,19 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		dataSourceMap.put(keyServerInfo, bds);
 
 		return bds;
+	}
+
+	@Override
+	@PreDestroy
+	protected void finalize() throws Throwable {
+		for(ServerInfo ServerInfo : dataSourceMap.keySet()){
+			try {
+				((BasicDataSource)dataSourceMap.get(ServerInfo)).close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		super.finalize();
 	}
 
 	@Override

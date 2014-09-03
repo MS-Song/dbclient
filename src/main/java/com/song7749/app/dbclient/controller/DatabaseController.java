@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.View;
 
 import com.song7749.app.dbclient.view.GenericExcelView;
+import com.song7749.dl.dbclient.dto.DeleteServerInfoDTO;
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.dto.FindTableDTO;
@@ -144,6 +145,7 @@ public class DatabaseController {
 
 		List<SaveServerInfoDTO> saveList = new ArrayList<SaveServerInfoDTO>();
 		List<ModifyServerInfoDTO> modifyList = new ArrayList<ModifyServerInfoDTO>();
+		List<DeleteServerInfoDTO> deleteList = new ArrayList<DeleteServerInfoDTO>();
 		for (int i = 0; i < host.length; i++) {
 			// 생성해야 하는 경우
 			if(serverInfoSeq.length==0 || null==serverInfoSeq[i]){
@@ -166,15 +168,15 @@ public class DatabaseController {
 						driver[i],
 						charset[i],
 						port[i]));
+
+			// 삭제 하기 위해 현재 SEQ 가 존재하는 리스트를 취합한다.
+				deleteList.add(new DeleteServerInfoDTO(serverInfoSeq[i]));
 			}
-
-			// TODO 삭제 해야하는 경우 조회해서 SEQ 가 없는 경우는 삭제한다.
-
 		}
 
-
-		logger.trace("saveList : {}",saveList);
-		logger.trace("modifyList : {}",modifyList);
+		logger.debug("saveList : {}",saveList);
+		logger.debug("modifyList : {}",modifyList);
+		logger.debug("deleteList : {}",deleteList);
 
 		if(saveList.size()>0){
 			serverInfoManager.saveServerInfoFacade(saveList);
@@ -182,6 +184,10 @@ public class DatabaseController {
 		if(modifyList.size()>0){
 			serverInfoManager.modifyServerInfoFacade(modifyList);
 		}
+
+		// 삭제 로직
+		serverInfoManager.deleteServerInfoFacade(
+				serverInfoManager.getPossibleDeleteServerInfoList(deleteList));
 
 		model.clear();
 		model.addAttribute("message", "서버 정보가 저장되었습니다.");

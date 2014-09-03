@@ -31,6 +31,10 @@ public interface ServerInfoManager {
 
 	void modifyServerInfoFacade(List<ModifyServerInfoDTO> list);
 
+	void deleteServerInfoFacade(List<DeleteServerInfoDTO> list);
+
+	List<DeleteServerInfoDTO> getPossibleDeleteServerInfoList(List<DeleteServerInfoDTO> list);
+
 	List<TableVO> findTableVOList(FindTableDTO dto);
 
 	List<FieldVO> findTableFieldVOList(FindTableDTO dto);
