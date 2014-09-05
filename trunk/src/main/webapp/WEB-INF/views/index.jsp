@@ -128,12 +128,17 @@
 								</table>
 								<input type="hidden" name="preparedStyle" id="preparedStyle" 	value="JAVA">
 								<hr/>
-								<input type="button" name="bntPreparedStyleJava" 	value="prepare JAVA"  			onclick="this.form.preparedStyle.value='JAVA';document.getElementById('prepareStyle').innerHTML='JAVA prepare 스타일'" style="width: 90px;height: 40px;" title="prepare style java">
-								<input type="button" id="bntJavaModel" 				value="JAVA MODEL"				onclick="javaModel();" 			style="width: 90px;height: 40px;" title="java에서 사용될 MODEL">
+								<input type="button" name="bntPreparedStyleJava" 	value="prepare JAVA"  			onclick="this.form.preparedStyle.value='JAVA';document.getElementById('prepareStyle').innerHTML='JAVA prepare 스타일'" style="width: 85px;height: 40px;" title="prepare style java">
+								<input type="button" id="bntJavaModel" 				value="JAVA MODEL"				onclick="javaModel();" 			style="width: 85px;height: 40px;" title="java에서 사용될 MODEL">
 								<input type="button" id="bntJavaHibernateModel" 	value="JAVA H-Model"			onclick="javaHibernateModel();" style="width: 90px;height: 40px;" title="java + Hibernate 에서 사용될 MODEL">
-								<input type="button" id="bntJavaModelSet" 			value="JAVA SET" 				onclick="javaModelSet();"		style="width: 90px;height: 40px;" title="java에서 사용될 MODEL SET">
-								<input type="button" id="bntJavaModelGet" 			value="JAVA GET" 				onclick="javaModelGet();"		style="width: 90px;height: 40px;" title="java에서 사용될 MODEL GET">
-								<input type="button" id="bntDBUnit" 				value="DBUnit XML" 				onclick="dbunitXML();" 			style="width: 90px;height: 40px;" title="DB 유닛에서 사용될 XML">
+								<input type="button" id="bntJavaModelSet" 			value="JAVA SET" 				onclick="javaModelSet();"		style="width: 85px;height: 40px;" title="java에서 사용될 MODEL SET">
+								<input type="button" id="bntJavaModelGet" 			value="JAVA GET" 				onclick="javaModelGet();"		style="width: 75px;height: 40px;" title="java에서 사용될 MODEL GET">
+								<input type="button" id="bntDBUnit" 				value="DBUnit XML" 				onclick="dbunitXML();" 			style="width: 75px;height: 40px;" title="DB 유닛에서 사용될 XML"><br/><br/>
+
+								<input type="button" id="MybatisSelect" 			value="MybatisSelect"			onclick="mybatisSelect();" 		style="width: 90px;height: 40px;" title="Mybatis 에서 Select">								
+								<input type="button" id="MybatisInsert" 			value="MybatisInsert"			onclick="mybatisInsert();" 		style="width: 90px;height: 40px;" title="Mybatis 에서 Insert">
+								<input type="button" id="MybatisUpdate" 			value="MybatisUpdate"			onclick="mybatisUpdate();" 		style="width: 90px;height: 40px;" title="Mybatis 에서 Update">								
+								<input type="button" id="MybatisDelete" 			value="MybatisDelete"			onclick="mybatisDelete();" 		style="width: 90px;height: 40px;" title="Mybatis 에서 Delete">
 								<input type="button" id="bntResultMap" 				value="ResultMap XML"			onclick="resultMap();" 			style="width: 100px;height: 40px;" title="Mybatis 에서 ResultMap">
 								<hr/>
 								<input type="button" name="bntPreparedStylePHP" 	value="prepare PHP" 	 		onclick="this.form.preparedStyle.value='PHP';document.getElementById('prepareStyle').innerHTML='PHP prepare 스타일'" style="width: 90px;height: 40px;" title="prepare style php">
