@@ -461,10 +461,10 @@ var dbunitXML = function(){
 var phpModel=function(){
 	if($("#tableName").html() != ''){
 		var tableName=$("#tableName").html();
-		if(tableName.indexOf('t')==0){
-			tableName=tableName.substring(1, tableName.length);
-		}
-		var html='class '+tableName + " { \n";
+//		if(tableName.indexOf('t')==0){
+//			tableName=tableName.substring(1, tableName.length);
+//		}
+		var html='class '+tableStyleConverter(tableName) + " { \n";
 		var getterSetters="";
 		// 컬럼명칭
 		var columnList=columns('columnList',$("#tableName").html());
@@ -500,12 +500,12 @@ var phpModelSet=function(){
 		var columnName='';
 		var columnParamName='';
 		var tableName=$("#tableName").html();
-		if(tableName.indexOf('t')==0){
-			// 첫글자 자르기
-			tableName=tableName.substring(1, tableName.length);
-			// 첫글자 소문자
-			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
-		}
+//		if(tableName.indexOf('t')==0){
+//			// 첫글자 자르기
+//			tableName=tableName.substring(1, tableName.length);
+//			// 첫글자 소문자
+//			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
+//		}
 
 		// 컬럼명칭
 		var columnList=columns('columnList',$("#tableName").html());
@@ -518,7 +518,7 @@ var phpModelSet=function(){
 				columnParamName=setList[i];
 			else
 				columnParamName='$'+columnParamName;
-			columnHtml+='$'+tableName+'->set'+columnName+'('+columnParamName+');\n';
+			columnHtml+='$'+tableStyleConverter(tableName)+'->set'+columnName+'('+columnParamName+');\n';
 		}
 		$("[name=query]").val(columnHtml);
 
@@ -534,19 +534,19 @@ var phpModelGet=function(){
 		var columnName='';
 		var columnParamName='';
 		var tableName=$("#tableName").html();
-		if(tableName.indexOf('t')==0){
-			// 첫글자 자르기
-			tableName=tableName.substring(1, tableName.length);
-			// 첫글자 소문자
-			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
-		}
+//		if(tableName.indexOf('t')==0){
+//			// 첫글자 자르기
+//			tableName=tableName.substring(1, tableName.length);
+//			// 첫글자 소문자
+//			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
+//		}
 
 		// 컬럼명칭
 		var columnList=columns('columnList',$("#tableName").html());
 		for(var i=0;i<columnList.length;i++){
 			columnParamName=columnStyleConverter(columnList[i]);
 			columnName=columnParamName.substring(0,1).toUpperCase()+columnParamName.substring(1, columnParamName.length);
-			columnHtml+='$'+tableName+'->get'+columnName+'();\n';
+			columnHtml+='$'+tableStyleConverter(tableName)+'->get'+columnName+'();\n';
 		}
 		$("[name=query]").val(columnHtml);
 
@@ -560,9 +560,9 @@ var javaModel=function(){
 	if($("#tableName").html() != ''){
 		if($("#tableName").html() != ''){
 			var tableName=$("#tableName").html();
-			if(tableName.indexOf('t')==0){
-				tableName=tableName.substring(1, tableName.length);
-			}
+//			if(tableName.indexOf('t')==0){
+//				tableName=tableName.substring(1, tableName.length);
+//			}
 			var html='\n/**\n\r* Table Name '+tableName+'\n\r*/\n\r';
 				html+='public class '+ tableStyleConverter(tableName) + " { \n";
 			var getterSetters="";
@@ -736,12 +736,12 @@ var javaModelSet=function(){
 		var columnName='';
 		var columnParamName='';
 		var tableName=$("#tableName").html();
-		if(tableName.indexOf('t')==0){
-			// 첫글자 자르기
-			tableName=tableName.substring(1, tableName.length);
-			// 첫글자 소문자
-			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
-		}
+//		if(tableName.indexOf('t')==0){
+//			// 첫글자 자르기
+//			tableName=tableName.substring(1, tableName.length);
+//			// 첫글자 소문자
+//			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
+//		}
 
 		// 컬럼명칭
 		var columnList=columns('columnList',$("#tableName").html());
@@ -752,7 +752,7 @@ var javaModelSet=function(){
 			columnName=columnParamName.substring(0,1).toUpperCase()+columnParamName.substring(1, columnParamName.length);
 			if(setList[i]!="")
 				columnParamName=setList[i];
-			columnHtml+=tableName+'.set'+columnName+'('+columnParamName+');\n';
+			columnHtml+=tableStyleConverter(tableName)+'.set'+columnName+'('+columnParamName+');\n';
 		}
 		$("[name=query]").val(columnHtml);
 
@@ -768,19 +768,19 @@ var javaModelGet=function(){
 		var columnName='';
 		var columnParamName='';
 		var tableName=$("#tableName").html();
-		if(tableName.indexOf('t')==0){
-			// 첫글자 자르기
-			tableName=tableName.substring(1, tableName.length);
-			// 첫글자 소문자
-			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
-		}
+//		if(tableName.indexOf('t')==0){
+//			// 첫글자 자르기
+//			tableName=tableName.substring(1, tableName.length);
+//			// 첫글자 소문자
+//			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
+//		}
 
 		// 컬럼명칭
 		var columnList=columns('columnList',$("#tableName").html());
 		for(var i=0;i<columnList.length;i++){
 			columnParamName=columnStyleConverter(columnList[i]);
 			columnName=columnParamName.substring(0,1).toUpperCase()+columnParamName.substring(1, columnParamName.length);
-			columnHtml+=tableName+'.get'+columnName+'();\n';
+			columnHtml+=tableStyleConverter(tableName)+'.get'+columnName+'();\n';
 		}
 		$("[name=query]").val(columnHtml);
 
@@ -797,11 +797,11 @@ var resultMap = function(){
 			var columnName='';
 			var columnParamName='';
 			var tableName=$("#tableName").html();
-			if(tableName.indexOf('t')==0){
-				// 첫글자 자르기
-				tableName=tableName.substring(1, tableName.length);
-			}
-			columnHtml+='<resultMap type="'+tableName+'" id="resultBy'+tableName+'">\n';
+//			if(tableName.indexOf('t')==0){
+//				// 첫글자 자르기
+//				tableName=tableName.substring(1, tableName.length);
+//			}
+			columnHtml+='<resultMap type="'+tableStyleConverter(tableName)+'" id="resultBy'+tableStyleConverter(tableName)+'">\n';
 
 			// 컬럼명칭
 			var columnList=columns('columnList',$("#tableName").html());
@@ -848,7 +848,7 @@ var prepareAll=function(mode){
 
 var insertQuery=function(mode){
 	if($("#tableName").html() != ''){
-		var sql='수정하세요 \n\nINSERT INTO '+$("#tableName").html() ;
+		var sql='\n\nINSERT INTO '+$("#tableName").html() ;
 		if(mode=='set'){
 			sql+=' SET \n'+columns('set',$("#tableName").html());
 		}
@@ -864,7 +864,7 @@ var insertQuery=function(mode){
 
 var updateQuery=function(){
 	if($("#tableName").html() != ''){
-		var sql='수정하세요 \n\nUPDATE '+$("#tableName").html() ;
+		var sql='\n\nUPDATE '+$("#tableName").html() ;
 			sql+=' SET \n'+columns('set',$("#tableName").html());
 			var where = columns('where',$("#tableName").html());
 			if(where == "")
@@ -882,7 +882,7 @@ var updateQuery=function(){
 
 var deleteQuery=function(){
 	if($("#tableName").html() != ''){
-		var sql='수정하세요\n\nDELETE FROM '+$("#tableName").html() ;
+		var sql='\n\nDELETE FROM '+$("#tableName").html() ;
 		var where = columns('where',$("#tableName").html());
 		if(where == "")
 			sql+=' \n\n WHERE \n'+columns('where_all',$("#tableName").html());
@@ -895,6 +895,40 @@ var deleteQuery=function(){
 		printQuery('테이블을 선택하세요');
 	}
 };
+
+var mybatisSelect = function(){
+	selectNameQuery();
+	var columnHtml ='<select type="'+tableStyleConverter($("#tableName").html())+'" id="select'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED" resultMap="resultBy'+tableStyleConverter($("#tableName").html())+'" >\n';
+	columnHtml+='\n/* select'+tableStyleConverter($("#tableName").html())+' */\n';
+	columnHtml+=$("[name=query]").val();
+	columnHtml+='\n</insert>';	
+	$("[name=query]").val(columnHtml);
+};
+var mybatisInsert = function(){
+	insertQuery('into');
+	var columnHtml ='<insert type="'+tableStyleConverter($("#tableName").html())+'" id="insert'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
+	columnHtml+='\n/* insert'+tableStyleConverter($("#tableName").html())+' */\n';
+	columnHtml+=$("[name=query]").val();
+	columnHtml+='\n</insert>';
+	$("[name=query]").val(columnHtml);
+};
+var mybatisUpdate = function(){
+	updateQuery();
+	var columnHtml ='<update type="'+tableStyleConverter($("#tableName").html())+'" id="update'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
+	columnHtml+='\n/* update'+tableStyleConverter($("#tableName").html())+' */\n';
+	columnHtml+=$("[name=query]").val();
+	columnHtml+='</insert>';
+	$("[name=query]").val(columnHtml);
+};
+var mybatisDelete = function(){
+	deleteQuery();
+	var columnHtml ='<delete type="'+tableStyleConverter($("#tableName").html())+'" id="delete'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
+	columnHtml+='\n/* delete'+tableStyleConverter($("#tableName").html())+' */\n';
+	columnHtml+=$("[name=query]").val();
+	columnHtml+='\n</insert>';
+	$("[name=query]").val(columnHtml);
+};
+
 
 var printQuery=function(text){
 	var time = new Date();

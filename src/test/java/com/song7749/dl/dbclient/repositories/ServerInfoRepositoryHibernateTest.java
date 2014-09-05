@@ -35,4 +35,10 @@ public class ServerInfoRepositoryHibernateTest {
 	public void testSave() throws Exception {
 		serverInfoRepository.save(serverInfo);
 	}
+
+	@Test
+	public void testDelete() throws Exception {
+		ServerInfo deleteServerInfo = new ServerInfo();
+		serverInfoRepository.delete(deleteServerInfo);
+	}
 }
