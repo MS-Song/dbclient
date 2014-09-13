@@ -1219,7 +1219,7 @@ var columns=function(mode,tableName){
 		for(var i=0;i<columnList.length;i++){
 			if(selectList[i]=="checked"){
 				
-				tmpColumnList[nowLoop]=columnList[i] + " AS " + aliasTable($("#tableName").html()).toUpperCase() +"_"+ columnList[i] + " \t\t /*" + columnCommentList[nowLoop] + "*/";
+				tmpColumnList[nowLoop]=aliasTable($("#tableName").html()).toUpperCase()+"."+columnList[i] + " AS " + aliasTable($("#tableName").html()).toUpperCase() +"_"+ columnList[i] + " \t\t /*" + columnCommentList[nowLoop] + "*/";
 				nowLoop++;
 			}
 		}
