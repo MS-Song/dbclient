@@ -367,9 +367,9 @@ var selectCountQuery=function(){
 var selectNameQuery=function(){
 	if($("#tableName").html() != ''){
 		if($("[name=driver]").val()=='mysql')
-			$("[name=query]").val('select \n'+columns('select',$("#tableName").html())+'\nfrom '+$("#tableName").html() + ' ' + columns('where',$("#tableName").html()) + ' \nlimit 10');
+			$("[name=query]").val('select \n'+columns('selectWithComment',$("#tableName").html())+'\nfrom '+$("#tableName").html() + ' ' + columns('where',$("#tableName").html()) + ' \nlimit 10');
 		else
-			$("[name=query]").val('select \n'+columns('select',$("#tableName").html())+'\n from (select \n'+columns('select',$("#tableName").html())+'\nfrom '+$("#tableName").html() + ' ' + columns('where',$("#tableName").html()) + ' ) where rownum<=10');
+			$("[name=query]").val('select \n'+columns('select',$("#tableName").html())+'\n from (select \n'+columns('selectWithComment',$("#tableName").html())+'\nfrom '+$("#tableName").html() + ' ' + columns('where',$("#tableName").html()) + ' ) where rownum<=10');
 	}
 	else{
 		printQuery('테이블을 선택하세요');
@@ -898,10 +898,10 @@ var deleteQuery=function(){
 
 var mybatisSelect = function(){
 	selectNameQuery();
-	var columnHtml ='<select type="'+tableStyleConverter($("#tableName").html())+'" id="select'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED" resultMap="resultBy'+tableStyleConverter($("#tableName").html())+'" >\n';
+	var columnHtml ='<select type="'+tableStyleConverter($("#tableName").html())+'" id="select'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED" resultMap="resultBySelect'+tableStyleConverter($("#tableName").html())+'" >\n';
 	columnHtml+='\n/* select'+tableStyleConverter($("#tableName").html())+' */\n';
 	columnHtml+=$("[name=query]").val();
-	columnHtml+='\n</insert>';	
+	columnHtml+='\n</select>';	
 	$("[name=query]").val(columnHtml);
 };
 var mybatisInsert = function(){
@@ -917,7 +917,7 @@ var mybatisUpdate = function(){
 	var columnHtml ='<update type="'+tableStyleConverter($("#tableName").html())+'" id="update'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
 	columnHtml+='\n/* update'+tableStyleConverter($("#tableName").html())+' */\n';
 	columnHtml+=$("[name=query]").val();
-	columnHtml+='</insert>';
+	columnHtml+='</update>';
 	$("[name=query]").val(columnHtml);
 };
 var mybatisDelete = function(){
@@ -925,7 +925,7 @@ var mybatisDelete = function(){
 	var columnHtml ='<delete type="'+tableStyleConverter($("#tableName").html())+'" id="delete'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
 	columnHtml+='\n/* delete'+tableStyleConverter($("#tableName").html())+' */\n';
 	columnHtml+=$("[name=query]").val();
-	columnHtml+='\n</insert>';
+	columnHtml+='\n</delete>';
 	$("[name=query]").val(columnHtml);
 };
 
@@ -1213,6 +1213,19 @@ var columns=function(mode,tableName){
 		}
 		returnValue=tmpColumnList.join(",\n");
 	}
+	else if(mode=='selectWithComment'){
+		var tmpColumnList = new Array();
+		var nowLoop=0;
+		
+		for(var i=0;i<columnList.length;i++){
+			if(selectList[i]=="checked"){
+				
+				tmpColumnList[nowLoop]=columnList[i] + " \t\t /*" + columnCommentList[nowLoop] + "*/";
+				nowLoop++;
+			}
+		}
+		returnValue=tmpColumnList.join(",\n");
+	}	
 	else if(mode=='where'){
 		var tmpColumnList = new Array();
 		var nowLoop=0;
