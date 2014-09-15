@@ -905,7 +905,7 @@ var mybatisSelect = function(){
 };
 var mybatisInsert = function(){
 	insertQuery('into');
-	var columnHtml ='<insert type="'+tableStyleConverter($("#tableName").html())+'" id="insert'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
+	var columnHtml ='<insert parameterType="'+tableStyleConverter($("#tableName").html())+'" id="insert'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
 	columnHtml+='\n/* insert'+tableStyleConverter($("#tableName").html())+' */\n';
 	columnHtml+=$("[name=query]").val();
 	columnHtml+='\n</insert>';
@@ -913,7 +913,7 @@ var mybatisInsert = function(){
 };
 var mybatisUpdate = function(){
 	updateQuery();
-	var columnHtml ='<update type="'+tableStyleConverter($("#tableName").html())+'" id="update'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
+	var columnHtml ='<update parameterType="'+tableStyleConverter($("#tableName").html())+'" id="update'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
 	columnHtml+='\n/* update'+tableStyleConverter($("#tableName").html())+' */\n';
 	columnHtml+=$("[name=query]").val();
 	columnHtml+='</update>';
@@ -921,7 +921,7 @@ var mybatisUpdate = function(){
 };
 var mybatisDelete = function(){
 	deleteQuery();
-	var columnHtml ='<delete type="'+tableStyleConverter($("#tableName").html())+'" id="delete'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
+	var columnHtml ='<delete parameterType="'+tableStyleConverter($("#tableName").html())+'" id="delete'+tableStyleConverter($("#tableName").html())+'" statementType="PREPARED">\n';
 	columnHtml+='\n/* delete'+tableStyleConverter($("#tableName").html())+' */\n';
 	columnHtml+=$("[name=query]").val();
 	columnHtml+='\n</delete>';
@@ -1216,14 +1216,18 @@ var columns=function(mode,tableName){
 		var tmpColumnList = new Array();
 		var nowLoop=0;
 		
+		var comma="";
 		for(var i=0;i<columnList.length;i++){
-			if(selectList[i]=="checked"){
-				
-				tmpColumnList[nowLoop]=aliasTable($("#tableName").html()).toUpperCase()+"."+columnList[i] + " AS " + aliasTable($("#tableName").html()).toUpperCase() +"_"+ columnList[i] + " \t\t /*" + columnCommentList[nowLoop] + "*/";
-				nowLoop++;
+			if(i>=columnList.length-1){
+				comma="";
 			}
+			else{
+				comma=",";
+			}
+			tmpColumnList[nowLoop]=aliasTable($("#tableName").html()).toUpperCase()+"."+columnList[i] + " AS " + aliasTable($("#tableName").html()).toUpperCase() +"_"+ columnList[i] +comma+" \t\t /*" + columnCommentList[nowLoop] + "*/";
+			nowLoop++;
 		}
-		returnValue=tmpColumnList.join(",\n");
+		returnValue=tmpColumnList.join("\n");
 	}	
 	else if(mode=='where'){
 		var tmpColumnList = new Array();
