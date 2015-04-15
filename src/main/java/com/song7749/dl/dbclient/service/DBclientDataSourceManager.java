@@ -1,9 +1,9 @@
 package com.song7749.dl.dbclient.service;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
-import javax.sql.DataSource;
 
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
@@ -13,7 +13,7 @@ import com.song7749.dl.dbclient.vo.TableVO;
 
 public interface DBclientDataSourceManager {
 
-	DataSource getDataSource(ServerInfo serverInfo);
+	Connection getConnection(ServerInfo serverInfo) throws SQLException ;
 
 	List<TableVO> selectTableVOList(ServerInfo serverInfo);
 

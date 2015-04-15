@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import com.song7749.dl.base.Entities;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.util.validate.ValidateGroupDelete;
+import com.song7749.util.validate.ValidateGroupInsert;
 import com.song7749.util.validate.ValidateGroupUpdate;
 
 @Entity
@@ -29,32 +30,32 @@ public class ServerInfo extends Entities {
 	private Integer serverInfoSeq;
 
 	@Column
-	@NotNull
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String host;
 
 	@Column
-	@NotNull
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String schemaName;
 
 	@Column
-	@NotNull
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String account;
 
 	@Column
-	@NotNull
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String password;
 
 	@Column
 	@Enumerated(EnumType.STRING)
-	@NotNull
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private DatabaseDriver driver;
 
 	@Column
-	@NotNull
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String charset;
 
 	@Column
-	@NotNull
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String port;
 
 	@Transient

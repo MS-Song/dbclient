@@ -24,10 +24,7 @@
 		init-method="checkHostEnviroment" />
 
 	<!-- 프로퍼티 파일 로딩 -->
-	<context:property-placeholder
-		location="classpath:properties/dbHostProperties.xml,
-		classpath:properties/dbPropertiesMaster.xml,
-		classpath:properties/dbProperties.xml" />
+	<context:property-placeholder location="classpath:properties/dbProperties.xml" />
 
 	<!-- config Property 로딩 -->
 	<util:properties id="config" location="classpath:properties/config-properties.xml"/>

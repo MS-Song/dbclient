@@ -1,5 +1,9 @@
 package com.song7749.dl.dbclient.repositories;
 
+import java.io.IOException;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Properties;
+
 import javax.annotation.Resource;
 
 import org.junit.Before;
@@ -26,9 +30,18 @@ public class ServerInfoRepositoryHibernateTest {
 	 * fixture
 	 */
 	ServerInfo serverInfo;
+
 	@Before
-	public void setUp(){
-		serverInfo = new ServerInfo("local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "UTF-8","3306");
+	public void setUp() throws InvalidPropertiesFormatException, IOException{
+		Properties prop = new Properties();
+		prop.loadFromXML(ClassLoader.getSystemResource("properties/dbProperties.xml").openStream());
+		serverInfo = new ServerInfo(prop.getProperty("dbClient.database.host")
+				, prop.getProperty("dbClient.database.schemaName")
+				, prop.getProperty("dbClient.database.username")
+				, prop.getProperty("dbClient.database.password")
+				, DatabaseDriver.mysql
+				, "UTF-8"
+				,"3306");
 	}
 
 	@Test

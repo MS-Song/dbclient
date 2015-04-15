@@ -5,6 +5,7 @@ import static com.song7749.util.LogMessageFormatter.logFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,12 +43,21 @@ public class DBclientDataSourceManagerImplTest {
 
 	@Before
 	public void setUp() throws Exception {
-		serverInfo = new ServerInfo(1, "local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "utf-8","3306");
+		// 서버 인포 설정
+		Properties prop = new Properties();
+		prop.loadFromXML(ClassLoader.getSystemResource("properties/dbProperties.xml").openStream());
+		serverInfo = new ServerInfo(prop.getProperty("dbClient.database.host")
+				, prop.getProperty("dbClient.database.schemaName")
+				, prop.getProperty("dbClient.database.username")
+				, prop.getProperty("dbClient.database.password")
+				, DatabaseDriver.mysql
+				, "UTF-8"
+				,"3306");
 	}
 
 	@Test
-	public void testGetDataSource() throws Exception {
-		dbClientDataSourceManager.getDataSource(serverInfo);
+	public void testGetConnection() throws Exception {
+		dbClientDataSourceManager.getConnection(serverInfo);
 	}
 
 	@Test

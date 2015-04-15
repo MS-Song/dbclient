@@ -8,9 +8,12 @@ import static org.springframework.test.web.server.request.MockMvcRequestBuilders
 import static org.springframework.test.web.server.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.Cookie;
 
@@ -31,6 +34,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.song7749.app.dbclient.loader.WebContextLoader;
+import com.song7749.dl.dbclient.entities.ServerInfo;
+import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.util.filter.XSSFilter;
 
 
@@ -58,11 +63,27 @@ public class DatabaseControllerTest {
 	// login 을 위한 cookie 정보
 	Cookie cookies;
 
+	/**
+	 * 테스트 서버 관련 객체
+	 */
+	ServerInfo serverInfo;
+
 	@Before
-	public void setUp() throws ClassNotFoundException {
+	public void setUp() throws ClassNotFoundException, InvalidPropertiesFormatException, IOException {
 		mockMvc = MockMvcBuilders.webApplicationContextSetup(wac)
 				.addFilter(new XSSFilter(), "/*")
 				.addFilter(new SiteMeshFilter(), "/*.html").build();
+
+		// 서버 인포 설정
+		Properties prop = new Properties();
+		prop.loadFromXML(ClassLoader.getSystemResource("properties/dbProperties.xml").openStream());
+		serverInfo = new ServerInfo(prop.getProperty("dbClient.database.host")
+				, prop.getProperty("dbClient.database.schemaName")
+				, prop.getProperty("dbClient.database.username")
+				, prop.getProperty("dbClient.database.password")
+				, DatabaseDriver.mysql
+				, "UTF-8"
+				,"3306");
 	}
 
 	@Test
@@ -89,7 +110,7 @@ public class DatabaseControllerTest {
 	@Test
 	public void testGetSchemaList() throws Exception {
 		drb = get("/database/schemaList.json")
-				.param("server","local-database")
+				.param("server",serverInfo.getHost())
 				;
 		// 로그인 cookie 정보 추가
 		drb.cookie(cookies);
@@ -109,9 +130,9 @@ public class DatabaseControllerTest {
 	@Test
 	public void testGetTableList() throws Exception {
 		drb = get("/database/tableList.json")
-				.param("server","local-database")
-				.param("schema","dbBilling")
-				.param("account","root")
+				.param("server",serverInfo.getHost())
+				.param("schema",serverInfo.getSchemaName())
+				.param("account",serverInfo.getAccount())
 				;
 
 		// 로그인 cookie 정보 추가
@@ -133,12 +154,12 @@ public class DatabaseControllerTest {
 	public void testSaveDatabases() throws Exception {
 		drb = post("/database/saveDatabases.json")
 				.param("serverInfoSeq[]","")
-				.param("host[]","local-database")
-				.param("schemaName[]","dbBilling")
-				.param("account[]","root")
-				.param("password[]","1234")
-				.param("driver[]","mysql")
-				.param("charset[]","utf-8")
+				.param("host[]",serverInfo.getHost())
+				.param("schemaName[]",serverInfo.getSchemaName())
+				.param("account[]",serverInfo.getAccount())
+				.param("password[]",serverInfo.getPassword())
+				.param("driver[]",serverInfo.getDriver().mysql.toString())
+				.param("charset[]","UTF-8")
 				.param("port[]","3306")
 				;
 		// 로그인 cookie 정보 추가
@@ -159,13 +180,13 @@ public class DatabaseControllerTest {
 
 		drb = post("/database/saveDatabases.json")
 				.param("serverInfoSeq[]","1,")
-				.param("host[]","local-database,local-database")
-				.param("schemaName[]","dbBilling,eldanawa")
-				.param("account[]","root,root")
-				.param("password[]","1234,1234")
-				.param("driver[]","mysql,mysql")
-				.param("charset[]","utf-8,utf-8")
-				.param("port[]","3306,3306")
+				.param("host[]",serverInfo.getHost(),serverInfo.getHost())
+				.param("schemaName[]",serverInfo.getSchemaName(),serverInfo.getSchemaName())
+				.param("account[]",serverInfo.getAccount(),serverInfo.getAccount())
+				.param("password[]",serverInfo.getPassword(),serverInfo.getPassword())
+				.param("driver[]",serverInfo.getDriver().mysql.toString(),serverInfo.getDriver().mysql.toString())
+				.param("charset[]","UTF-8","UTF-8")
+				.param("port[]","3306","3306")
 				;
 		// 로그인 cookie 정보 추가
 		drb.cookie(cookies);

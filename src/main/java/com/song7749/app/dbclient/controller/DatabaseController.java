@@ -35,6 +35,22 @@ import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 
+/**
+ * <pre>
+ * Class Name : DatabaseController.java
+ * Description : 데이터 베이스 컨트롤러
+*
+*  Modification Information
+*  Modify Date 		Modifier	Comment
+*  -----------------------------------------------
+*  2015. 4. 15.		song7749	신규작성
+*
+* </pre>
+*
+* @author song7749
+* @since 2015. 4. 15.
+*/
+
 @Controller
 @RequestMapping("/database")
 public class DatabaseController {
@@ -46,6 +62,11 @@ public class DatabaseController {
 	@Resource(name="genericExcelView")
 	GenericExcelView genericExcelView;
 
+	/**
+	 * 데이터 베이스 서버 리스트 조회
+	 * @param request
+	 * @param model
+	 */
 	@RequestMapping(value="/serverList.json",method=RequestMethod.GET)
 	public void getServerList(
 			HttpServletRequest request,
@@ -57,6 +78,12 @@ public class DatabaseController {
 		model.addAttribute("serverInfo", infoList);
 	}
 
+	/**
+	 * 데이터 베이스 스키마, SID 조회
+	 * @param host
+	 * @param request
+	 * @param model
+	 */
 	@RequestMapping(value="/schemaList.json",method=RequestMethod.GET)
 	public void getSchemaList(
 			@RequestParam(value="server",required=true) String host,
@@ -69,6 +96,14 @@ public class DatabaseController {
 		model.addAttribute("serverInfo", infoList);
 	}
 
+	/**
+	 * 데이터베이스 테이블 리스트 조회
+	 * @param host
+	 * @param schemaName
+	 * @param account
+	 * @param request
+	 * @param model
+	 */
 	@RequestMapping(value="/tableList.json",method=RequestMethod.GET)
 	public void getTableList(
 			@RequestParam(value="server",required=true) String host,
@@ -88,6 +123,15 @@ public class DatabaseController {
 		model.addAttribute("tableList", tableList);
 	}
 
+	/**
+	 * 데이터 베이스 필드 리스트 조회
+	 * @param host
+	 * @param schemaName
+	 * @param account
+	 * @param tableName
+	 * @param request
+	 * @param model
+	 */
 	@RequestMapping(value="/fieldList.json",method=RequestMethod.GET)
 	public void getFieldList(
 			@RequestParam(value="server",required=true) String host,
@@ -109,6 +153,15 @@ public class DatabaseController {
 		model.addAttribute("fieldList", fieldList);
 	}
 
+	/**
+	 * 데이터 베이스 인덱스 리스트 조회
+	 * @param host
+	 * @param schemaName
+	 * @param account
+	 * @param tableName
+	 * @param request
+	 * @param model
+	 */
 	@RequestMapping(value="/indexList.json",method=RequestMethod.GET)
 	public void getIndexList(
 			@RequestParam(value="server",required=true) String host,
@@ -129,6 +182,19 @@ public class DatabaseController {
 		model.addAttribute("indexList", indexList);
 	}
 
+	/**
+	 * 데이터 베이스 저장
+	 * @param serverInfoSeq
+	 * @param host
+	 * @param schemaName
+	 * @param account
+	 * @param password
+	 * @param driver
+	 * @param charset
+	 * @param port
+	 * @param request
+	 * @param model
+	 */
 	@RequestMapping(value="/saveDatabases.json",method=RequestMethod.POST)
 	public void saveDatabases(
 			@RequestParam(value="serverInfoSeq[]",required=true) Integer[] serverInfoSeq,
@@ -194,6 +260,17 @@ public class DatabaseController {
 	}
 
 
+	/**
+	 * 데이터 베이스 쿼리 실행
+	 * @param host
+	 * @param schemaName
+	 * @param account
+	 * @param autoCommit
+	 * @param query
+	 * @param htmlAllow
+	 * @param request
+	 * @param model
+	 */
 	@RequestMapping(value="/executeQuery.json",method=RequestMethod.POST)
 	public void executeQuery(
 			@RequestParam(value="server",required=true) String host,
@@ -243,6 +320,15 @@ public class DatabaseController {
 
 	}
 
+	/**
+	 * 엑셀 다운로드
+	 * @param titles
+	 * @param values
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value={"/getExcel.xls"},
 			produces= {"application/vnd.ms-excel;charset=UTF-8", "text/csv;charset=UTF-8"},
 			method=RequestMethod.POST)
@@ -281,6 +367,10 @@ public class DatabaseController {
 		return genericExcelView;
 	}
 
+	/**
+	 * 데이터 베이스 드라이버 조회
+	 * @param model
+	 */
 	@RequestMapping(value="/getDatabaseDriver.json",method=RequestMethod.GET)
 	public void getDatabaseDriver(
 			ModelMap model){
