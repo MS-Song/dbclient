@@ -2,10 +2,10 @@ package com.song7749.dl.dbclient.dto;
 
 import javax.validation.constraints.NotNull;
 
-import com.song7749.dl.base.Dto;
+import com.song7749.dl.base.AbstractDto;
 import com.song7749.util.validate.ValidateGroupSelect;
 
-public class FindTableDTO extends Dto{
+public class FindTableDTO extends AbstractDto{
 
 	private static final long serialVersionUID = 3720276959059559353L;
 
