@@ -7,8 +7,8 @@
 		</encoder>
 	</appender>
 	
-	<!-- MyBatis Loggers -->
 	<logger name="java.sql" level="TRACE" />
+	
 	<!-- Spring Loggers -->
 	<logger name="org.springframework.core" level="INFO" />
 	<logger name="org.springframework.beans" level="INFO" />
@@ -18,9 +18,9 @@
 	<!-- web Loggers -->
 	<logger name="com.danawa.app.marketplace" level="DEBUG" />
 
-	<!-- swagger 
-	<logger name="com.mangofactory" additivity="false" level="DEBUG"/>
-	-->
+	<!-- swagger -->
+	<logger name="com.mangofactory" additivity="false" level="ERROR"/>
+	
 	<!-- MQ -->
 	<logger name="org.apache.activemq" level="INFO" />
 	

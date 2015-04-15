@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-	<comment>DB 커넥션 연결정보 LOCAL</comment>
+	<comment>DB 커넥션 연결정보 test Unit</comment>
 	<!-- database schema 명 -->
-	<entry key="dbClient.database.schemaName">dbClient</entry>
+	<entry key="dbClient.database.schemaName">testdbClient</entry>
 
 	<!-- DB hosts 정보 -->
 	<entry key="dbClient.database.host">127.0.0.1</entry>

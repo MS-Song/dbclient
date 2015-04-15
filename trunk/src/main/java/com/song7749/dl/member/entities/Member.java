@@ -11,10 +11,14 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.BatchSize;
 
 import com.song7749.dl.base.Entities;
+import com.song7749.util.validate.ValidateGroupDelete;
+import com.song7749.util.validate.ValidateGroupInsert;
+import com.song7749.util.validate.ValidateGroupUpdate;
 
 /**
  * <pre>
@@ -40,18 +44,26 @@ public class Member extends Entities {
 
 	@Id
 	@Column
+	@NotNull(groups={ValidateGroupInsert.class
+			,ValidateGroupUpdate.class
+			,ValidateGroupDelete.class})
 	private String id;
 
 	@Column
+	@NotNull(groups={ValidateGroupInsert.class
+			,ValidateGroupUpdate.class})
 	private String password;
 
 	@Column
+	@NotNull(groups={ValidateGroupInsert.class})
 	private String email;
 
 	@Column
+	@NotNull(groups={ValidateGroupInsert.class})
 	private String passwordQuestion;
 
 	@Column
+	@NotNull(groups={ValidateGroupInsert.class})
 	private String passwordAnswer;
 
 	@OneToMany(mappedBy="member",fetch=FetchType.LAZY,cascade=CascadeType.ALL, orphanRemoval=true)

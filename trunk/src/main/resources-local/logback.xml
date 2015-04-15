@@ -7,8 +7,6 @@
 		</encoder>
 	</appender>
 	
-	<!-- MyBatis Loggers -->
-	<logger name="org.apache.ibatis" level="DEBUG" />
 	<logger name="java.sql" level="TRACE" />
 	
 	<!-- Spring Loggers -->

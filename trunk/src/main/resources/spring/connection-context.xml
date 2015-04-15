@@ -15,29 +15,29 @@
 
 	<!-- dbClient -->
 	<bean id="dbClientMasterDatasource" class="org.apache.commons.dbcp.BasicDataSource"  destroy-method="close">  
-		<property name="driverClassName" value="${dbClient.master.driver}" />  
-		<property name="url" value="${dbClient.master.url}" />  
-		<property name="username" value="${dbClient.master.username}" />  
-		<property name="password" value="${dbClient.master.password}" />
+		<property name="driverClassName" value="${dbClient.database.driver}" />  
+		<property name="url" value="${dbClient.database.url}" />  
+		<property name="username" value="${dbClient.database.username}" />  
+		<property name="password" value="${dbClient.database.password}" />
 
-		<property name="validationQuery" value="${dbClient.master.validationQuery}" />	 	
-		<property name="validationQueryTimeout" value="${dbClient.master.validationQueryTimeout}"/>
-		<property name="defaultAutoCommit" value="${dbClient.master.defaultAutoCommit}"></property>
-		<property name="maxActive" value="${dbClient.master.maxActive}" /> 
-		<property name="initialSize" value="${dbClient.master.initialSize}" /> 
-		<property name="minIdle" value="${dbClient.master.minIdle}"/>  
-		<property name="maxIdle" value="${dbClient.master.maxIdle}" /> 
-		<property name="maxWait" value="${dbClient.master.maxWait}" /> 
-		<property name="testOnBorrow" value="${dbClient.master.testOnBorrow}"/> 			
-		<property name="testOnReturn" value="${dbClient.master.testOnReturn}"/> 				
-		<property name="testWhileIdle" value="${dbClient.master.testWhileIdle}"/> 				
-		<property name="numTestsPerEvictionRun" value="${dbClient.master.numTestsPerEvictionRun}" />		
-		<property name="minEvictableIdleTimeMillis" value="${dbClient.master.minEvictableIdleTimeMillis}"/> 
-		<property name="timeBetweenEvictionRunsMillis" value="${dbClient.master.timeBetweenEvictionRunsMillis}" />	 
-		<property name="removeAbandoned" value="${dbClient.master.removeAbandoned}"/> 
-		<property name="removeAbandonedTimeout" value="${dbClient.master.removeAbandonedTimeout}"/> 
-		<property name="logAbandoned" value="${dbClient.master.logAbandoned}"/>
-		<property name="poolPreparedStatements" value="${dbClient.master.poolPreparedStatements}"></property> 		
+		<property name="validationQuery" value="${dbClient.database.validationQuery}" />	 	
+		<property name="validationQueryTimeout" value="${dbClient.database.validationQueryTimeout}"/>
+		<property name="defaultAutoCommit" value="${dbClient.database.defaultAutoCommit}"></property>
+		<property name="maxActive" value="${dbClient.database.maxActive}" /> 
+		<property name="initialSize" value="${dbClient.database.initialSize}" /> 
+		<property name="minIdle" value="${dbClient.database.minIdle}"/>  
+		<property name="maxIdle" value="${dbClient.database.maxIdle}" /> 
+		<property name="maxWait" value="${dbClient.database.maxWait}" /> 
+		<property name="testOnBorrow" value="${dbClient.database.testOnBorrow}"/> 			
+		<property name="testOnReturn" value="${dbClient.database.testOnReturn}"/> 				
+		<property name="testWhileIdle" value="${dbClient.database.testWhileIdle}"/> 				
+		<property name="numTestsPerEvictionRun" value="${dbClient.database.numTestsPerEvictionRun}" />		
+		<property name="minEvictableIdleTimeMillis" value="${dbClient.database.minEvictableIdleTimeMillis}"/> 
+		<property name="timeBetweenEvictionRunsMillis" value="${dbClient.database.timeBetweenEvictionRunsMillis}" />	 
+		<property name="removeAbandoned" value="${dbClient.database.removeAbandoned}"/> 
+		<property name="removeAbandonedTimeout" value="${dbClient.database.removeAbandonedTimeout}"/> 
+		<property name="logAbandoned" value="${dbClient.database.logAbandoned}"/>
+		<property name="poolPreparedStatements" value="${dbClient.database.poolPreparedStatements}"></property> 		
 	</bean>	
 	
 	<!-- sessionFactory -->

@@ -4,6 +4,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Properties;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,9 +45,23 @@ public class ServerInfoManagerImplTest {
 	SaveServerInfoDTO saveServerInfoDTO;
 	ModifyServerInfoDTO modifyServerInfoDTO;
 	@Before
-	public void setup(){
-		saveServerInfoDTO = new SaveServerInfoDTO("local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "utf-8","3306");
-		modifyServerInfoDTO = new ModifyServerInfoDTO(1,"local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "utf-8","3306");
+	public void setup() throws InvalidPropertiesFormatException, IOException{
+		Properties prop = new Properties();
+		prop.loadFromXML(ClassLoader.getSystemResource("properties/dbProperties.xml").openStream());
+		saveServerInfoDTO = new SaveServerInfoDTO(prop.getProperty("dbClient.database.host")
+				, prop.getProperty("dbClient.database.schemaName")
+				, prop.getProperty("dbClient.database.username")
+				, prop.getProperty("dbClient.database.password")
+				, DatabaseDriver.mysql
+				, "UTF-8"
+				,"3306");
+		modifyServerInfoDTO = new ModifyServerInfoDTO(1,prop.getProperty("dbClient.database.host")
+				, prop.getProperty("dbClient.database.schemaName")
+				, prop.getProperty("dbClient.database.username")
+				, prop.getProperty("dbClient.database.password")
+				, DatabaseDriver.mysql
+				, "UTF-8"
+				,"3316");
 	}
 
 	@Before
@@ -64,7 +82,15 @@ public class ServerInfoManagerImplTest {
 	@Test
 	public void testModifyServerInfo() throws Exception {
 		// give
-		ServerInfo serverInfo = new ServerInfo(1, "local-database", "dbBilling", "root", "1234", DatabaseDriver.mysql, "utf-8","3306");
+		Properties prop = new Properties();
+		prop.loadFromXML(ClassLoader.getSystemResource("properties/dbProperties.xml").openStream());
+		ServerInfo serverInfo = new ServerInfo(prop.getProperty("dbClient.database.host")
+				, prop.getProperty("dbClient.database.schemaName")
+				, prop.getProperty("dbClient.database.username")
+				, prop.getProperty("dbClient.database.password")
+				, DatabaseDriver.mysql
+				, "UTF-8"
+				,"3306");
 		given(serverInfoRepository.find(any(ServerInfo.class))).willReturn(serverInfo);
 		// when
 		serverInfoManager.modifyServerInfo(modifyServerInfoDTO);

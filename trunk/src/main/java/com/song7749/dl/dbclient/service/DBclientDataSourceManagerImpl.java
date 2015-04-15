@@ -35,8 +35,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	private final Map<ServerInfo, DataSource> dataSourceMap = new HashMap<ServerInfo, DataSource>();
 
 	@Override
-	public DataSource getDataSource(ServerInfo serverInfo) {
-
+	public Connection getConnection(ServerInfo serverInfo) throws SQLException {
 		/**
 		 * 테이블 정보를 제거하기 위해 추가함. 추후 변경 고려
 		 */
@@ -50,56 +49,45 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		keyServerInfo.setCharset(serverInfo.getCharset());
 
 		if (dataSourceMap.containsKey(keyServerInfo)) {
-
 			logger.debug(logFormat("Return Saved Connection!"));
-			return dataSourceMap.get(keyServerInfo);
-		}
+		} else {
+			logger.debug(logFormat("Return New Connection!"));
 
-		logger.debug(logFormat("Return New Connection!"));
-
-		BasicDataSource bds = new BasicDataSource();
-		bds.setDriverClassName(serverInfo.getDriver().getDriverName());
-		try {
-			bds.setUrl(serverInfo.getDriver().getUrl(serverInfo));
-		} catch (Exception e) {
-			throw new IllegalArgumentException(e.getMessage());
-		}
-		bds.setUsername(serverInfo.getAccount());
-		bds.setPassword(serverInfo.getPassword());
-		bds.setValidationQuery("SELECT 1 FROM DUAL");
-		bds.setValidationQueryTimeout(60);
-		bds.setDefaultAutoCommit(false);
-		bds.setMaxActive(20);
-		bds.setInitialSize(10);
-		bds.setMinIdle(10);
-		bds.setMaxIdle(20);
-		bds.setMaxWait(5000);
-		bds.setTestOnReturn(true);
-		bds.setTestOnReturn(false);
-		bds.setTestWhileIdle(true);
-		bds.setNumTestsPerEvictionRun(5);
-		bds.setMinEvictableIdleTimeMillis(10000);
-		bds.setTimeBetweenEvictionRunsMillis(50000);
-		bds.setRemoveAbandoned(true);
-		bds.setRemoveAbandonedTimeout(60);
-		bds.setLogAbandoned(true);
-		bds.setPoolPreparedStatements(true);
-		dataSourceMap.put(keyServerInfo, bds);
-
-		return bds;
-	}
-
-	@Override
-	@PreDestroy
-	protected void finalize() throws Throwable {
-		for(ServerInfo ServerInfo : dataSourceMap.keySet()){
+			BasicDataSource bds = new BasicDataSource();
+			bds.setDriverClassName(serverInfo.getDriver().getDriverName());
 			try {
-				((BasicDataSource)dataSourceMap.get(ServerInfo)).close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+				bds.setUrl(serverInfo.getDriver().getUrl(serverInfo));
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e.getMessage());
 			}
+			bds.setUsername(serverInfo.getAccount());
+			bds.setPassword(serverInfo.getPassword());
+			bds.setValidationQuery("SELECT 1 FROM DUAL");
+			bds.setValidationQueryTimeout(60);
+			bds.setDefaultAutoCommit(false);
+			bds.setMaxActive(20);
+			bds.setInitialSize(10);
+			bds.setMinIdle(10);
+			bds.setMaxIdle(20);
+			bds.setMaxWait(5000);
+			bds.setTestOnReturn(true);
+			bds.setTestOnReturn(false);
+			bds.setTestWhileIdle(true);
+			bds.setNumTestsPerEvictionRun(5);
+			bds.setMinEvictableIdleTimeMillis(10000);
+			bds.setTimeBetweenEvictionRunsMillis(50000);
+			bds.setRemoveAbandoned(true);
+			bds.setRemoveAbandonedTimeout(60);
+			bds.setLogAbandoned(true);
+			bds.setPoolPreparedStatements(true);
+			dataSourceMap.put(keyServerInfo, bds);
 		}
-		super.finalize();
+		try {
+			return dataSourceMap.get(keyServerInfo).getConnection();
+		} catch (SQLException e) {
+			dataSourceMap.remove(keyServerInfo);
+			throw new SQLException(e);
+		}
 	}
 
 	@Override
@@ -109,7 +97,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		List<Map<String, String>> resultList = null;
 		try {
-			resultList = executeQueryList(getDataSource(serverInfo).getConnection(), serverInfo.getDriver().getTableListQuery(serverInfo));
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getTableListQuery(serverInfo));
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new IllegalArgumentException(e.getCause());
@@ -131,7 +119,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		List<Map<String, String>> resultList = null;
 		try {
-			resultList = executeQueryList(getDataSource(serverInfo).getConnection(), serverInfo.getDriver().getFieldListQueryQuery(serverInfo));
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getFieldListQueryQuery(serverInfo));
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new IllegalArgumentException(e.getCause());
@@ -161,7 +149,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		List<Map<String, String>> resultList = null;
 		try {
-			resultList = executeQueryList(getDataSource(serverInfo).getConnection(), serverInfo.getDriver().getIndexListQuery(serverInfo));
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getIndexListQuery(serverInfo));
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new IllegalArgumentException(e.getCause());
@@ -301,7 +289,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			// 별도의 explain 쿼리가 존재하지 않으면..
 			if(serverInfo.getDriver().getExplainQuery().equals("")){
 				try{
-					list = executeQueryList(getDataSource(serverInfo).getConnection(), dto.getQuery(),dto.isHtmlAllow());
+					list = executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
 				} catch (SQLException e) {
 					e.printStackTrace();
 					throw new IllegalArgumentException(e.getCause());
@@ -309,7 +297,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			} else {
 			// 별도의 explain 쿼리가 존재하면 쿼리를 실행한 뒤에 explain query 를 다시 실행한다.
 				try{
-					Connection conn = getDataSource(serverInfo).getConnection();
+					Connection conn = getConnection(serverInfo);
 					conn.prepareStatement(dto.getQuery()).execute();
 					list = executeQueryList(conn, serverInfo.getDriver().getExplainQuery());
 				} catch (SQLException e) {
@@ -320,14 +308,14 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		} else if(dto.getQuery().toLowerCase().startsWith("select")
 				|| dto.getQuery().toLowerCase().startsWith("show")){
 			try{
-				list=executeQueryList(getDataSource(serverInfo).getConnection(), dto.getQuery(),dto.isHtmlAllow());
+				list=executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
 			} catch (SQLException e) {
 				e.printStackTrace();
 				throw new IllegalArgumentException(e.getCause());
 			}
 		} else {
 			try{
-				int affectRows = executeQuery(getDataSource(serverInfo).getConnection(), dto.getQuery(), dto.isAutoCommit());
+				int affectRows = executeQuery(getConnection(serverInfo), dto.getQuery(), dto.isAutoCommit());
 
 				Map<String, String> affectedRowMap = new HashMap<String, String>();
 				affectedRowMap.put("affectedRows", new Integer(affectRows).toString());
@@ -340,5 +328,18 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			}
 		}
 		return list;
+	}
+
+	@Override
+	@PreDestroy
+	protected void finalize() throws Throwable {
+		for(ServerInfo ServerInfo : dataSourceMap.keySet()){
+			try {
+				((BasicDataSource)dataSourceMap.get(ServerInfo)).close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		super.finalize();
 	}
 }
