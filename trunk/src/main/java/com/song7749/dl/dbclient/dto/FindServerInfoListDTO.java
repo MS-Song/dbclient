@@ -1,8 +1,8 @@
 package com.song7749.dl.dbclient.dto;
 
-import com.song7749.dl.base.Dto;
+import com.song7749.dl.base.AbstractDto;
 
-public class FindServerInfoListDTO extends Dto{
+public class FindServerInfoListDTO extends AbstractDto{
 
 	private static final long serialVersionUID = -2933768698426325461L;
 

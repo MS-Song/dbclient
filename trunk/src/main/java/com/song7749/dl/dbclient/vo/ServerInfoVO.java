@@ -1,11 +1,11 @@
 package com.song7749.dl.dbclient.vo;
 
-import com.song7749.dl.base.Vo;
+import com.song7749.dl.base.AbstractVo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("ServerInfo")
-public class ServerInfoVO extends Vo{
+public class ServerInfoVO extends AbstractVo{
 
 	private static final long serialVersionUID = -8989212849769127761L;
 

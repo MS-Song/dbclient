@@ -2,10 +2,10 @@ package com.song7749.dl.dbclient.dto;
 
 import javax.validation.constraints.NotNull;
 
-import com.song7749.dl.base.Dto;
+import com.song7749.dl.base.AbstractDto;
 
 
-public class ExecuteResultListDTO extends Dto{
+public class ExecuteResultListDTO extends AbstractDto{
 
 	private static final long serialVersionUID = 7378998437614912567L;
 

@@ -2,10 +2,10 @@ package com.song7749.dl.dbclient.dto;
 
 import javax.validation.constraints.NotNull;
 
-import com.song7749.dl.base.Dto;
+import com.song7749.dl.base.AbstractDto;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 
-public class SaveServerInfoDTO extends Dto{
+public class SaveServerInfoDTO extends AbstractDto{
 
 	private static final long serialVersionUID = 1403398882918633647L;
 

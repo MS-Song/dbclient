@@ -1,8 +1,8 @@
 package com.song7749.dl.dbclient.vo;
 
-import com.song7749.dl.base.Vo;
+import com.song7749.dl.base.AbstractVo;
 
-public class TableVO extends Vo{
+public class TableVO extends AbstractVo{
 
 	private static final long serialVersionUID = -3104451423491045532L;
 
