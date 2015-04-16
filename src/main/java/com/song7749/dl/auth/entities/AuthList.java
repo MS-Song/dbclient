@@ -1,4 +1,4 @@
-package com.song7749.dl.member.entities;
+package com.song7749.dl.auth.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,8 +7,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 import com.song7749.dl.base.Entities;
+import com.song7749.util.validate.ValidateGroupDelete;
+import com.song7749.util.validate.ValidateGroupInsert;
+import com.song7749.util.validate.ValidateGroupUpdate;
 
 /**
  * <pre>
@@ -35,12 +39,18 @@ public class AuthList extends Entities {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column
+	@NotNull(groups={ValidateGroupUpdate.class,
+			ValidateGroupDelete.class})
 	private Integer authListSeq;
 
 	@Column
+	@NotNull(groups={ValidateGroupInsert.class
+			,ValidateGroupUpdate.class})
 	private Integer authCode;
 
 	@Column
+	@NotNull(groups={ValidateGroupInsert.class
+			,ValidateGroupUpdate.class})
 	private String authName;
 
 
