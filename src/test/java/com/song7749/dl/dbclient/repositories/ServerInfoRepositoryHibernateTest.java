@@ -44,8 +44,26 @@ public class ServerInfoRepositoryHibernateTest {
 				,"3306");
 	}
 
+	@Test(expected=IllegalArgumentException.class)
+	public void testSave_validation_account() throws Exception {
+		// give
+		serverInfo.setAccount("");
+		// when // then
+		serverInfoRepository.save(serverInfo);
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void testSave_validation_charset() throws Exception {
+		// give
+		serverInfo.setCharset("");;
+		// when // then
+		serverInfoRepository.save(serverInfo);
+	}
+
+
+
 	@Test
-	public void testSave() throws Exception {
+	public void testSave_로직테스트() throws Exception {
 		serverInfoRepository.save(serverInfo);
 	}
 
@@ -54,4 +72,10 @@ public class ServerInfoRepositoryHibernateTest {
 		ServerInfo deleteServerInfo = new ServerInfo();
 		serverInfoRepository.delete(deleteServerInfo);
 	}
+
+	@Test
+	public void testFind() throws Exception {
+		serverInfoRepository.find(serverInfo);
+	}
+
 }

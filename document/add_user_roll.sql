@@ -1,2 +1,2 @@
-GRANT SELECT,EXECUTE,INSERT,UPDATE,DELETE ON *.* TO dbclient@localhost IDENTIFIED BY "1234";
-GRANT SELECT,EXECUTE,INSERT,UPDATE,DELETE ON *.* TO dbclient@127.0.0.1 IDENTIFIED BY "1234";
+GRANT all privileges on *.* TO dbclient@localhost IDENTIFIED BY "1234";
+GRANT all privileges on *.* TO dbclient@127.0.0.1 IDENTIFIED BY "1234";

@@ -32,7 +32,7 @@ import com.song7749.util.validate.ValidateGroupUpdate;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = "authCode",name="UK_authCode")})
-public class AuthList extends Entities {
+public class Auth extends Entities {
 
 	private static final long serialVersionUID = 2177336930086021873L;
 
@@ -54,16 +54,16 @@ public class AuthList extends Entities {
 	private String authName;
 
 
-	public AuthList(Integer authListSeq) {
+	public Auth(Integer authListSeq) {
 		this.authListSeq = authListSeq;
 	}
 
-	public AuthList(Integer authCode, String authName) {
+	public Auth(Integer authCode, String authName) {
 		this.authCode = authCode;
 		this.authName = authName;
 	}
 
-	public AuthList(Integer authListSeq, Integer authCode, String authName) {
+	public Auth(Integer authListSeq, Integer authCode, String authName) {
 		this.authListSeq = authListSeq;
 		this.authCode = authCode;
 		this.authName = authName;
