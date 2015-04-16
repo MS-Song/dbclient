@@ -10,10 +10,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.ForeignKey;
 
 import com.song7749.dl.base.Entities;
+import com.song7749.util.validate.ValidateGroupDelete;
+import com.song7749.util.validate.ValidateGroupInsert;
+import com.song7749.util.validate.ValidateGroupUpdate;
 
 /**
  * <pre>
@@ -40,9 +44,13 @@ public class MemberAuth extends Entities{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column
+	@NotNull(groups={ValidateGroupUpdate.class,
+			ValidateGroupDelete.class})
 	private Integer memberAuthSeq;
 
 	@Column
+	@NotNull(groups={ValidateGroupInsert.class
+			,ValidateGroupUpdate.class})
 	private Integer authCode;
 
 	@ManyToOne(fetch = FetchType.LAZY)
