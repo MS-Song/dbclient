@@ -211,7 +211,6 @@ public class DatabaseController {
 
 		List<SaveServerInfoDTO> saveList = new ArrayList<SaveServerInfoDTO>();
 		List<ModifyServerInfoDTO> modifyList = new ArrayList<ModifyServerInfoDTO>();
-		List<DeleteServerInfoDTO> deleteList = new ArrayList<DeleteServerInfoDTO>();
 		for (int i = 0; i < host.length; i++) {
 			// 생성해야 하는 경우
 			if(serverInfoSeq.length==0 || null==serverInfoSeq[i]){
@@ -234,31 +233,44 @@ public class DatabaseController {
 						driver[i],
 						charset[i],
 						port[i]));
-
-			// 삭제 하기 위해 현재 SEQ 가 존재하는 리스트를 취합한다.
-				deleteList.add(new DeleteServerInfoDTO(serverInfoSeq[i]));
 			}
 		}
 
 		logger.debug("saveList : {}",saveList);
 		logger.debug("modifyList : {}",modifyList);
-		logger.debug("deleteList : {}",deleteList);
 
+		// 추가
 		if(saveList.size()>0){
 			serverInfoManager.saveServerInfoFacade(saveList);
 		}
+		// 수정
 		if(modifyList.size()>0){
 			serverInfoManager.modifyServerInfoFacade(modifyList);
 		}
-
-		// 삭제 로직
-		serverInfoManager.deleteServerInfoFacade(
-				serverInfoManager.getPossibleDeleteServerInfoList(deleteList));
 
 		model.clear();
 		model.addAttribute("message", "서버 정보가 저장되었습니다.");
 	}
 
+	/**
+	 * 서버 정보를 삭제한다.
+	 * @param serverInfoSeq
+	 * @param request
+	 * @param model
+	 */
+	@RequestMapping(value="/deleteDatabases.json",method=RequestMethod.POST)
+	public void saveDatabases(
+			@RequestParam(value="serverInfoSeq",required=true) Integer serverInfoSeq,
+			HttpServletRequest request,
+			ModelMap model){
+
+		DeleteServerInfoDTO dto = new DeleteServerInfoDTO(serverInfoSeq);
+		serverInfoManager.deleteServerInfo(dto);
+
+		model.clear();
+		model.addAttribute("message", serverInfoSeq+" 번 정보가 삭제되었습니다.");
+
+	}
 
 	/**
 	 * 데이터 베이스 쿼리 실행

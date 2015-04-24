@@ -34,6 +34,7 @@ var databaseManageForm=function(){
 		$(document).on("click", "#rowBody input[name=delete]", function(event){
 			var targetRow = $(this).parents('.subHtml');
 			var inputs = targetRow.find('input[type!=button]');
+
 			var hasValue = false;
 			for(var i=0; i<inputs.length; i++) {
 				if ($(inputs[i]).val() != '') {
@@ -44,7 +45,18 @@ var databaseManageForm=function(){
 			if (hasValue && !confirm('작성된 내용이 있습니다. 삭제하시겠습니까?')) {
 				return;
 			}
-			targetRow.remove();
+			
+			// seq 찾기
+			var serverInfoSeq = targetRow.find("input[name='serverInfoSeq[]']").val();
+			console.log("serverInfo Seq =" + serverInfoSeq);
+			if(serverInfoSeq!=""){
+				$.post("./database/deleteDatabases.json", {"serverInfoSeq":serverInfoSeq}, function(data){
+					alert(data.result.message);
+					targetRow.remove();
+				});
+			} else {
+				targetRow.remove();
+			}
 		});
 	});
 };
@@ -95,7 +107,10 @@ $(document).ready(function(){
 						$.post("./database/saveDatabases.json", $("#databaseManageTable").serializeArray(), function(data){
 							alert(data.result.message);
 						});
-						document.location = document.location.href;
+						window.setTimeout(function(){
+							document.location = document.location.href;	
+						}, 1000)
+						
 					};
 
 				}

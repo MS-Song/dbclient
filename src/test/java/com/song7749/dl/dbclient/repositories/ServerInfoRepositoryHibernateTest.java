@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.junit.Before;
@@ -16,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 
@@ -39,6 +42,7 @@ public class ServerInfoRepositoryHibernateTest {
 	public void CURDFasade() throws Exception{
 		ServerInfo serverInfo = testSave();
 		testFind(serverInfo);
+		testFindServerInfoList(serverInfo);
 		testDelete(serverInfo);
 	}
 
@@ -69,7 +73,7 @@ public class ServerInfoRepositoryHibernateTest {
 		serverInfoRepository.getSesson().flush();
 
 		// then
-		logger.trace("\nseq : {}",serverInfo);
+		logger.trace("\nserverInfo : {}",serverInfo);
 	}
 
 	public ServerInfo testFind(ServerInfo serverInfo) throws Exception {
@@ -79,5 +83,19 @@ public class ServerInfoRepositoryHibernateTest {
 		assertThat(serverInfo.getServerInfoSeq(), is(returnInfo.getServerInfoSeq()));
 
 		return returnInfo;
+	}
+
+
+	public void testFindServerInfoList(ServerInfo serverInfo) throws Exception {
+		// give
+		FindServerInfoListDTO dto = new FindServerInfoListDTO();
+		dto.setAccount(serverInfo.getAccount());
+		dto.setHost(serverInfo.getHost());
+		dto.setSchemaName(serverInfo.getSchemaName());
+
+		// when
+		List<ServerInfo> infoList = serverInfoRepository.findServerInfoList(dto);
+		// then
+		logger.trace("\ninfoList : {}",infoList);
 	}
 }

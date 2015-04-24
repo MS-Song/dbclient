@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
-import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,22 +46,31 @@ public class ServerInfoManagerImplTest {
 	ModifyServerInfoDTO modifyServerInfoDTO;
 	@Before
 	public void setup() throws InvalidPropertiesFormatException, IOException{
-		Properties prop = new Properties();
-		prop.loadFromXML(ClassLoader.getSystemResource("properties/dbProperties.xml").openStream());
-		saveServerInfoDTO = new SaveServerInfoDTO(prop.getProperty("dbClient.database.host")
-				, prop.getProperty("dbClient.database.schemaName")
-				, prop.getProperty("dbClient.database.username")
-				, prop.getProperty("dbClient.database.password")
+		// give
+		ServerInfo serverInfo = new ServerInfo("10.20.10.41"
+				, "dbclient"
+				, "dbclient"
+				, "1234"
 				, DatabaseDriver.mysql
 				, "UTF-8"
 				,"3306");
-		modifyServerInfoDTO = new ModifyServerInfoDTO(1,prop.getProperty("dbClient.database.host")
-				, prop.getProperty("dbClient.database.schemaName")
-				, prop.getProperty("dbClient.database.username")
-				, prop.getProperty("dbClient.database.password")
+
+
+		saveServerInfoDTO = new SaveServerInfoDTO("10.20.10.41"
+				, "dbclient"
+				, "dbclient"
+				, "1234"
 				, DatabaseDriver.mysql
 				, "UTF-8"
-				,"3316");
+				,"3306");
+		modifyServerInfoDTO = new ModifyServerInfoDTO(1
+				, "10.20.10.42"
+				, "dbclient"
+				, "dbclient"
+				, "1234"
+				, DatabaseDriver.mysql
+				, "UTF-8"
+				,"3306");
 	}
 
 	@Before
@@ -83,12 +91,11 @@ public class ServerInfoManagerImplTest {
 	@Test
 	public void testModifyServerInfo() throws Exception {
 		// give
-		Properties prop = new Properties();
-		prop.loadFromXML(ClassLoader.getSystemResource("properties/dbProperties.xml").openStream());
-		ServerInfo serverInfo = new ServerInfo(prop.getProperty("dbClient.database.host")
-				, prop.getProperty("dbClient.database.schemaName")
-				, prop.getProperty("dbClient.database.username")
-				, prop.getProperty("dbClient.database.password")
+		// give
+		ServerInfo serverInfo = new ServerInfo("10.20.10.41"
+				, "dbclient"
+				, "dbclient"
+				, "1234"
 				, DatabaseDriver.mysql
 				, "UTF-8"
 				,"3306");

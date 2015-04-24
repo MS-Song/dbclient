@@ -2,8 +2,6 @@ package com.song7749.dl.dbclient.service;
 
 import static com.song7749.dl.dbclient.service.ServerInfoConvert.convert;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +70,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	}
 
 	@Override
-	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Transactional(value = "dbClientTransactionManager")
 	public void deleteServerInfo(DeleteServerInfoDTO dto) {
 		logger.debug("delete serverInfo {}",dto);
 		serverInfoRepository.delete(new ServerInfo(dto.getServerInfoSeq()));
@@ -115,36 +113,6 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 		for (DeleteServerInfoDTO deleteServerInfoDTO : list) {
 			deleteServerInfo(deleteServerInfoDTO);
 		}
-	}
-
-	@Override
-	@Transactional(value = "dbClientTransactionManager")
-	public List<DeleteServerInfoDTO> getPossibleDeleteServerInfoList(List<DeleteServerInfoDTO> list){
-		List<ServerInfoVO> findList = findServerInfoList(new FindServerInfoListDTO());
-		Iterator<ServerInfoVO> iterator = findList.iterator();
-
-		logger.debug("find All serverInfo List {}",findList);
-
-		// 존재하는 것은 제외하기 위해 처리 -- 삭제될 리스트만 남긴다.
-		for(DeleteServerInfoDTO dto : list){
-			for(;iterator.hasNext();){
-				if(iterator.next().getServerInfoSeq().equals(
-								dto.getServerInfoSeq())){
-
-					iterator.remove();
-				}
-			}
-		}
-
-		// 삭제되고 남은 리스트 형 변환
-		List<DeleteServerInfoDTO> deleteList = new ArrayList<DeleteServerInfoDTO>();
-		for(ServerInfoVO vo : findList){
-			deleteList.add(new DeleteServerInfoDTO(vo.getServerInfoSeq()));
-		}
-
-		logger.debug("delete serverInfo List {}",deleteList);
-
-		return deleteList;
 	}
 
 	@Override
