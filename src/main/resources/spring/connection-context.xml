@@ -4,46 +4,25 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
-		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
- 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+ 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
 
 	<!-- dbClient -->
-	<bean id="dbClientMasterDatasource" class="org.apache.commons.dbcp.BasicDataSource"  destroy-method="close">  
-		<property name="driverClassName" value="${dbClient.database.driver}" />  
-		<property name="url" value="${dbClient.database.url}" />  
-		<property name="username" value="${dbClient.database.username}" />  
-		<property name="password" value="${dbClient.database.password}" />
-
-		<property name="validationQuery" value="${dbClient.database.validationQuery}" />	 	
-		<property name="validationQueryTimeout" value="${dbClient.database.validationQueryTimeout}"/>
-		<property name="defaultAutoCommit" value="${dbClient.database.defaultAutoCommit}"></property>
-		<property name="maxActive" value="${dbClient.database.maxActive}" /> 
-		<property name="initialSize" value="${dbClient.database.initialSize}" /> 
-		<property name="minIdle" value="${dbClient.database.minIdle}"/>  
-		<property name="maxIdle" value="${dbClient.database.maxIdle}" /> 
-		<property name="maxWait" value="${dbClient.database.maxWait}" /> 
-		<property name="testOnBorrow" value="${dbClient.database.testOnBorrow}"/> 			
-		<property name="testOnReturn" value="${dbClient.database.testOnReturn}"/> 				
-		<property name="testWhileIdle" value="${dbClient.database.testWhileIdle}"/> 				
-		<property name="numTestsPerEvictionRun" value="${dbClient.database.numTestsPerEvictionRun}" />		
-		<property name="minEvictableIdleTimeMillis" value="${dbClient.database.minEvictableIdleTimeMillis}"/> 
-		<property name="timeBetweenEvictionRunsMillis" value="${dbClient.database.timeBetweenEvictionRunsMillis}" />	 
-		<property name="removeAbandoned" value="${dbClient.database.removeAbandoned}"/> 
-		<property name="removeAbandonedTimeout" value="${dbClient.database.removeAbandonedTimeout}"/> 
-		<property name="logAbandoned" value="${dbClient.database.logAbandoned}"/>
-		<property name="poolPreparedStatements" value="${dbClient.database.poolPreparedStatements}"></property> 		
+	<bean id="dbClientDatasource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">  
+		<property name="driverClassName" value="${dbClient.database.driver}"/>
+		<property name="url" value="${dbClient.database.url}"/>  
 	</bean>	
 	
 	<!-- sessionFactory -->
 	<bean id="dbClientSessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dbClientMasterDatasource" />
+		<property name="dataSource" ref="dbClientDatasource" />
 		<property name="configLocation" value="classpath:/hibernate.cfg.xml" />
 		<property name="packagesToScan" value="com.song7749.dl.member,com.song7749.dl.dbclient" />
 		<property name="entityInterceptor">

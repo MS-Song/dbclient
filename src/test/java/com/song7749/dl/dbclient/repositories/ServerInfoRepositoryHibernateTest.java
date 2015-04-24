@@ -1,14 +1,16 @@
 package com.song7749.dl.dbclient.repositories;
 
-import java.io.IOException;
-import java.util.InvalidPropertiesFormatException;
-import java.util.Properties;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -23,59 +25,59 @@ import com.song7749.dl.dbclient.type.DatabaseDriver;
 @Transactional("dbClientTransactionManager")
 public class ServerInfoRepositoryHibernateTest {
 
+	Logger logger = LoggerFactory.getLogger(getClass());
+
 	@Resource
 	ServerInfoRepository serverInfoRepository;
 
-	/**
-	 * fixture
-	 */
-	ServerInfo serverInfo;
-
 	@Before
-	public void setUp() throws InvalidPropertiesFormatException, IOException{
-		Properties prop = new Properties();
-		prop.loadFromXML(ClassLoader.getSystemResource("properties/dbProperties.xml").openStream());
-		serverInfo = new ServerInfo(prop.getProperty("dbClient.database.host")
-				, prop.getProperty("dbClient.database.schemaName")
-				, prop.getProperty("dbClient.database.username")
-				, prop.getProperty("dbClient.database.password")
+	public void setUp(){
+
+	}
+
+	@Test
+	public void CURDFasade() throws Exception{
+		ServerInfo serverInfo = testSave();
+		testFind(serverInfo);
+		testDelete(serverInfo);
+	}
+
+	public ServerInfo testSave() throws Exception {
+		// give
+		ServerInfo serverInfo = new ServerInfo("10.20.10.41"
+				, "dbclient"
+				, "dbclient"
+				, "1234"
 				, DatabaseDriver.mysql
 				, "UTF-8"
 				,"3306");
-	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void testSave_validation_account() throws Exception {
-		// give
-		serverInfo.setAccount("");
-		// when // then
+
+		// when
 		serverInfoRepository.save(serverInfo);
+
+		// then
+		logger.trace("\nseq : {}",serverInfo.getServerInfoSeq());
+		assertThat(serverInfo.getServerInfoSeq(), notNullValue());
+
+		return serverInfo;
 	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void testSave_validation_charset() throws Exception {
-		// give
-		serverInfo.setCharset("");;
-		// when // then
-		serverInfoRepository.save(serverInfo);
+	public void testDelete(ServerInfo serverInfo) throws Exception {
+		// give // when
+		serverInfoRepository.delete(serverInfo);
+		serverInfoRepository.getSesson().flush();
+
+		// then
+		logger.trace("\nseq : {}",serverInfo);
 	}
 
+	public ServerInfo testFind(ServerInfo serverInfo) throws Exception {
+		// give // when
+		ServerInfo returnInfo = serverInfoRepository.find(serverInfo);
+		// then
+		assertThat(serverInfo.getServerInfoSeq(), is(returnInfo.getServerInfoSeq()));
 
-
-	@Test
-	public void testSave_로직테스트() throws Exception {
-		serverInfoRepository.save(serverInfo);
+		return returnInfo;
 	}
-
-	@Test
-	public void testDelete() throws Exception {
-		ServerInfo deleteServerInfo = new ServerInfo();
-		serverInfoRepository.delete(deleteServerInfo);
-	}
-
-	@Test
-	public void testFind() throws Exception {
-		serverInfoRepository.find(serverInfo);
-	}
-
 }

@@ -3,10 +3,10 @@ package com.song7749.app.dbclient.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.server.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,10 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.test.web.server.MockMvc;
-import org.springframework.test.web.server.MvcResult;
-import org.springframework.test.web.server.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.server.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -70,9 +70,11 @@ public class DatabaseControllerTest {
 
 	@Before
 	public void setUp() throws ClassNotFoundException, InvalidPropertiesFormatException, IOException {
-		mockMvc = MockMvcBuilders.webApplicationContextSetup(wac)
+		mockMvc=MockMvcBuilders.webAppContextSetup(wac)
 				.addFilter(new XSSFilter(), "/*")
-				.addFilter(new SiteMeshFilter(), "/*.html").build();
+				.addFilter(new SiteMeshFilter(), "/*.html")
+				.build();
+
 
 		// 서버 인포 설정
 		Properties prop = new Properties();
