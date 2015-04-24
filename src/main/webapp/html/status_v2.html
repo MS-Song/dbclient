@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GHS API Status Report</title>
+<meta http-equiv="refresh" content="300; URL=/html/status_v2.html">
+<link href='css/global_v2.css' rel='stylesheet' type='text/css' />
+<link href='lib/jquery-ui-1.11.2/jquery-ui.min.css' media='screen' rel='stylesheet' type='text/css' />
+<script src='lib/jquery-1.8.0.min.js' type='text/javascript'></script>
+<script src='lib/jquery-ui-1.11.2/jquery-ui.min.js' type='text/javascript'></script>
+<script src='lib/utils.js' type='text/javascript'></script>
+<script type="text/javascript">
+
+var changePage = 0;
+
+//숫자 타입에서 쓸 수 있도록 format() 함수 추가
+Number.prototype.format = function(){
+    if(this==0) return 0;
+ 
+    var reg = /(^[+-]?\d+)(\d{3})/;
+    var n = (this + '');
+ 
+    while (reg.test(n)) n = n.replace(reg, '$1' + ',' + '$2');
+ 
+    return n;
+};
+ 
+// 문자열 타입에서 쓸 수 있도록 format() 함수 추가
+String.prototype.format = function(){
+    var num = parseFloat(this);
+    if( isNaN(num) ) return "0";
+ 
+    return num.format();
+};
+
+// 시간 이벤트 객체
+var timeInterval;
+//제휴사 명칭을 조회하여 화면을 생성한다.
+var getAffiliatedStType=function(){
+	$.getJSON("/affiliated/affiliatedStType", function( data ) {
+
+		var item_order="";
+		var cs="";
+		$(data.result).each(function(){
+			item_order+="<tr>";
+			item_order+="<td><img src='images/"+this.name+".png' /></td>";
+			item_order+="<td id='"+this.name+"_orderPriceTotal'></td>";
+			item_order+="<td id='"+this.name+"_orderCount'></td>";
+			item_order+="<td id='"+this.name+"_successItemCount'></td>";
+			item_order+="<td id='"+this.name+"_failItemCount'></td>";
+			item_order+="</tr>";
+			
+			cs+="<tr>";
+			cs+="<td><img src='images/"+this.name+".png'/></td>";
+			cs+="<td id='"+this.name+"_emergencyMessageCount'></td>";
+			cs+="<td id='"+this.name+"_emergencyMessageAnswerCount'></td>";
+			cs+="<td id='"+this.name+"_normalMessageCount'></td>";
+			cs+="<td id='"+this.name+"_normalMessageAnswerCount'></td>";
+			cs+="</tr>";
+		});
+		$("#item_order_report_put").append(item_order);
+		$("#cs_report_put").append(cs);
+		
+		// 제휴 데이터 호출 로직을 time 베이스로 실행
+		timeInterval = window.setInterval(getReport, 3000);		
+	});
+};
+
+// 제휴사 리포트를 조회한다.
+var getReport = function(){
+	
+	var url = window.location.hostname;
+	
+	// 30초 주기로 GMO와 GHS를 번갈아간다.
+	if(getParameter('change') == 'Y' && changePage > 10){
+		if(url.indexOf('localhost')>=0){
+			location.href = "http://localhost:8080/html/status_v2.html?change=Y";
+		}
+		else if(url.indexOf('10.10.13.119')>=0){
+			location.href = "http://10.10.13.119:18085/html/status_v2.html?change=Y";
+		}
+		else {
+			location.href = "http://10.10.38.154:9082/html/status_v2.html?change=Y";
+		}
+	}
+	
+	$.getJSON("/affiliated/monitor/itemReport", function( data ) {
+		$(data.result).each(function(){
+			// 효과 
+			effect($("#"+this.affiliatedStType+"_successItemCount")	,this.successItemCount.format()	,$("#"+this.affiliatedStType+"_successItemCount").html());
+			effect($("#"+this.affiliatedStType+"_failItemCount")	,this.failItemCount.format()	,$("#"+this.affiliatedStType+"_failItemCount").html());			
+			
+			// 데이터 출력
+			$("#"+this.affiliatedStType+"_successItemCount").html(this.successItemCount.format());
+			$("#"+this.affiliatedStType+"_failItemCount").html(this.failItemCount.format());
+		});
+	});
+
+	$.getJSON("/affiliated/monitor/orderReport", function( data ) {
+		$(data.result).each(function(){
+			// 금액이 1억 넘을 경우 100만 단위로 변경 함
+			var price = this.orderPriceTotal.toString();
+			this.orderPriceTotal = price.substring(0,price.length-4);
+			// 효과 
+			effect($("#"+this.affiliatedStType+"_orderPriceTotal")	,this.orderPriceTotal.format()	,$("#"+this.affiliatedStType+"_orderPriceTotal").html());
+			effect($("#"+this.affiliatedStType+"_orderCount")		,this.orderCount.format()		,$("#"+this.affiliatedStType+"_orderCount").html());			
+
+			// 데이터 출력
+			$("#"+this.affiliatedStType+"_orderPriceTotal").html(this.orderPriceTotal.format());
+			$("#"+this.affiliatedStType+"_orderCount").html(this.orderCount.format());
+		});
+	});
+
+	$.getJSON("/affiliated/monitor/csReport", function( data ) {
+		$(data.result).each(function(){
+			// 효과 
+			effect($("#"+this.affiliatedStType+"_emergencyMessageCount"),		this.emergencyMessageCount.format()		,$("#"+this.affiliatedStType+"_emergencyMessageCount").html());
+			effect($("#"+this.affiliatedStType+"_emergencyMessageAnswerCount"),	this.emergencyMessageAnswerCount.format(),$("#"+this.affiliatedStType+"_emergencyMessageAnswerCount").html());			
+			effect($("#"+this.affiliatedStType+"_normalMessageCount"),			this.normalMessageCount.format()		,$("#"+this.affiliatedStType+"_normalMessageCount").html());
+			effect($("#"+this.affiliatedStType+"_normalMessageAnswerCount"),	this.normalMessageAnswerCount.format()	,$("#"+this.affiliatedStType+"_normalMessageAnswerCount").html());			
+
+			// 데이터 출력
+			$("#"+this.affiliatedStType+"_emergencyMessageCount").html(this.emergencyMessageCount.format());
+			$("#"+this.affiliatedStType+"_emergencyMessageAnswerCount").html(this.emergencyMessageAnswerCount.format());
+			$("#"+this.affiliatedStType+"_normalMessageCount").html(this.normalMessageCount.format());
+			$("#"+this.affiliatedStType+"_normalMessageAnswerCount").html(this.normalMessageAnswerCount.format());
+		});
+	});
+	
+	changePage++;
+}
+
+// 변경 효과
+var effect = function(obj , after, before){
+	if(before != after){
+		$(obj).animate({
+	         backgroundColor: "#ff9e9b"	         
+	       }, 500 );
+		 $(obj).animate({
+	         backgroundColor: "#ffffff"
+	      }, 500 );
+	}
+};
+
+getAffiliatedStType();
+
+// 파라미터를 조회한다.
+var getParameter = function( name )
+{
+    var rtnval = '';
+    var nowAddress = unescape(location.href);
+    var parameters = (nowAddress.slice(nowAddress.indexOf('?')+1,nowAddress.length)).split('&');
+
+    for(var i = 0 ; i < parameters.length ; i++)
+    {
+        var varName = parameters[i].split('=')[0];
+        if(varName.toUpperCase() == name.toUpperCase())
+        {
+            rtnval = parameters[i].split('=')[1];
+            break;
+        }
+    }
+    return rtnval;
+}
+
+</script>
+</head>
+<body>
+	<div class="header">
+		<div id="topMenu">
+			<table>
+				<tr>
+					<td valign="top">
+						<div id="logo"></div>
+						<div id="marketPlaceList" style="text-align: left;">
+							<h1> GHS API STATUS REPORT </h1>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="topPadding"></div>
+	</div>
+	<div id="wrapper-outer">
+		<div id="wrapper" align="center">
+			<table class="table-big" witdh="100%" id="tbl_report">
+				<thead>
+					<tr>
+						<th rowspan="2" width="15%">제휴사</th>
+						<th colspan="2">주문(만원)</th>
+						<th colspan="2">상품</th>
+					</tr>
+					<tr>
+						<th>금액</th>
+						<th>건수</th>
+						<th>연동</th>
+						<th>중지</th>									
+					</tr>
+				</thead>
+				<tbody id="item_order_report_put">
+				<tbody>
+				<thead>
+					<tr>
+						<th rowspan="2" width="15%">제휴사</th>
+						<th colspan="2">긴급메세지</th>
+						<th colspan="2">일반메세지</th>
+					</tr>
+					<tr>
+						<th>문의</th>
+						<th>답변</th>
+						<th>문의</th>
+						<th>답변</th>									
+					</tr>
+				</thead>
+				<tbody id="cs_report_put">
+				<tbody>
+			</table>
+		</div>
+	</div>
+	<div id="bottomMenu">
+		<table>
+			<tr>
+				<td>Copyright Song7749 Co., Ltd. All Rights Reserved.</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
