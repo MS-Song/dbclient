@@ -49,23 +49,27 @@ public class ValidateInterceptor<T> implements MethodInterceptor{
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-
+		// AOP Start
 		logger.trace(logFormat(invocation.getMethod().toString(), "Validate AOP START"));
-
 
 		// 파라메터가 존재하는 경우
 		if(null!=invocation.getArguments() && invocation.getArguments().length>0){
 			logger.trace(logFormat("find params , size : {}", "Validate AOP"),invocation.getArguments().length);
 
-
 			Validate validate=null;
 			// 인터페이스에 annotation 이 없는 경우 직접 객체에서 찾아야 한다.
 			if(invocation.getMethod().isAnnotationPresent(Validate.class)){
 				validate = invocation.getMethod().getAnnotation(Validate.class);
-			} else{// 해당 인스턴스에서 찾아내야 한다.
+			}
+			// 해당 인스턴스에서 찾아내야 한다.
+			else{
 				Method method = invocation.getThis().getClass().getMethod(invocation.getMethod().getName(), invocation.getMethod().getParameterTypes());
+				logger.trace(logFormat("{}"),method.getAnnotations());
 				validate = method.getAnnotation(Validate.class);
 			}
+
+
+			logger.trace(logFormat("{}"),validate);
 
 			// 파라메터에 null 이 허용되는지..
 			boolean nullAble = false;

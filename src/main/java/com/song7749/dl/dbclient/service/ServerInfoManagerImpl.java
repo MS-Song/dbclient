@@ -72,7 +72,6 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Override
 	@Transactional(value = "dbClientTransactionManager")
 	public void deleteServerInfo(DeleteServerInfoDTO dto) {
-		logger.debug("delete serverInfo {}",dto);
 		serverInfoRepository.delete(new ServerInfo(dto.getServerInfoSeq()));
 	}
 

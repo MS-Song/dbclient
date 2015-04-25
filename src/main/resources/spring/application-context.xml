@@ -33,12 +33,14 @@
 	<import resource="connection-context.xml" />
 
 	<!-- validate -->
-	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
-	<bean id="validatorAdvice" class="com.song7749.util.validate.ValidateInterceptor">
-		<property name="validatorFactoryBean" ref="validator" />
-	</bean>
 	<bean id="validatorAdvisor" class="org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
-		<property name="advice" ref="validatorAdvice"/>
+		<property name="advice">
+			<bean class="com.song7749.util.validate.ValidateInterceptor">
+				<property name="validatorFactoryBean">
+					<bean class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+				</property>
+			</bean>
+		</property>
 		<property name="expression" value="@annotation(com.song7749.util.validate.annotation.Validate))"/>
 	</bean>
 

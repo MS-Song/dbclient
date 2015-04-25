@@ -15,6 +15,7 @@ import com.song7749.dl.base.Entities;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.util.validate.ValidateGroupDelete;
 import com.song7749.util.validate.ValidateGroupInsert;
+import com.song7749.util.validate.ValidateGroupSelect;
 import com.song7749.util.validate.ValidateGroupUpdate;
 
 @Entity
@@ -26,7 +27,7 @@ public class ServerInfo extends Entities {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column
-	@NotNull(groups={ValidateGroupUpdate.class,ValidateGroupDelete.class})
+	@NotNull(groups={ValidateGroupUpdate.class,ValidateGroupDelete.class,ValidateGroupSelect.class})
 	private Integer serverInfoSeq;
 
 	@Column
