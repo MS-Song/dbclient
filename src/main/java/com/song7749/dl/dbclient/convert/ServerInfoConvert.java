@@ -1,4 +1,4 @@
-package com.song7749.dl.dbclient.service;
+package com.song7749.dl.dbclient.convert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,8 @@ import com.song7749.dl.dbclient.vo.ServerInfoVO;
 /**
  * <pre>
  * Class Name : ServerInfoConvert.java
- * Description : convert
+ * Description : 서버 관련 정보 convert
+ * entity 또는 MAP 객체를 VO 로 치환 한다.
  *
  *
  *  Modification Information
@@ -24,6 +25,11 @@ import com.song7749.dl.dbclient.vo.ServerInfoVO;
  */
 public class ServerInfoConvert {
 
+	/**
+	 * ServerInfo to ServerInfoVO
+	 * @param serverInfo
+	 * @return ServerInfoVO
+	 */
 	public static ServerInfoVO convert(ServerInfo serverInfo){
 		if(null==serverInfo){
 			return null;
@@ -39,6 +45,11 @@ public class ServerInfoConvert {
 				serverInfo.getPort());
 	}
 
+	/**
+	 * List<ServerInfo> to List<ServerInfoVO>
+	 * @param serverInfoList
+	 * @return List<ServerInfoVO>
+	 */
 	public static List<ServerInfoVO> convert(List<ServerInfo> serverInfoList){
 		if(null==serverInfoList){
 			return null;

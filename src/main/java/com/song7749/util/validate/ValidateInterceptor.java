@@ -1,6 +1,6 @@
 package com.song7749.util.validate;
 
-import static com.song7749.util.LogMessageFormatter.logFormat;
+import static com.song7749.util.LogMessageFormatter.format;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import com.song7749.util.validate.annotation.Validate;
-
-
 
 /**
  * <pre>
@@ -39,8 +37,14 @@ import com.song7749.util.validate.annotation.Validate;
  */
 
 public class ValidateInterceptor<T> implements MethodInterceptor{
+	/**
+	 * logger
+	 */
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+	/**
+	 *  validate Factory Bean application context DI
+	 */
 	protected Validator validatorFactoryBean;
 
 	public void setValidatorFactoryBean(LocalValidatorFactoryBean validatorFactoryBean){
@@ -49,90 +53,86 @@ public class ValidateInterceptor<T> implements MethodInterceptor{
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
+		// validate write logger
+		if(logger.isTraceEnabled()){
+			String[] log = {
+					invocation.getMethod().getName()
+					,String.valueOf(invocation.getArguments().length)
+			};
+			logger.trace(format("mehtod : {}\nparamsize:{}", "Validate AOP"),log);
+		}
 
-		logger.trace(logFormat(invocation.getMethod().toString(), "Validate AOP START"));
-
-
-		// 파라메터가 존재하는 경우
-		if(null!=invocation.getArguments() && invocation.getArguments().length>0){
-			logger.trace(logFormat("find params , size : {}", "Validate AOP"),invocation.getArguments().length);
-
+		// has parameter
+		if(null!=invocation.getArguments()
+				&& invocation.getArguments().length>0){
 
 			Validate validate=null;
-			// 인터페이스에 annotation 이 없는 경우 직접 객체에서 찾아야 한다.
+			// interface has annotation
 			if(invocation.getMethod().isAnnotationPresent(Validate.class)){
 				validate = invocation.getMethod().getAnnotation(Validate.class);
-			} else{// 해당 인스턴스에서 찾아내야 한다.
+			} else{// has instance
 				Method method = invocation.getThis().getClass().getMethod(invocation.getMethod().getName(), invocation.getMethod().getParameterTypes());
 				validate = method.getAnnotation(Validate.class);
 			}
 
-			// 파라메터에 null 이 허용되는지..
-			boolean nullAble = false;
-			// group list 조회
-			Class<? extends ValidateGroupBase>[] baseList=null;
-			String[] properties = null;
-
 			if(null != validate){
-				// 그룹이 존재할 경우 그룹값일 추가
-				baseList=validate.VG();
-				// 파라메터에  null 이 허용되는지 확인
-				nullAble=validate.nullable();
-				// 필드 프로퍼티가 들어 있는 경우
-				properties=validate.property();
-			}
-			// 파라메터 검증
-			for(Object o:invocation.getArguments()){
-				// 파라메터에 null 이 허용되지 않는데, 파라메터가 null 인 경우에는
-				if(nullAble==false
-						&& null==o){
-					throw new IllegalArgumentException("파라메터는  null 이 아니어야 합니다.");
-				}
 
-				Set<ConstraintViolation<Object>> i= null;
-				// 프로퍼티 설정이 있는 경우
-				if(null!=properties
-						&& properties.length>0){
-					Set<ConstraintViolation<Object>> propertySet=null;
-					for(String property : properties){
-						// 프로퍼티 값이 존재하면..
-						if(null!=property && ""!=property){
-							if(null==baseList){
-								propertySet=validatorFactoryBean.validateProperty(o, property);
-							} else{
-								propertySet=validatorFactoryBean.validateProperty(o, property, baseList);
+				// validate group
+				Class<? extends ValidateGroupBase>[] baseList=validate.VG();
+				// property has
+				String[] properties = validate.property();
+
+				// start validate
+				for(Object o:invocation.getArguments()){
+					// parameter is not null and object us null
+					if(validate.nullable() == false && o == null){
+						throw new IllegalArgumentException(" parameter is not null");
+					}
+
+					Set<ConstraintViolation<Object>> cv= null;
+
+					// has property
+					if(null!=properties && properties.length>0){
+
+						Set<ConstraintViolation<Object>> propertySet=null;
+
+						for(String property : properties){
+							// 프로퍼티 값이 존재하면..
+							if(null!=property && ""!=property){
+								if(null==baseList){
+									propertySet=validatorFactoryBean.validateProperty(o, property);
+								} else{
+									propertySet=validatorFactoryBean.validateProperty(o, property, baseList);
+								}
+							}
+							// validate 결과가 존재하면..
+							if(null!=propertySet
+									&& propertySet.size()>0){
+								if(cv==null){
+									cv=propertySet;
+								} else{
+									cv.addAll(propertySet);
+								}
 							}
 						}
-						// validate 결과가 존재하면..
-						if(null!=propertySet
-								&& propertySet.size()>0){
-							if(i==null){
-								i=propertySet;
-							} else{
-								i.addAll(propertySet);
-							}
+					} else{ // not has property
+						if(null==baseList){
+							cv=validatorFactoryBean.validate(o);
+						} else {
+							cv=validatorFactoryBean.validate(o,baseList);
 						}
 					}
-				} else{ // 프로퍼티 설정이 없는 경우
-					if(null==baseList){
-						i=validatorFactoryBean.validate(o);
-					} else {
-						i=validatorFactoryBean.validate(o,baseList);
-					}
-				}
-				if(null!=i && i.size()>0){
-					// TODO 더 좋은 방법이 있으면 고친다.
-					for(ConstraintViolation c:i){
-						// 프록시 객체에서 발생한 에러를 건너뛴
-						if(c.getRootBeanClass().getName().indexOf("_$$_javassist_")==-1){
-							throw new IllegalArgumentException(c.getPropertyPath() + " 은(는) " + c.getMessage());
+					if(null!=cv && cv.size()>0){
+						for(ConstraintViolation<?> c:cv){
+							// 프록시 객체에서 발생한 에러를 건너뛴
+							if(c.getRootBeanClass().getName().indexOf("_$$_javassist_")==-1){
+								throw new IllegalArgumentException(c.getPropertyPath() + " 은(는) " + c.getMessage());
+							}
 						}
 					}
 				}
 			}
 		}
-		logger.trace(logFormat(invocation.getMethod().toString(), "Validate AOP END"));
-
 		try {
 			return invocation.proceed();
 		} catch (javax.validation.ConstraintViolationException e) {

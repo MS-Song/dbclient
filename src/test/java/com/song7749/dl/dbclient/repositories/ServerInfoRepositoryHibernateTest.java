@@ -3,6 +3,7 @@ package com.song7749.dl.dbclient.repositories;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class ServerInfoRepositoryHibernateTest {
 		ServerInfo serverInfo = testSave();
 		testFind(serverInfo);
 		testFindServerInfoList(serverInfo);
+		testUpdate(serverInfo);
 		testDelete(serverInfo);
 	}
 
@@ -61,19 +63,26 @@ public class ServerInfoRepositoryHibernateTest {
 		serverInfoRepository.save(serverInfo);
 
 		// then
-		logger.trace("\nseq : {}",serverInfo.getServerInfoSeq());
 		assertThat(serverInfo.getServerInfoSeq(), notNullValue());
 
 		return serverInfo;
 	}
 
+	public void testUpdate(ServerInfo serverInfo) throws Exception {
+		// give
+		serverInfo.setPassword("5678");
+		// when
+		serverInfoRepository.update(serverInfo);
+		// then
+		assertTrue(true);
+	}
+
+
 	public void testDelete(ServerInfo serverInfo) throws Exception {
 		// give // when
 		serverInfoRepository.delete(serverInfo);
-		serverInfoRepository.getSesson().flush();
-
 		// then
-		logger.trace("\nserverInfo : {}",serverInfo);
+		assertTrue(true);
 	}
 
 	public ServerInfo testFind(ServerInfo serverInfo) throws Exception {
@@ -81,10 +90,8 @@ public class ServerInfoRepositoryHibernateTest {
 		ServerInfo returnInfo = serverInfoRepository.find(serverInfo);
 		// then
 		assertThat(serverInfo.getServerInfoSeq(), is(returnInfo.getServerInfoSeq()));
-
 		return returnInfo;
 	}
-
 
 	public void testFindServerInfoList(ServerInfo serverInfo) throws Exception {
 		// give

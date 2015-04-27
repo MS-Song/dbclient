@@ -1,6 +1,6 @@
 package com.song7749.dl.dbclient.service;
 
-import static com.song7749.util.LogMessageFormatter.logFormat;
+import static com.song7749.util.LogMessageFormatter.format;
 import static com.song7749.util.StringUtils.htmlentities;
 
 import java.sql.Connection;
@@ -26,7 +26,21 @@ import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.TableVO;
-
+/**
+ * <pre>
+ * Class Name : DBclientDataSourceManagerImpl.java
+ * Description : DBclientDataSourceManager implements class
+*
+*  Modification Information
+*  Modify Date 		Modifier	Comment
+*  -----------------------------------------------
+*  2015. 4. 27.		song7749	신규작성
+*
+* </pre>
+*
+* @author song7749
+* @since 2015. 4. 27.
+*/
 @Service("dbClientDataSourceManager")
 public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager {
 
@@ -49,9 +63,9 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		keyServerInfo.setCharset(serverInfo.getCharset());
 
 		if (dataSourceMap.containsKey(keyServerInfo)) {
-			logger.debug(logFormat("Return Saved Connection!"));
+			logger.debug(format("Return Saved Connection!"));
 		} else {
-			logger.debug(logFormat("Return New Connection!"));
+			logger.debug(format("Return New Connection!"));
 
 			BasicDataSource bds = new BasicDataSource();
 			bds.setDriverClassName(serverInfo.getDriver().getDriverName());
@@ -194,7 +208,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		ResultSet rs = null;
 		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 
-		logger.debug(logFormat("excute Query : {} ","databaseInfo"),executeQuery);
+		logger.debug(format("excute Query : {} ","databaseInfo"),executeQuery);
 		try {
 			ps = conn.prepareStatement(executeQuery);
 			rs = ps.executeQuery();
@@ -227,6 +241,14 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		return list;
 	}
 
+	/**
+	 * Query를 실행한다.
+	 * @param conn
+	 * @param executeQuery
+	 * @param isAutoCommit
+	 * @return int affected rows
+	 * @throws SQLException
+	 */
 	private int executeQuery(Connection conn,String executeQuery,boolean isAutoCommit) throws SQLException{
 		PreparedStatement ps = null;
 		int affectedRows=0;

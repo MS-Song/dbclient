@@ -1,6 +1,6 @@
 package com.song7749.dl.dbclient.service;
 
-import static com.song7749.dl.dbclient.service.ServerInfoConvert.convert;
+import static com.song7749.dl.dbclient.convert.ServerInfoConvert.convert;
 
 import java.util.List;
 import java.util.Map;

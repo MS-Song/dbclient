@@ -9,7 +9,7 @@ public class LogMessageFormatter {
 	 * @param message
 	 * @return String logMessage
 	 */
-	public static String logFormat(String message){
+	public static String format(String message){
 		return LogMessageFormatter.makeFormat(message, "");
 	}
 
@@ -20,7 +20,7 @@ public class LogMessageFormatter {
 	 * @param title
 	 * @return String logMessage
 	 */
-	public static String logFormat(String message,String title){
+	public static String format(String message,String title){
 		return LogMessageFormatter.makeFormat(message, title);
 	}
 
