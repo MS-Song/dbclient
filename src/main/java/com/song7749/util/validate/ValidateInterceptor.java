@@ -70,11 +70,11 @@ public class ValidateInterceptor<T> implements MethodInterceptor{
 			// interface has annotation
 			if(invocation.getMethod().isAnnotationPresent(Validate.class)){
 				validate = invocation.getMethod().getAnnotation(Validate.class);
+
 			} else{// has instance
 				Method method = invocation.getThis().getClass().getMethod(invocation.getMethod().getName(), invocation.getMethod().getParameterTypes());
 				validate = method.getAnnotation(Validate.class);
 			}
-
 			if(null != validate){
 
 				// validate group

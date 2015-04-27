@@ -15,6 +15,7 @@ import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.util.validate.ValidateGroupDelete;
 import com.song7749.util.validate.ValidateGroupInsert;
+import com.song7749.util.validate.ValidateGroupSelect;
 import com.song7749.util.validate.ValidateGroupUpdate;
 import com.song7749.util.validate.annotation.Validate;
 
@@ -35,24 +36,25 @@ public class ServerInfoRepositoryHibernate implements ServerInfoRepository{
 	}
 
 	@Override
-	@Validate(VG={ValidateGroupInsert.class})
+	@Validate(nullable=false,VG={ValidateGroupInsert.class})
 	public void save(ServerInfo serverInfo) {
 		getSesson().save(serverInfo);
 	}
 
 	@Override
-	@Validate(VG={ValidateGroupUpdate.class})
+	@Validate(nullable=false,VG={ValidateGroupUpdate.class})
 	public void update(ServerInfo serverInfo) {
 		getSesson().update(serverInfo);
 	}
 
 	@Override
-	@Validate(VG={ValidateGroupDelete.class})
+	@Validate(nullable=false,VG={ValidateGroupDelete.class})
 	public void delete(ServerInfo serverInfo) {
 		getSesson().delete(serverInfo);
 	}
 
 	@Override
+	@Validate(nullable=false,VG={ValidateGroupSelect.class})
 	public ServerInfo find(ServerInfo serverInfo) {
 		return 	(ServerInfo)getSesson().byId(ServerInfo.class).load(serverInfo.getServerInfoSeq());
 	}

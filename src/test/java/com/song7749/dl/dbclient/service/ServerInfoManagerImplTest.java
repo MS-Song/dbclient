@@ -63,6 +63,7 @@ public class ServerInfoManagerImplTest {
 				, DatabaseDriver.mysql
 				, "UTF-8"
 				,"3306");
+
 		modifyServerInfoDTO = new ModifyServerInfoDTO(1
 				, "10.20.10.42"
 				, "dbclient"
@@ -91,7 +92,6 @@ public class ServerInfoManagerImplTest {
 	@Test
 	public void testModifyServerInfo() throws Exception {
 		// give
-		// give
 		ServerInfo serverInfo = new ServerInfo("10.20.10.41"
 				, "dbclient"
 				, "dbclient"
@@ -99,6 +99,7 @@ public class ServerInfoManagerImplTest {
 				, DatabaseDriver.mysql
 				, "UTF-8"
 				,"3306");
+
 		given(serverInfoRepository.find(any(ServerInfo.class))).willReturn(serverInfo);
 		// when
 		serverInfoManager.modifyServerInfo(modifyServerInfoDTO);
