@@ -56,7 +56,7 @@ public class ValidateInterceptor<T> implements MethodInterceptor{
 		// validate write logger
 		if(logger.isTraceEnabled()){
 			String[] log = {
-					invocation.getMethod().getName()
+					invocation.getMethod().toString()
 					,String.valueOf(invocation.getArguments().length)
 			};
 			logger.trace(format("mehtod : {}\nparamsize:{}", "Validate AOP"),log);
