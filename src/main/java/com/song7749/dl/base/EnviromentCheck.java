@@ -8,6 +8,21 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <pre>
+ * Class Name : EnviromentCheck.java
+ * Description : 환경 변수 체크
+*
+*  Modification Information
+*  Modify Date 		Modifier	Comment
+*  -----------------------------------------------
+*  2015. 4. 28.		song7749	신규작성
+*
+* </pre>
+*
+* @author song7749
+* @since 2015. 4. 28.
+*/
 public class EnviromentCheck {
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());

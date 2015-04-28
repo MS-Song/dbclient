@@ -14,6 +14,7 @@ import com.song7749.util.validate.annotation.Validate;
  * <pre>
  * Class Name : Repository.java
  * Description : Repository 인터페이스
+ * 모든 Repository 는 Repository 인터페이스를 구현해야 한다.
  *
  *
  *  Modification Information

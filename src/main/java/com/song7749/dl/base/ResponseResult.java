@@ -5,6 +5,21 @@ import java.sql.Time;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * <pre>
+ * Class Name : ResponseResult.java
+ * Description : 컨트롤러에서 호출되는 모든 기능의 result data 를 wrapping 하여 처리한다.
+*
+*  Modification Information
+*  Modify Date 		Modifier	Comment
+*  -----------------------------------------------
+*  2015. 4. 28.		song7749	신규작성
+*
+* </pre>
+*
+* @author song7749
+* @since 2015. 4. 28.
+*/
 @XStreamAlias("response")
 public class ResponseResult extends BaseObject {
 

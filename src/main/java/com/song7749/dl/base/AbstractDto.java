@@ -1,6 +1,22 @@
 package com.song7749.dl.base;
 
-public abstract class AbstractDto extends BaseObject implements Dto{
+/**
+ * <pre>
+ * Class Name : AbstractDto.java
+ * Description : 모돈 DTO 는 AbstractDto 를 구현해야 한다.
+ *
+ *
+ *  Modification Information
+ *  Modify Date 		Modifier	Comment
+ *  -----------------------------------------------
+ *  2015. 4. 28.		song7749	신규작성
+ *
+ * </pre>
+ *
+ * @author song7749
+ * @since 2015. 4. 28.
+ */
+public abstract class AbstractDto extends BaseObject implements Dto {
 
 	private static final long serialVersionUID = 8863605294397638654L;
 
@@ -13,15 +29,11 @@ public abstract class AbstractDto extends BaseObject implements Dto{
 	 * offset.<br/>
 	 */
 	private Long offset = 0L;
-	/**
-	 * cache 사용 여부 .<br/>
-	 * 캐시를 사용할 경우 true 로 값을 설정 한다 .<br/>
-	 */
-	private final boolean useCache=false;
+
 	/**
 	 * limit 사용 여부 .<br/>
 	 */
-	private boolean useLimit=true;
+	private boolean useLimit = true;
 
 	/**
 	 * @return the limit
@@ -29,20 +41,25 @@ public abstract class AbstractDto extends BaseObject implements Dto{
 	public Long getLimit() {
 		return limit;
 	}
+
 	/**
-	 * @param limit the limit to set
+	 * @param limit
+	 *            the limit to set
 	 */
 	public void setLimit(Long limit) {
 		this.limit = limit;
 	}
+
 	/**
 	 * @return the offset
 	 */
 	public Long getOffset() {
 		return offset;
 	}
+
 	/**
-	 * @param offset the offset to set
+	 * @param offset
+	 *            the offset to set
 	 */
 	public void setOffset(Long offset) {
 		this.offset = offset;
@@ -54,8 +71,10 @@ public abstract class AbstractDto extends BaseObject implements Dto{
 	public boolean isUseLimit() {
 		return useLimit;
 	}
+
 	/**
-	 * @param useLimit the useLimit to set
+	 * @param useLimit
+	 *            the useLimit to set
 	 */
 	public void setUseLimit(boolean useLimit) {
 		this.useLimit = useLimit;

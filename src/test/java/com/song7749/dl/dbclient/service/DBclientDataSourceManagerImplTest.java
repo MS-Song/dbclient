@@ -1,6 +1,5 @@
 package com.song7749.dl.dbclient.service;
 
-import static com.song7749.util.LogMessageFormatter.format;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -33,7 +31,6 @@ import com.song7749.dl.dbclient.vo.TableVO;
 @TransactionConfiguration(transactionManager="dbClientTransactionManager",defaultRollback=true)
 @Transactional("dbClientTransactionManager")
 
-@Ignore	// 테스트 DB 서버가 준비되지 않아 막아 놓음. 테스트 빌드 서버가 구비되면, 해제 바람
 public class DBclientDataSourceManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -49,7 +46,7 @@ public class DBclientDataSourceManagerImplTest {
 	@Before
 	public void setUp() throws Exception {
 		// 서버 인포 설정
-		serverInfo = new ServerInfo("10.20.10.41"
+		serverInfo = new ServerInfo("127.0.0.1"
 						, "dbclient"
 						, "dbclient"
 						, "1234"
@@ -95,15 +92,15 @@ public class DBclientDataSourceManagerImplTest {
 	public void testExecuteQueryListServerInfoStringBoolean() throws Exception {
 		List<Map<String,String>> list=null;
 		List<String> queryList = new ArrayList<String>();
-		queryList.add("INSERT INTO tService SET nServiceSeq=1, sServiceName='테스트DB'");
-		queryList.add("select * from tService");
-		queryList.add("explain select * from tService");
-		queryList.add("update tService set sServiceName='테스트 DB 1'");
-		queryList.add("delete from tService where nServiceSeq=1");
+		queryList.add("INSERT INTO serverinfo SET account='dbclient' , charset='UTF-8' , driver='mysql' , host='127.0.0.1' , password='1234', port='3306', schemaName='dbclient'");
+		queryList.add("select * from serverinfo");
+		queryList.add("explain select * from serverinfo");
+		queryList.add("update serverinfo set host='locahost'");
+		queryList.add("delete from serverinfo");
 
 		for(String query:queryList){
 			list =dbClientDataSourceManager.executeQueryList(serverInfo,new ExecuteResultListDTO(query));
-			logger.debug(format("result : {} ","test code"),list);
+			assertTrue(true);
 		}
 	}
 }
