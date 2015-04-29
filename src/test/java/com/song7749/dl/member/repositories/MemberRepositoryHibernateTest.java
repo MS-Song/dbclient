@@ -1,5 +1,9 @@
 package com.song7749.dl.member.repositories;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import javax.annotation.Resource;
 
 import org.junit.Before;
@@ -12,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.member.entities.Member;
 import com.song7749.dl.member.entities.MemberAuth;
+import com.song7749.dl.member.type.AuthType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:spring/application-context.xml" })
@@ -22,20 +27,50 @@ public class MemberRepositoryHibernateTest {
 	@Resource
 	MemberRepository memberRepository;
 
-
-	/**
-	 * fixture
-	 */
-	Member member;
-	MemberAuth memberAuth;
 	@Before
 	public void setup(){
-		member=new Member("song7749", "1234", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
-		member.addMemberAuthList(new MemberAuth(1));
+	}
+
+
+	@Test
+	public void testGetSesson() throws Exception {
+		// give
+		// when
+		memberRepository.getSesson();
+		// then
+		assertTrue(true);
 	}
 
 	@Test
-	public void testSave() throws Exception {
-		memberRepository.save(member);
+	public void testGetCriteriaOf() throws Exception {
+		// give
+		// when
+		memberRepository.getCriteriaOf(Member.class);
+		// then
+		assertTrue(true);
 	}
+
+
+
+	@Test
+	public void testCURDFasade() throws Exception {
+		Member member = testSave();
+
+	}
+
+
+
+	public Member testSave() throws Exception {
+		// give
+		Member member=new Member("song7749", "1234", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
+		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
+
+		// when
+		memberRepository.save(member);
+
+		// then
+		assertThat(member.getId(), notNullValue());
+		return member;
+	}
+
 }

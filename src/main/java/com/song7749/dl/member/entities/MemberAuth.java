@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.ForeignKey;
 
 import com.song7749.dl.base.Entities;
+import com.song7749.dl.member.type.AuthType;
 import com.song7749.util.validate.ValidateGroupDelete;
 import com.song7749.util.validate.ValidateGroupInsert;
 import com.song7749.util.validate.ValidateGroupUpdate;
@@ -36,7 +37,7 @@ import com.song7749.util.validate.ValidateGroupUpdate;
  */
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"id","authCode"},name="UK_id_authCode")})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"id","authType"},name="UK_id_authType")})
 public class MemberAuth extends Entities{
 
 	private static final long serialVersionUID = 3575039257379611826L;
@@ -51,7 +52,7 @@ public class MemberAuth extends Entities{
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class
 			,ValidateGroupUpdate.class})
-	private Integer authCode;
+	private AuthType authType;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@ForeignKey(name="FK_Member_MemberAuth")
@@ -60,14 +61,26 @@ public class MemberAuth extends Entities{
 
 	public MemberAuth(){}
 
-	public MemberAuth(Integer authCode) {
-		this.authCode = authCode;
+	/**
+	 * 입력 생성자
+	 * @param authType
+	 * @param member
+	 */
+	public MemberAuth(AuthType authType) {
+		super();
+		this.authType = authType;
 	}
 
-	public MemberAuth(Integer memberAuthSeq, Integer authCode, Member member) {
+	/**
+	 * 전체 생성자
+	 * @param memberAuthSeq
+	 * @param authType
+	 * @param member
+	 */
+	public MemberAuth(Integer memberAuthSeq, AuthType authType) {
+		super();
 		this.memberAuthSeq = memberAuthSeq;
-		this.authCode = authCode;
-		this.member = member;
+		this.authType = authType;
 	}
 
 	public Integer getMemberAuthSeq() {
@@ -78,12 +91,12 @@ public class MemberAuth extends Entities{
 		this.memberAuthSeq = memberAuthSeq;
 	}
 
-	public Integer getAuthCode() {
-		return authCode;
+	public AuthType getAuthType() {
+		return authType;
 	}
 
-	public void setAuthCode(Integer authCode) {
-		this.authCode = authCode;
+	public void setAuthType(AuthType authType) {
+		this.authType = authType;
 	}
 
 	public Member getMember() {
@@ -93,5 +106,4 @@ public class MemberAuth extends Entities{
 	public void setMember(Member member) {
 		this.member = member;
 	}
-
 }

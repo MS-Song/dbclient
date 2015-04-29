@@ -52,6 +52,7 @@ public class Member extends Entities {
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class
 			,ValidateGroupUpdate.class})
+//	@ColumnTransformer( write="password(?)", read="?" )
 	private String password;
 
 	@Column

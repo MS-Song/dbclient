@@ -18,6 +18,21 @@ import com.song7749.util.validate.ValidateGroupInsert;
 import com.song7749.util.validate.ValidateGroupSelect;
 import com.song7749.util.validate.ValidateGroupUpdate;
 
+/**
+ * <pre>
+ * Class Name : ServerInfo.java
+ * Description : 서버 정보 객체
+*
+*  Modification Information
+*  Modify Date 		Modifier	Comment
+*  -----------------------------------------------
+*  2015. 4. 29.		song7749	신규작성
+*
+* </pre>
+*
+* @author song7749
+* @since 2015. 4. 29.
+*/
 @Entity
 @Table
 public class ServerInfo extends Entities {
