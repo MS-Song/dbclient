@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.song7749.dl.member.dto.FindMemberListDTO;
 import com.song7749.dl.member.entities.Member;
+import com.song7749.util.validate.ValidateGroupDelete;
 import com.song7749.util.validate.ValidateGroupInsert;
 import com.song7749.util.validate.ValidateGroupUpdate;
 import com.song7749.util.validate.annotation.Validate;
@@ -65,6 +66,7 @@ public class MemberRepositoryHibernate implements MemberRepository{
 	}
 
 	@Override
+	@Validate(VG={ValidateGroupDelete.class})
 	public void delete(Member member) {
 		getSesson().delete(member);
 	}
@@ -75,6 +77,7 @@ public class MemberRepositoryHibernate implements MemberRepository{
 	}
 
 	@Override
+	@Validate(nullable=false)
 	public List<Member> findMemberList(FindMemberListDTO dto) {
 		Criteria criteria=getCriteriaOf(Member.class);
 

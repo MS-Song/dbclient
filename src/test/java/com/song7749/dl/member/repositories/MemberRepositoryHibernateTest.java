@@ -1,8 +1,12 @@
 package com.song7749.dl.member.repositories;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -14,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.song7749.dl.member.dto.FindMemberListDTO;
 import com.song7749.dl.member.entities.Member;
 import com.song7749.dl.member.entities.MemberAuth;
 import com.song7749.dl.member.type.AuthType;
@@ -50,12 +55,12 @@ public class MemberRepositoryHibernateTest {
 		assertTrue(true);
 	}
 
-
-
 	@Test
 	public void testCURDFasade() throws Exception {
 		Member member = testSave();
-
+		testFindMemberList(member);
+		testUpdate(member);
+		testDelete(member);
 	}
 
 
@@ -69,8 +74,41 @@ public class MemberRepositoryHibernateTest {
 		memberRepository.save(member);
 
 		// then
-		assertThat(member.getId(), notNullValue());
+		Member selectedMember = memberRepository.find(member);
+		assertThat(member.getId(), is(selectedMember.getId()));
 		return member;
 	}
 
+
+
+	public void testUpdate(Member member) throws Exception {
+		// give
+		member.setPassword("4567");
+		// when
+		memberRepository.update(member);
+		// then
+		Member selectedMember = memberRepository.find(member);
+		assertThat(member.getPassword(), is(selectedMember.getPassword()));
+	}
+
+
+
+	public void testDelete(Member member) throws Exception {
+		// give // when
+		memberRepository.delete(member);
+		//then
+		Member selectedMember = memberRepository.find(member);
+		assertThat(selectedMember, nullValue());
+	}
+
+
+
+	public void testFindMemberList(Member member) throws Exception {
+		// give
+		FindMemberListDTO dto=new FindMemberListDTO();
+		// when
+		List<Member> list = memberRepository.findMemberList(dto);
+		// then
+		assertThat(list, notNullValue());
+	}
 }
