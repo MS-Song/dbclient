@@ -3,28 +3,28 @@
 <head>
 <title>Swagger UI</title>
 <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css' />
-<link href='css/reset.css' media='screen' rel='stylesheet' type='text/css' />
-<link href='css/screen.css' media='screen' rel='stylesheet' type='text/css' />
-<link href='css/reset.css' media='print' rel='stylesheet' type='text/css' />
-<link href='css/screen.css' media='print' rel='stylesheet' type='text/css' />
-<link href='lib/jquery-ui-1.11.2/jquery-ui.min.css' media='screen' rel='stylesheet' type='text/css' />
-<script type="text/javascript" src="lib/shred.bundle.js"></script>
-<script src='lib/jquery-1.8.0.min.js' type='text/javascript'></script>
-<script src='lib/jquery.slideto.min.js' type='text/javascript'></script>
-<script src='lib/jquery.wiggle.min.js' type='text/javascript'></script>
-<script src='lib/jquery.ba-bbq.min.js' type='text/javascript'></script>
-<script src='lib/handlebars-1.0.0.js' type='text/javascript'></script>
-<script src='lib/underscore-min.js' type='text/javascript'></script>
-<script src='lib/backbone-min.js' type='text/javascript'></script>
-<script src='lib/swagger.js' type='text/javascript'></script>
-<script src='lib/swagger-client.js' type='text/javascript'></script>
-<script src='swagger-ui.js' type='text/javascript'></script>
-<script src='lib/highlight.7.3.pack.js' type='text/javascript'></script>
-<script src='lib/jquery-ui-1.11.2/jquery-ui.min.js' type='text/javascript'></script>
-
+<link href='/static/css/reset.css' media='screen' rel='stylesheet' type='text/css' />
+<link href='/static/css/screen.css' media='screen' rel='stylesheet' type='text/css' />
+<link href='/static/css/reset.css' media='print' rel='stylesheet' type='text/css' />
+<link href='/static/css/screen.css' media='print' rel='stylesheet' type='text/css' />
+<link href='/static/js/jquery-ui-1.11.2/jquery-ui.min.css' media='screen' rel='stylesheet' type='text/css' />
+<script src="/static/js/shred.bundle.js" type="text/javascript" ></script>
+<script src='/static/js/jquery-1.8.0.min.js' type='text/javascript'></script>
+<script src='/static/js/jquery.slideto.min.js' type='text/javascript'></script>
+<script src='/static/js/jquery.wiggle.min.js' type='text/javascript'></script>
+<script src='/static/js/jquery.ba-bbq.min.js' type='text/javascript'></script>
+<script src='/static/js/handlebars-1.0.0.js' type='text/javascript'></script>
+<script src='/static/js/underscore-min.js' type='text/javascript'></script>
+<script src='/static/js/backbone-min.js' type='text/javascript'></script>
+<script src='/static/js/swagger.js' type='text/javascript'></script>
+<script src='/static/js/swagger-client.js' type='text/javascript'></script>
+<script src='/static/js/swagger-ui.js' type='text/javascript'></script>
+<script src='/static/js/highlight.7.3.pack.js' type='text/javascript'></script>
+<script src='/static/js/jquery-ui-1.11.2/jquery-ui.min.js' type='text/javascript'></script>
 
 <!-- enabling this will enable oauth2 implicit scope support -->
-<script src='lib/swagger-oauth.js' type='text/javascript'></script>
+<script src='/static/js/swagger-oauth.js' type='text/javascript'></script>
+
 <script type="text/javascript">
 	var addDate=function(obj){
 		$(obj).datepicker({
@@ -111,17 +111,12 @@
 <body class="swagger-section">
 	<div id='header'>
 		<div class="swagger-ui-wrap">
-			<a id="logo" href="/html/index.html">HomePlus API <span id="server_role"></span> @runDate@</a>
-
+			<a id="logo" href="/static/html/index.html">DB CLIENT API <span id="server_role"></span> @runDate@</a>
 			<input id="input_baseUrl" name="baseUrl" type="hidden" />
 			<input id="input_apiKey" name="apiKey" type="hidden" />
 		</div>
 	</div>
-	<div class="swagger-ui-wrap">
-		<a href="./log.html" target="_blank">FileLogView</a> 
-		| <a href="./status.html" target="_blank">Status Report</a>
-		| <a href="./sysAffErrorlog.html" target="_blank">SysAffErrorLogView</a>
-	</div>
+	<div class="swagger-ui-wrap"></div>
 	<div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>
 	<div id="swagger-ui-container" class="swagger-ui-wrap"></div>
 </body>

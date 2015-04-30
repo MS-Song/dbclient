@@ -28,7 +28,6 @@
    	 	<!-- 판매자 API 인증 및 사용량 기록을 위한 인터셉터	-->
     </mvc:interceptors>
 
-
 	<!-- 컨텐츠 네고시에이팅 뷰 리졸버 설정 -->
 	<!-- 요청의 확장자, 헤더 타입 등을 기준으로 렌더링할 뷰를 결정해준다. -->
 	<bean id="ContentNegotiatingViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
@@ -113,5 +112,5 @@
 		<property name="order" value="1" />	
 	</bean>
 	
-	 	<bean id="springSwaggerConfig" class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
+  	<bean id="springSwaggerConfig" class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
 </beans>

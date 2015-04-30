@@ -7,6 +7,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.mangofactory.swagger.annotations.ApiIgnore;
+
 /**
  * <pre>
  * Class Name : IndexController.java
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 * @author song7749
 * @since 2015. 4. 15.
 */
+@ApiIgnore
 @Controller
 @RequestMapping("/")
 public class IndexController {

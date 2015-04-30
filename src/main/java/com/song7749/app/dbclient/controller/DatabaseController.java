@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.View;
 
 import com.song7749.app.dbclient.view.GenericExcelView;
+import com.song7749.dl.base.ResponseResult;
 import com.song7749.dl.dbclient.dto.DeleteServerInfoDTO;
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
@@ -34,6 +35,9 @@ import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 /**
  * <pre>
@@ -51,6 +55,7 @@ import com.song7749.dl.dbclient.vo.TableVO;
 * @since 2015. 4. 15.
 */
 
+@Api(value = "database", description = "database 관련 기능",position=1)
 @Controller
 @RequestMapping("/database")
 public class DatabaseController {
@@ -62,11 +67,9 @@ public class DatabaseController {
 	@Resource(name="genericExcelView")
 	GenericExcelView genericExcelView;
 
-	/**
-	 * 데이터 베이스 서버 리스트 조회
-	 * @param request
-	 * @param model
-	 */
+	@ApiOperation(value = "데이터 베이스 서버 리스트 조회"
+					,notes = "등록되어 있는 Database 서버 리스트를 조회 한다."
+					,response=ResponseResult.class)
 	@RequestMapping(value="/serverList.json",method=RequestMethod.GET)
 	public void getServerList(
 			HttpServletRequest request,
@@ -78,15 +81,13 @@ public class DatabaseController {
 		model.addAttribute("serverInfo", infoList);
 	}
 
-	/**
-	 * 데이터 베이스 스키마, SID 조회
-	 * @param host
-	 * @param request
-	 * @param model
-	 */
+	@ApiOperation(value = "데이터 베이스 스키마, SID 조회"
+			,notes = "등록되어 있는 Database 서버 의 스키마(Mysql), SID(Oracle) 을 조회 한다."
+			,response=ResponseResult.class)
 	@RequestMapping(value="/schemaList.json",method=RequestMethod.GET)
 	public void getSchemaList(
-			@RequestParam(value="server",required=true) String host,
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
 			HttpServletRequest request,
 			ModelMap model){
 		// 테스트 데이터 설정
@@ -96,19 +97,17 @@ public class DatabaseController {
 		model.addAttribute("serverInfo", infoList);
 	}
 
-	/**
-	 * 데이터베이스 테이블 리스트 조회
-	 * @param host
-	 * @param schemaName
-	 * @param account
-	 * @param request
-	 * @param model
-	 */
+	@ApiOperation(value = "데이터베이스 테이블 리스트 조회"
+			,notes = "등록되어 있는 Database 서버의 Table 을 조회 한다."
+			,response=ResponseResult.class)
 	@RequestMapping(value="/tableList.json",method=RequestMethod.GET)
 	public void getTableList(
-			@RequestParam(value="server",required=true) String host,
-			@RequestParam(value="schema",required=true) String  schemaName,
-			@RequestParam(value="account",required=true) String  account,
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
 			HttpServletRequest request,
 			ModelMap model){
 
@@ -123,21 +122,19 @@ public class DatabaseController {
 		model.addAttribute("tableList", tableList);
 	}
 
-	/**
-	 * 데이터 베이스 필드 리스트 조회
-	 * @param host
-	 * @param schemaName
-	 * @param account
-	 * @param tableName
-	 * @param request
-	 * @param model
-	 */
+	@ApiOperation(value = "데이터베이스 테이블  필드 리스트 조회"
+			,notes = "등록되어 있는 Database 서버의 Table 의 필드를 조회 한다."
+			,response=ResponseResult.class)
 	@RequestMapping(value="/fieldList.json",method=RequestMethod.GET)
 	public void getFieldList(
-			@RequestParam(value="server",required=true) String host,
-			@RequestParam(value="schema",required=true) String  schemaName,
-			@RequestParam(value="account",required=true) String  account,
-			@RequestParam(value="table",required=true) String  tableName,
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam	String account,
+			@RequestParam(value="table",required=true)
+			@ApiParam	String tableName,
 			HttpServletRequest request,
 			ModelMap model){
 
@@ -153,21 +150,20 @@ public class DatabaseController {
 		model.addAttribute("fieldList", fieldList);
 	}
 
-	/**
-	 * 데이터 베이스 인덱스 리스트 조회
-	 * @param host
-	 * @param schemaName
-	 * @param account
-	 * @param tableName
-	 * @param request
-	 * @param model
-	 */
+
+	@ApiOperation(value = "데이터베이스 테이블 인덱스 리스트 조회"
+			,notes = "등록되어 있는 Database 서버의 Table 의 인덱스 리스트 조회."
+			,response=ResponseResult.class)
 	@RequestMapping(value="/indexList.json",method=RequestMethod.GET)
 	public void getIndexList(
-			@RequestParam(value="server",required=true) String host,
-			@RequestParam(value="schema",required=true) String  schemaName,
-			@RequestParam(value="account",required=true) String  account,
-			@RequestParam(value="table",required=true) String  tableName,
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam	String account,
+			@RequestParam(value="table",required=true)
+			@ApiParam	String tableName,
 			HttpServletRequest request,
 			ModelMap model){
 
@@ -182,29 +178,30 @@ public class DatabaseController {
 		model.addAttribute("indexList", indexList);
 	}
 
-	/**
-	 * 데이터 베이스 저장
-	 * @param serverInfoSeq
-	 * @param host
-	 * @param schemaName
-	 * @param account
-	 * @param password
-	 * @param driver
-	 * @param charset
-	 * @param port
-	 * @param request
-	 * @param model
-	 */
+	@ApiOperation(value = "데이터베이스 서버 정보 저장"
+			,notes = "데이터베이스 서버 정보를 저장한다.<br/>"
+					+ "여러 개의 서버를 동시에 입력할 수 있으며, 모든 필드의 값을 row 별로 동일하게 입력해야 한다.<br/>"
+					+ "정보를 Row 별로 빠짐없이 넣지 않으면 입력되지 않는다.<br/><br/>"
+					+ "serverInfoSeq[] 를 넣지 않으면 입력, 있으면 업데이트 한다."
+			,response=ResponseResult.class)
 	@RequestMapping(value="/saveDatabases.json",method=RequestMethod.POST)
 	public void saveDatabases(
-			@RequestParam(value="serverInfoSeq[]",required=true) Integer[] serverInfoSeq,
-			@RequestParam(value="host[]",required=true) String[] host,
-			@RequestParam(value="schemaName[]",required=true) String[]  schemaName,
-			@RequestParam(value="account[]",required=true) String[]  account,
-			@RequestParam(value="password[]",required=true) String[]  password,
-			@RequestParam(value="driver[]",required=true) DatabaseDriver[]  driver,
-			@RequestParam(value="charset[]",required=true) String[]  charset,
-			@RequestParam(value="port[]",required=true) String[]  port,
+			@RequestParam(value="serverInfoSeq[]",required=true)
+			@ApiParam	Integer[] serverInfoSeq,
+			@RequestParam(value="host[]",required=true)
+			@ApiParam	String[] host,
+			@RequestParam(value="schemaName[]",required=true)
+			@ApiParam	String[]  schemaName,
+			@RequestParam(value="account[]",required=true)
+			@ApiParam	String[]  account,
+			@RequestParam(value="password[]",required=true)
+			@ApiParam	String[]  password,
+			@RequestParam(value="driver[]",required=true)
+			@ApiParam	DatabaseDriver[]  driver,
+			@RequestParam(value="charset[]",required=true)
+			@ApiParam	String[]  charset,
+			@RequestParam(value="port[]",required=true)
+			@ApiParam	String[]  port,
 			HttpServletRequest request,
 			ModelMap model){
 
@@ -252,15 +249,13 @@ public class DatabaseController {
 		model.addAttribute("message", "서버 정보가 저장되었습니다.");
 	}
 
-	/**
-	 * 서버 정보를 삭제한다.
-	 * @param serverInfoSeq
-	 * @param request
-	 * @param model
-	 */
+	@ApiOperation(value = "서버 정보를 삭제한다"
+			,notes = "등록된 서버 정보를 삭제 한다."
+			,response=ResponseResult.class)
 	@RequestMapping(value="/deleteDatabases.json",method=RequestMethod.POST)
 	public void saveDatabases(
-			@RequestParam(value="serverInfoSeq",required=true) Integer serverInfoSeq,
+			@RequestParam(value="serverInfoSeq",required=true)
+			@ApiParam	Integer serverInfoSeq,
 			HttpServletRequest request,
 			ModelMap model){
 
@@ -272,25 +267,23 @@ public class DatabaseController {
 
 	}
 
-	/**
-	 * 데이터 베이스 쿼리 실행
-	 * @param host
-	 * @param schemaName
-	 * @param account
-	 * @param autoCommit
-	 * @param query
-	 * @param htmlAllow
-	 * @param request
-	 * @param model
-	 */
+	@ApiOperation(value = "데이터 베이스 쿼리 실행"
+			,notes = "입력된 database query 를 실행 한다."
+			,response=ResponseResult.class)
 	@RequestMapping(value="/executeQuery.json",method=RequestMethod.POST)
 	public void executeQuery(
-			@RequestParam(value="server",required=true) String host,
-			@RequestParam(value="schema",required=true) String  schemaName,
-			@RequestParam(value="account",required=true) String  account,
-			@RequestParam(value="autoCommit",required=true) boolean  autoCommit,
-			@RequestParam(value="query",required=true) String  query,
-			@RequestParam(value="htmlAllow",required=true) boolean  htmlAllow,
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam	String  account,
+			@RequestParam(value="autoCommit",required=true)
+			@ApiParam("commit 가능 여부")	boolean  autoCommit,
+			@RequestParam(value="query",required=true)
+			@ApiParam("Database Query SQL")	String  query,
+			@RequestParam(value="htmlAllow",required=true)
+			@ApiParam("결과물에 HTML 테그를 허용할 것인가 여부")	boolean  htmlAllow,
 			HttpServletRequest request,
 			ModelMap model){
 
@@ -332,27 +325,24 @@ public class DatabaseController {
 
 	}
 
-	/**
-	 * 엑셀 다운로드
-	 * @param titles
-	 * @param values
-	 * @param model
-	 * @param request
-	 * @param response
-	 * @return
-	 */
+	@ApiOperation(value = "엑셀 다운로드"
+			,notes = "Request parameter 를 기반으로 엑셀파일을 생성하여 다운로드 한다."
+					+ "타이틀은 엑셀 컬럼 제목이며, 타이틀 배열 개수만큼 밸류를 row 로 생성한다."
+			,response=ResponseResult.class)
 	@RequestMapping(value={"/getExcel.xls"},
 			produces= {"application/vnd.ms-excel;charset=UTF-8", "text/csv;charset=UTF-8"},
 			method=RequestMethod.POST)
 	public View getExcel(
-			@RequestParam(value="titles[]",required=true) String[] titles,
-			@RequestParam(value="values[]",required=true) String[] values,
+			@RequestParam(value="titles[]",required=true)
+			@ApiParam	String[] titles,
+			@RequestParam(value="values[]",required=true)
+			@ApiParam	String[] values,
 			ModelMap model,
 			HttpServletRequest request,
 			HttpServletResponse response){
 
 		if(null==titles || titles.length==0){
-			throw new IllegalArgumentException("excel 출력할 데이터가 없습닏.");
+			throw new IllegalArgumentException("excel 출력할 데이터가 없습니다.");
 		}
 
 		List<String> colNameList = new ArrayList<String>();
@@ -379,10 +369,9 @@ public class DatabaseController {
 		return genericExcelView;
 	}
 
-	/**
-	 * 데이터 베이스 드라이버 조회
-	 * @param model
-	 */
+	@ApiOperation(value = "데이터 베이스 드라이버 조회"
+			,notes = "데이터 베이스 드라이버를 조회한다."
+			,response=ResponseResult.class)
 	@RequestMapping(value="/getDatabaseDriver.json",method=RequestMethod.GET)
 	public void getDatabaseDriver(
 			ModelMap model){

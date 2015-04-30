@@ -72,7 +72,7 @@
                         <configuration>
                             <tasks>
                                 <echo message="##### Setting product version in source code" />
-                                <replace dir="${project.basedir}/src/main/webapp/html" 
+                                <replace dir="${project.basedir}/src/main/webapp/static" 
                                          includes="**/*.html" 
                                          token="@runDate@" 
                                     value="${maven.build.timestamp}"
