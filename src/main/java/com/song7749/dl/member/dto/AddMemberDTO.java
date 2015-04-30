@@ -4,6 +4,8 @@ import javax.validation.constraints.NotNull;
 
 import com.song7749.dl.base.AbstractDto;
 import com.song7749.dl.member.type.AuthType;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * <pre>
@@ -20,11 +22,13 @@ import com.song7749.dl.member.type.AuthType;
 * @author song7749
 * @since 2015. 4. 29.
 */
+@ApiModel
 public class AddMemberDTO extends AbstractDto{
 
 	private static final long serialVersionUID = 7979771551393878737L;
 
 	@NotNull
+	@ApiModelProperty(value="유저 ID",required=true)
 	private String id;
 
 	@NotNull

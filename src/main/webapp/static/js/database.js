@@ -48,11 +48,15 @@ var databaseManageForm=function(){
 			
 			// seq 찾기
 			var serverInfoSeq = targetRow.find("input[name='serverInfoSeq[]']").val();
-			console.log("serverInfo Seq =" + serverInfoSeq);
+			console.log("serverInfoSeq =" + serverInfoSeq);
 			if(serverInfoSeq!=""){
-				$.post("./database/deleteDatabases.json", {"serverInfoSeq":serverInfoSeq}, function(data){
-					alert(data.result.message);
-					targetRow.remove();
+				$.ajax({
+				    url: './database/deleteDatabases.json'+ '?' + $.param({'serverInfoSeq':serverInfoSeq}),
+				    method: 'DELETE',
+				    success:  function(data){
+						alert(data.result.message);
+						targetRow.remove();
+				    }
 				});
 			} else {
 				targetRow.remove();

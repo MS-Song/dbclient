@@ -70,7 +70,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터 베이스 서버 리스트 조회"
 					,notes = "등록되어 있는 Database 서버 리스트를 조회 한다."
 					,response=ResponseResult.class)
-	@RequestMapping(value="/serverList.json",method=RequestMethod.GET)
+	@RequestMapping(value="/serverList",method=RequestMethod.GET)
 	public void getServerList(
 			HttpServletRequest request,
 			ModelMap model){
@@ -84,7 +84,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터 베이스 스키마, SID 조회"
 			,notes = "등록되어 있는 Database 서버 의 스키마(Mysql), SID(Oracle) 을 조회 한다."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/schemaList.json",method=RequestMethod.GET)
+	@RequestMapping(value="/schemaList",method=RequestMethod.GET)
 	public void getSchemaList(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -100,7 +100,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 테이블 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 을 조회 한다."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/tableList.json",method=RequestMethod.GET)
+	@RequestMapping(value="/tableList",method=RequestMethod.GET)
 	public void getTableList(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -125,7 +125,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 테이블  필드 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 의 필드를 조회 한다."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/fieldList.json",method=RequestMethod.GET)
+	@RequestMapping(value="/fieldList",method=RequestMethod.GET)
 	public void getFieldList(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -154,7 +154,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 테이블 인덱스 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 의 인덱스 리스트 조회."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/indexList.json",method=RequestMethod.GET)
+	@RequestMapping(value="/indexList",method=RequestMethod.GET)
 	public void getIndexList(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -184,7 +184,7 @@ public class DatabaseController {
 					+ "정보를 Row 별로 빠짐없이 넣지 않으면 입력되지 않는다.<br/><br/>"
 					+ "serverInfoSeq[] 를 넣지 않으면 입력, 있으면 업데이트 한다."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/saveDatabases.json",method=RequestMethod.POST)
+	@RequestMapping(value="/saveDatabases",method=RequestMethod.POST)
 	public void saveDatabases(
 			@RequestParam(value="serverInfoSeq[]",required=true)
 			@ApiParam	Integer[] serverInfoSeq,
@@ -252,7 +252,7 @@ public class DatabaseController {
 	@ApiOperation(value = "서버 정보를 삭제한다"
 			,notes = "등록된 서버 정보를 삭제 한다."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/deleteDatabases.json",method=RequestMethod.POST)
+	@RequestMapping(value="/deleteDatabases",method=RequestMethod.DELETE)
 	public void saveDatabases(
 			@RequestParam(value="serverInfoSeq",required=true)
 			@ApiParam	Integer serverInfoSeq,
@@ -270,7 +270,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터 베이스 쿼리 실행"
 			,notes = "입력된 database query 를 실행 한다."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/executeQuery.json",method=RequestMethod.POST)
+	@RequestMapping(value="/executeQuery",method=RequestMethod.POST)
 	public void executeQuery(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -372,7 +372,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터 베이스 드라이버 조회"
 			,notes = "데이터 베이스 드라이버를 조회한다."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/getDatabaseDriver.json",method=RequestMethod.GET)
+	@RequestMapping(value="/getDatabaseDriver",method=RequestMethod.GET)
 	public void getDatabaseDriver(
 			ModelMap model){
 		model.addAttribute("databaseDriverList", DatabaseDriver.values());
