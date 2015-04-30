@@ -77,8 +77,8 @@ public class ServerInfoManagerImplTest {
 	@Before
 	public void setupMock() throws Exception{
 		MockitoAnnotations.initMocks(this);
-		ServerInfoManager sim = (ServerInfoManager)ProxyUtils.unwrapProxy(serverInfoManager);
-		ReflectionTestUtils.setField(sim, "serverInfoRepository", serverInfoRepository);
+		ServerInfoManager o = (ServerInfoManager)ProxyUtils.unwrapProxy(serverInfoManager);
+		ReflectionTestUtils.setField(o, "serverInfoRepository", serverInfoRepository);
 	}
 
 	@Test

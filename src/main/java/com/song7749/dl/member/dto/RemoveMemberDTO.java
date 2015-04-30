@@ -1,0 +1,43 @@
+package com.song7749.dl.member.dto;
+
+import javax.validation.constraints.NotNull;
+
+import com.song7749.dl.base.AbstractDto;
+
+/**
+ * <pre>
+ * Class Name : RemoveMemberDTO.java
+ * Description : 회원 삭제 DTO
+*
+*  Modification Information
+*  Modify Date 		Modifier	Comment
+*  -----------------------------------------------
+*  2015. 4. 29.		song7749	신규작성
+*
+* </pre>
+*
+* @author song7749
+* @since 2015. 4. 29.
+*/
+public class RemoveMemberDTO extends AbstractDto{
+
+	private static final long serialVersionUID = 8220095335803571308L;
+
+
+	@NotNull
+	private String id;
+
+	public RemoveMemberDTO() {}
+
+	public RemoveMemberDTO(String id) {
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+}

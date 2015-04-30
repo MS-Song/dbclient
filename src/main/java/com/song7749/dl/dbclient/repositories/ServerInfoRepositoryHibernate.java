@@ -36,25 +36,25 @@ public class ServerInfoRepositoryHibernate implements ServerInfoRepository{
 	}
 
 	@Override
-	@Validate(nullable=false,VG={ValidateGroupInsert.class})
+	@Validate(VG={ValidateGroupInsert.class})
 	public void save(ServerInfo serverInfo) {
 		getSesson().save(serverInfo);
 	}
 
 	@Override
-	@Validate(nullable=false,VG={ValidateGroupUpdate.class})
+	@Validate(VG={ValidateGroupUpdate.class})
 	public void update(ServerInfo serverInfo) {
 		getSesson().update(serverInfo);
 	}
 
 	@Override
-	@Validate(nullable=false,VG={ValidateGroupDelete.class})
+	@Validate(VG={ValidateGroupDelete.class})
 	public void delete(ServerInfo serverInfo) {
 		getSesson().delete(serverInfo);
 	}
 
 	@Override
-	@Validate(nullable=false,VG={ValidateGroupSelect.class})
+	@Validate(VG={ValidateGroupSelect.class})
 	public ServerInfo find(ServerInfo serverInfo) {
 		return 	(ServerInfo)getSesson().byId(ServerInfo.class).load(serverInfo.getServerInfoSeq());
 	}
