@@ -3,6 +3,8 @@ package com.song7749.dl.member.convert;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.entities.Member;
 import com.song7749.dl.member.entities.MemberAuth;
@@ -55,8 +57,8 @@ public class MemberConvert {
 		if(null == member){
 			return null;
 		} else {
-			// 권한 데이터가 있는 경우
-			AuthType type = member.getMemberAuthList() == null &&  member.getMemberAuthList().size() > 0
+			// 권한 데이터가 있는 경우 -- TODO 추후 1:N 구조가 가능하도록 고쳐야 한다.
+			AuthType type = CollectionUtils.isEmpty(member.getMemberAuthList())
 					? null : member.getMemberAuthList().get(0).getAuthType();
 
 			return new MemberVO(member.getId()
@@ -74,7 +76,7 @@ public class MemberConvert {
 	 * @return List<MemberVO>
 	 */
 	public static List<MemberVO> convert(List<Member> memberList){
-		if(null==memberList || memberList.size() == 0){
+		if(CollectionUtils.isEmpty(memberList)){
 			return null;
 		} else {
 			List<MemberVO> list = new ArrayList<MemberVO>();

@@ -192,5 +192,4 @@ public class MemberManagerImplTest {
 		// then
 		verify(memberRepository,times(1)).findMemberList(dto);
 	}
-
 }
