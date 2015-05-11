@@ -1,5 +1,7 @@
 package com.song7749.app.dbclient.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -13,7 +15,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.song7749.dl.base.ResponseResult;
 import com.song7749.dl.member.dto.AddMemberDTO;
+import com.song7749.dl.member.dto.FindMemberListDTO;
+import com.song7749.dl.member.dto.ModifyMemberDTO;
+import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.service.MemberManager;
+import com.song7749.dl.member.vo.MemberVO;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -42,14 +48,59 @@ public class MemberController {
 	@Autowired
 	MemberManager memberManager;
 
-	@ApiOperation(value = "데이터 베이스 서버 리스트 조회"
-			,notes = "등록되어 있는 Database 서버 리스트를 조회 한다."
-			,response=ResponseResult.class)
-@RequestMapping(value="/member",method=RequestMethod.POST)
+	@ApiOperation(value = "회원가입"
+			,notes = "회원 정보를 등록한다."
+			,response=ResponseResult.class
+			,position=1)
+	@RequestMapping(value="/add",method=RequestMethod.POST)
 	public void addMember(
 			@ModelAttribute AddMemberDTO dto,
 			HttpServletRequest request,
 			ModelMap model){
 		memberManager.addMember(dto);
+		model.addAttribute("message", "회원 가입이 완료되었습니다.");
 	}
+
+	@ApiOperation(value = "회원수정"
+			,notes = "회원 정보를 수정한다."
+			,response=ResponseResult.class
+			,position=2)
+	@RequestMapping(value="/modifry",method=RequestMethod.PUT)
+	public void modifyMember(
+			@ModelAttribute ModifyMemberDTO dto,
+			HttpServletRequest request,
+			ModelMap model){
+		memberManager.modifyMember(dto);
+		model.addAttribute("message", "회원 수정이 완료되었습니다.");
+	}
+
+	@ApiOperation(value = "회원삭제"
+			,notes = "회원 정보를 삭제한다."
+			,response=ResponseResult.class
+			,position=3)
+	@RequestMapping(value="/remove",method=RequestMethod.DELETE)
+	public void removeMember(
+			@ModelAttribute RemoveMemberDTO dto,
+			HttpServletRequest request,
+			ModelMap model){
+		memberManager.removeMember(dto);
+		model.addAttribute("message", "회원 정보가 삭제되었습니다.");
+	}
+
+	@ApiOperation(value = "회원 리스트 조회"
+			,notes = "회원 리스트를 조회 한다."
+			,response=MemberVO.class
+			,responseContainer="ResponseResult"
+			,position=4)
+	@RequestMapping(value="/list",method=RequestMethod.GET)
+	public void listMember(
+			@ModelAttribute FindMemberListDTO dto,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<MemberVO> list = memberManager.findMemberList(dto);
+
+		model.addAttribute("memberList",list);
+	}
+
 }

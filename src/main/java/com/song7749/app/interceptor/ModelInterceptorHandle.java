@@ -6,12 +6,17 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.song7749.dl.base.Dto;
 import com.song7749.dl.base.ResponseResult;
 
 public class ModelInterceptorHandle extends HandlerInterceptorAdapter {
+
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * This implementation always returns <code>true</code>.
@@ -52,7 +57,13 @@ public class ModelInterceptorHandle extends HandlerInterceptorAdapter {
 
 					Map<Object,Object> rMap = new HashMap<Object, Object>();
 					for (Object key : modelAndView.getModel().keySet()) {
-						rMap.put(key, modelAndView.getModel().get(key));
+						// ModelAttribute 를 쓸 경우 DTO, Bind 객체가 추가 됨으로 제거 하고
+						// return 될 class 만 넣는다.
+						if(!(modelAndView.getModel().get(key) instanceof Dto
+								|| modelAndView.getModel().get(key) instanceof org.springframework.validation.BindingResult)){
+							rMap.put(key, modelAndView.getModel().get(key));
+						}
+
 					}
 					responseResult.setResult(rMap);
 

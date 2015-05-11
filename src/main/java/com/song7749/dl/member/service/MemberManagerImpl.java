@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.dto.FindMemberListDTO;
@@ -41,7 +42,8 @@ public class MemberManagerImpl implements MemberManager{
 	MemberRepository memberRepository;
 
 	@Override
-	@Validate(nullable=false)
+	@Validate
+	@Transactional(value = "dbClientTransactionManager")
 	public void addMember(AddMemberDTO dto) {
 		// 기존 ID를 조회 한뒤 변경 분에 대해서만 업데이트 한다.
 		Member member = memberRepository.find(new Member(dto.getId()));
@@ -53,6 +55,7 @@ public class MemberManagerImpl implements MemberManager{
 
 	@Override
 	@Validate
+	@Transactional(value = "dbClientTransactionManager")
 	public void modifyMember(ModifyMemberDTO dto) {
 		// 기존 ID를 조회 한뒤 변경 분에 대해서만 업데이트 한다.
 		Member member = memberRepository.find(new Member(dto.getId()));
@@ -81,12 +84,14 @@ public class MemberManagerImpl implements MemberManager{
 
 	@Override
 	@Validate
+	@Transactional(value = "dbClientTransactionManager")
 	public void removeMember(RemoveMemberDTO dto) {
 		memberRepository.delete(new Member(dto.getId()));
 	}
 
 	@Override
 	@Validate
+	@Transactional(value = "dbClientTransactionManager",readOnly=true)
 	public List<MemberVO> findMemberList(FindMemberListDTO dto) {
 		return convert(memberRepository.findMemberList(dto));
 	}

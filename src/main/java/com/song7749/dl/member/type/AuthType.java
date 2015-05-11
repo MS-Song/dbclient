@@ -1,5 +1,8 @@
 package com.song7749.dl.member.type;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 /**
  * <pre>
  * Class Name : AuthType.java
@@ -15,7 +18,8 @@ package com.song7749.dl.member.type;
 * @author song7749
 * @since 2015. 4. 29.
 */
+@ApiModel(description="회원 권한 타입")
 public enum AuthType {
-	ADMIN,
-	NORMAL
+	@ApiModelProperty("관리자") ADMIN,
+	@ApiModelProperty("일반") NORMAL
 }

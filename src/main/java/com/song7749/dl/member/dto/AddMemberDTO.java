@@ -2,7 +2,8 @@ package com.song7749.dl.member.dto;
 
 import javax.validation.constraints.NotNull;
 
-import com.song7749.dl.base.AbstractDto;
+import com.song7749.dl.base.BaseObject;
+import com.song7749.dl.base.Dto;
 import com.song7749.dl.member.type.AuthType;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
@@ -22,29 +23,34 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 * @author song7749
 * @since 2015. 4. 29.
 */
-@ApiModel
-public class AddMemberDTO extends AbstractDto{
+@ApiModel(value="회원 생성 DTO")
+public class AddMemberDTO extends BaseObject implements Dto {
 
 	private static final long serialVersionUID = 7979771551393878737L;
 
 	@NotNull
-	@ApiModelProperty(value="유저 ID",required=true)
+	@ApiModelProperty(value="ID",required=true)
 	private String id;
 
 	@NotNull
-	private String password;
-
-	@NotNull
+	@ApiModelProperty(value="e-mail",required=true)
 	private String email;
 
 	@NotNull
+	@ApiModelProperty(value="비밀번호",required=true)
+	private String password;
+
+	@NotNull
+	@ApiModelProperty(value="비밀번호 찾기 질문",required=true)
 	private String passwordQuestion;
 
 	@NotNull
+	@ApiModelProperty(value="비밀번호 찾기 답변",required=true)
 	private String passwordAnswer;
 
 	@NotNull
-	private AuthType authType;
+	@ApiModelProperty(value="회원 권한",hidden=true)
+	private AuthType authType = AuthType.NORMAL;
 
 	public AddMemberDTO() {}
 

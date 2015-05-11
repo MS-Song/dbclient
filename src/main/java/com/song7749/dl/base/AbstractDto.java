@@ -1,5 +1,8 @@
 package com.song7749.dl.base;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 /**
  * <pre>
  * Class Name : AbstractDto.java
@@ -16,6 +19,7 @@ package com.song7749.dl.base;
  * @author song7749
  * @since 2015. 4. 28.
  */
+@ApiModel("BASE DTO")
 public abstract class AbstractDto extends BaseObject implements Dto {
 
 	private static final long serialVersionUID = 8863605294397638654L;
@@ -24,15 +28,18 @@ public abstract class AbstractDto extends BaseObject implements Dto {
 	 * Limit. <br/>
 	 * 개발자의 실수를 방지하기 위해서 최대 값을 1000으로 제한한다.<br/>
 	 */
+	@ApiModelProperty("최대 조회 개수")
 	private Long limit = 1000L;
 	/**
 	 * offset.<br/>
 	 */
+	@ApiModelProperty("조회 시작 Offset")
 	private Long offset = 0L;
 
 	/**
 	 * limit 사용 여부 .<br/>
 	 */
+	@ApiModelProperty("Result 수를 지정할 것인가?")
 	private boolean useLimit = true;
 
 	/**

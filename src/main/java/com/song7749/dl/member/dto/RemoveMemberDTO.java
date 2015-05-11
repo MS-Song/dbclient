@@ -2,7 +2,9 @@ package com.song7749.dl.member.dto;
 
 import javax.validation.constraints.NotNull;
 
-import com.song7749.dl.base.AbstractDto;
+import com.song7749.dl.base.BaseObject;
+import com.song7749.dl.base.Dto;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * <pre>
@@ -19,12 +21,13 @@ import com.song7749.dl.base.AbstractDto;
 * @author song7749
 * @since 2015. 4. 29.
 */
-public class RemoveMemberDTO extends AbstractDto{
+public class RemoveMemberDTO extends BaseObject implements Dto {
 
 	private static final long serialVersionUID = 8220095335803571308L;
 
 
 	@NotNull
+	@ApiModelProperty(value="ID",required=true)
 	private String id;
 
 	public RemoveMemberDTO() {}

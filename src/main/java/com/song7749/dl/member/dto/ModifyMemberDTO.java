@@ -2,8 +2,11 @@ package com.song7749.dl.member.dto;
 
 import javax.validation.constraints.NotNull;
 
-import com.song7749.dl.base.AbstractDto;
+import com.song7749.dl.base.BaseObject;
+import com.song7749.dl.base.Dto;
 import com.song7749.dl.member.type.AuthType;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * <pre>
@@ -20,27 +23,29 @@ import com.song7749.dl.member.type.AuthType;
 * @author song7749
 * @since 2015. 4. 29.
 */
-public class ModifyMemberDTO extends AbstractDto{
+@ApiModel("회원 정보 수정 DTO")
+public class ModifyMemberDTO extends BaseObject implements Dto {
 
 	private static final long serialVersionUID = -8973962952713127994L;
 
 
 	@NotNull
+	@ApiModelProperty(value="ID",required=true)
 	private String id;
 
-
-	private String password;
-
-
+	@ApiModelProperty(value="e-mail")
 	private String email;
 
+	@ApiModelProperty(value="패스워드")
+	private String password;
 
+	@ApiModelProperty(value="패스워드 찾기 질문")
 	private String passwordQuestion;
 
-
+	@ApiModelProperty(value="패스워드 찾기 답변")
 	private String passwordAnswer;
 
-
+	@ApiModelProperty(value="회원 권한")
 	private AuthType authType;
 
 	public ModifyMemberDTO() {}
