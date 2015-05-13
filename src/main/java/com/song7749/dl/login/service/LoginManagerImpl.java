@@ -1,4 +1,4 @@
-package com.song7749.dbclient.login.service;
+package com.song7749.dl.login.service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -8,8 +8,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.song7749.dbclient.login.annotations.Login;
-import com.song7749.dbclient.login.dto.DoLoginDTO;
+import com.song7749.dl.login.annotations.Login;
+import com.song7749.dl.login.dto.DoLoginDTO;
 import com.song7749.dl.member.entities.Member;
 import com.song7749.dl.member.entities.MemberAuth;
 import com.song7749.dl.member.repositories.MemberRepository;

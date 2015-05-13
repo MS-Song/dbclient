@@ -1,4 +1,4 @@
-package com.song7749.dbclient.login.type;
+package com.song7749.dl.login.type;
 
 /**
  * <pre>

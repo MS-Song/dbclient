@@ -1,4 +1,4 @@
-package com.song7749.dbclient.login.dto;
+package com.song7749.dl.login.dto;
 
 import com.song7749.dl.base.BaseObject;
 import com.song7749.dl.base.Dto;
