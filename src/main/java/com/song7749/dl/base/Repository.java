@@ -45,21 +45,21 @@ public interface Repository<T> {
 	 * entity 저장
 	 * @param entity
 	 */
-	@Validate(nullable=false,VG={ValidateGroupInsert.class})
+	@Validate(VG={ValidateGroupInsert.class})
 	void save(T entity);
 
 	/**
 	 * entity 수정
 	 * @param entity
 	 */
-	@Validate(nullable=false,VG={ValidateGroupUpdate.class})
+	@Validate(VG={ValidateGroupUpdate.class})
 	void update(T entity);
 
 	/**
 	 * 삭제
 	 * @param entity
 	 */
-	@Validate(nullable=false,VG={ValidateGroupDelete.class})
+	@Validate(VG={ValidateGroupDelete.class})
 	void delete(T entity);
 
 	/**
@@ -67,6 +67,6 @@ public interface Repository<T> {
 	 * @param entity
 	 * @return
 	 */
-	@Validate(nullable=false,VG={ValidateGroupSelect.class})
+	@Validate(VG={ValidateGroupSelect.class})
 	T find(T entity);
 }

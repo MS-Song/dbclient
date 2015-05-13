@@ -14,11 +14,12 @@
 
 
 	<!-- dbClient -->
-	<bean id="dbClientDatasource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">  
-		<property name="driverClassName" value="${dbClient.database.driver}"/>
-		<property name="url" value="${dbClient.database.url}"/>  
-	</bean>	
-	
+	<bean id="dbClientDatasource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${dbClient.database.driver}" />
+		<property name="url" value="${dbClient.database.url}" />
+	</bean>
+
 	<!-- sessionFactory -->
 	<bean id="dbClientSessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
@@ -26,20 +27,20 @@
 		<property name="configLocation" value="classpath:/hibernate.cfg.xml" />
 		<property name="packagesToScan" value="com.song7749.dl" />
 		<property name="entityInterceptor">
-			<bean class="com.song7749.hibernate.util.HibernateSecurityInterceptor"/>
-		</property> 
+			<bean class="com.song7749.hibernate.util.HibernateSecurityInterceptor" />
+		</property>
 	</bean>
-	
+
 	<!-- 트랜잭션 매니저 -->
 	<bean id="dbClientTransactionManager"
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="dbClientSessionFactory" />
-		<qualifier value="dbClientTransactionManager"/>
+		<qualifier value="dbClientTransactionManager" />
 	</bean>
-	
+
 	<!-- 애노테이션 기반의 트랜잭션 설정 -->
 	<tx:annotation-driven transaction-manager="dbClientTransactionManager" />
-	
+
 	<!-- 하이버네이트 익셉션 핸들러 -->
 	<bean class="org.springframework.orm.hibernate4.HibernateExceptionTranslator" />
 </beans>

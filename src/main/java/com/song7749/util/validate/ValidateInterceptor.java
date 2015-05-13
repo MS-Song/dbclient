@@ -86,7 +86,6 @@ public class ValidateInterceptor<T> implements MethodInterceptor{
 				for(Object o:invocation.getArguments()){
 					// parameter is not null and object us null
 					if(validate.nullable() == false && o == null){
-						logger.debug(format("Throw New IllegalArgumentException"));
 						throw new IllegalArgumentException(" parameter is not null");
 					}
 
@@ -127,7 +126,6 @@ public class ValidateInterceptor<T> implements MethodInterceptor{
 						for(ConstraintViolation<?> c:cv){
 							// 프록시 객체에서 발생한 에러를 건너뛴
 							if(c.getRootBeanClass().getName().indexOf("_$$_javassist_")==-1){
-								logger.debug(format("Throw New IllegalArgumentException"));
 								throw new IllegalArgumentException(c.getPropertyPath() + " 은(는) " + c.getMessage());
 							}
 						}

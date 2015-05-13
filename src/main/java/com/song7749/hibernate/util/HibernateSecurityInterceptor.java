@@ -5,7 +5,7 @@ import org.hibernate.EmptyInterceptor;
 /**
  * <pre>
  * Class Name : HibernateSecurityInterceptor.java
- * Description :
+ * Description : 하이버네이트 보안관련 인터셉터
  *
  *  Modification Information
  *  Modify Date 	Modifier	Comment

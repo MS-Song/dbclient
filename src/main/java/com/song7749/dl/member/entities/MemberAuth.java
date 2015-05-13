@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.ForeignKey;
@@ -37,14 +36,13 @@ import com.song7749.util.validate.ValidateGroupUpdate;
  */
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"id","authType"},name="UK_id_authType")})
+@Table
 public class MemberAuth extends Entities{
 
 	private static final long serialVersionUID = 3575039257379611826L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column
 	@NotNull(groups={ValidateGroupUpdate.class,
 			ValidateGroupDelete.class})
 	private Integer memberAuthSeq;

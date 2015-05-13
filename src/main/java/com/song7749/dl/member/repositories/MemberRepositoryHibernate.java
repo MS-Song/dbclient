@@ -77,7 +77,7 @@ public class MemberRepositoryHibernate implements MemberRepository{
 	}
 
 	@Override
-	@Validate(nullable=false)
+	@Validate
 	public List<Member> findMemberList(FindMemberListDTO dto) {
 		Criteria criteria=getCriteriaOf(Member.class);
 

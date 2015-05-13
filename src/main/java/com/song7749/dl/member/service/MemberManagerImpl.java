@@ -15,6 +15,7 @@ import com.song7749.dl.member.dto.ModifyMemberDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.entities.Member;
 import com.song7749.dl.member.entities.MemberAuth;
+import com.song7749.dl.member.exception.MemberNotFoundException;
 import com.song7749.dl.member.repositories.MemberRepository;
 import com.song7749.dl.member.vo.MemberVO;
 import com.song7749.util.validate.annotation.Validate;
@@ -60,6 +61,10 @@ public class MemberManagerImpl implements MemberManager{
 		// 기존 ID를 조회 한뒤 변경 분에 대해서만 업데이트 한다.
 		Member member = memberRepository.find(new Member(dto.getId()));
 
+		if(null == member){
+			throw new MemberNotFoundException();
+		}
+
 		if(null != dto.getEmail()){
 			member.setEmail(dto.getEmail());
 		}
@@ -78,7 +83,6 @@ public class MemberManagerImpl implements MemberManager{
 		if(null != dto.getPasswordQuestion()){
 			member.setPasswordQuestion(dto.getPasswordQuestion());
 		}
-
 		memberRepository.update(member);
 	}
 

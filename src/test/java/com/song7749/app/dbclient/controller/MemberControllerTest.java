@@ -3,7 +3,10 @@ package com.song7749.app.dbclient.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,6 +43,7 @@ import com.song7749.util.filter.XSSFilter;
 		"classpath*:spring/servlet-context.xml" })
 @TransactionConfiguration(transactionManager="dbClientTransactionManager",defaultRollback=true)
 @Transactional("dbClientTransactionManager")
+//@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MemberControllerTest {
 
 	@Autowired
@@ -71,7 +75,7 @@ public class MemberControllerTest {
 		drb = post("/member/add.json")
 				.param("id","song7749")
 				.param("email","song7749@gmail.com")
-				.param("password","1234")
+				.param("password","12345678")
 				.param("passwordQuestion","1234")
 				.param("passwordAnswer","1234")
 				.param("authType","ADMIN")
@@ -96,17 +100,71 @@ public class MemberControllerTest {
 
 	@Test
 	public void testModifyMember() throws Exception {
-		throw new RuntimeException("not yet implemented");
-	}
+		drb = put("/member/modify.json")
+				.param("id","root")
+				.param("email","song7749@gmail.com")
+				.param("password","12345678")
+				.param("passwordQuestion","5678")
+				.param("passwordAnswer","5678")
+				.param("authType","ADMIN")
+				;
 
-	@Test
-	public void testRemoveMember() throws Exception {
-		throw new RuntimeException("not yet implemented");
+		// 로그인 cookie 정보 추가
+		drb.cookie(cookies);
+
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 						notNullValue());
+		assertThat((Integer)responseObject.get("status"),				is(200));
+		assertThat(responseObject.get("result"), 						notNullValue());
+		assertThat((String)((Map)responseObject.get("result")).get("message"),	is("회원 수정이 완료되었습니다."));
+
 	}
 
 	@Test
 	public void testListMember() throws Exception {
-		throw new RuntimeException("not yet implemented");
+		drb = get("/member/list.json")
+				;
+
+		// 로그인 cookie 정보 추가
+		drb.cookie(cookies);
+
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 						notNullValue());
+		assertThat((Integer)responseObject.get("status"),				is(200));
+		assertThat(responseObject.get("result"), 						notNullValue());
 	}
 
+	@Test
+	public void testRemoveMember() throws Exception {
+		drb = delete("/member/remove.json")
+				.param("id","root")
+				;
+
+		// 로그인 cookie 정보 추가
+		drb.cookie(cookies);
+
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 						notNullValue());
+		assertThat((Integer)responseObject.get("status"),				is(200));
+		assertThat(responseObject.get("result"), 						notNullValue());
+		assertThat((String)((Map)responseObject.get("result")).get("message"),	is("회원 정보가 삭제되었습니다."));
+	}
 }

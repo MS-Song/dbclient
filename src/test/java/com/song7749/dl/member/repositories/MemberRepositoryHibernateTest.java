@@ -67,7 +67,7 @@ public class MemberRepositoryHibernateTest {
 
 	public Member testSave() throws Exception {
 		// give
-		Member member=new Member("song7749", "1234", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
+		Member member=new Member("song7749", "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
 		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
 
 		// when

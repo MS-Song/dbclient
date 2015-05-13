@@ -22,6 +22,7 @@ import com.song7749.dl.member.dto.FindMemberListDTO;
 import com.song7749.dl.member.dto.ModifyMemberDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.entities.Member;
+import com.song7749.dl.member.exception.MemberNotFoundException;
 import com.song7749.dl.member.repositories.MemberRepository;
 import com.song7749.dl.member.type.AuthType;
 import com.song7749.util.ProxyUtils;
@@ -58,7 +59,7 @@ public class MemberManagerImplTest {
 	public void testAddMember_validate_dto_id() throws Exception {
 		// give
 		AddMemberDTO dto=new AddMemberDTO(null
-				, "1234"
+				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
 				, "대한민국 초등학교"
@@ -72,7 +73,7 @@ public class MemberManagerImplTest {
 	public void testAddMember() throws Exception {
 		// give
 		AddMemberDTO dto=new AddMemberDTO("song7749"
-				, "1234"
+				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
 				, "대한민국 초등학교"
@@ -87,7 +88,7 @@ public class MemberManagerImplTest {
 	public void testAddMember_duplication_id() throws Exception {
 		// give
 		AddMemberDTO dto = new AddMemberDTO("song7749"
-				, "1234"
+				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
 				, "대한민국 초등학교"
@@ -114,7 +115,7 @@ public class MemberManagerImplTest {
 	public void testModifyMember_validate_dto_id() throws Exception {
 		// give
 		ModifyMemberDTO dto = new ModifyMemberDTO(null
-				, "1234"
+				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
 				, "대한민국 초등학교"
@@ -124,11 +125,29 @@ public class MemberManagerImplTest {
 		// then exception
 	}
 
+
+	@Test(expected=MemberNotFoundException.class)
+	public void testModifyMember_memberNotFoundException() throws Exception {
+		// give
+		ModifyMemberDTO dto = new ModifyMemberDTO("song7749"
+				, "12345678"
+				, "song7749@gmail.com"
+				, "초등학교는?"
+				, "대한민국 초등학교"
+				, AuthType.ADMIN);
+
+		given(memberRepository.find(any(Member.class))).willReturn(null);
+
+		// when
+		memberManager.modifyMember(dto);
+		// then exception
+	}
+
 	@Test
 	public void testModifyMember() throws Exception {
 		// give
 		ModifyMemberDTO dto = new ModifyMemberDTO("song7749"
-				, "1234"
+				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
 				, "대한민국 초등학교"

@@ -65,7 +65,7 @@ public class MemberController {
 			,notes = "회원 정보를 수정한다."
 			,response=ResponseResult.class
 			,position=2)
-	@RequestMapping(value="/modifry",method=RequestMethod.PUT)
+	@RequestMapping(value="/modify",method=RequestMethod.PUT)
 	public void modifyMember(
 			@ModelAttribute ModifyMemberDTO dto,
 			HttpServletRequest request,

@@ -2,4 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 	<comment>환경 설정파일</comment>
+	
+	<!-- login url 정보 -->
+	<entry key="login.url">/login.html</entry>
 </properties>

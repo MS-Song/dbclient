@@ -4,6 +4,21 @@ import java.sql.Types;
 
 import org.hibernate.dialect.Dialect;
 
+/**
+ * <pre>
+ * Class Name : CustomSQLiteDBDialect.java
+ * Description : SQLite Dialect
+*
+*  Modification Information
+*  Modify Date 		Modifier	Comment
+*  -----------------------------------------------
+*  2015. 5. 12.		song7749	신규작성
+*
+* </pre>
+*
+* @author song7749
+* @since 2015. 5. 12.
+*/
 public class CustomSQLiteDBDialect extends Dialect {
   public CustomSQLiteDBDialect() {
     registerColumnType(Types.BIT, "integer");
@@ -29,7 +44,6 @@ public class CustomSQLiteDBDialect extends Dialect {
     registerColumnType(Types.BLOB, "blob");
     registerColumnType(Types.CLOB, "clob");
     registerColumnType(Types.BOOLEAN, "integer");
-
   }
 
   @Override

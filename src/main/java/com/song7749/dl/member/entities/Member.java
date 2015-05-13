@@ -14,8 +14,10 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.validator.constraints.Email;
 
 import com.song7749.dl.base.Entities;
+import com.song7749.util.crypto.CryptoAES;
 import com.song7749.util.validate.ValidateGroupDelete;
 import com.song7749.util.validate.ValidateGroupInsert;
 import com.song7749.util.validate.ValidateGroupUpdate;
@@ -37,26 +39,27 @@ import com.song7749.util.validate.ValidateGroupUpdate;
  */
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = "id",name="UK_id")})
+@Table(uniqueConstraints = {
+	@UniqueConstraint(columnNames = "id",name="UK_id")
+})
 public class Member extends Entities {
 
 	private static final long serialVersionUID = 2498909624760963269L;
 
 	@Id
-	@Column
 	@NotNull(groups={ValidateGroupInsert.class
 			,ValidateGroupUpdate.class
 			,ValidateGroupDelete.class})
 	private String id;
 
-	@Column
 	@NotNull(groups={ValidateGroupInsert.class
 			,ValidateGroupUpdate.class})
-//	@ColumnTransformer( write="password(?)", read="?" )
+//	@ColumnTransformer( write="seal(?)", read="unseal(?)" )
 	private String password;
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class})
+	@Email(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String email;
 
 	@Column
@@ -79,7 +82,7 @@ public class Member extends Entities {
 
 	public Member(String id, String password) {
 		this.id = id;
-		this.password = password;
+		setPassword(password);
 	}
 
 	public Member(String id,String passwordQuestion, String passwordAnswer) {
@@ -91,7 +94,7 @@ public class Member extends Entities {
 	public Member(String id, String password, String email,
 			String passwordQuestion, String passwordAnswer) {
 		this.id = id;
-		this.password = password;
+		setPassword(password);
 		this.email = email;
 		this.passwordQuestion = passwordQuestion;
 		this.passwordAnswer = passwordAnswer;
@@ -106,11 +109,11 @@ public class Member extends Entities {
 	}
 
 	public String getPassword() {
-		return password;
+		return CryptoAES.decrypt(password);
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = CryptoAES.encrypt(password);
 	}
 
 	public String getEmail() {
