@@ -38,12 +38,7 @@
 						<div id="marketPlaceList" style="text-align: left">
 						<h3> 데이터베이스 관리 </h3>
 						</div>
-						<div id="loginInfo">
-							<span id="id">ID</span>
-							<span id="name">Name</span>
-							<br/>
-							<span id="logout">[로그아웃]</span>
-						</div>
+						<div id="loginInfo" />
 					</td>
 				</tr>
 			</table>

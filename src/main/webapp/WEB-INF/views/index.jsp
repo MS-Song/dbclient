@@ -2,9 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<div id="databasePopup" title=""></div>
-<div id="userPopup" title=""></div>
-<div id="changePasswordPopup" title=""></div>
+<div id="databaseManagePopup" title=""></div>
 <div id="loading" style="display: none;position: absolute;width: 300px;height: 35px;top:500px;left:30% ;background:gray;">
 	<div style="color: white;"> <br/> <strong> Lading Now ......</strong> </div>
 </div>

@@ -14,7 +14,7 @@ var databaseManageForm=function(){
 			html+='				<th><input type="button" id="add" value="추가"></th>';
 			html+='			</tr>';
 			html+='		</thead>';
-			html+='	<tbody id="rowBody">';;
+			html+='	<tbody id="rowBody">';
 		
 		var subHtml = '';
 		$.each(data.result.serverInfo,function(){
@@ -23,7 +23,7 @@ var databaseManageForm=function(){
 		
 		subHtml;
 		html+='<tbody></table></form>';
-		$( "#databasePopup" ).html(html);
+		$( "#databaseManagePopup" ).html(html);
 
 		// add button click event
 		$( "#add" ).click(function( event ) {
@@ -97,7 +97,7 @@ var databaseManageGetSubHTML = function(obj){
 };
 
 $(document).ready(function(){
-	$("#databasePopup").dialog({
+	$("#databaseManagePopup").dialog({
 		autoOpen: false,
 		width: 1000,
 		height: 600,
@@ -135,7 +135,7 @@ $(document).ready(function(){
 	
 	// Link to open the dialog
 	$( "#databaseManager" ).click(function( event ) {
-		$( "#databasePopup" ).dialog( "open" );
+		$( "#databaseManagePopup" ).dialog( "open" );
 		event.preventDefault();
 		databaseManageForm();
 	});

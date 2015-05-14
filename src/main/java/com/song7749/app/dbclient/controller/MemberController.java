@@ -58,6 +58,8 @@ public class MemberController {
 			HttpServletRequest request,
 			ModelMap model){
 		memberManager.addMember(dto);
+
+		model.clear();
 		model.addAttribute("message", "회원 가입이 완료되었습니다.");
 	}
 
@@ -71,6 +73,8 @@ public class MemberController {
 			HttpServletRequest request,
 			ModelMap model){
 		memberManager.modifyMember(dto);
+
+		model.clear();
 		model.addAttribute("message", "회원 수정이 완료되었습니다.");
 	}
 
@@ -84,6 +88,8 @@ public class MemberController {
 			HttpServletRequest request,
 			ModelMap model){
 		memberManager.removeMember(dto);
+
+		model.clear();
 		model.addAttribute("message", "회원 정보가 삭제되었습니다.");
 	}
 
@@ -100,7 +106,7 @@ public class MemberController {
 
 		List<MemberVO> list = memberManager.findMemberList(dto);
 
+		model.clear();
 		model.addAttribute("memberList",list);
 	}
-
 }

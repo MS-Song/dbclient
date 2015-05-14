@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,8 @@ import com.song7749.util.crypto.CryptoAES;
 */
 @Service("loginManager")
 public class LoginManagerImpl implements LoginManager{
+
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	// 로그인 정보 저장 쿠키 명칭
 	private final String cipher = "cipher";
@@ -70,13 +74,19 @@ public class LoginManagerImpl implements LoginManager{
 	}
 
 	@Override
+	public void doLogout(HttpServletResponse response) {
+		response.addCookie(new Cookie(cipher,""));
+	}
+
+	@Override
 	public String getLoginID(HttpServletRequest request) {
 		String cipher = null;
 		Cookie[] cookie = request.getCookies();
 		// 쿠키에서 cipher 를 찾아낸다.
 		if (cookie != null) {
 			for (int i=0; i<cookie.length; i++) {
-				if (cookie[i].getName().equals(cipher)) {
+				if (null != cookie[i]
+						&& cookie[i].getName().equals(cipher)) {
 					cipher = cookie[i].getValue();
 					// 복호화 된 ID 정보를 리턴한다.
 					return CryptoAES.decrypt(cipher);
@@ -111,4 +121,5 @@ public class LoginManagerImpl implements LoginManager{
 			return false;
 		}
 	}
+
 }

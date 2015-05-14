@@ -3,6 +3,8 @@ package com.song7749.dl.login.dto;
 import com.song7749.dl.base.BaseObject;
 import com.song7749.dl.base.Dto;
 import com.sun.istack.NotNull;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * <pre>
@@ -19,13 +21,17 @@ import com.sun.istack.NotNull;
 * @author song7749
 * @since 2015. 5. 13.
 */
+@ApiModel
 public class DoLoginDTO extends BaseObject implements Dto{
 
 	private static final long serialVersionUID = -582753518955573813L;
 
 	@NotNull
+	@ApiModelProperty(value="로그인 id",required=true)
 	private String id;
+
 	@NotNull
+	@ApiModelProperty(value="패스워드",required=true)
 	private String password;
 
 	public DoLoginDTO() {

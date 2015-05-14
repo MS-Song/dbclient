@@ -41,6 +41,12 @@ public interface LoginManager {
 	public boolean doLogin(DoLoginDTO dto,HttpServletResponse response);
 
 	/**
+	 * 로그아웃 실행
+	 * @param response
+	 */
+	public void doLogout(HttpServletResponse response);
+
+	/**
 	 * 로그인 된 회원의 ID 정보 조회
 	 * @param request
 	 * @return String loginID
