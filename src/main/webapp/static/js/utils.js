@@ -53,6 +53,79 @@ var createSelect = function (values,textes,name,selectedValue,firsetOpetionValue
 };
 
 
+/**
+ * 세로형 폼 Head 만들기
+ */
+var createVerticalFormHead = function(apiMemberOperations,operationPath){
+	var html='';
+	var operation = findOperation(apiMemberOperations,operationPath);
+	$(operation).each(function(){	
+		$(this.parameters).each(function(){
+			html+='			<tr>';
+			html+='				<th>'+this.description+'</th>';				
+			html+='			</tr>';
+		});
+	});
+};
+
+/**
+ * 세로형 폼 Body 만들기
+ */
+var createVerticalFormBody = function(apiMemberOperations,operationPath){
+	var html='';
+	var operation = findOperation(apiMemberOperations,operationPath);
+	$(operation).each(function(){	
+		$(this.parameters).each(function(){
+			html+='			<tr>';
+			if(this.enum == undefined){
+				html+='				<td><input type="text" name="'+this.name+'" value="" /></td>';			
+			} else {
+				html+='				<td>'+createSelect(this.enum,this.enum,this.name,null,null,null,null,null);+'</td>';				
+			}
+			html+='			</tr>';
+		});
+	});
+};
+
+
+/**
+ * 가로형 폼 만들기
+ */
+var createHorizontalForm = function(apiMemberOperations,operationPath){
+	var htmlWrap='	<table class="table-list">';
+	var htmlBody='		<tbody>';
+	// 필드 생성
+	var operation = findOperation(apiMemberOperations,operationPath);
+	$(operation).each(function(){	
+		$(this.parameters).each(function(){
+			htmlBody+='			<tr>';
+			htmlBody+='				<th>'+this.description+'</th>';
+			if(this.enum == undefined){
+				htmlBody+='				<td><input type="text" name="'+this.name+'" value="" /></td>';			
+			} else {
+				htmlBody+='				<td>'+createSelect(this.enum,this.enum,this.name,null,null,null,null,null);+'</td>';				
+			}
+			htmlBody+='			</tr>';
+		});
+	});
+	htmlBody+='		</tbody>';	
+	htmlWrap+=htmlBody+'</table>';
+	return htmlWrap;
+};
+
+/**
+ * operationPath 와 동일한 operation 을 리턴한다.
+ */
+var findOperation = function(apiOperations,operationPath){
+	var operations = null;
+	$(apiOperations).each(function(){
+		if(this.path==operationPath){
+			operations=this.operations;
+		}
+	});
+	return operations;
+};
+
 $(document).ready(function(){
 	/**
 	 * 공통 팝업

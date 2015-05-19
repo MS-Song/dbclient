@@ -1,18 +1,29 @@
 package com.song7749.dl.dbclient.vo;
 
 import com.song7749.dl.base.AbstractVo;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
+@ApiModel
 public class IndexVO extends AbstractVo{
 
 	private static final long serialVersionUID = -4278215059798990829L;
 
+	@ApiModelProperty
 	private String owner;
+	@ApiModelProperty
 	private String indexName;
+	@ApiModelProperty
 	private String indexType;
+	@ApiModelProperty
 	private String columnName;
+	@ApiModelProperty
 	private String columnPosition;
+	@ApiModelProperty
 	private String cardinality;
+	@ApiModelProperty
 	private String unique;
+	@ApiModelProperty
 	private String descend;
 
 	public IndexVO() {}

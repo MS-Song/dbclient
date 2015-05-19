@@ -63,11 +63,11 @@ public class Member extends Entities {
 	private String email;
 
 	@Column
-	@NotNull(groups={ValidateGroupInsert.class})
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String passwordQuestion;
 
 	@Column
-	@NotNull(groups={ValidateGroupInsert.class})
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String passwordAnswer;
 
 	@OneToMany(mappedBy="member",fetch=FetchType.LAZY,cascade=CascadeType.ALL, orphanRemoval=true)

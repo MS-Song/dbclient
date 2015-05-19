@@ -1,8 +1,12 @@
+// 회원 관련 기능 API 오퍼레이션 목록
+var apiMemberOperations = null;
 
 /**
  * 회원가입 폼
  */
 var resisteMember = function(){
+	var operationPath = '/member/add';
+	
 	/**
 	 * dialog 설정
 	 */
@@ -13,13 +17,18 @@ var resisteMember = function(){
 				text: "가입",
 				click: function() {
 					if(confirm("회원 가입을 하시겠습니까??")){
-//						$.post("./database/saveDatabases.json", $("#databaseManageTable").serializeArray(), function(data){
-//							alert(data.result.message);
-//						});
-						window.setTimeout(function(){
-							document.location = document.location.href;	
-						}, 1000)
-						
+						$.post("."+operationPath+".json", $("#resistMemberForm").serializeArray(), function(data){
+							if(data.status == 200){
+								alert(data.result.message);	
+								window.setTimeout(function(){
+									document.location = document.location.href;	
+								}, 1000)
+							} else {
+								alert(data.desc);	
+							}
+							
+							
+						});
 					};
 
 				}
@@ -36,15 +45,13 @@ var resisteMember = function(){
 	});
 	
 	$( "#commonsPopup" ).dialog( "open" );
-	resistMemberForm();
-}
-
-/**
- * 회원가입 폼 
- */
-var resistMemberForm = function(){
 	
-};
+	// html 생성
+	var html='<form name="resistMemberForm" id="resistMemberForm">';
+	html+=createHorizontalForm(apiMemberOperations,operationPath);
+	html+='</form>';
+	$( "#commonsPopup" ).html(html);
+}
 
 /**
  * 로그인 폼 
@@ -100,5 +107,13 @@ $(document).ready(function(){
 	    	}
     		$("#loginInfo").html(html)
 	    }
+	});
+	
+	/**
+	 * 회원 관련 기능 API 목록
+	 */
+	$.get("./api-docs/api/member", null, function(data){
+		apiMemberOperations = data.apis;
+		console.log(apiMemberOperations);
 	});
 });

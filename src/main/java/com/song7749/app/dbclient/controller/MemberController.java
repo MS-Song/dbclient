@@ -3,6 +3,7 @@ package com.song7749.app.dbclient.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class MemberController {
 			,position=1)
 	@RequestMapping(value="/add",method=RequestMethod.POST)
 	public void addMember(
-			@ModelAttribute AddMemberDTO dto,
+			@Valid @ModelAttribute AddMemberDTO dto,
 			HttpServletRequest request,
 			ModelMap model){
 		memberManager.addMember(dto);

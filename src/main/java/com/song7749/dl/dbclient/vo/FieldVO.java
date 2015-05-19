@@ -1,21 +1,34 @@
 package com.song7749.dl.dbclient.vo;
 
 import com.song7749.dl.base.AbstractVo;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 
+@ApiModel
 public class FieldVO extends AbstractVo{
 
 	private static final long serialVersionUID = -6548195910234084209L;
 
+	@ApiModelProperty
 	private String columnId;
+	@ApiModelProperty
 	private String columnName;
+	@ApiModelProperty
 	private String nullable;
+	@ApiModelProperty
 	private String columnKey;
+	@ApiModelProperty
 	private String dataType;
+	@ApiModelProperty
 	private String dataLegnth;
+	@ApiModelProperty
 	private String characterset;
+	@ApiModelProperty
 	private String extra;
+	@ApiModelProperty
 	private String defaultValue;
+	@ApiModelProperty
 	private String comment;
 
 	public FieldVO() {}

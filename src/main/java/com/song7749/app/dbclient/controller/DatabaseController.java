@@ -66,7 +66,7 @@ public class DatabaseController {
 
 	@ApiOperation(value = "데이터 베이스 서버 리스트 조회"
 					,notes = "등록되어 있는 Database 서버 리스트를 조회 한다."
-					,response=ResponseResult.class)
+					,response=ServerInfoVO.class)
 	@RequestMapping(value="/serverList",method=RequestMethod.GET)
 	public void getServerList(
 			HttpServletRequest request,
@@ -80,7 +80,7 @@ public class DatabaseController {
 
 	@ApiOperation(value = "데이터 베이스 스키마, SID 조회"
 			,notes = "등록되어 있는 Database 서버 의 스키마(Mysql), SID(Oracle) 을 조회 한다."
-			,response=ResponseResult.class)
+			,response=ServerInfoVO.class)
 	@RequestMapping(value="/schemaList",method=RequestMethod.GET)
 	public void getSchemaList(
 			@RequestParam(value="server",required=true)
@@ -96,7 +96,7 @@ public class DatabaseController {
 
 	@ApiOperation(value = "데이터베이스 테이블 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 을 조회 한다."
-			,response=ResponseResult.class)
+			,response=TableVO.class)
 	@RequestMapping(value="/tableList",method=RequestMethod.GET)
 	public void getTableList(
 			@RequestParam(value="server",required=true)
@@ -121,7 +121,7 @@ public class DatabaseController {
 
 	@ApiOperation(value = "데이터베이스 테이블  필드 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 의 필드를 조회 한다."
-			,response=ResponseResult.class)
+			,response=FieldVO.class)
 	@RequestMapping(value="/fieldList",method=RequestMethod.GET)
 	public void getFieldList(
 			@RequestParam(value="server",required=true)
@@ -150,7 +150,7 @@ public class DatabaseController {
 
 	@ApiOperation(value = "데이터베이스 테이블 인덱스 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 의 인덱스 리스트 조회."
-			,response=ResponseResult.class)
+			,response=IndexVO.class)
 	@RequestMapping(value="/indexList",method=RequestMethod.GET)
 	public void getIndexList(
 			@RequestParam(value="server",required=true)
@@ -324,7 +324,7 @@ public class DatabaseController {
 
 	@ApiOperation(value = "데이터 베이스 드라이버 조회"
 			,notes = "데이터 베이스 드라이버를 조회한다."
-			,response=ResponseResult.class)
+			,response=DatabaseDriver.class)
 	@RequestMapping(value="/getDatabaseDriver",method=RequestMethod.GET)
 	public void getDatabaseDriver(
 			ModelMap model){

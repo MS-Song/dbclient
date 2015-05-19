@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.util.StringUtils;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * <pre>
@@ -24,8 +26,10 @@ import com.song7749.util.StringUtils;
  * @author song7749
  * @since 2014. 4. 28.
  */
+@ApiModel
 public enum DatabaseDriver {
 
+	@ApiModelProperty
 	mysql(
 			"com.mysql.jdbc.Driver",
 			"jdbc:mysql://{host}:{port}/{schemaName}?autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding={charset}",
@@ -33,7 +37,7 @@ public enum DatabaseDriver {
 			"SELECT ORDINAL_POSITION COLUMN_ID,COLUMN_NAME,IS_NULLABLE NULLABLE,COLUMN_KEY,DATA_TYPE,COLUMN_TYPE DATA_LENGTH,CHARACTER_SET_NAME CHARACTER_SET,EXTRA,COLUMN_DEFAULT DEFAULT_VALUE,COLUMN_COMMENT COMMENTS FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}' AND TABLE_NAME='{tableName}'",
 			"SELECT TABLE_NAME OWNER, INDEX_NAME, INDEX_TYPE, if(NON_UNIQUE=0,'UNIQUE','NOT_UNIQUE') as UNIQUENESS, CARDINALITY, COLUMN_NAME, SEQ_IN_INDEX COLUMN_POSITION, 'ASC' as DESCEND FROM information_schema.statistics WHERE table_name='{tableName}' AND TABLE_SCHEMA='{schemaName}'",
 			""),
-
+	@ApiModelProperty
 	oracle(
 			"oracle.jdbc.driver.OracleDriver",
 			"jdbc:oracle:thin:@{host}:{port}:{schemaName}",

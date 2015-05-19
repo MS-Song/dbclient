@@ -2,27 +2,36 @@ package com.song7749.dl.dbclient.vo;
 
 import com.song7749.dl.base.AbstractVo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
-@XStreamAlias("ServerInfo")
+@ApiModel(description="데이터베이스 서버 정보",subTypes={DatabaseDriver.class})
 public class ServerInfoVO extends AbstractVo{
 
 	private static final long serialVersionUID = -8989212849769127761L;
 
+	@ApiModelProperty(hidden=true)
 	private Integer serverInfoSeq;
 
+	@ApiModelProperty(position=2)
 	private String host;
 
+	@ApiModelProperty(position=3)
 	private String schemaName;
 
+	@ApiModelProperty(position=4)
 	private String account;
 
+	@ApiModelProperty(position=5)
 	private String password;
 
+	@ApiModelProperty(position=6)
 	private DatabaseDriver driver;
 
+	@ApiModelProperty(position=7)
 	private String charset;
 
+	@ApiModelProperty(position=8)
 	private String port;
 
 	public ServerInfoVO(){}
