@@ -1,3 +1,47 @@
+
+/**
+ * 데이터베이스 매니저 호출 이벤트
+ */
+var databaseManager = function(){
+	/**
+	 * dialog 설정
+	 */
+	$("#commonsPopup").dialog({
+		title: '데이터 베이스 관리',
+		buttons: [
+			{
+				text: "저장",
+				click: function() {
+					if(confirm("변경 내용을 저장 하시겠습니까?")){
+						$.post("./database/saveDatabases.json", $("#databaseManageTable").serializeArray(), function(data){
+							alert(data.result.message);
+						});
+						window.setTimeout(function(){
+							document.location = document.location.href;	
+						}, 1000)
+						
+					};
+
+				}
+			},
+			{
+				text: "취소",
+				click: function() {
+					if(confirm("취소 하시겠습니까?")){
+						$( this ).dialog( "close" );
+					};
+				}
+			}
+		]
+	});
+	
+	$( "#commonsPopup" ).dialog( "open" );
+	databaseManageForm();
+}
+
+/**
+ * 데이터베이스 매니저 폼
+ */
 var databaseManageForm=function(){
 	$.get("./database/serverList.json", null, function(data){
 		var html='<form name="databaseManageTable" id="databaseManageTable">';
@@ -23,7 +67,7 @@ var databaseManageForm=function(){
 		
 		subHtml;
 		html+='<tbody></table></form>';
-		$( "#databaseManagePopup" ).html(html);
+		$( "#commonsPopup" ).html(html);
 
 		// add button click event
 		$( "#add" ).click(function( event ) {
@@ -65,6 +109,9 @@ var databaseManageForm=function(){
 	});
 };
 
+/**
+ * 데이터베이스 매니저 데이터 생성
+ */
 var databaseManageGetSubHTML = function(obj){
 	// 객체 검증
 	
@@ -95,48 +142,3 @@ var databaseManageGetSubHTML = function(obj){
 	subHtml+='</tr>';
 	return subHtml; 
 };
-
-$(document).ready(function(){
-	$("#databaseManagePopup").dialog({
-		autoOpen: false,
-		width: 1000,
-		height: 600,
-		modal: true,
-		title: '데이터 베이스 관리',
-		buttons: [
-			{
-				text: "저장",
-				click: function() {
-					if(confirm("변경 내용을 저장 하시겠습니까?")){
-						$.post("./database/saveDatabases.json", $("#databaseManageTable").serializeArray(), function(data){
-							alert(data.result.message);
-						});
-						window.setTimeout(function(){
-							document.location = document.location.href;	
-						}, 1000)
-						
-					};
-
-				}
-			},
-			{
-				text: "취소",
-				click: function() {
-					if(confirm("취소 하시겠습니까?")){
-						$( this ).dialog( "close" );
-					};
-				}
-			}
-		],
-		open: function(event, ui) {
-			$( this ).dialog("option", "height", $( window ).height());
-		}
-	});
-	
-	// Link to open the dialog
-	$( "#databaseManager" ).click(function( event ) {
-		$( "#databaseManagePopup" ).dialog( "open" );
-		event.preventDefault();
-		databaseManageForm();
-	});
-});

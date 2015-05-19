@@ -3,13 +3,11 @@ package com.song7749.app.dbclient.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.View;
 
 import com.song7749.app.dbclient.view.GenericExcelView;
 import com.song7749.dl.base.ResponseResult;
@@ -325,50 +322,6 @@ public class DatabaseController {
 
 	}
 
-	@ApiOperation(value = "엑셀 다운로드"
-			,notes = "Request parameter 를 기반으로 엑셀파일을 생성하여 다운로드 한다."
-					+ "타이틀은 엑셀 컬럼 제목이며, 타이틀 배열 개수만큼 밸류를 row 로 생성한다."
-			,response=ResponseResult.class)
-	@RequestMapping(value={"/getExcel.xls"},
-			produces= {"application/vnd.ms-excel;charset=UTF-8", "text/csv;charset=UTF-8"},
-			method=RequestMethod.POST)
-	public View getExcel(
-			@RequestParam(value="titles[]",required=true)
-			@ApiParam	String[] titles,
-			@RequestParam(value="values[]",required=true)
-			@ApiParam	String[] values,
-			ModelMap model,
-			HttpServletRequest request,
-			HttpServletResponse response){
-
-		if(null==titles || titles.length==0){
-			throw new IllegalArgumentException("excel 출력할 데이터가 없습니다.");
-		}
-
-		List<String> colNameList = new ArrayList<String>();
-		colNameList.addAll(Arrays.asList(titles));
-
-
-		List<List<String>> colValueList = new ArrayList<List<String>>();
-		if(null!=values && values.length>0){
-			List<String> subList = new ArrayList<String>();
-			for(int i=0;i<values.length;i++){
-				if(i>0 && i%titles.length==0){
-					colValueList.add(subList);
-					subList = new ArrayList<String>();
-				}
-				subList.add(values[i]);
-			}
-			colValueList.add(subList);
-		}
-
-
-		model.addAttribute("excelName", "dbClient"+System.currentTimeMillis());
-		model.addAttribute("colName",colNameList);
-		model.addAttribute("colValue",colValueList);
-		return genericExcelView;
-	}
-
 	@ApiOperation(value = "데이터 베이스 드라이버 조회"
 			,notes = "데이터 베이스 드라이버를 조회한다."
 			,response=ResponseResult.class)
@@ -377,4 +330,49 @@ public class DatabaseController {
 			ModelMap model){
 		model.addAttribute("databaseDriverList", DatabaseDriver.values());
 	}
+
+//	@ApiOperation(value = "엑셀 다운로드"
+//			,notes = "Request parameter 를 기반으로 엑셀파일을 생성하여 다운로드 한다."
+//					+ "타이틀은 엑셀 컬럼 제목이며, 타이틀 배열 개수만큼 밸류를 row 로 생성한다."
+//			,response=ResponseResult.class)
+//	@RequestMapping(value={"/getExcel.xls"},
+//			produces= {"application/vnd.ms-excel;charset=UTF-8", "text/csv;charset=UTF-8"},
+//			method=RequestMethod.POST)
+//	public View getExcel(
+//			@RequestParam(value="titles[]",required=true)
+//			@ApiParam	String[] titles,
+//			@RequestParam(value="values[]",required=true)
+//			@ApiParam	String[] values,
+//			ModelMap model,
+//			HttpServletRequest request,
+//			HttpServletResponse response){
+//
+//		if(null==titles || titles.length==0){
+//			throw new IllegalArgumentException("excel 출력할 데이터가 없습니다.");
+//		}
+//
+//		List<String> colNameList = new ArrayList<String>();
+//		colNameList.addAll(Arrays.asList(titles));
+//
+//
+//		List<List<String>> colValueList = new ArrayList<List<String>>();
+//		if(null!=values && values.length>0){
+//			List<String> subList = new ArrayList<String>();
+//			for(int i=0;i<values.length;i++){
+//				if(i>0 && i%titles.length==0){
+//					colValueList.add(subList);
+//					subList = new ArrayList<String>();
+//				}
+//				subList.add(values[i]);
+//			}
+//			colValueList.add(subList);
+//		}
+//
+//
+//		model.addAttribute("excelName", "dbClient"+System.currentTimeMillis());
+//		model.addAttribute("colName",colNameList);
+//		model.addAttribute("colValue",colValueList);
+//		return genericExcelView;
+//	}
+
 }

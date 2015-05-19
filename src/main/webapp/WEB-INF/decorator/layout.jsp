@@ -36,7 +36,7 @@
 					<td valign="top">
 						<div id="logo"><a href="/" onfocus="this.blur()"></a></div>
 						<div id="marketPlaceList" style="text-align: left">
-						<h3> 데이터베이스 관리 </h3>
+						<h3> Database 관리 시스템 </h3>
 						</div>
 						<div id="loginInfo" />
 					</td>
@@ -44,8 +44,8 @@
 			</table>
 		</div>
 		<ul class="jd_menu">
-			<li><a id="databaseManager" href="#">Database 관리</a></li>
-			<li><a id="userManager" href="#">회원 관리</a></li>
+			<li><a href="javascript:databaseManager();">Database 관리</a></li>
+			<li><a href="javascript:memberManager();">회원 관리</a></li>
 		</ul>
 		<div id="topPadding"></div>
 	</div>

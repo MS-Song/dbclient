@@ -5,7 +5,7 @@ html {
 body {
 	height:100%;
 	background: #DDDDDD;
-	font-family: 굴림;
+	font-family: 援대┝;
 	font-size: 0.7em;
 	margin-left: 10px;
 	margin-top: 0px;
@@ -23,6 +23,17 @@ a:hover {
 	color: #22b9ff;
 	text-decoration: none;
 }
+
+span a, a:visited, a:active {
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+span a:hover {
+	color: #22b9ff;
+	text-decoration: none;
+}
+
 
 a img {
 	border-style: none;
@@ -204,7 +215,7 @@ input[type="radio"],input[type="checkbox"] {border:0px}
 input[type="button"]:HOVER{color:#06F;cursor: pointer;}
 input[type="button"]:FOCUS{color:#FB7B7B}
 
-/* 목록형태의 table */
+/* 紐⑸줉�뺥깭��table */
 table.table-list {
 	font-size:12px;
 	border-collapse:collapse;
@@ -238,7 +249,7 @@ table.table-list td {
 	padding-right:5px;
 	text-align: left;
 }
-/* 목록형태의 table */
+/* 紐⑸줉�뺥깭��table */
 table.table-list-no-gradient {
 	font-size:12px;
 	border-collapse:collapse;
@@ -269,7 +280,7 @@ table.table-list-no-gradient td {
 	text-align: left;
 }
 
-/* 입력폼 형태의 table */
+/* �낅젰���뺥깭��table */
 table.table-form {
 	font-size:12px;
 	border-collapse:collapse;
@@ -303,7 +314,7 @@ table.table-form td {
 	empty-cells: show;
 }
 
-/* 검색기능 table */
+/* 寃�깋湲곕뒫 table */
 table.table-search {
 	background:#EEF2F0;
 	font-size:11px;
@@ -322,7 +333,7 @@ table.table-search input[type="submit"] {
 }
 
 
-/* 입력폼 오류메세지 */
+/* �낅젰���ㅻ쪟硫붿꽭吏�*/
 .validation_error {
 	color:red;
 	counter-increment: inherit;
@@ -392,7 +403,7 @@ ul.jd_menu ul {
 	width: 1%;
 }
 ul.jd_menu li {
-	font-family: 돋움;
+	font-family: �뗭�;
 	font-size: 12px;
 	color: #FFF;
 	font-weight:normal;
