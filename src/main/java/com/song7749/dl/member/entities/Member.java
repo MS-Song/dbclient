@@ -12,13 +12,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.constraints.Email;
 
 import com.song7749.dl.base.Entities;
 import com.song7749.util.crypto.CryptoAES;
-import com.song7749.util.validate.ValidateGroupDelete;
 import com.song7749.util.validate.ValidateGroupInsert;
 import com.song7749.util.validate.ValidateGroupUpdate;
 
@@ -47,14 +47,16 @@ public class Member extends Entities {
 	private static final long serialVersionUID = 2498909624760963269L;
 
 	@Id
-	@NotNull(groups={ValidateGroupInsert.class
-			,ValidateGroupUpdate.class
-			,ValidateGroupDelete.class})
+	@NotNull
+	@Size(min=8,max=20)
 	private String id;
 
 	@NotNull(groups={ValidateGroupInsert.class
 			,ValidateGroupUpdate.class})
 //	@ColumnTransformer( write="seal(?)", read="unseal(?)" )
+	@Size(min=8,max=64
+		,groups={ValidateGroupInsert.class
+				,ValidateGroupUpdate.class})
 	private String password;
 
 	@Column
@@ -64,10 +66,16 @@ public class Member extends Entities {
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
+	@Size(min=6,max=50
+	,groups={ValidateGroupInsert.class
+			,ValidateGroupUpdate.class})
 	private String passwordQuestion;
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
+	@Size(min=6,max=50
+	,groups={ValidateGroupInsert.class
+			,ValidateGroupUpdate.class})
 	private String passwordAnswer;
 
 	@OneToMany(mappedBy="member",fetch=FetchType.LAZY,cascade=CascadeType.ALL, orphanRemoval=true)

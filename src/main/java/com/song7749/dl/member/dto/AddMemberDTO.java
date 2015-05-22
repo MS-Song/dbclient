@@ -1,6 +1,9 @@
 package com.song7749.dl.member.dto;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Email;
 
 import com.song7749.dl.base.BaseObject;
 import com.song7749.dl.base.Dto;
@@ -29,22 +32,27 @@ public class AddMemberDTO extends BaseObject implements Dto {
 	private static final long serialVersionUID = 7979771551393878737L;
 
 	@NotNull
+	@Size(min=8,max=20)
 	@ApiModelProperty(value="ID",required=true)
 	private String id;
 
 	@NotNull
+	@Email
 	@ApiModelProperty(value="e-mail",required=true)
 	private String email;
 
 	@NotNull
+	@Size(min=8,max=20)
 	@ApiModelProperty(value="비밀번호",required=true)
 	private String password;
 
 	@NotNull
+	@Size(min=6,max=50)
 	@ApiModelProperty(value="비밀번호 찾기 질문",required=true)
 	private String passwordQuestion;
 
 	@NotNull
+	@Size(min=6,max=50)
 	@ApiModelProperty(value="비밀번호 찾기 답변",required=true)
 	private String passwordAnswer;
 

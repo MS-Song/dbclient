@@ -32,7 +32,14 @@ var databaseManager = function(){
 					};
 				}
 			}
-		]
+		],
+		autoOpen: false,
+		width: 1000,
+		height: 600,
+		modal: true,
+		open: function(event, ui) {
+			$( this ).dialog("option", "height", $( window ).height());
+		}		
 	});
 	
 	$( "#commonsPopup" ).dialog( "open" );

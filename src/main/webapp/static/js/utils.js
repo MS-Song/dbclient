@@ -57,7 +57,7 @@ var createSelect = function (values,textes,name,selectedValue,firsetOpetionValue
  * 세로형 폼 Head 만들기
  */
 var createVerticalFormHead = function(apiMemberOperations,operationPath){
-	var html='';
+	var html='<thead>';
 	var operation = findOperation(apiMemberOperations,operationPath);
 	$(operation).each(function(){	
 		$(this.parameters).each(function(){
@@ -66,13 +66,15 @@ var createVerticalFormHead = function(apiMemberOperations,operationPath){
 			html+='			</tr>';
 		});
 	});
+	html='</thead>';
+	return html;
 };
 
 /**
  * 세로형 폼 Body 만들기
  */
 var createVerticalFormBody = function(apiMemberOperations,operationPath){
-	var html='';
+	var html='<tbody>';
 	var operation = findOperation(apiMemberOperations,operationPath);
 	$(operation).each(function(){	
 		$(this.parameters).each(function(){
@@ -85,6 +87,8 @@ var createVerticalFormBody = function(apiMemberOperations,operationPath){
 			html+='			</tr>';
 		});
 	});
+	html='</tbody>';
+	return html;
 };
 
 
@@ -92,19 +96,24 @@ var createVerticalFormBody = function(apiMemberOperations,operationPath){
  * 가로형 폼 만들기
  */
 var createHorizontalForm = function(apiMemberOperations,operationPath){
-	var htmlWrap='	<table class="table-list">';
+	var htmlWrap='	<table class="table-list valid">';
 	var htmlBody='		<tbody>';
 	// 필드 생성
 	var operation = findOperation(apiMemberOperations,operationPath);
+
+	console.log(operation);
+	
 	$(operation).each(function(){	
 		$(this.parameters).each(function(){
 			htmlBody+='			<tr>';
 			htmlBody+='				<th>'+this.description+'</th>';
 			if(this.enum == undefined){
-				htmlBody+='				<td><input type="text" name="'+this.name+'" value="" /></td>';			
+				var inputType = this.name!='password' ? 'text': 'password';
+				htmlBody+='	<td><input type="'+inputType+'" name="'+this.name+'" value="" />';					
 			} else {
-				htmlBody+='				<td>'+createSelect(this.enum,this.enum,this.name,null,null,null,null,null);+'</td>';				
+				htmlBody+='	<td>'+createSelect(this.enum,this.enum,this.name,null,null,null,null,null);				
 			}
+			htmlBody+='<label id="label_'+this.name+'"/></td>';
 			htmlBody+='			</tr>';
 		});
 	});
@@ -126,17 +135,26 @@ var findOperation = function(apiOperations,operationPath){
 	return operations;
 };
 
-$(document).ready(function(){
-	/**
-	 * 공통 팝업
-	 */
-	$("#commonsPopup").dialog({
-		autoOpen: false,
-		width: 1000,
-		height: 600,
-		modal: true,
-		open: function(event, ui) {
-			$( this ).dialog("option", "height", $( window ).height());
+/**
+ * 에러 메세지 제거
+ */
+var removeErrorMessage = function(){
+	$("label[id^='label_']").removeClass("error").html("");
+};
+
+/**
+ * 에러 메세지 추가
+ */
+var addErrorMessage = function(data){
+	var messageList = data.desc.split("|");
+	for(var i=0;i<messageList.length;i++){
+		var message = messageList[i].split("=");
+		if(message.length > 1){
+			$("#label_"+message[0]).addClass("error").html(message[1]);
 		}
-	});
+	}
+};
+
+$(document).ready(function(){
+
 });

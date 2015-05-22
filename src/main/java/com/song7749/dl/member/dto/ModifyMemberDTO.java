@@ -1,6 +1,7 @@
 package com.song7749.dl.member.dto;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.song7749.dl.base.BaseObject;
 import com.song7749.dl.base.Dto;
@@ -30,6 +31,7 @@ public class ModifyMemberDTO extends BaseObject implements Dto {
 
 
 	@NotNull
+	@Size(min=8,max=20)
 	@ApiModelProperty(value="ID",required=true)
 	private String id;
 

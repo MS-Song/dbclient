@@ -72,6 +72,7 @@ public class MemberRepositoryHibernate implements MemberRepository{
 	}
 
 	@Override
+	@Validate
 	public Member find(Member member) {
 		return (Member)getSesson().byId(Member.class).load(member.getId());
 	}

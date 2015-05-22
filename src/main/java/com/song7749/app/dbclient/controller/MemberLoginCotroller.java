@@ -4,6 +4,7 @@ import static com.song7749.util.LogMessageFormatter.format;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,18 +38,16 @@ public class MemberLoginCotroller {
 			,position=1)
 	@RequestMapping(value="/doLogin",method=RequestMethod.POST)
 	public ModelMap doLogin(
-			@ModelAttribute DoLoginDTO dto,
+			@Valid @ModelAttribute DoLoginDTO dto,
 			HttpServletRequest request,
 			HttpServletResponse response,
 			ModelMap model){
 
+		loginManager.doLogin(dto, response);
+
 		model.clear();
+		model.addAttribute("message","로그인 처리가 완료되었습니다.");
 
-
-		if(loginManager.doLogin(dto, response))
-			model.addAttribute("message","로그인 처리가 완료되었습니다.");
-		else
-			model.addAttribute("message","ID 또는 비밀번호가 맞지 않습니다.");
 		// HttpServletResponse response 를 받을 경우에는 modelMap return 해야 한다.
 		return model;
 	}
@@ -62,6 +61,8 @@ public class MemberLoginCotroller {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			ModelMap model){
+
+		loginManager.doLogout(response);
 
 		model.clear();
 		model.addAttribute("message","로그아웃 처리가 완료되었습니다.");

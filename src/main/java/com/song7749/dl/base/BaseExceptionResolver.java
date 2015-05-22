@@ -21,6 +21,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -61,6 +62,7 @@ public class BaseExceptionResolver extends SimpleMappingExceptionResolver {
 
 		// http status 정리
 		int responseCode = getResponseCode(ex);
+
 		// 익셉션 메세지 변환
 		String message = convertExceptionMessage(request, handler, ex);
 
@@ -195,9 +197,17 @@ public class BaseExceptionResolver extends SimpleMappingExceptionResolver {
 			} catch (Exception e) {
 				// 파라메터 추출 실패 시 기존 익셉션 값을 전달한다
 			}
+		} else if(ex instanceof BindException){ // Validate 익셉션 처리
+			for(FieldError fe : ((BindException) ex).getFieldErrors()){
+				sb.append(fe.getField());
+				sb.append("=");
+				sb.append(" 의(는)(은) ");
+				sb.append(fe.getDefaultMessage());
+				sb.append("|");
+			}
+		} else { //  그외 모든 오류
+			sb.append(ex.getMessage());
 		}
-		sb.append(" ");
-		sb.append(ex.getMessage());
 		return sb.toString();
 	}
 

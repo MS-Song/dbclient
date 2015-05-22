@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.login.annotations.Login;
 import com.song7749.dl.login.dto.DoLoginDTO;
@@ -48,7 +49,6 @@ public class LoginManagerImpl implements LoginManager{
 	public boolean isLogin(HttpServletRequest request) {
 		String id = getLoginID(request);
 		if(null!=id){
-			request.setAttribute("loginID", CryptoAES.decrypt(cipher));
 			return true;
 		} else {
 			return false;
@@ -57,20 +57,25 @@ public class LoginManagerImpl implements LoginManager{
 
 	@Override
 	@Valid
-	public boolean doLogin(DoLoginDTO dto,HttpServletResponse response) {
-		Member findMember = new Member(dto.getId(), dto.getPassword());
+	@Transactional(value = "dbClientTransactionManager",readOnly=true)
+	public boolean doLogin(DoLoginDTO dto,HttpServletResponse response){
+		Member findMember = new Member(dto.getId());
 		Member member = memberRepository.find(findMember);
 
 		// 회원 정보가 조회가 되면.. 회원이 존재함.
 		if(null != member){
-
-			// 로그인 cookie 정보를 생성 한다.
-			response.addCookie(
-					new Cookie(cipher,CryptoAES.encrypt(member.getId())));
-
-			return true;
+			// 패스워드가 동일 함
+			if(dto.getPassword().equals(member.getPassword())){
+				// 로그인 cookie 정보를 생성 한다.
+				Cookie ciperCookie = new Cookie(cipher,CryptoAES.encrypt(member.getId()));
+				ciperCookie.setMaxAge(60*60*2);
+				response.addCookie(ciperCookie);
+				return true;
+			} else {
+				throw new IllegalArgumentException("password=PASSWORD 가 일치하지 않습니다.");
+			}
 		}
-		return false;
+		throw new IllegalArgumentException("id=존재하지 않는 ID 입니다.");
 	}
 
 	@Override
@@ -86,7 +91,7 @@ public class LoginManagerImpl implements LoginManager{
 		if (cookie != null) {
 			for (int i=0; i<cookie.length; i++) {
 				if (null != cookie[i]
-						&& cookie[i].getName().equals(cipher)) {
+						&& cookie[i].getName().equals(this.cipher)) {
 					cipher = cookie[i].getValue();
 					// 복호화 된 ID 정보를 리턴한다.
 					return CryptoAES.decrypt(cipher);
@@ -103,6 +108,7 @@ public class LoginManagerImpl implements LoginManager{
 	 * @return boolean
 	 */
 	@Override
+	@Transactional(value = "dbClientTransactionManager",readOnly=true)
 	public boolean isAccese(HttpServletRequest request,Login login) {
 		// 일반 회원 접근 가능 페이지는 권한 체크 하지 않는다.
 		if(login.value().equals(AuthType.NORMAL)){

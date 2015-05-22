@@ -1,5 +1,7 @@
 package com.song7749.dl.login.dto;
 
+import javax.validation.constraints.Size;
+
 import com.song7749.dl.base.BaseObject;
 import com.song7749.dl.base.Dto;
 import com.sun.istack.NotNull;
@@ -27,11 +29,13 @@ public class DoLoginDTO extends BaseObject implements Dto{
 	private static final long serialVersionUID = -582753518955573813L;
 
 	@NotNull
+	@Size(min=8,max=20)
 	@ApiModelProperty(value="로그인 id",required=true)
 	private String id;
 
 	@NotNull
-	@ApiModelProperty(value="패스워드",required=true)
+	@Size(min=8,max=20)
+	@ApiModelProperty(value="비밀번호",required=true)
 	private String password;
 
 	public DoLoginDTO() {

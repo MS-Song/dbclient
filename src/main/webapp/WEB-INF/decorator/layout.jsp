@@ -43,9 +43,7 @@
 				</tr>
 			</table>
 		</div>
-		<ul class="jd_menu">
-			<li><a href="javascript:databaseManager();">Database 관리</a></li>
-			<li><a href="javascript:memberManager();">회원 관리</a></li>
+		<ul class="jd_menu" id="jd_menu">
 		</ul>
 		<div id="topPadding"></div>
 	</div>

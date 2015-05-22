@@ -55,6 +55,43 @@ public class MemberRepositoryHibernateTest {
 		assertTrue(true);
 	}
 
+	@Test(expected=IllegalArgumentException.class)
+	public void testSave_valiate_id_null() throws Exception {
+		// give
+		Member member=new Member(null, "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
+		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
+
+		// when
+		memberRepository.save(member);
+
+		// then exception
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void testSave_valiate_id_empty() throws Exception {
+		// give
+		Member member=new Member("", "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
+		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
+
+		// when
+		memberRepository.save(member);
+
+		// then exception
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void testSave_valiate_id_size_over() throws Exception {
+		// give
+		Member member=new Member("sssssssssssssssssssssss", "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
+		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
+
+		// when
+		memberRepository.save(member);
+
+		// then exception
+	}
+
+
 	@Test
 	public void testCURDFasade() throws Exception {
 		Member member = testSave();
@@ -67,7 +104,7 @@ public class MemberRepositoryHibernateTest {
 
 	public Member testSave() throws Exception {
 		// give
-		Member member=new Member("song7749", "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
+		Member member=new Member("song7749", "12345678", "song7749@gmail.com", "출신초등학교는?", "대한민국초등학교");
 		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
 
 		// when
@@ -83,7 +120,7 @@ public class MemberRepositoryHibernateTest {
 
 	public void testUpdate(Member member) throws Exception {
 		// give
-		member.setPassword("4567");
+		member.setPassword("45671234");
 		// when
 		memberRepository.update(member);
 		// then

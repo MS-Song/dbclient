@@ -2,6 +2,7 @@ package com.song7749.app.dbclient.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -69,6 +70,36 @@ public class MemberControllerTest {
 				.addFilter(new SiteMeshFilter(), "/*.html")
 				.build();
 	}
+
+	@Test
+	public void testAddMember_id_duplicate_validate() throws Exception {
+		drb = post("/member/add.json")
+				.param("id","root")
+				.param("email","song7749@gmail.com")
+				.param("password","12345678")
+				.param("passwordQuestion","1234")
+				.param("passwordAnswer","1234")
+				.param("authType","ADMIN")
+				;
+
+		// login cookie add
+		drb.cookie(cookies);
+
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 						notNullValue());
+		assertThat((Integer)responseObject.get("status"),				is(500));
+		assertThat(responseObject.get("result"), 						nullValue());
+		assertThat((String)responseObject.get("desc"),	is(" 이미 가입된  회원 ID 입니다."));
+
+
+	}
+
 
 	@Test
 	public void testAddMember() throws Exception {

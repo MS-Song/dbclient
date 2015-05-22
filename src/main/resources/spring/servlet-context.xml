@@ -107,6 +107,9 @@
         </property>
 	</bean>
 	
+	<!-- Validate SpringMVC 에서 사용될 validator -->
+	<bean class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+	
 	<!-- Exception Resolver-->
 	<bean class="com.song7749.dl.base.BaseExceptionResolver" >
 		<property name="order" value="1" />	
