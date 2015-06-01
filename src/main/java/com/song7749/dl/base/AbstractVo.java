@@ -1,5 +1,7 @@
 package com.song7749.dl.base;
 
+import com.wordnik.swagger.annotations.ApiModel;
+
 /**
  * <pre>
  * Class Name : AbstractVo.java
@@ -15,6 +17,7 @@ package com.song7749.dl.base;
  * @author song7749
  * @since 2015. 4. 28.
  */
+@ApiModel("BASE VO")
 public abstract class AbstractVo extends BaseObject implements Vo {
 	private static final long serialVersionUID = -8005676524782732033L;
 }

@@ -52,57 +52,47 @@ var createSelect = function (values,textes,name,selectedValue,firsetOpetionValue
 	return sb.join("");
 };
 
-
 /**
- * 세로형 폼 Head 만들기
+ * 세로형 폼 만들기
  */
-var createVerticalFormHead = function(apiMemberOperations,operationPath){
-	var html='<thead>';
-	var operation = findOperation(apiMemberOperations,operationPath);
+var createVerticalForm = function(operations,operationPath){
+	var html='<table class="table-list valid"><thead>';
+	var operation = findOperation(operations,operationPath);
 	$(operation).each(function(){	
+		html+='			<tr>';
 		$(this.parameters).each(function(){
-			html+='			<tr>';
 			html+='				<th>'+this.description+'</th>';				
-			html+='			</tr>';
 		});
+		html+='			</tr>';		
 	});
-	html='</thead>';
-	return html;
-};
-
-/**
- * 세로형 폼 Body 만들기
- */
-var createVerticalFormBody = function(apiMemberOperations,operationPath){
-	var html='<tbody>';
-	var operation = findOperation(apiMemberOperations,operationPath);
+	html+='</thead>';
+	html='<tbody>';
 	$(operation).each(function(){	
+		html+='			<tr>';
 		$(this.parameters).each(function(){
-			html+='			<tr>';
 			if(this.enum == undefined){
 				html+='				<td><input type="text" name="'+this.name+'" value="" /></td>';			
 			} else {
-				html+='				<td>'+createSelect(this.enum,this.enum,this.name,null,null,null,null,null);+'</td>';				
+				html+='				<td>'+createSelect(this.enum,this.enum,this.name,this.value,null,null,null,null);+'</td>';				
 			}
-			html+='			</tr>';
 		});
+		html+='			</tr>';
 	});
-	html='</tbody>';
+	html='</tbody></table>';
 	return html;
 };
+
 
 
 /**
  * 가로형 폼 만들기
  */
-var createHorizontalForm = function(apiMemberOperations,operationPath){
+var createHorizontalForm = function(operations,operationPath){
 	var htmlWrap='	<table class="table-list valid">';
 	var htmlBody='		<tbody>';
 	// 필드 생성
-	var operation = findOperation(apiMemberOperations,operationPath);
+	var operation = findOperation(operations,operationPath);
 
-	console.log(operation);
-	
 	$(operation).each(function(){	
 		$(this.parameters).each(function(){
 			htmlBody+='			<tr>';
@@ -136,6 +126,22 @@ var findOperation = function(apiOperations,operationPath){
 };
 
 /**
+ * response 모델을 확인해서 해당하는 모델에 대한 정보를 리턴한다.
+ */
+var findModel = function(operation,models){
+	var model = null;
+	$.each(operation,function(index,attribute){
+		if(null!=models[attribute.type]){
+			model = new Object();
+			$.each(models[attribute.type].properties,function(k,v){
+				model[k]=v.description;
+			});
+		}
+	});
+	return model;
+}
+
+/**
  * 에러 메세지 제거
  */
 var removeErrorMessage = function(){
@@ -146,7 +152,8 @@ var removeErrorMessage = function(){
  * 에러 메세지 추가
  */
 var addErrorMessage = function(data){
-	var messageList = data.desc.split("|");
+	console.log(data);
+	var messageList = data.desc.split("\n");
 	for(var i=0;i<messageList.length;i++){
 		var message = messageList[i].split("=");
 		if(message.length > 1){

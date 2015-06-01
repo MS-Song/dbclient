@@ -11,7 +11,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,6 @@ import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
 import com.mangofactory.swagger.paths.SwaggerPathProvider;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
-import com.mangofactory.swagger.readers.operation.RequestMappingReader;
 import com.wordnik.swagger.model.ApiInfo;
 import com.wordnik.swagger.model.ResponseMessage;
 
@@ -73,7 +71,6 @@ public class CustomJavaPluginConfig {
 				.pathProvider(swaggerPathProvider())
 				.excludeAnnotations(ApiIgnore.class)
 				.ignoredParameterTypes(ModelMap.class, HttpServletRequest.class)
-				.customAnnotationReaders(getCustomAnnotationReaders());
 				;
 		// 기본 응답 추가
 		Map<RequestMethod, List<ResponseMessage>> allResponseMessage = getResponseMessages();
@@ -83,15 +80,6 @@ public class CustomJavaPluginConfig {
 
 		return plugin;
 	}
-
-	/**
-	 * Custom Annotation Reading
-	 * @return Collection<RequestMappingReader>
-	 */
-	private Collection<RequestMappingReader> getCustomAnnotationReaders(){
-		return null;
-	};
-
 
 	/**
 	 * API 기본 설명

@@ -1,5 +1,7 @@
 package com.song7749.dl.member.vo;
 
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
+
 import com.song7749.dl.base.AbstractVo;
 import com.song7749.dl.member.type.AuthType;
 import com.wordnik.swagger.annotations.ApiModel;
@@ -20,22 +22,28 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 * @author song7749
 * @since 2015. 4. 29.
 */
-@ApiModel(value="회원정보",discriminator="member",description="회원정보 데이터")
+@ApiModel("회원정보")
+@JsonPropertyOrder({ "id",
+	"email",
+	"password",
+	"passwordQuestion",
+	"passwordAnswer",
+	"authType" })
 public class MemberVO extends AbstractVo{
 
 	private static final long serialVersionUID = -5590670872135422125L;
 
-	@ApiModelProperty(value="ID",position=1)
+	@ApiModelProperty(value="ID")
 	private String id;
-	@ApiModelProperty(value="e-mail",position=2)
+	@ApiModelProperty(value="e-mail")
 	private String email;
-	@ApiModelProperty(value="비밀번호",position=3)
+	@ApiModelProperty(value="비밀번호")
 	private String password;
-	@ApiModelProperty(value="비밀번호 찾기 질문",position=4)
+	@ApiModelProperty(value="비밀번호 찾기 질문")
 	private String passwordQuestion;
-	@ApiModelProperty(value="비밀번호 찾기 답변",position=5)
+	@ApiModelProperty(value="비밀번호 찾기 답변")
 	private String passwordAnswer;
-	@ApiModelProperty(value="회원권한",position=6)
+	@ApiModelProperty(value="회원권한")
 	private AuthType authType;
 
 	public MemberVO() {}

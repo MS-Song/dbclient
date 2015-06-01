@@ -70,7 +70,7 @@ public class MemberController {
 			,position=2)
 	@RequestMapping(value="/modify",method=RequestMethod.PUT)
 	public void modifyMember(
-			@ModelAttribute ModifyMemberDTO dto,
+			@Valid @ModelAttribute ModifyMemberDTO dto,
 			HttpServletRequest request,
 			ModelMap model){
 		memberManager.modifyMember(dto);
@@ -85,7 +85,7 @@ public class MemberController {
 			,position=3)
 	@RequestMapping(value="/remove",method=RequestMethod.DELETE)
 	public void removeMember(
-			@ModelAttribute RemoveMemberDTO dto,
+			@Valid @ModelAttribute RemoveMemberDTO dto,
 			HttpServletRequest request,
 			ModelMap model){
 		memberManager.removeMember(dto);

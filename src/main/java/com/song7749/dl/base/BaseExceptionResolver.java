@@ -203,7 +203,7 @@ public class BaseExceptionResolver extends SimpleMappingExceptionResolver {
 				sb.append("=");
 				sb.append(" 의(는)(은) ");
 				sb.append(fe.getDefaultMessage());
-				sb.append("|");
+				sb.append("\n");
 			}
 		} else { //  그외 모든 오류
 			sb.append(ex.getMessage());
