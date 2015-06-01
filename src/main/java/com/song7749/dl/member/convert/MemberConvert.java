@@ -7,7 +7,6 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.entities.Member;
-import com.song7749.dl.member.entities.MemberAuth;
 import com.song7749.dl.member.type.AuthType;
 import com.song7749.dl.member.vo.MemberVO;
 
@@ -43,7 +42,7 @@ public class MemberConvert {
 					, dto.getEmail()
 					, dto.getPasswordQuestion()
 					, dto.getPasswordAnswer());
-			member.addMemberAuthList(new MemberAuth(dto.getAuthType()));
+			// 가입 시에 회원 권한을 넣지 않고, 추후 승인된 회원만 권한을 넣어준다.
 			return member;
 		}
 	}
@@ -62,10 +61,8 @@ public class MemberConvert {
 					? null : member.getMemberAuthList().get(0).getAuthType();
 
 			return new MemberVO(member.getId()
-					, member.getPassword()
 					, member.getEmail()
 					, member.getPasswordQuestion()
-					, member.getPasswordAnswer()
 					, type);
 		}
 	}

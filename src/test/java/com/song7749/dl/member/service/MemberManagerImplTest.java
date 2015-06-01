@@ -62,8 +62,7 @@ public class MemberManagerImplTest {
 				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
-				, "대한민국 초등학교"
-				, AuthType.ADMIN);
+				, "대한민국 초등학교");
 		// when
 		memberManager.addMember(dto);
 		// then exception
@@ -76,8 +75,7 @@ public class MemberManagerImplTest {
 				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
-				, "대한민국 초등학교"
-				, AuthType.ADMIN);
+				, "대한민국 초등학교");
 		// when
 		memberManager.addMember(dto);
 		// then
@@ -91,8 +89,7 @@ public class MemberManagerImplTest {
 				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
-				, "대한민국 초등학교"
-				, AuthType.ADMIN);
+				, "대한민국 초등학교");
 
 		given(memberRepository.find(any(Member.class))).willReturn(new Member("song7749"));
 

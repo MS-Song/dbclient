@@ -110,7 +110,6 @@ var loginForm = function(){
 	var html='<form name="doLoginForm" id="doLoginForm">';
 	html+=createHorizontalForm(apiLoginOperations,operationPath);
 	html+='</form>';
-	console.log(html);
 	$( "#commonsPopup" ).html(html);
 };
 
@@ -142,16 +141,23 @@ var memberListForm = function(){
 	
 	$( "#commonsPopup" ).dialog( "open" );
 
+	
+	
+	// 검색 조건 설정
+	// html 생성
+	var html='<form name="memberListForm" id="memberListForm">';
+	html+=createVerticalForm(apiMemberOperations,operationPath);
+	html+='</form>';
+	console.log(html);
+	$( "#commonsPopup" ).html(html);
+	
+	
 	// 오퍼레이션과 모델을 검색 한다.
 	var operation = findOperation(apiMemberOperations, operationPath);
 	var model = findModel(operation, apiMemberModels);
-	
 	var htmlWrap='	<table class="table-list valid">';
 	var htmlHead='		<thead>';
 	var htmlBody='		<tbody>';
-	
-	// 검색 조건 설정
-
 	// 화면 리스트 
 	$.get("./member/list.json", null, function(data){
 		if(data.status == 200){
@@ -163,12 +169,17 @@ var memberListForm = function(){
 						$.each(v,function(name,value){
 							htmlHead+='<th>'+model[name]+'</th>';	
 						});
+						htmlHead+='<th>관리</th>';
 						htmlHead+='</tr>';
 					} 
 					htmlBody+='<tr>';
 					$.each(v,function(name,value){
-						htmlHead+='<td>'+value+'</td>';	
+						htmlBody+='<td>'+value+'</td>';	
 					});
+					htmlBody+='<td>';
+					htmlBody+=' <a href="javascript:memberModifyForm(\''+v.id+'\')"><input type="button" id="modify" value="수정"></a>';
+					htmlBody+=' <a href="javascript:memberRemove(\''+v.id+'\')"><input type="button" id="remove" value="삭제"></a>';
+					htmlBody+='</td>';
 					htmlBody+='</tr>';
 				});
 			});
@@ -176,14 +187,14 @@ var memberListForm = function(){
 		} else {
 			htmlWrap+='<tr><td>'+ data.desc +'</td></tr></tbody></table>'
 		}
-		$( "#commonsPopup" ).html(htmlWrap);
+		$( "#commonsPopup" ).html($( "#commonsPopup" ).html()+htmlWrap);
 	});
 };
 
 /**
  * 회원정보 수정 폼
  */
-var memberModifyForm = function(){
+var memberModifyForm = function(id){
 	
 };
 
@@ -217,7 +228,7 @@ $(document).ready(function(){
 	    	if(null!=data.result.message 
 	    			&& ""!=data.result.message){
 
-	    		headhtml+='<span id="memberId">'+data.result.message+'</span>';
+	    		headhtml+='<span id="memberId"><a href="javascript:memberModifyForm(\''+data.result.message+'\');">'+data.result.message+'(수정)</a></span>';
 	    		headhtml+=' <span id="logout"><a href="javascript:logout();">[로그아웃]</a></span>';
 
 	    		menuHtml+='<li><a href="javascript:databaseManager();">Database 관리</a></li>';

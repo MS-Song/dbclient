@@ -33,8 +33,7 @@ public class MemberConvertTest {
 				, "password"
 				, "email"
 				, "passwordQuestion"
-				, "passwordAnswer"
-				, AuthType.ADMIN);
+				, "passwordAnswer");
 		// when
 		member = MemberConvert.convert(dto);
 
@@ -44,7 +43,6 @@ public class MemberConvertTest {
 		assertThat(dto.getEmail(), is(member.getEmail()));
 		assertThat(dto.getPasswordQuestion(), is(member.getPasswordQuestion()));
 		assertThat(dto.getPasswordAnswer(), is(member.getPasswordAnswer()));
-		assertThat(dto.getAuthType(), is(member.getMemberAuthList().get(0).getAuthType()));
 	}
 
 	@Test
@@ -69,10 +67,8 @@ public class MemberConvertTest {
 
 		// then
 		assertThat(vo.getId(), is(member.getId()));
-		assertThat(vo.getPassword(), is(member.getPassword()));
 		assertThat(vo.getEmail(), is(member.getEmail()));
 		assertThat(vo.getPasswordQuestion(), is(member.getPasswordQuestion()));
-		assertThat(vo.getPasswordAnswer(), is(member.getPasswordAnswer()));
 		assertThat(vo.getAuthType(), nullValue());
 
 

@@ -57,7 +57,9 @@ var createSelect = function (values,textes,name,selectedValue,firsetOpetionValue
  */
 var createVerticalForm = function(operations,operationPath){
 	var html='<table class="table-list valid"><thead>';
+
 	var operation = findOperation(operations,operationPath);
+	
 	$(operation).each(function(){	
 		html+='			<tr>';
 		$(this.parameters).each(function(){

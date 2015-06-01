@@ -25,9 +25,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 @ApiModel("회원정보")
 @JsonPropertyOrder({ "id",
 	"email",
-	"password",
 	"passwordQuestion",
-	"passwordAnswer",
 	"authType" })
 public class MemberVO extends AbstractVo{
 
@@ -37,25 +35,19 @@ public class MemberVO extends AbstractVo{
 	private String id;
 	@ApiModelProperty(value="e-mail")
 	private String email;
-	@ApiModelProperty(value="비밀번호")
-	private String password;
 	@ApiModelProperty(value="비밀번호 찾기 질문")
 	private String passwordQuestion;
-	@ApiModelProperty(value="비밀번호 찾기 답변")
-	private String passwordAnswer;
 	@ApiModelProperty(value="회원권한")
 	private AuthType authType;
 
 	public MemberVO() {}
 
-	public MemberVO(String id, String password, String email,
-			String passwordQuestion, String passwordAnswer, AuthType authType) {
+	public MemberVO(String id, String email,
+			String passwordQuestion, AuthType authType) {
 		super();
 		this.id = id;
-		this.password = password;
 		this.email = email;
 		this.passwordQuestion = passwordQuestion;
-		this.passwordAnswer = passwordAnswer;
 		this.authType = authType;
 	}
 
@@ -65,14 +57,6 @@ public class MemberVO extends AbstractVo{
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public String getEmail() {
@@ -89,14 +73,6 @@ public class MemberVO extends AbstractVo{
 
 	public void setPasswordQuestion(String passwordQuestion) {
 		this.passwordQuestion = passwordQuestion;
-	}
-
-	public String getPasswordAnswer() {
-		return passwordAnswer;
-	}
-
-	public void setPasswordAnswer(String passwordAnswer) {
-		this.passwordAnswer = passwordAnswer;
 	}
 
 	public AuthType getAuthType() {

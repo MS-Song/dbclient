@@ -50,7 +50,7 @@ public class MemberController {
 	MemberManager memberManager;
 
 	@ApiOperation(value = "회원가입"
-			,notes = "회원 정보를 등록한다."
+			,notes = "회원 정보를 등록한다. 회원 가입 시에 권한 정보는 추후 승인하는 형태로 진행 한다."
 			,response=ResponseResult.class
 			,position=1)
 	@RequestMapping(value="/add",method=RequestMethod.POST)

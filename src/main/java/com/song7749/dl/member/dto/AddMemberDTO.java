@@ -7,7 +7,6 @@ import org.hibernate.validator.constraints.Email;
 
 import com.song7749.dl.base.BaseObject;
 import com.song7749.dl.base.Dto;
-import com.song7749.dl.member.type.AuthType;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -56,21 +55,16 @@ public class AddMemberDTO extends BaseObject implements Dto {
 	@ApiModelProperty(value="비밀번호 찾기 답변",required=true)
 	private String passwordAnswer;
 
-	@NotNull
-	@ApiModelProperty(value="회원 권한",hidden=true)
-	private AuthType authType = AuthType.NORMAL;
-
 	public AddMemberDTO() {}
 
 	public AddMemberDTO(String id, String password, String email,
-			String passwordQuestion, String passwordAnswer, AuthType authType) {
+			String passwordQuestion, String passwordAnswer) {
 		super();
 		this.id = id;
 		this.password = password;
 		this.email = email;
 		this.passwordQuestion = passwordQuestion;
 		this.passwordAnswer = passwordAnswer;
-		this.authType = authType;
 	}
 
 	public String getId() {
@@ -113,11 +107,4 @@ public class AddMemberDTO extends BaseObject implements Dto {
 		this.passwordAnswer = passwordAnswer;
 	}
 
-	public AuthType getAuthType() {
-		return authType;
-	}
-
-	public void setAuthType(AuthType authType) {
-		this.authType = authType;
-	}
 }
