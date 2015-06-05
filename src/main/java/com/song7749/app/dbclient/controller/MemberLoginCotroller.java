@@ -2,10 +2,13 @@ package com.song7749.app.dbclient.controller;
 
 import static com.song7749.util.LogMessageFormatter.format;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.song7749.dl.base.ResponseResult;
 import com.song7749.dl.login.dto.DoLoginDTO;
 import com.song7749.dl.login.service.LoginManager;
+import com.song7749.dl.member.dto.FindMemberListDTO;
+import com.song7749.dl.member.service.MemberManager;
+import com.song7749.dl.member.vo.MemberVO;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -31,6 +37,9 @@ public class MemberLoginCotroller {
 
 	@Autowired
 	LoginManager loginManager;
+
+	@Autowired
+	MemberManager memberManager;
 
 	@ApiOperation(value = "회원 로그인"
 			,notes = "회원 ID/PASSWORD 를 받아서 로그인 cookie 를 생성 한다."
@@ -83,7 +92,11 @@ public class MemberLoginCotroller {
 
 		logger.debug(format("로그인 한 회원의 ID : {}",""),memberId);
 
+		List<MemberVO> memberList  = null;
+		if(!StringUtils.isBlank(memberId)){
+			memberList=memberManager.findMemberList(new FindMemberListDTO(memberId));
+		}
 		model.clear();
-		model.addAttribute("message",memberId);
+		model.addAttribute(memberList);
 	}
 }

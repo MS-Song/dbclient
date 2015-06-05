@@ -29,6 +29,14 @@ var inArray=function (value,array){
 	return isInArray;
 };
 
+var isset=function(obj){
+	var is = true;
+	is = is && obj != undefined;
+	is = is && obj != null;
+	is = is && obj != "";
+	return is;
+}
+
 /**
  * 셀렉트 박스 생성
  */
@@ -100,7 +108,7 @@ var createHorizontalForm = function(operations,operationPath){
 			htmlBody+='			<tr>';
 			htmlBody+='				<th>'+this.description+'</th>';
 			if(this.enum == undefined){
-				var inputType = this.name!='password' ? 'text': 'password';
+				var inputType = (this.name=='password' || this.name=='passwordRepeat') ? 'password':'text';
 				htmlBody+='	<td><input type="'+inputType+'" name="'+this.name+'" value="" />';					
 			} else {
 				htmlBody+='	<td>'+createSelect(this.enum,this.enum,this.name,null,null,null,null,null);				
@@ -112,6 +120,19 @@ var createHorizontalForm = function(operations,operationPath){
 	htmlBody+='		</tbody>';	
 	htmlWrap+=htmlBody+'</table>';
 	return htmlWrap;
+};
+
+/**
+ * 리퀘스트 받은 데이터를 form 내에 넣는다.
+ */
+var inputFormData = function(result,formId){
+	$.each(result,function(){
+		$.each(this,function(){
+			$.each(this,function(field,value){
+				$("#"+formId).find("[name='"+field+"']").val(value);
+			});
+		});
+	});
 };
 
 /**
@@ -160,6 +181,8 @@ var addErrorMessage = function(data){
 		var message = messageList[i].split("=");
 		if(message.length > 1){
 			$("#label_"+message[0]).addClass("error").html(message[1]);
+		} else {
+			alert(message[0]);
 		}
 	}
 };

@@ -15,11 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.song7749.dl.base.ResponseResult;
+import com.song7749.dl.login.annotations.Login;
+import com.song7749.dl.login.service.LoginManager;
+import com.song7749.dl.login.type.LoginResponseType;
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.dto.FindMemberListDTO;
+import com.song7749.dl.member.dto.ModifyMemberByAdminDTO;
 import com.song7749.dl.member.dto.ModifyMemberDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
+import com.song7749.dl.member.exception.MemberNotIdentificationException;
 import com.song7749.dl.member.service.MemberManager;
+import com.song7749.dl.member.type.AuthType;
 import com.song7749.dl.member.vo.MemberVO;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -49,6 +55,9 @@ public class MemberController {
 	@Autowired
 	MemberManager memberManager;
 
+	@Autowired
+	LoginManager loginManager;
+
 	@ApiOperation(value = "회원가입"
 			,notes = "회원 정보를 등록한다. 회원 가입 시에 권한 정보는 추후 승인하는 형태로 진행 한다."
 			,response=ResponseResult.class
@@ -58,6 +67,7 @@ public class MemberController {
 			@Valid @ModelAttribute AddMemberDTO dto,
 			HttpServletRequest request,
 			ModelMap model){
+
 		memberManager.addMember(dto);
 
 		model.clear();
@@ -65,25 +75,51 @@ public class MemberController {
 	}
 
 	@ApiOperation(value = "회원수정"
-			,notes = "회원 정보를 수정한다."
+			,notes = "회원 정보를 수정한다. 본인의 개인정보만 수정 가능하다."
 			,response=ResponseResult.class
 			,position=2)
-	@RequestMapping(value="/modify",method=RequestMethod.PUT)
+	@RequestMapping(value="/modify",method=RequestMethod.POST)
+	@Login(type=LoginResponseType.EXCEPTION,value=AuthType.NORMAL)
 	public void modifyMember(
 			@Valid @ModelAttribute ModifyMemberDTO dto,
 			HttpServletRequest request,
 			ModelMap model){
+
+		// 본인확인
+		if(!loginManager.isIdentification(request, dto.getId())){
+			throw new MemberNotIdentificationException();
+		}
+
 		memberManager.modifyMember(dto);
 
 		model.clear();
 		model.addAttribute("message", "회원 수정이 완료되었습니다.");
 	}
 
+	@ApiOperation(value = "회원수정 관리자"
+			,notes = "회원 정보를 수정한다. 관리자가 수정한다."
+			,response=ResponseResult.class
+			,position=2)
+	@RequestMapping(value="/modifyByAdmin",method=RequestMethod.POST)
+	@Login(type=LoginResponseType.EXCEPTION,value=AuthType.ADMIN)
+	public void modifyMemberByAdmin(
+			@Valid @ModelAttribute ModifyMemberByAdminDTO dto,
+			HttpServletRequest request,
+			ModelMap model){
+
+		memberManager.modifyMember(dto);
+
+		model.clear();
+		model.addAttribute("message", "회원 수정이 완료되었습니다.");
+	}
+
+
 	@ApiOperation(value = "회원삭제"
 			,notes = "회원 정보를 삭제한다."
 			,response=ResponseResult.class
 			,position=3)
 	@RequestMapping(value="/remove",method=RequestMethod.DELETE)
+	@Login(type=LoginResponseType.EXCEPTION,value=AuthType.ADMIN)
 	public void removeMember(
 			@Valid @ModelAttribute RemoveMemberDTO dto,
 			HttpServletRequest request,
@@ -100,6 +136,7 @@ public class MemberController {
 			,responseContainer="ResponseResult"
 			,position=4)
 	@RequestMapping(value="/list",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value=AuthType.ADMIN)
 	public void listMember(
 			@ModelAttribute FindMemberListDTO dto,
 			HttpServletRequest request,

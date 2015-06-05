@@ -127,7 +127,7 @@ public class ValidateInterceptor<T> implements MethodInterceptor{
 							// 프록시 객체에서 발생한 에러를 건너뛴
 							if(c.getRootBeanClass().getName().indexOf("_$$_javassist_")==-1){
 								logger.trace(format("{} , 입력값 : {}","Validate Exception"),c.getPropertyPath() + " 은(는) " + c.getMessage(),c.getInvalidValue());
-								throw new IllegalArgumentException(c.getPropertyPath() + " 은(는) " + c.getMessage());
+								throw new IllegalArgumentException(c.getPropertyPath() + "= 은(는) " + c.getMessage());
 							}
 						}
 					}

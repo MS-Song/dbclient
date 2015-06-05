@@ -4,9 +4,11 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -81,6 +83,17 @@ public class MemberRepositoryHibernate implements MemberRepository{
 	@Validate
 	public List<Member> findMemberList(FindMemberListDTO dto) {
 		Criteria criteria=getCriteriaOf(Member.class);
+
+		// 검색 조건
+		if(!StringUtils.isBlank(dto.getId())){
+			criteria.add(Restrictions.eq("id", dto.getId()));
+		}
+		if(!StringUtils.isBlank(dto.getEmail())){
+			criteria.add(Restrictions.eq("email", dto.getEmail()));
+		}
+		if(null!=dto.getAuthType()){
+			criteria.createAlias("memberAuthList","ma").add(Restrictions.eq("ma.authType", dto.getAuthType()));
+		}
 
 		// offset 시작점
 		if(null != dto.getOffset()){

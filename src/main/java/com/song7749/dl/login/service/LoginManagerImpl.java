@@ -16,7 +16,6 @@ import com.song7749.dl.login.dto.DoLoginDTO;
 import com.song7749.dl.member.entities.Member;
 import com.song7749.dl.member.entities.MemberAuth;
 import com.song7749.dl.member.repositories.MemberRepository;
-import com.song7749.dl.member.type.AuthType;
 import com.song7749.util.crypto.CryptoAES;
 
 /**
@@ -110,22 +109,22 @@ public class LoginManagerImpl implements LoginManager{
 	@Override
 	@Transactional(value = "dbClientTransactionManager",readOnly=true)
 	public boolean isAccese(HttpServletRequest request,Login login) {
-		// 일반 회원 접근 가능 페이지는 권한 체크 하지 않는다.
-		if(login.value().equals(AuthType.NORMAL)){
-			return true;
-		} else {
-			// 회원 로그인 정보에서 데이터를 가져와서 권한 여부를 판단한다.
-			Member member = memberRepository.find(new Member(getLoginID(request)));
+		// 회원 로그인 정보에서 데이터를 가져와서 권한 여부를 판단한다.
+		Member member = memberRepository.find(new Member(getLoginID(request)));
 
-			if(null!=member && null!=login){
-				for(MemberAuth ma : member.getMemberAuthList()){
-					if(ma.getAuthType().equals(login.value())){
-						return true;
-					}
+		// 회원이 아닌 경우 권한이 없다.
+		if(null!=member){
+			for(MemberAuth ma : member.getMemberAuthList()){
+				if(ma.getAuthType().equals(login.value())){
+					return true;
 				}
 			}
-			return false;
 		}
+		return false;
 	}
 
+	@Override
+	public boolean isIdentification(HttpServletRequest request, String id) {
+		return getLoginID(request) != null ? getLoginID(request).equals(id) : false;
+	}
 }

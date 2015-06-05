@@ -172,12 +172,12 @@ var memberListForm = function(){
 						htmlHead+='<th>관리</th>';
 						htmlHead+='</tr>';
 					} 
-					htmlBody+='<tr>';
+					htmlBody+='<tr id="'+v.id+'">';
 					$.each(v,function(name,value){
 						htmlBody+='<td>'+value+'</td>';	
 					});
 					htmlBody+='<td>';
-					htmlBody+=' <a href="javascript:memberModifyForm(\''+v.id+'\')"><input type="button" id="modify" value="수정"></a>';
+					htmlBody+=' <a href="javascript:memberModifyForm(\''+v.id+'\',\'true\')"><input type="button" id="modify" value="수정"></a>';
 					htmlBody+=' <a href="javascript:memberRemove(\''+v.id+'\')"><input type="button" id="remove" value="삭제"></a>';
 					htmlBody+='</td>';
 					htmlBody+='</tr>';
@@ -194,9 +194,88 @@ var memberListForm = function(){
 /**
  * 회원정보 수정 폼
  */
-var memberModifyForm = function(id){
+var memberModifyForm = function(id,isAdmin){
+	var operationPath=null;
+	if(!isset(isAdmin)){
+		operationPath = '/member/modify';
+	} else {
+		operationPath = '/member/modifyByAdmin';
+	}
 	
-};
+	/**
+	 * dialog 설정
+	 */
+	$("#commonsDetailPopup").dialog({
+		title: '회원수정',
+		buttons: [
+			{
+				text: "수정",
+				click: function() {
+					if(confirm("회원 정보를 수정 하시겠습니까??")){
+						removeErrorMessage();
+						$.post("."+operationPath+".json", $("#modifyMemberForm").serializeArray(), function(data){
+							if(data.status == 200){
+								alert(data.result.message);
+								// 관리자 수정이 아니면 새로 고침한다.
+								if(!isset(isAdmin)){
+									window.setTimeout(function(){
+										document.location = document.location.href;	
+									}, 1000)
+								} else { // 관리자 수정이면, 닫는다. 
+									$("#commonsDetailPopup").dialog( "close" );
+								}
+							} else {
+								addErrorMessage(data);
+							}
+						});
+					};
+				}
+			},
+			{
+				text: "취소",
+				click: function() {
+					if(confirm("취소 하시겠습니까?")){
+						$( this ).dialog( "close" );
+					};
+				}
+			}
+		],
+		autoOpen: false,
+		width: 700,
+		height:300,
+		modal: true,
+	});
+	
+	$( "#commonsDetailPopup" ).dialog( "open" );
+	
+	// html 생성
+	var html='<form name="modifyMemberForm" id="modifyMemberForm">';
+	html+=createHorizontalForm(apiMemberOperations,operationPath);
+	html+='</form>';
+	$( "#commonsDetailPopup" ).html(html);
+	
+	// 폼에 조회된 데이터를 넣는다.
+	$.get("./member/list.json?id="+id, null, function(data){
+		if(data.status == 200){
+			inputFormData(data.result,'modifyMemberForm');		
+		} 
+	});
+}
+
+/**
+ * 회원 삭제
+ */
+var memberRemove = function(id){
+		if(confirm(id+" 을(를) 삭제 하시겠습니까?")){
+		$.ajax({
+		    url: './member/remove.json'+ '?' + $.param({'id':id}),
+		    method: 'DELETE',
+		    success:  function(data){
+				$("#"+id).remove();;
+		    }
+		});
+	}
+}
 
 /**
  * 로그 아웃 프로세스 처리
@@ -225,16 +304,28 @@ $(document).ready(function(){
 	    success:  function(data){
 	    	var headhtml = "";
 	    	var menuHtml = "";
-	    	if(null!=data.result.message 
-	    			&& ""!=data.result.message){
-
-	    		headhtml+='<span id="memberId"><a href="javascript:memberModifyForm(\''+data.result.message+'\');">'+data.result.message+'(수정)</a></span>';
-	    		headhtml+=' <span id="logout"><a href="javascript:logout();">[로그아웃]</a></span>';
-
-	    		menuHtml+='<li><a href="javascript:databaseManager();">Database 관리</a></li>';
-    			menuHtml+='<li><a href="javascript:memberListForm();">회원 관리</a></li>';
-
-	    	} else {
+	    	
+	    	// 정상 리퀘스트 일 경우 
+			if(data.status == 200){
+				// 로그인 정보 획득
+		    	if(null!=data.result){
+		    		var id=null;
+		    		var auth=null;
+		    		
+		    		$.each(data.result,function(){
+		    			$.each(this,function(){
+		    				id=this.id;
+		    				authType=this.authType;
+		    			});
+		    		});
+		    		headhtml+='<span id="memberId"><a href="javascript:memberModifyForm(\''+id+'\');">'+id+'(수정)</a></span>';
+		    		headhtml+=' <span id="logout"><a href="javascript:logout();">[로그아웃]</a></span>';
+		    		if(authType=='ADMIN'){
+			    		menuHtml+='<li><a href="javascript:databaseManager();">Database 관리</a></li>';
+		    			menuHtml+='<li><a href="javascript:memberListForm();">회원 관리</a></li>';
+		    		}
+		    	}
+			} else {
 	    		headhtml+='<span id="resistMember"><a href="javascript:resisteMember();">[회원가입]</a></span>';
 	    		headhtml+=' <span id="login"><a href="javascript:loginForm();">[로그인]</a></span>';
 	    	}

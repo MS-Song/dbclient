@@ -143,6 +143,9 @@ public class MemberRepositoryHibernateTest {
 	public void testFindMemberList(Member member) throws Exception {
 		// give
 		FindMemberListDTO dto=new FindMemberListDTO();
+		dto.setId("song7749");
+		dto.setEmail("song7749@gmail.com");
+		dto.setAuthType(AuthType.ADMIN);
 		// when
 		List<Member> list = memberRepository.findMemberList(dto);
 		// then

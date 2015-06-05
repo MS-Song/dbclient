@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.dto.FindMemberListDTO;
+import com.song7749.dl.member.dto.ModifyMemberByAdminDTO;
 import com.song7749.dl.member.dto.ModifyMemberDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.entities.Member;
@@ -113,10 +114,10 @@ public class MemberManagerImplTest {
 		// give
 		ModifyMemberDTO dto = new ModifyMemberDTO(null
 				, "12345678"
+				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
-				, "대한민국 초등학교"
-				, AuthType.ADMIN);
+				, "대한민국 초등학교");
 		// when
 		memberManager.modifyMember(dto);
 		// then exception
@@ -128,10 +129,10 @@ public class MemberManagerImplTest {
 		// give
 		ModifyMemberDTO dto = new ModifyMemberDTO("song7749"
 				, "12345678"
+				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
-				, "대한민국 초등학교"
-				, AuthType.ADMIN);
+				, "대한민국 초등학교");
 
 		given(memberRepository.find(any(Member.class))).willReturn(null);
 
@@ -145,10 +146,29 @@ public class MemberManagerImplTest {
 		// give
 		ModifyMemberDTO dto = new ModifyMemberDTO("song7749"
 				, "12345678"
+				, "12345678"
+				, "song7749@gmail.com"
+				, "초등학교는?"
+				, "대한민국 초등학교");
+
+		given(memberRepository.find(any(Member.class))).willReturn(new Member());
+
+		// when
+		memberManager.modifyMember(dto);
+		// then
+		verify(memberRepository,times(1)).update(any(Member.class));
+	}
+
+	@Test
+	public void testModifyMemberModifyMemberByAdminDTO() throws Exception {
+		// give
+		ModifyMemberByAdminDTO dto = new ModifyMemberByAdminDTO("song7749"
+				, "12345678"
+				, "12345678"
 				, "song7749@gmail.com"
 				, "초등학교는?"
 				, "대한민국 초등학교"
-				, AuthType.ADMIN);
+				,AuthType.ADMIN);
 
 		given(memberRepository.find(any(Member.class))).willReturn(new Member());
 

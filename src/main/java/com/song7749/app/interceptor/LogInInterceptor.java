@@ -16,7 +16,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.song7749.dl.login.annotations.Login;
-import com.song7749.dl.login.exception.AdminUserException;
+import com.song7749.dl.login.exception.AuthorityUserException;
 import com.song7749.dl.login.service.LoginManager;
 import com.song7749.util.LogMessageFormatter;
 
@@ -83,8 +83,8 @@ public class LogInInterceptor extends HandlerInterceptorAdapter {
 
 				// 권한에 맞는 페이지에 접근 했는가 확인
 				if(!loginManager.isAccese(request, login)){
-					logger.trace(format("관리자 확인을 시작 합니다.", "로그인"));
-					throw new AdminUserException();
+					logger.trace(format("회원 권한 확인을 시작 합니다.", "로그인"));
+					throw new AuthorityUserException();
 				}
 				logger.trace(LogMessageFormatter.format("{} 님이 로그인 했습니다.", "로그인"),loginManager.getLoginID(request));
 			}

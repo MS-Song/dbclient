@@ -2,15 +2,16 @@ package com.song7749.dl.member.service;
 
 import static com.song7749.dl.member.convert.MemberConvert.convert;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.dto.FindMemberListDTO;
+import com.song7749.dl.member.dto.ModifyMemberByAdminDTO;
 import com.song7749.dl.member.dto.ModifyMemberDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.entities.Member;
@@ -65,25 +66,35 @@ public class MemberManagerImpl implements MemberManager{
 			throw new MemberNotFoundException();
 		}
 
-		if(null != dto.getEmail()){
+		if(!StringUtils.isBlank(dto.getEmail())){
 			member.setEmail(dto.getEmail());
 		}
-		if(null != dto.getAuthType()){
-			List<MemberAuth> memberAuthList = new ArrayList<MemberAuth>();
-			memberAuthList.add(new MemberAuth(dto.getAuthType()));
-			member.setMemberAuthList(memberAuthList);
-		}
-		if(null != dto.getPassword()){
+		if(!StringUtils.isBlank(dto.getPassword())){
 			member.setPassword(dto.getPassword());
 		}
-		if(null != dto.getPasswordAnswer()){
+		if(!StringUtils.isBlank(dto.getPasswordAnswer())){
 			member.setPasswordAnswer(dto.getPasswordAnswer());
 		}
 
-		if(null != dto.getPasswordQuestion()){
+		if(!StringUtils.isBlank(dto.getPasswordQuestion())){
 			member.setPasswordQuestion(dto.getPasswordQuestion());
 		}
+
+		// 상속을 사용하여, 역참조가 되지 않기 때문에 어쩔 수 없이 처리
+		if(dto instanceof ModifyMemberByAdminDTO){
+			if(null != ((ModifyMemberByAdminDTO) dto).getAuthType()){
+				member.addMemberAuthList(new MemberAuth(((ModifyMemberByAdminDTO) dto).getAuthType()));
+			}
+		}
+
 		memberRepository.update(member);
+	}
+
+	@Override
+	@Validate
+	@Transactional(value = "dbClientTransactionManager")
+	public void modifyMember(ModifyMemberByAdminDTO dto) {
+		modifyMember((ModifyMemberDTO) dto);
 	}
 
 	@Override

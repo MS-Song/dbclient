@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.dto.FindMemberListDTO;
+import com.song7749.dl.member.dto.ModifyMemberByAdminDTO;
 import com.song7749.dl.member.dto.ModifyMemberDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.vo.MemberVO;
@@ -36,6 +37,12 @@ public interface MemberManager {
 	 * @param dto
 	 */
 	public void modifyMember(ModifyMemberDTO dto);
+
+	/**
+	 * 관리자 회원정보 수정
+	 * @param dto
+	 */
+	public void modifyMember(ModifyMemberByAdminDTO dto);
 
 	/**
 	 * 회원 제거

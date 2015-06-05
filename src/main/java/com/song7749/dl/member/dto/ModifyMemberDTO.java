@@ -5,7 +5,6 @@ import javax.validation.constraints.Size;
 
 import com.song7749.dl.base.BaseObject;
 import com.song7749.dl.base.Dto;
-import com.song7749.dl.member.type.AuthType;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -41,27 +40,29 @@ public class ModifyMemberDTO extends BaseObject implements Dto {
 	@ApiModelProperty(value="패스워드")
 	private String password;
 
+	@ApiModelProperty(value="패스워드 유효성 검증")
+	private String passwordRepeat;
+
 	@ApiModelProperty(value="패스워드 찾기 질문")
 	private String passwordQuestion;
 
 	@ApiModelProperty(value="패스워드 찾기 답변")
 	private String passwordAnswer;
 
-	@ApiModelProperty(value="회원 권한")
-	private AuthType authType;
-
 	public ModifyMemberDTO() {}
 
-	public ModifyMemberDTO(String id, String password, String email,
-			String passwordQuestion, String passwordAnswer, AuthType authType) {
-
+	public ModifyMemberDTO(String id, String email, String password,
+			String passwordRepeat, String passwordQuestion,
+			String passwordAnswer) {
+		super();
 		this.id = id;
-		this.password = password;
 		this.email = email;
+		this.password = password;
+		this.passwordRepeat = passwordRepeat;
 		this.passwordQuestion = passwordQuestion;
 		this.passwordAnswer = passwordAnswer;
-		this.authType = authType;
 	}
+
 
 	public String getId() {
 		return id;
@@ -77,6 +78,14 @@ public class ModifyMemberDTO extends BaseObject implements Dto {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getPasswordRepeat() {
+		return passwordRepeat;
+	}
+
+	public void setPasswordRepeat(String passwordRepeat) {
+		this.passwordRepeat = passwordRepeat;
 	}
 
 	public String getEmail() {
@@ -103,11 +112,5 @@ public class ModifyMemberDTO extends BaseObject implements Dto {
 		this.passwordAnswer = passwordAnswer;
 	}
 
-	public AuthType getAuthType() {
-		return authType;
-	}
 
-	public void setAuthType(AuthType authType) {
-		this.authType = authType;
-	}
 }
