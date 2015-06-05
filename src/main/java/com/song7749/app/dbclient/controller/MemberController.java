@@ -79,7 +79,7 @@ public class MemberController {
 			,response=ResponseResult.class
 			,position=2)
 	@RequestMapping(value="/modify",method=RequestMethod.POST)
-	@Login(type=LoginResponseType.EXCEPTION,value=AuthType.NORMAL)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void modifyMember(
 			@Valid @ModelAttribute ModifyMemberDTO dto,
 			HttpServletRequest request,

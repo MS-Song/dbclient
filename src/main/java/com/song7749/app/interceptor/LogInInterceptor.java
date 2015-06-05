@@ -57,7 +57,7 @@ public class LogInInterceptor extends HandlerInterceptorAdapter {
 		 */
 		if(login != null){
 
-			logger.trace(format("로그인이 필요한 페이지에 접근했습니다.", "로그인"));
+			logger.debug(format("로그인이 필요한 페이지에 접근했습니다.", "로그인"));
 
 			// 로그인 되어 있지 않다. 로그인 페이지로 이동시킨다.
 			if(!loginManager.isLogin(request)){
@@ -75,18 +75,17 @@ public class LogInInterceptor extends HandlerInterceptorAdapter {
 						logger.trace(LogMessageFormatter.format("로그인 익셉션이 발생합니다.", "로그인"));
 						throw new LoginException("로그인이 필요한 서비스입니다. 로그인 해주시기 바랍니다.");
 				}
-				return false;
 			}
 			// 로그인이 되어 있다.
 			else{
-				logger.trace(LogMessageFormatter.format("로그인 처리 로직을 시작 합니다. {}", "로그인"),login);
+				logger.debug(LogMessageFormatter.format("로그인 처리 로직을 시작 합니다. {}", "로그인"),login);
 
 				// 권한에 맞는 페이지에 접근 했는가 확인
 				if(!loginManager.isAccese(request, login)){
 					logger.trace(format("회원 권한 확인을 시작 합니다.", "로그인"));
 					throw new AuthorityUserException();
 				}
-				logger.trace(LogMessageFormatter.format("{} 님이 로그인 했습니다.", "로그인"),loginManager.getLoginID(request));
+				logger.debug(LogMessageFormatter.format("{} 님이 로그인 했습니다.", "로그인"),loginManager.getLoginID(request));
 			}
 		}
 		return true;

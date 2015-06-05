@@ -1,10 +1,13 @@
 package com.song7749.dl.login.service;
 
+import static com.song7749.util.LogMessageFormatter.format;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import com.song7749.dl.login.dto.DoLoginDTO;
 import com.song7749.dl.member.entities.Member;
 import com.song7749.dl.member.entities.MemberAuth;
 import com.song7749.dl.member.repositories.MemberRepository;
+import com.song7749.dl.member.type.AuthType;
 import com.song7749.util.crypto.CryptoAES;
 
 /**
@@ -46,12 +50,7 @@ public class LoginManagerImpl implements LoginManager{
 
 	@Override
 	public boolean isLogin(HttpServletRequest request) {
-		String id = getLoginID(request);
-		if(null!=id){
-			return true;
-		} else {
-			return false;
-		}
+		return null!=getLoginID(request) ? true : false;
 	}
 
 	@Override
@@ -91,9 +90,15 @@ public class LoginManagerImpl implements LoginManager{
 			for (int i=0; i<cookie.length; i++) {
 				if (null != cookie[i]
 						&& cookie[i].getName().equals(this.cipher)) {
+
 					cipher = cookie[i].getValue();
 					// 복호화 된 ID 정보를 리턴한다.
-					return CryptoAES.decrypt(cipher);
+					logger.debug(format("값 : {} , 길이 : {}","로그인 정보 복호화"),cipher,cipher.length());
+
+					if(!StringUtils.isBlank(cipher) && cipher.length()>=24){
+						logger.debug(format("{}","로그인 정보 복호화"),"복호화 성공");
+						return CryptoAES.decrypt(cipher);
+					}
 				}
 			}
 		}
@@ -115,8 +120,10 @@ public class LoginManagerImpl implements LoginManager{
 		// 회원이 아닌 경우 권한이 없다.
 		if(null!=member){
 			for(MemberAuth ma : member.getMemberAuthList()){
-				if(ma.getAuthType().equals(login.value())){
-					return true;
+				for(AuthType at : login.value()){
+					if(ma.getAuthType().equals(at)){
+						return true;
+					}
 				}
 			}
 		}

@@ -13,6 +13,6 @@ import com.song7749.dl.member.type.AuthType;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Login {
-	AuthType value() default AuthType.NORMAL;
+	AuthType[] value() default AuthType.NORMAL;
 	LoginResponseType type() default LoginResponseType.EXCEPTION;
 }

@@ -1,7 +1,6 @@
 package com.song7749.app.dbclient.controller;
 
-import static com.song7749.util.LogMessageFormatter.format;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -90,11 +89,11 @@ public class MemberLoginCotroller {
 			ModelMap model){
 		String memberId = loginManager.getLoginID(request);
 
-		logger.debug(format("로그인 한 회원의 ID : {}",""),memberId);
-
 		List<MemberVO> memberList  = null;
 		if(!StringUtils.isBlank(memberId)){
 			memberList=memberManager.findMemberList(new FindMemberListDTO(memberId));
+		} else {
+			memberList = new ArrayList<MemberVO>();
 		}
 		model.clear();
 		model.addAttribute(memberList);
