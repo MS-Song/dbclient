@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.entities.Member;
-import com.song7749.dl.member.entities.MemberAuth;
 import com.song7749.dl.member.type.AuthType;
 import com.song7749.dl.member.vo.MemberVO;
 
@@ -73,14 +72,13 @@ public class MemberConvertTest {
 
 
 		// give
-		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
+		member.setAuthType(AuthType.ADMIN);
 
 		// when
 		vo = MemberConvert.convert(member);
 
 		// then
-		assertThat(vo.getAuthType(), is(member.getMemberAuthList().get(0).getAuthType()));
-
+		assertThat(vo.getAuthType(), is(member.getAuthType()));
 	}
 
 

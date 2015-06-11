@@ -7,7 +7,6 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.entities.Member;
-import com.song7749.dl.member.type.AuthType;
 import com.song7749.dl.member.vo.MemberVO;
 
 /**
@@ -56,14 +55,10 @@ public class MemberConvert {
 		if(null == member){
 			return null;
 		} else {
-			// 권한 데이터가 있는 경우 -- TODO 추후 1:N 구조가 가능하도록 고쳐야 한다.
-			AuthType type = CollectionUtils.isEmpty(member.getMemberAuthList())
-					? null : member.getMemberAuthList().get(0).getAuthType();
-
 			return new MemberVO(member.getId()
 					, member.getEmail()
 					, member.getPasswordQuestion()
-					, type);
+					, member.getAuthType());
 		}
 	}
 

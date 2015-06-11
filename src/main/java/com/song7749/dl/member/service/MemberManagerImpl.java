@@ -15,7 +15,6 @@ import com.song7749.dl.member.dto.ModifyMemberByAdminDTO;
 import com.song7749.dl.member.dto.ModifyMemberDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.entities.Member;
-import com.song7749.dl.member.entities.MemberAuth;
 import com.song7749.dl.member.exception.MemberNotFoundException;
 import com.song7749.dl.member.repositories.MemberRepository;
 import com.song7749.dl.member.vo.MemberVO;
@@ -83,7 +82,7 @@ public class MemberManagerImpl implements MemberManager{
 		// 상속을 사용하여, 역참조가 되지 않기 때문에 어쩔 수 없이 처리
 		if(dto instanceof ModifyMemberByAdminDTO){
 			if(null != ((ModifyMemberByAdminDTO) dto).getAuthType()){
-				member.addMemberAuthList(new MemberAuth(((ModifyMemberByAdminDTO) dto).getAuthType()));
+				member.setAuthType(((ModifyMemberByAdminDTO) dto).getAuthType());
 			}
 		}
 

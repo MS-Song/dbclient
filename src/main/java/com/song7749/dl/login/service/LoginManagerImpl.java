@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.song7749.dl.login.annotations.Login;
 import com.song7749.dl.login.dto.DoLoginDTO;
 import com.song7749.dl.member.entities.Member;
-import com.song7749.dl.member.entities.MemberAuth;
 import com.song7749.dl.member.repositories.MemberRepository;
 import com.song7749.dl.member.type.AuthType;
 import com.song7749.util.crypto.CryptoAES;
@@ -117,13 +116,11 @@ public class LoginManagerImpl implements LoginManager{
 		// 회원 로그인 정보에서 데이터를 가져와서 권한 여부를 판단한다.
 		Member member = memberRepository.find(new Member(getLoginID(request)));
 
-		// 회원이 아닌 경우 권한이 없다.
-		if(null!=member){
-			for(MemberAuth ma : member.getMemberAuthList()){
-				for(AuthType at : login.value()){
-					if(ma.getAuthType().equals(at)){
-						return true;
-					}
+		// 회원이 아닌 경우 권한이 없다 - 모든 페이지를 작동 불능으로 처리한다.
+		if(null!=member && null!=member.getAuthType()){
+			for(AuthType at : login.value()){
+				if(member.getAuthType().equals(at)){
+					return true;
 				}
 			}
 		}

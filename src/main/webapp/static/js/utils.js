@@ -179,9 +179,10 @@ var addErrorMessage = function(data){
 	var messageList = data.desc.split("\n");
 	for(var i=0;i<messageList.length;i++){
 		var message = messageList[i].split("=");
+		
 		if(message.length > 1){
 			$("#label_"+message[0]).addClass("error").html(message[1]);
-		} else {
+		} else if(""!=message[0]){
 			alert(message[0]);
 		}
 	}

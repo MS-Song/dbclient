@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.member.dto.FindMemberListDTO;
 import com.song7749.dl.member.entities.Member;
-import com.song7749.dl.member.entities.MemberAuth;
 import com.song7749.dl.member.type.AuthType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -58,8 +57,7 @@ public class MemberRepositoryHibernateTest {
 	@Test(expected=IllegalArgumentException.class)
 	public void testSave_valiate_id_null() throws Exception {
 		// give
-		Member member=new Member(null, "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
-		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
+		Member member=new Member(null, "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교",AuthType.ADMIN);
 
 		// when
 		memberRepository.save(member);
@@ -70,8 +68,7 @@ public class MemberRepositoryHibernateTest {
 	@Test(expected=IllegalArgumentException.class)
 	public void testSave_valiate_id_empty() throws Exception {
 		// give
-		Member member=new Member("", "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
-		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
+		Member member=new Member("", "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교",AuthType.ADMIN);
 
 		// when
 		memberRepository.save(member);
@@ -82,8 +79,7 @@ public class MemberRepositoryHibernateTest {
 	@Test(expected=IllegalArgumentException.class)
 	public void testSave_valiate_id_size_over() throws Exception {
 		// give
-		Member member=new Member("sssssssssssssssssssssss", "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교");
-		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
+		Member member=new Member("sssssssssssssssssssssss", "12345678", "song7749@gmail.com", "초등학교는?", "대한민국초등학교",AuthType.ADMIN);
 
 		// when
 		memberRepository.save(member);
@@ -104,8 +100,7 @@ public class MemberRepositoryHibernateTest {
 
 	public Member testSave() throws Exception {
 		// give
-		Member member=new Member("song7749", "12345678", "song7749@gmail.com", "출신초등학교는?", "대한민국초등학교");
-		member.addMemberAuthList(new MemberAuth(AuthType.ADMIN));
+		Member member=new Member("song7749", "12345678", "song7749@gmail.com", "출신초등학교는?", "대한민국초등학교",AuthType.ADMIN);
 
 		// when
 		memberRepository.save(member);

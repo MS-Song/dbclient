@@ -102,6 +102,10 @@ var loginForm = function(){
 		width: 600,
 		height:200,
 		modal: true,
+	}).keyup(function(e) {
+	    if (e.keyCode == $.ui.keyCode.ENTER){
+	    	 $("button:contains('로그인')").click();
+	    }
 	});
 	
 	$( "#commonsPopup" ).dialog( "open" );

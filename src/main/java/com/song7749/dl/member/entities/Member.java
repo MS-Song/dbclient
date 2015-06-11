@@ -1,23 +1,17 @@
 package com.song7749.dl.member.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.constraints.Email;
 
 import com.song7749.dl.base.Entities;
+import com.song7749.dl.member.type.AuthType;
 import com.song7749.util.crypto.CryptoAES;
 import com.song7749.util.validate.ValidateGroupInsert;
 import com.song7749.util.validate.ValidateGroupUpdate;
@@ -78,9 +72,8 @@ public class Member extends Entities {
 			,ValidateGroupUpdate.class})
 	private String passwordAnswer;
 
-	@OneToMany(mappedBy="member",fetch=FetchType.LAZY,cascade=CascadeType.ALL, orphanRemoval=true)
-	@BatchSize(size=10)
-	private List<MemberAuth> memberAuthList = new ArrayList<MemberAuth>();
+	@Column
+	private AuthType authType;
 
 	public Member() {}
 
@@ -101,11 +94,22 @@ public class Member extends Entities {
 
 	public Member(String id, String password, String email,
 			String passwordQuestion, String passwordAnswer) {
+		super();
 		this.id = id;
-		setPassword(password);
+		this.password = password;
 		this.email = email;
 		this.passwordQuestion = passwordQuestion;
 		this.passwordAnswer = passwordAnswer;
+	}
+
+	public Member(String id, String password, String email,
+			String passwordQuestion, String passwordAnswer, AuthType authType) {
+		this.id = id;
+		this.password = password;
+		this.email = email;
+		this.passwordQuestion = passwordQuestion;
+		this.passwordAnswer = passwordAnswer;
+		this.authType = authType;
 	}
 
 	public String getId() {
@@ -148,19 +152,11 @@ public class Member extends Entities {
 		this.passwordAnswer = passwordAnswer;
 	}
 
-	public List<MemberAuth> getMemberAuthList() {
-		return memberAuthList;
+	public AuthType getAuthType() {
+		return authType;
 	}
 
-	public void addMemberAuthList(MemberAuth memberAuth) {
-		if(null==memberAuthList){
-			memberAuthList = new ArrayList<MemberAuth>();
-		}
-		memberAuth.setMember(this);
-		this.memberAuthList.add(memberAuth);
-	}
-
-	public void setMemberAuthList(List<MemberAuth> memberAuthList) {
-		this.memberAuthList = memberAuthList;
+	public void setAuthType(AuthType authType) {
+		this.authType = authType;
 	}
 }
