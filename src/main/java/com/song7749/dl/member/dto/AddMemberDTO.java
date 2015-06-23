@@ -31,7 +31,7 @@ public class AddMemberDTO extends BaseObject implements Dto {
 	private static final long serialVersionUID = 7979771551393878737L;
 
 	@NotNull
-	@Size(min=8,max=20)
+	@Size(min=4,max=20)
 	@ApiModelProperty(value="ID",required=true)
 	private String id;
 

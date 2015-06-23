@@ -42,7 +42,7 @@ public class Member extends Entities {
 
 	@Id
 	@NotNull
-	@Size(min=8,max=20)
+	@Size(min=4,max=20)
 	private String id;
 
 	@NotNull(groups={ValidateGroupInsert.class

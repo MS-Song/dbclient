@@ -28,7 +28,7 @@ public class RemoveMemberDTO extends BaseObject implements Dto {
 
 
 	@NotNull
-	@Size(min=8,max=20)
+	@Size(min=4,max=20)
 	@ApiModelProperty(value="ID",required=true)
 	private String id;
 
