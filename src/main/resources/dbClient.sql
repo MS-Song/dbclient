@@ -1,0 +1,2 @@
+insert into Member (email, password, passwordAnswer, passwordQuestion, id) values ( 'userEmail@example.com', '12345678', '패스워드질문', '패스워드답변', 'root' );
+insert into MemberAuth (authType, id) values ( 'ADMIN', 'root' );
