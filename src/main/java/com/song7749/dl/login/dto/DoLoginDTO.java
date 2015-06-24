@@ -29,7 +29,7 @@ public class DoLoginDTO extends BaseObject implements Dto{
 	private static final long serialVersionUID = -582753518955573813L;
 
 	@NotNull
-	@Size(min=8,max=20)
+	@Size(min=4,max=20)
 	@ApiModelProperty(value="로그인 id",required=true)
 	private String id;
 
