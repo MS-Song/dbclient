@@ -7,7 +7,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
@@ -15,7 +14,6 @@ import com.song7749.dl.base.Entities;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.util.validate.ValidateGroupDelete;
 import com.song7749.util.validate.ValidateGroupInsert;
-import com.song7749.util.validate.ValidateGroupSelect;
 import com.song7749.util.validate.ValidateGroupUpdate;
 
 /**
@@ -34,20 +32,22 @@ import com.song7749.util.validate.ValidateGroupUpdate;
 * @since 2015. 4. 29.
 */
 @Entity
-@Table
 public class ServerInfo extends Entities {
 
 	private static final long serialVersionUID = 1522920445714322487L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column
-	@NotNull(groups={ValidateGroupUpdate.class,ValidateGroupDelete.class,ValidateGroupSelect.class})
+	@NotNull(groups={ValidateGroupUpdate.class,ValidateGroupDelete.class})
 	private Integer serverInfoSeq;
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String host;
+
+	@Column
+	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
+	private String hostAliase;
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
@@ -88,9 +88,10 @@ public class ServerInfo extends Entities {
 		this.tableName = tableName;
 	}
 
-	public ServerInfo(String host, String schemaName,
+	public ServerInfo(String host,String hostAliase, String schemaName,
 			String account, String password, DatabaseDriver driver, String charset,String port) {
 		this.host = host;
+		this.hostAliase = hostAliase;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.password = password;
@@ -99,10 +100,11 @@ public class ServerInfo extends Entities {
 		this.port = port;
 	}
 
-	public ServerInfo(Integer serverInfoSeq, String host, String schemaName,
+	public ServerInfo(Integer serverInfoSeq, String host, String hostAliase, String schemaName,
 			String account, String password, DatabaseDriver driver, String charset,String port) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
+		this.hostAliase = hostAliase;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.password = password;
@@ -121,6 +123,14 @@ public class ServerInfo extends Entities {
 
 	public String getHost() {
 		return host;
+	}
+
+	public String getHostAliase() {
+		return hostAliase;
+	}
+
+	public void setHostAliase(String hostAliase) {
+		this.hostAliase = hostAliase;
 	}
 
 	public void setHost(String host) {

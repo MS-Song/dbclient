@@ -484,6 +484,11 @@
 			<artifactId>couchbase-client</artifactId>
 			<version>1.4.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>3.0.8</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>

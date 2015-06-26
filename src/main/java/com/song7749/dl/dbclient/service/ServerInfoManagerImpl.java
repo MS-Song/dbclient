@@ -45,7 +45,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Transactional("dbClientTransactionManager")
 	public void saveServerInfo(SaveServerInfoDTO dto) {
 
-		ServerInfo serverInfo = new ServerInfo(dto.getHost(),
+		ServerInfo serverInfo = new ServerInfo(dto.getHost(), dto.getHostAliase(),
 				dto.getSchemaName(), dto.getAccount(), dto.getPassword(),
 				dto.getDriver(), dto.getCharset(), dto.getPort());
 
@@ -60,6 +60,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 				.getServerInfoSeq()));
 		if (null != serverInfo) {
 			serverInfo.setHost(dto.getHost());
+			serverInfo.setHostAliase(dto.getHostAliase());
 			serverInfo.setSchemaName(dto.getSchemaName());
 			serverInfo.setAccount(dto.getAccount());
 			serverInfo.setPassword(dto.getPassword());

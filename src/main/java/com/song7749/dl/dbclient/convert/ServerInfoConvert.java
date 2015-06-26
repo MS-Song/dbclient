@@ -37,6 +37,7 @@ public class ServerInfoConvert {
 		return new ServerInfoVO(
 				serverInfo.getServerInfoSeq(),
 				serverInfo.getHost(),
+				serverInfo.getHostAliase(),
 				serverInfo.getSchemaName(),
 				serverInfo.getAccount(),
 				serverInfo.getPassword(),

@@ -50,7 +50,8 @@ public class ServerInfoRepositoryHibernateTest {
 
 	public ServerInfo testSave() throws Exception {
 		// give
-		ServerInfo serverInfo = new ServerInfo("10.20.10.41"
+		ServerInfo serverInfo = new ServerInfo("127.0.0.1",
+				"테스트 mysql 서버"
 				, "dbclient"
 				, "dbclient"
 				, "1234"

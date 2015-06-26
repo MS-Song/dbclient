@@ -80,6 +80,7 @@ public class DatabaseControllerTest {
 		Properties prop = new Properties();
 		prop.loadFromXML(ClassLoader.getSystemResource("sample/dbProperties.xml").openStream());
 		serverInfo = new ServerInfo(prop.getProperty("mysql.database.host")
+				, prop.getProperty("mysql.database.host.aliase")
 				, prop.getProperty("mysql.database.schemaName")
 				, prop.getProperty("mysql.database.username")
 				, prop.getProperty("mysql.database.password")
@@ -157,6 +158,7 @@ public class DatabaseControllerTest {
 		drb = post("/database/saveDatabases.json")
 				.param("serverInfoSeq[]","")
 				.param("host[]",serverInfo.getHost())
+				.param("hostAlias[]",serverInfo.getHostAliase())
 				.param("schemaName[]",serverInfo.getSchemaName())
 				.param("account[]",serverInfo.getAccount())
 				.param("password[]",serverInfo.getPassword())
@@ -183,6 +185,7 @@ public class DatabaseControllerTest {
 		drb = post("/database/saveDatabases.json")
 				.param("serverInfoSeq[]","1,")
 				.param("host[]",serverInfo.getHost(),serverInfo.getHost())
+				.param("hostAlias[]",serverInfo.getHostAliase(),serverInfo.getHostAliase())
 				.param("schemaName[]",serverInfo.getSchemaName(),serverInfo.getSchemaName())
 				.param("account[]",serverInfo.getAccount(),serverInfo.getAccount())
 				.param("password[]",serverInfo.getPassword(),serverInfo.getPassword())

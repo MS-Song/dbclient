@@ -47,7 +47,9 @@ public class ServerInfoManagerImplTest {
 	@Before
 	public void setup() throws InvalidPropertiesFormatException, IOException{
 		// give
-		ServerInfo serverInfo = new ServerInfo("10.20.10.41"
+		ServerInfo serverInfo = new ServerInfo(
+				"10.20.10.41"
+				,"테스트서버"
 				, "dbclient"
 				, "dbclient"
 				, "1234"
@@ -56,7 +58,9 @@ public class ServerInfoManagerImplTest {
 				,"3306");
 
 
-		saveServerInfoDTO = new SaveServerInfoDTO("10.20.10.41"
+		saveServerInfoDTO = new SaveServerInfoDTO(
+				"10.20.10.41"
+				,"테스트서버"
 				, "dbclient"
 				, "dbclient"
 				, "1234"
@@ -66,6 +70,7 @@ public class ServerInfoManagerImplTest {
 
 		modifyServerInfoDTO = new ModifyServerInfoDTO(1
 				, "10.20.10.42"
+				,"테스트서버"
 				, "dbclient"
 				, "dbclient"
 				, "1234"
@@ -92,7 +97,9 @@ public class ServerInfoManagerImplTest {
 	@Test
 	public void testModifyServerInfo() throws Exception {
 		// give
-		ServerInfo serverInfo = new ServerInfo("10.20.10.41"
+		ServerInfo serverInfo = new ServerInfo(
+				"10.20.10.41"
+				,"테스트서버"
 				, "dbclient"
 				, "dbclient"
 				, "1234"

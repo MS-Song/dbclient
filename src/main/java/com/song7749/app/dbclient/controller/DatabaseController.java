@@ -187,6 +187,8 @@ public class DatabaseController {
 			@ApiParam	Integer[] serverInfoSeq,
 			@RequestParam(value="host[]",required=true)
 			@ApiParam	String[] host,
+			@RequestParam(value="hostAlias[]",required=false)
+			@ApiParam	String[] hostAlias,
 			@RequestParam(value="schemaName[]",required=true)
 			@ApiParam	String[]  schemaName,
 			@RequestParam(value="account[]",required=true)
@@ -210,6 +212,7 @@ public class DatabaseController {
 			if(serverInfoSeq.length==0 || null==serverInfoSeq[i]){
 				saveList.add(new SaveServerInfoDTO(
 						host[i],
+						hostAlias[i],
 						schemaName[i],
 						account[i],
 						password[i],
@@ -221,6 +224,7 @@ public class DatabaseController {
 				modifyList.add(new ModifyServerInfoDTO(
 						serverInfoSeq[i],
 						host[i],
+						hostAlias[i],
 						schemaName[i],
 						account[i],
 						password[i],

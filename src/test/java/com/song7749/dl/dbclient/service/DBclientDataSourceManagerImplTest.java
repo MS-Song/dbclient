@@ -46,7 +46,9 @@ public class DBclientDataSourceManagerImplTest {
 	@Before
 	public void setUp() throws Exception {
 		// 서버 인포 설정
-		serverInfo = new ServerInfo("127.0.0.1"
+		serverInfo = new ServerInfo(
+						"127.0.0.1"
+						, "테스트 서버"
 						, "dbclient"
 						, "dbclient"
 						, "1234"
