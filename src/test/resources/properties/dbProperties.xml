@@ -5,5 +5,5 @@
 	<!-- driver 정보  -->
 	<entry key="dbClient.database.driver">org.sqlite.JDBC</entry>
 	<!-- 접속정보 -->
-	<entry key="dbClient.database.url">jdbc:sqlite:dbClientTest.db</entry>
+	<entry key="dbClient.database.url">jdbc:sqlite:src/test/resources/dbClientTest.db</entry>
 </properties>

@@ -3,7 +3,6 @@ package com.song7749.app.dbclient.controller;
 import static com.song7749.util.LogMessageFormatter.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -80,7 +79,7 @@ public class MemberLoginCotrollerTest {
 	@Test
 	public void testDoLogin_로그인실패() throws Exception {
 		drb = post("/member/doLogin.json")
-				.param("id","song7749")
+				.param("id","root")
 				.param("password","5678")
 				;
 
@@ -95,9 +94,8 @@ public class MemberLoginCotrollerTest {
 
 		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
 		assertThat(responseObject.get("status"), 						notNullValue());
-		assertThat((Integer)responseObject.get("status"),				is(200));
-		assertThat(responseObject.get("result"), 						notNullValue());
-		assertThat((String)((Map)responseObject.get("result")).get("message"),	is("ID 또는 비밀번호가 맞지 않습니다."));
+		assertThat((Integer)responseObject.get("status"),				is(400));
+		assertThat(responseObject.get("desc"), 						notNullValue());
 	}
 
 	@Test
@@ -134,7 +132,6 @@ public class MemberLoginCotrollerTest {
 				;
 
 		// 로그인 cookie 정보 추가
-		// 로그인 cookie 정보 추가
 		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
 		drb.cookie(cookie);
 
@@ -146,7 +143,7 @@ public class MemberLoginCotrollerTest {
 
 		//
 		logger.trace(format("{}",""),result.getResponse().getCookie("cipher"));
-		assertThat(result.getResponse().getCookie("cipher"),nullValue());
+		assertThat(result.getResponse().getCookie("cipher").getValue(),is(""));
 
 	}
 	@Test
@@ -164,9 +161,8 @@ public class MemberLoginCotrollerTest {
 
 		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
 		assertThat(responseObject.get("status"), 						notNullValue());
-		assertThat((Integer)responseObject.get("status"),				is(200));
-		assertThat(responseObject.get("result"), 						notNullValue());
-		assertThat((String)((Map)responseObject.get("result")).get("message"),	nullValue());
+		assertThat((Integer)responseObject.get("status"),				is(204));
+		assertThat(responseObject.get("desc"), 						notNullValue());
 	}
 
 	@Ignore

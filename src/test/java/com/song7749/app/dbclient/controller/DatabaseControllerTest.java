@@ -78,14 +78,14 @@ public class DatabaseControllerTest {
 
 		// 서버 인포 설정
 		Properties prop = new Properties();
-		prop.loadFromXML(ClassLoader.getSystemResource("properties/dbProperties.xml").openStream());
-		serverInfo = new ServerInfo(prop.getProperty("dbClient.database.host")
-				, prop.getProperty("dbClient.database.schemaName")
-				, prop.getProperty("dbClient.database.username")
-				, prop.getProperty("dbClient.database.password")
-				, DatabaseDriver.mysql
-				, "UTF-8"
-				,"3306");
+		prop.loadFromXML(ClassLoader.getSystemResource("sample/dbProperties.xml").openStream());
+		serverInfo = new ServerInfo(prop.getProperty("mysql.database.host")
+				, prop.getProperty("mysql.database.schemaName")
+				, prop.getProperty("mysql.database.username")
+				, prop.getProperty("mysql.database.password")
+				, DatabaseDriver.valueOf(prop.getProperty("mysql.database.driver"))
+				, prop.getProperty("mysql.database.charset")
+				, prop.getProperty("mysql.database.port"));
 	}
 
 	@Test
@@ -161,8 +161,8 @@ public class DatabaseControllerTest {
 				.param("account[]",serverInfo.getAccount())
 				.param("password[]",serverInfo.getPassword())
 				.param("driver[]",serverInfo.getDriver().mysql.toString())
-				.param("charset[]","UTF-8")
-				.param("port[]","3306")
+				.param("charset[]",serverInfo.getCharset())
+				.param("port[]",serverInfo.getPort())
 				;
 		// 로그인 cookie 정보 추가
 		drb.cookie(cookies);
@@ -187,8 +187,8 @@ public class DatabaseControllerTest {
 				.param("account[]",serverInfo.getAccount(),serverInfo.getAccount())
 				.param("password[]",serverInfo.getPassword(),serverInfo.getPassword())
 				.param("driver[]",serverInfo.getDriver().mysql.toString(),serverInfo.getDriver().mysql.toString())
-				.param("charset[]","UTF-8","UTF-8")
-				.param("port[]","3306","3306")
+				.param("charset[]",serverInfo.getCharset(),serverInfo.getCharset())
+				.param("port[]",serverInfo.getPort(),serverInfo.getPort())
 				;
 		// 로그인 cookie 정보 추가
 		drb.cookie(cookies);

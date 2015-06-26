@@ -92,7 +92,7 @@ public class MemberRepositoryHibernate implements MemberRepository{
 			criteria.add(Restrictions.eq("email", dto.getEmail()));
 		}
 		if(null!=dto.getAuthType()){
-			criteria.createAlias("memberAuthList","ma").add(Restrictions.eq("ma.authType", dto.getAuthType()));
+			criteria.add(Restrictions.eq("authType", dto.getAuthType()));
 		}
 
 		// offset 시작점
