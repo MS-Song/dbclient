@@ -56,6 +56,7 @@ var databaseManageForm=function(){
 			html+='		<thead>';
 			html+='			<tr>';
 			html+='				<th>host<input type="hidden" name="mode" value="save"></th>';
+			html+='				<th>host aliase</th>';
 			html+='				<th>schemaName</th>';
 			html+='				<th>account</th>';
 			html+='				<th>password</th>';
@@ -124,6 +125,7 @@ var databaseManageGetSubHTML = function(obj){
 	
 	var serverInfoSeq	= obj != null && obj.serverInfoSeq 	!= 'undefined' ? obj.serverInfoSeq 	: '';
 	var host			= obj != null && obj.host 			!= 'undefined' ? obj.host 			: '';
+	var hostAliase		= obj != null && obj.hostAliase 	!= 'undefined' ? obj.hostAliase 	: '';
 	var schemaName 		= obj != null && obj.schemaName 	!= 'undefined' ? obj.schemaName 	: '';
 	var account 		= obj != null && obj.account 		!= 'undefined' ? obj.account 		: '';
 	var password 		= obj != null && obj.password 		!= 'undefined' ? obj.password 		: '';
@@ -137,13 +139,14 @@ var databaseManageGetSubHTML = function(obj){
 	subHtml+='<tr class="subHtml">';
 	subHtml+='<td>';
 	subHtml+='	<input type="hidden"   name="serverInfoSeq[]" 	value="'+serverInfoSeq+'" />';
-	subHtml+='	<input type="text"     name="host[]" 			value="'+host+'"		size="20" />';
+	subHtml+='	<input type="text"     name="host[]" 			value="'+host+'"		size="15" />';
 	subHtml+='</td>';
-	subHtml+='<td><input type="text"     name="schemaName[]" 	value="'+schemaName+'"	size="16" /></td>';
-	subHtml+='<td><input type="text"     name="account[]" 		value="'+account+'"		size="14" /></td>';
-	subHtml+='<td><input type="password" name="password[]" 		value="'+password+'"	size="14" /></td>';
+	subHtml+='<td><input type="text"     name="hostAliase[]" 	value="'+hostAliase+'"	size="15" /></td>';
+	subHtml+='<td><input type="text"     name="schemaName[]" 	value="'+schemaName+'"	size="10" /></td>';
+	subHtml+='<td><input type="text"     name="account[]" 		value="'+account+'"		size="10" /></td>';
+	subHtml+='<td><input type="password" name="password[]" 		value="'+password+'"	size="10" /></td>';
 	subHtml+='<td>'+dbdriver+'</td>';
-	subHtml+='<td><input type="text"     name="charset[]" 		value="'+charset+'" 	size="14" /></td>';
+	subHtml+='<td><input type="text"     name="charset[]" 		value="'+charset+'" 	size="10" /></td>';
 	subHtml+='<td><input type="text"     name="port[]" 			value="'+port+'" 		size="4" /></td>';
 	subHtml+='<td><input type="button"   name="delete" 			value="삭제" /></td>';
 	subHtml+='</tr>';
