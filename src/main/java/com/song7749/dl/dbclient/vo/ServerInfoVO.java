@@ -17,7 +17,7 @@ public class ServerInfoVO extends AbstractVo{
 	private String host;
 
 	@ApiModelProperty(position=3)
-	private String hostAliase;
+	private String hostAlias;
 
 	@ApiModelProperty(position=4)
 	private String schemaName;
@@ -39,11 +39,11 @@ public class ServerInfoVO extends AbstractVo{
 
 	public ServerInfoVO(){}
 
-	public ServerInfoVO(Integer serverInfoSeq, String host, String hostAliase, String schemaName,
+	public ServerInfoVO(Integer serverInfoSeq, String host, String hostAlias, String schemaName,
 			String account, String password, DatabaseDriver driver, String charset,String port) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
-		this.hostAliase = hostAliase;
+		this.hostAlias = hostAlias;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.password = password;
@@ -68,12 +68,12 @@ public class ServerInfoVO extends AbstractVo{
 		this.host = host;
 	}
 
-	public String getHostAliase() {
-		return hostAliase;
+	public String getHostAlias() {
+		return hostAlias;
 	}
 
-	public void setHostAliase(String hostAliase) {
-		this.hostAliase = hostAliase;
+	public void setHostAlias(String hostAlias) {
+		this.hostAlias = hostAlias;
 	}
 
 	public String getSchemaName() {

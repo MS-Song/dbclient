@@ -14,7 +14,7 @@ public class ModifyServerInfoDTO extends AbstractDto{
 
 	private String host;
 
-	private String hostAliase;
+	private String hostAlias;
 
 	private String schemaName;
 
@@ -30,12 +30,12 @@ public class ModifyServerInfoDTO extends AbstractDto{
 
 	public ModifyServerInfoDTO() {}
 
-	public ModifyServerInfoDTO(Integer serverInfoSeq, String hostAliase, String host,
+	public ModifyServerInfoDTO(Integer serverInfoSeq, String hostAlias, String host,
 			String schemaName, String account, String password, DatabaseDriver driver,
 			String charset,String port) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
-		this.hostAliase = hostAliase;
+		this.hostAlias = hostAlias;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.password = password;
@@ -57,12 +57,12 @@ public class ModifyServerInfoDTO extends AbstractDto{
 		this.host = host;
 	}
 
-	public String getHostAliase() {
-		return hostAliase;
+	public String getHostAlias() {
+		return hostAlias;
 	}
 
-	public void setHostAliase(String hostAliase) {
-		this.hostAliase = hostAliase;
+	public void setHostAlias(String hostAlias) {
+		this.hostAlias = hostAlias;
 	}
 
 	public String getSchemaName() {

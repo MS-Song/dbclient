@@ -115,6 +115,8 @@ var loginForm = function(){
 	html+=createHorizontalForm(apiLoginOperations,operationPath);
 	html+='</form>';
 	$( "#commonsPopup" ).html(html);
+	// 로그인 창에 포커스 이동
+	$( "#commonsPopup" ).find("input:eq(0)").focus();
 };
 
 

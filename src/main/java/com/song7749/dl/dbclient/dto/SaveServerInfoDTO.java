@@ -12,7 +12,7 @@ public class SaveServerInfoDTO extends AbstractDto{
 	@NotNull
 	private String host;
 	@NotNull
-	private String hostAliase;
+	private String hostAlias;
 	@NotNull
 	private String schemaName;
 	@NotNull
@@ -28,10 +28,10 @@ public class SaveServerInfoDTO extends AbstractDto{
 
 	public SaveServerInfoDTO(){}
 
-	public SaveServerInfoDTO(String host, String hostAliase, String schemaName, String account,
+	public SaveServerInfoDTO(String host, String hostAlias, String schemaName, String account,
 			String password, DatabaseDriver driver, String charset,String port) {
 		this.host = host;
-		this.hostAliase = hostAliase;
+		this.hostAlias = hostAlias;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.password = password;
@@ -47,12 +47,12 @@ public class SaveServerInfoDTO extends AbstractDto{
 		this.host = host;
 	}
 
-	public String getHostAliase() {
-		return hostAliase;
+	public String getHostAlias() {
+		return hostAlias;
 	}
 
-	public void setHostAliase(String hostAliase) {
-		this.hostAliase = hostAliase;
+	public void setHostAlias(String hostAlias) {
+		this.hostAlias = hostAlias;
 	}
 
 	public String getSchemaName() {

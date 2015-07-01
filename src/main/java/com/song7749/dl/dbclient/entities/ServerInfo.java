@@ -47,7 +47,7 @@ public class ServerInfo extends Entities {
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
-	private String hostAliase;
+	private String hostAlias;
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
@@ -88,10 +88,10 @@ public class ServerInfo extends Entities {
 		this.tableName = tableName;
 	}
 
-	public ServerInfo(String host,String hostAliase, String schemaName,
+	public ServerInfo(String host,String hostAlias, String schemaName,
 			String account, String password, DatabaseDriver driver, String charset,String port) {
 		this.host = host;
-		this.hostAliase = hostAliase;
+		this.hostAlias = hostAlias;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.password = password;
@@ -100,11 +100,11 @@ public class ServerInfo extends Entities {
 		this.port = port;
 	}
 
-	public ServerInfo(Integer serverInfoSeq, String host, String hostAliase, String schemaName,
+	public ServerInfo(Integer serverInfoSeq, String host, String hostAlias, String schemaName,
 			String account, String password, DatabaseDriver driver, String charset,String port) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
-		this.hostAliase = hostAliase;
+		this.hostAlias = hostAlias;
 		this.schemaName = schemaName;
 		this.account = account;
 		this.password = password;
@@ -125,12 +125,12 @@ public class ServerInfo extends Entities {
 		return host;
 	}
 
-	public String getHostAliase() {
-		return hostAliase;
+	public String getHostAlias() {
+		return hostAlias;
 	}
 
-	public void setHostAliase(String hostAliase) {
-		this.hostAliase = hostAliase;
+	public void setHostAlias(String hostAlias) {
+		this.hostAlias = hostAlias;
 	}
 
 	public void setHost(String host) {

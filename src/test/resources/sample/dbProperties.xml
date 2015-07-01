@@ -4,7 +4,7 @@
 	<comment>데이터베이스 테스트 연결용 데이터 -- 테스트 코드에서 실제 접속 테스트 용도</comment>
 	<entry key="mysql.database.driver">mysql</entry>
 	<entry key="mysql.database.host">127.0.0.1</entry>
-	<entry key="mysql.database.host.aliase">테스트서버</entry>
+	<entry key="mysql.database.host.alias">테스트서버</entry>
 	<entry key="mysql.database.schemaName">test</entry>
 	<entry key="mysql.database.username">dbClientTest</entry>
 	<entry key="mysql.database.password">dbClientTest</entry>
