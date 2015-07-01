@@ -14,7 +14,7 @@ var showHost=function(){
 		$.each(data.result.serverInfo,function(){
 			if(inArray(this.host,values)!=true){
 				values.push(this.host);
-				textes.push(this.host);
+				textes.push(this.host + '[' + this.hostAlias +']');
 			}
 		});
 		$("#serverList").html(createSelect(values,textes,name,selectedValue,firsetOpetionValue,selectAppend,optionAppend));
