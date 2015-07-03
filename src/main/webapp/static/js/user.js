@@ -51,6 +51,10 @@ var resisteMember = function(){
 		width: 700,
 		height:300,
 		modal: true,
+	}).keyup(function(e) {
+	    if (e.keyCode == $.ui.keyCode.ENTER){
+	    	 $("button:contains('가입')").click();
+	    }
 	});
 	
 	$( "#commonsPopup" ).dialog( "open" );
@@ -60,6 +64,9 @@ var resisteMember = function(){
 	html+=createHorizontalForm(apiMemberOperations,operationPath);
 	html+='</form>';
 	$( "#commonsPopup" ).html(html);
+	// 창에 포커스 이동
+	$( "#commonsPopup" ).find("input:eq(0)").focus();
+
 }
 
 /**
@@ -115,7 +122,7 @@ var loginForm = function(){
 	html+=createHorizontalForm(apiLoginOperations,operationPath);
 	html+='</form>';
 	$( "#commonsPopup" ).html(html);
-	// 로그인 창에 포커스 이동
+	// 창에 포커스 이동
 	$( "#commonsPopup" ).find("input:eq(0)").focus();
 };
 
@@ -154,7 +161,6 @@ var memberListForm = function(){
 	var html='<form name="memberListForm" id="memberListForm">';
 	html+=createVerticalForm(apiMemberOperations,operationPath);
 	html+='</form>';
-	console.log(html);
 	$( "#commonsPopup" ).html(html);
 	
 	
@@ -266,6 +272,8 @@ var memberModifyForm = function(id,isAdmin){
 			inputFormData(data.result,'modifyMemberForm');		
 		} 
 	});
+	// 창에 포커스 이동
+	$( "#commonsPopup" ).find("input:eq(0)").focus();
 }
 
 /**
@@ -331,7 +339,7 @@ $(document).ready(function(){
 		    			menuHtml+='<li><a href="javascript:memberListForm();">회원 관리</a></li>';
 		    		}
 		    	}
-			} else {
+			} else {	// 그외 204와 같이 데이터가 없는 경우에는 로그인 되어 있지 않다. 
 	    		headhtml+='<span id="resistMember"><a href="javascript:resisteMember();">[회원가입]</a></span>';
 	    		headhtml+=' <span id="login"><a href="javascript:loginForm();">[로그인]</a></span>';
 	    	}

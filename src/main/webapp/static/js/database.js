@@ -44,6 +44,9 @@ var databaseManager = function(){
 	
 	$( "#commonsPopup" ).dialog( "open" );
 	databaseManageForm();
+	
+	// 창에 포커스 이동
+	$( "#commonsPopup" ).find("input:eq(0)").focus();
 }
 
 /**

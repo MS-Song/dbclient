@@ -64,6 +64,7 @@ public class DatabaseController {
 	@Resource(name="genericExcelView")
 	GenericExcelView genericExcelView;
 
+
 	@ApiOperation(value = "데이터 베이스 서버 리스트 조회"
 					,notes = "등록되어 있는 Database 서버 리스트를 조회 한다."
 					,response=ServerInfoVO.class)
@@ -342,7 +343,8 @@ public class DatabaseController {
 //	@RequestMapping(value={"/getExcel.xls"},
 //			produces= {"application/vnd.ms-excel;charset=UTF-8", "text/csv;charset=UTF-8"},
 //			method=RequestMethod.POST)
-//	public View getExcel(
+//	@Login(type=LoginResponseType.MESSAGE,value={AuthType.ADMIN,AuthType.NORMAL})
+	//	public View getExcel(
 //			@RequestParam(value="titles[]",required=true)
 //			@ApiParam	String[] titles,
 //			@RequestParam(value="values[]",required=true)
