@@ -4,7 +4,7 @@
 	<comment>DB 커넥션 연결정보 LOCAL</comment>
 	<!-- driver 정보  -->
 	<entry key="dbClient.database.driver">org.sqlite.JDBC</entry>
-	<!-- 접속정보 -->
-	<entry key="dbClient.database.url">jdbc:sqlite:dbClient.db</entry>
+	<!-- 접속정보 : 경로를 수정하세요.-->
+	<entry key="dbClient.database.url">jdbc:sqlite:/sqliteDatabase/dbClient.db</entry>
 
 </properties>

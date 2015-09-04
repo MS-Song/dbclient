@@ -13,10 +13,12 @@
 			<property name="hibernate.hbm2ddl.auto">validate</property>
 			<property name="hibernate.hbm2ddl.auto">update</property>
 			<property name="hibernate.hbm2ddl.auto">create-drop</property>
+			<property name="hibernate.hbm2ddl.auto">create</property>
 			<property name="hibernate.hbm2ddl.import_files">./dbClient.sql</property>
-			<property name="hibernate.hbm2ddl.auto">create-drop</property>
+			<property name="hibernate.hbm2ddl.auto">create</property>
 			<property name="hibernate.hbm2ddl.import_files">./dbClient.sql</property>
 		 -->
+
 		<property name="hibernate.connection.CharSet">UTF-8</property>
 		<property name="hibernate.connection.characterEncoding">UTF-8</property>
 		<property name="hibernate.connection.useUnicode">true</property>
