@@ -63,23 +63,27 @@
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.7</version>
-				<executions>
-					<execution>
-						<id>set-version-resource-file</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<echo message="##### Setting product version in source code" />
-								<replace dir="${project.basedir}/src/main/webapp/static"
-									includes="**/*.html" token="@runDate@" value="${maven.build.timestamp}"
-									encoding="UTF-8" />
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
+				<configuration>
+					<lifecycleMappingMetadata>
+						<pluginExecutions>
+							<pluginExecution>
+								<id>set-version-resource-file</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echo message="##### Setting product version in source code" />
+										<replace dir="${project.basedir}/src/main/webapp/static"
+											includes="**/*.html" token="@runDate@" value="${maven.build.timestamp}"
+											encoding="UTF-8" />
+									</tasks>
+								</configuration>
+							</pluginExecution>
+						</pluginExecutions>
+					</lifecycleMappingMetadata>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -153,7 +157,7 @@
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.9.2</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
@@ -369,7 +373,7 @@
 			<artifactId>hibernate-ehcache</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
- 
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
