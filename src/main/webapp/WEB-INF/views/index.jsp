@@ -94,7 +94,7 @@
 					{ view:"text", label:'Password', name:"password" },
 					{margin:5, cols:[
 							{ view:"button", value:"Login" , type:"form", click:function(){
-								
+																
 							}},
 							{ view:"button", value:"Cancel", click:function(){
 								$$("login_popup").hide();
@@ -128,7 +128,23 @@
 		// 로그 아웃 처리
 		// 회원가입 처리
 		// 회원 관리 처리
+		// 회원 권한 처리
 
+		// Database 관리
+		// 서버 선택
+		// DB 선택
+		// 테이블 리스트
+		// function 리스트
+		// view 리스트
+		// procedure
+		// 쿼리 도우미
+		// CURD
+		// Mybatis
+		// hibernate
+		// model 생성
+		// 히스토리
+		// create 테이블
+		// 인덱스
 		
 	</script>
 
