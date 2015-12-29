@@ -75,7 +75,7 @@
 					template: "html->menu_template",
 					data:[
 						{id: 1, value: "Login", icon: "user", func: "login_popup"},
-						{id: 3, value: "Database", icon: "database", func: "select_database_popup"},
+						{id: 3, value: "Database 선택", icon: "database", func: "select_database_popup"},
 						{id: 4, value: "Settings", icon: "cog", func: "config_popup"}
 					],
 					select:true,
@@ -324,8 +324,58 @@
 		// 회원 권한 처리
 
 		// Database 관리
-		// 서버 선택
-		// DB 선택
+		
+		
+		// 서버 & DB 선택
+		var select_database_popup=function(){
+	        webix.ui({
+	            view:"window",
+	            id:"select_database_popup",
+	            autowidth:true,
+	            position:"center",
+	            modal:true,
+	            head:"database 선택",
+	            body:{
+	            	id:"select_database_loader",
+	            	view:"datatable",
+	            	columns:[
+	     					{ id:"driver",		header:"Driver",	width:100},
+							{ id:"host",		header:"Host",		width:120},
+	     					{ id:"hostAlias",	header:"HostAlias",	width:180},
+	     					{ id:"schemaName",	header:"SchemaName",width:120},
+	     					{ id:"account",		header:"Account",	width:120},
+	     					{ id:"port",		header:"Port",		width:80},
+	     					{ id:"selected",	header:"선택",		width:50}
+     				],
+    				autowidth:true,
+    				autoheight:true,
+    				data:[]
+	            }
+	        }).show();
+	        // 데이터베이스 정보를 조회한다.
+      		webix.ajax().get("/database/serverList.json", function(text,data){
+				// 데이터베이스 정보를 획득한 경우에 테이블에 넣는다.
+				console.log(data.json().result);
+				if(data.json().status ==200 && null!=data.json().result){	
+		    		$.each(data.json().result,function(){
+		    			$.each(this,function(index){
+		    				console.log(this);
+		    				$$("select_database_loader").data.add({
+		    					id:this.serverInfoSeq,
+		    					driver:this.driver, 
+		    					host:this.host, 
+		    					hostAlias:this.hostAlias, 
+		    					schemaName:this.schemaName,
+		    					account:this.account,
+		    					port:this.port,
+		    					selected:"선택"}
+		    				,index);
+		    			});
+		    		});
+				}
+      		});
+		}
+
 		// 테이블 리스트
 		// function 리스트
 		// view 리스트
