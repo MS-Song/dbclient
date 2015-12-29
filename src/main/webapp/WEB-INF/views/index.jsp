@@ -27,7 +27,13 @@
 <body>
 
 	<script type="text/javascript" charset="utf-8">
-		// 상단 화면 구성
+		// 회원정보
+   		var id=null;
+   		var authType=null;
+   		var email=null;
+   		var passwordQuestion=null;
+
+   		// 상단 화면 구성
 		webix.ready(function(){
 			webix.ui({
 				rows:[{	// 상단 타이틀 구성 및 sidemenu 제어
@@ -90,19 +96,26 @@
 				// 로그인 정보를 획득한 경우
 				console.log(data.json().result);
 				if(data.json().status ==200 && null!=data.json().result){	
-		    		var id=null;
-		    		var authType=null;
+		    		console.log(data.json().result);
 		    		$.each(data.json().result,function(){
 		    			$.each(this,function(){
 		    				id=this.id;
 		    				authType=this.authType;
+		    				email=this.email;
+		    		   		passwordQuestion=this.passwordQuestion;
+
 		    			});
 		    		});
 		    		// 로그인 정보 획득에 성공한 경우에는 메뉴의 로그인 버튼을 변경한다.
 		    		$$("menu").getBody().data.remove(1);
-		    		$$("menu").getBody().data.add({id: 1, value: id+" 님  (수정)", icon: "user", func: "edit_member"},0);
+		    		$$("menu").getBody().data.add({id: 1, value: id+" 님  (수정)", icon: "user", func: "modify_member_popup"},0);
 		    		$$("menu").getBody().data.add({id: 2, value: " 로그아웃 ", icon: "user", func: "log_out"},1);
 		    		console.log($$("menu").getBody().data.getItem(1));
+		    		
+		    		// 권한 할당이 안된 경우 표시
+		    		if(authType==null){
+		    			$$("toolbar").addView({view: "label", label: "권한이 없습니다. 관리자에게 연락하시기 바랍니다."},3);	
+		    		}
 				}
 			});			
 		});		
@@ -204,9 +217,9 @@
 			view:"form",
 			borderless:true,
 			elements: [
-				{ view:"text", label:'ID', name:"id" },
+				{ view:"text", label:'ID', name:"id" ,value:""},
 				{ view:"text", label:'email', name:"email" },
-				{ view:"text", label:'Password', name:"password" ,type:"password"},
+				{ view:"text", label:'패스워드', name:"password" ,type:"password"},
 				{ view:"text", label:'비밀번호 찾기 질문', name:"passwordQuestion" },
 				{ view:"text", label:'비밀번호 찾기 답변', name:"passwordAnswer" },
 				{margin:5, cols:[
@@ -249,12 +262,69 @@
 	        }).show();
 		}
 		
+		// 회원 정보 수정
+		var modify_member_form = {
+			id:"modify_member_form",
+			view:"form",
+			borderless:true,
+			elements: [
+				{ view:"text", name:"id" ,type:"hidden",height:0},
+				{ view:"text", label:'email', name:"email" },
+				{ view:"text", label:'패스워드', name:"password" ,type:"password"},
+				{ view:"text", label:'패스워드 재입력', name:"password" ,type:"password"},
+				{ view:"text", label:'비밀번호 찾기 질문', name:"passwordQuestion" },
+				{ view:"text", label:'비밀번호 찾기 답변', name:"passwordAnswer" },
+				{margin:5, cols:[
+					{ view:"button", value:"수정" , type:"form", click:function(){
+						webix.ajax().post("/member/modify.json", this.getFormView().getValues(), function(text,data){
+							// 가입 실패
+							if(data.json().status !=200){
+								// validate 메세지 
+								var message = data.json().desc.split("\n");
+								webix.message(message[0].replace("="," "));
+							} else { // 가입 성공
+								webix.message("수정이 완료되었습니다.");
+								$$("modify_member_popup").hide();
+							}
+						});
+					}},
+					{ view:"button", value:"취소", click:function(){ // 가입취소
+						$$("modify_member_popup").hide();
+					}},
+				]},
+			],
+			elementsConfig:{
+				labelPosition:"top"
+			}
+		};
+		
+		// 회원정보 수정
+		var modify_member_popup = function(){
+	        webix.ui({
+	            view:"window",
+	            id:"modify_member_popup",
+	            width:500,
+	            position:"center",
+	            modal:true,
+	            head:"회원정보 수정",
+	            body:webix.copy(modify_member_form)
+	        }).show();
+	        
+	        //$$("modify_member_form").getFormView().getValues();
+	        $$("modify_member_form").setValues({
+				id:id,
+				authType:authType,
+				email:email,
+		   		passwordQuestion:passwordQuestion
+	        });
+		}
+		
+		
 		// 회원 관리 처리
 		// 회원 권한 처리
 
 		// Database 관리
-		// 서버 선택
-		// DB 선택
+		// 서버 및 DB 선택
 		// 테이블 리스트
 		// function 리스트
 		// view 리스트
