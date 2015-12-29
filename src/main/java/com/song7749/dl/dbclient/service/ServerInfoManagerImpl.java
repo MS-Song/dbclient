@@ -66,6 +66,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 			serverInfo.setPassword(dto.getPassword());
 			serverInfo.setDriver(dto.getDriver());
 			serverInfo.setCharset(dto.getCharset());
+			serverInfo.setPort(dto.getPort());;
 			serverInfoRepository.update(serverInfo);
 		}
 	}
