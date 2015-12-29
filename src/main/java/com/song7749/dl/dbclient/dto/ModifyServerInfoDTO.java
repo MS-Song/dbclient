@@ -30,7 +30,7 @@ public class ModifyServerInfoDTO extends AbstractDto{
 
 	public ModifyServerInfoDTO() {}
 
-	public ModifyServerInfoDTO(Integer serverInfoSeq, String hostAlias, String host,
+	public ModifyServerInfoDTO(Integer serverInfoSeq, String host, String hostAlias,
 			String schemaName, String account, String password, DatabaseDriver driver,
 			String charset,String port) {
 		this.serverInfoSeq = serverInfoSeq;

@@ -75,8 +75,7 @@ var databaseManageForm=function(){
 		$.each(data.result.serverInfo,function(){
 			html+=databaseManageGetSubHTML(this);
 		});
-		
-		subHtml;
+
 		html+='<tbody></table></form>';
 		$( "#commonsPopup" ).html(html);
 
@@ -129,7 +128,7 @@ var databaseManageGetSubHTML = function(obj){
 	
 	var serverInfoSeq	= obj != null && obj.serverInfoSeq 	!= 'undefined' ? obj.serverInfoSeq 	: '';
 	var host			= obj != null && obj.host 			!= 'undefined' ? obj.host 			: '';
-	var hostAlias		= obj != null && obj.hostAlias 		!= 'undefined' ? obj.hostAlias 	: '';
+	var hostAlias		= obj != null && obj.hostAlias 		!= 'undefined' ? obj.hostAlias 		: '';
 	var schemaName 		= obj != null && obj.schemaName 	!= 'undefined' ? obj.schemaName 	: '';
 	var account 		= obj != null && obj.account 		!= 'undefined' ? obj.account 		: '';
 	var password 		= obj != null && obj.password 		!= 'undefined' ? obj.password 		: '';
