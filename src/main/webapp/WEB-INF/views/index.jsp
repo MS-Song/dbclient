@@ -8,6 +8,7 @@
 	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
 	<link rel="stylesheet" href="./static/codebase/webix.css" type="text/css" media="screen" charset="utf-8">
 	<script src="./static/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./static/js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
 	<title>DB Client</title>
 	<style>
 		.my_menu .webix_view{
@@ -32,12 +33,10 @@
 				rows:[{	// 상단 타이틀 구성 및 sidemenu 제어
 						view: "toolbar", id:"toolbar", elements:[
 						{ view: "icon", icon: "bars", click: function(){
-								if( $$("menu").config.hidden){
-									$$("menu").show();
-								}
-								else{
-									$$("menu").hide();
-								}
+							if( $$("menu").config.hidden) 
+								$$("menu").show();
+							else 
+								$$("menu").hide();
 						}},
 						{ view: "label", label: "DB CLient"}
 					]},
@@ -70,63 +69,186 @@
 					template: "html->menu_template",
 					data:[
 						{id: 1, value: "Login", icon: "user", func: "login_popup"},
-						{id: 2, value: "Database", icon: "database", func: "login_popup"},
-						{id: 3, value: "Settings", icon: "cog", func: "login_popup"}
+						{id: 3, value: "Database", icon: "database", func: "select_database_popup"},
+						{id: 4, value: "Settings", icon: "cog", func: "config_popup"}
 					],
 					select:true,
 					type:{ height: 40 },
 					click:function(id,e){
 						// 사이드 메뉴 액션
 						console.log(this.getItem(id).func);
-			            $$(this.getItem(id).func).show();
-						//eval(this.getItem(id).func+"()");
+						eval(this.getItem(id).func+"()");
 					}
 				}
 			});
 		}); 
 		
+		// 로그인 된 경우 처리 
+		webix.ready(function(){
+			// 로그인 정보 획득
+			webix.ajax().get("/member/getLogin.json", function(text,data){
+				// 로그인 정보를 획득한 경우
+				console.log(data.json().result);
+				if(data.json().status ==200 && null!=data.json().result){	
+		    		var id=null;
+		    		var authType=null;
+		    		$.each(data.json().result,function(){
+		    			$.each(this,function(){
+		    				id=this.id;
+		    				authType=this.authType;
+		    			});
+		    		});
+		    		// 로그인 정보 획득에 성공한 경우에는 메뉴의 로그인 버튼을 변경한다.
+		    		$$("menu").getBody().data.remove(1);
+		    		$$("menu").getBody().data.add({id: 1, value: id+" 님  (수정)", icon: "user", func: "edit_member"},0);
+		    		$$("menu").getBody().data.add({id: 2, value: " 로그아웃 ", icon: "user", func: "log_out"},1);
+		    		console.log($$("menu").getBody().data.getItem(1));
+				}
+			});			
+		});		
+		
 		// 로그인 폼
 		var login_form = {
-				view:"form",
-				borderless:true,
-				elements: [
-					{ view:"text", label:'ID', name:"id" },
-					{ view:"text", label:'Password', name:"password" },
-					{margin:5, cols:[
-							{ view:"button", value:"Login" , type:"form", click:function(){
-																
-							}},
-							{ view:"button", value:"Cancel", click:function(){
-								$$("login_popup").hide();
-							}},
-							{ view:"button", value:"Resist", click:function(){
-								$$("login_popup").hide();
-								// 회원 가입 팝업
-							}}
-					]},
-				],
-				rules:{
-					"email":webix.rules.isEmail,
-					"login":webix.rules.isNotEmpty
-				},
-				elementsConfig:{
-					labelPosition:"top"
-				}
-			};
+			id:"login_form",
+			view:"form",
+			borderless:true,
+			elements: [
+				{ view:"text", label:'ID', name:"id" },
+				{ view:"text", label:'Password', name:"password" ,type:"password", on:{
+					"onKeyPress":function(id,e){
+						if(e.keyCode == 13){
+							// 버튼을  trigger 할 방법을 찾아보자.. 버튼의 이벤트가 나중에 걸려서 문제다.
+						}
+					}
+				}},
+				{margin:5, cols:[
+					{ id:"login_button",view:"button", value:"Login" , type:"form", click:function(){// 로그인 실행
+						//console.log(this.getFormView().getValues());
+						webix.ajax().post("/member/doLogin.json", this.getFormView().getValues(), function(text,data){
+							// 로그인 실패 
+							if(data.json().status !=200){
+								// validate 메세지 
+								var message = data.json().desc.split("\n");
+								webix.message(message[0].replace("="," "));
+							} else { // 로그인 성공
+								// 로그인 성공 액션
+								webix.message("로그인 처리 완료");
+								// 1초 후에 리로드 한다.	
+								window.setTimeout(function(){
+									document.location = document.location.href;	
+								}, 1000)										
+							}
+						});
+					}},
+					{ view:"button", value:"Cancel", click:function(){ // 로그인 취소
+						// 로그인 팝업 닫기
+						$$("login_popup").hide();
+						$$("login_popup").blockEvent();
+					}},
+					{ view:"button", value:"회원가입", click:function(){// 회원 가입
+						// 로그인 팝업 닫기 
+						$$("login_popup").hide();
+						$$("login_popup").blockEvent();
+						// 회원 가입 팝업
+						resister_member_popup();
+					}}
+				]},
+			],
+			elementsConfig:{
+				labelPosition:"top"
+			}
+		};
+		
 		// 로그인 팝업
-        webix.ui({
-            view:"window",
-            id:"login_popup",
-            width:300,
-            position:"center",
-            modal:true,
-            head:"Log In",
-            body:webix.copy(login_form)
-        });
+		var login_popup = function(){
+	        webix.ui({
+	            view:"window",
+	            id:"login_popup",
+	            width:300,
+	            position:"center",
+	            modal:true,
+	            head:"Log In",
+	            body:webix.copy(login_form)
+	        }).show();
+	        $$("login_popup").unblockEvent();
+		}
 
-		// 로그인 처리
 		// 로그 아웃 처리
-		// 회원가입 처리
+		var log_out=function(){
+			webix.confirm({
+				title: "로그 아웃 확인",
+				ok:"Yes", cancel:"No",
+				text:"로그아웃 하시겠습니까?",
+				callback:function(result){
+					if(result==true){
+			 			// 로그 아웃 실행
+						webix.ajax().post("/member/doLogout.json", function(text,data){
+							// 로그 아웃 결과 확인
+							console.log(data.json().result);
+							if(data.json().status ==200){	
+								window.setTimeout(function(){
+									document.location = document.location.href;	
+								}, 1000)
+							} else {
+								webix.message(data.json().desc);
+							}
+						}); 					
+					}
+				}
+			});
+		};
+		
+		// 회원가입 폼
+		var resister_member_form = {
+			id:"resister_member_form",
+			view:"form",
+			borderless:true,
+			elements: [
+				{ view:"text", label:'ID', name:"id" },
+				{ view:"text", label:'email', name:"email" },
+				{ view:"text", label:'Password', name:"password" ,type:"password"},
+				{ view:"text", label:'비밀번호 찾기 질문', name:"passwordQuestion" },
+				{ view:"text", label:'비밀번호 찾기 답변', name:"passwordAnswer" },
+				{margin:5, cols:[
+					{ view:"button", value:"가입" , type:"form", click:function(){
+						webix.ajax().post("/member/add.json", this.getFormView().getValues(), function(text,data){
+							// 가입 실패
+							if(data.json().status !=200){
+								// validate 메세지 
+								var message = data.json().desc.split("\n");
+								webix.message(message[0].replace("="," "));
+							} else { // 가입 성공
+								webix.message("가입이 완료되었습니다.");
+								// 1초 후에 리로드 한다.	
+								window.setTimeout(function(){
+									document.location = document.location.href;	
+								}, 1000)										
+							}
+						});
+					}},
+					{ view:"button", value:"취소", click:function(){ // 가입취소
+						$$("resister_member_popup").hide();
+					}},
+				]},
+			],
+			elementsConfig:{
+				labelPosition:"top"
+			}
+		};
+		
+		// 회원가입 팝업
+		var resister_member_popup = function(){
+	        webix.ui({
+	            view:"window",
+	            id:"resister_member_popup",
+	            width:500,
+	            position:"center",
+	            modal:true,
+	            head:"회원 가입",
+	            body:webix.copy(resister_member_form)
+	        }).show();
+		}
+		
 		// 회원 관리 처리
 		// 회원 권한 처리
 
