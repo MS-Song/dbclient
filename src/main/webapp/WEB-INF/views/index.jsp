@@ -6,7 +6,8 @@
 <html>
 <head>
 	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
-	<link rel="stylesheet" href="./static/codebase/webix.css" type="text/css" media="screen" charset="utf-8">
+	<!-- <link rel="stylesheet" href="./static/codebase/webix.css" type="text/css" media="screen" charset="utf-8"> -->
+	<link rel="stylesheet" href="./static/codebase/skins/web.css" type="text/css" media="screen" charset="utf-8">	
 	<script src="./static/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
 	<title>DB Client</title>
@@ -33,6 +34,12 @@
    		var email=null;
    		var passwordQuestion=null;
 
+   		// 데이터 베이스 선택 정보
+   		var serverInfoSeq=null;
+   		var server=null;
+   		var schema=null;
+   		var account=null;
+   		
    		// 상단 화면 구성
 		webix.ready(function(){
 			webix.ui({
@@ -48,9 +55,21 @@
 					]},
 					{	// 메인 화면 구성
 						id:"main_body",
-						template: "Click 'menu' icon to show a menu"
+						multi:true,
+						view:"accordion",
+						cols:[
+							{ id:"database_info_view",	header:"Database 정보", 	body:"loading data", width:250},
+							{rows:[
+								{ id:"database_query_view",	header:"쿼리 & 개발자도구", 	body:"loading data"},
+								{ id:"database_result_vew",	header:"Result", 		body:"loading data"}
+							]},
+						],
+						autoheigth:true,
+						autowidth:true
 					},
 					{	// footer 구성
+						id:"footer",
+						height:30,
 						template: "html->footer",
 					}
 				]
@@ -79,7 +98,7 @@
 						{id: 4, value: "Settings", icon: "cog", func: "config_popup"}
 					],
 					select:true,
-					type:{ height: 40 },
+					type:{ height: 30 },
 					click:function(id,e){
 						// 사이드 메뉴 액션
 						console.log(this.getItem(id).func);
@@ -107,15 +126,19 @@
 		    			});
 		    		});
 		    		// 로그인 정보 획득에 성공한 경우에는 메뉴의 로그인 버튼을 변경한다.
-		    		$$("menu").getBody().data.remove(1);
+		    		$$("menu").getBody().data.remove(1);	// TODO ID Search 으로 변경
 		    		$$("menu").getBody().data.add({id: 1, value: id+" 님  (수정)", icon: "user", func: "modify_member_popup"},0);
 		    		$$("menu").getBody().data.add({id: 2, value: " 로그아웃 ", icon: "user", func: "log_out"},1);
 		    		console.log($$("menu").getBody().data.getItem(1));
 		    		
 		    		// 권한 할당이 안된 경우 표시
 		    		if(authType==null){
+		    			// Database 관련 기능 비 활성화
+		    			$$("menu").getBody().data.remove(3);
 		    			$$("toolbar").addView({view: "label", label: "권한이 없습니다. 관리자에게 연락하시기 바랍니다."},3);	
 		    		}
+				} else { // 로그인 되어 있지 않으면 비 활성화
+	    			$$("menu").getBody().data.remove(3);
 				}
 			});			
 		});		
@@ -334,19 +357,24 @@
 	            autowidth:true,
 	            position:"center",
 	            modal:true,
-	            head:"database 선택",
+	            head:{view:"button",value:"서버 선택 닫기" , click:function(){
+	           		$$("select_database_popup").hide();
+            	}},
 	            body:{
 	            	id:"select_database_loader",
 	            	view:"datatable",
 	            	columns:[
-	     					{ id:"driver",		header:"Driver",	width:100},
-							{ id:"host",		header:"Host",		width:120},
-	     					{ id:"hostAlias",	header:"HostAlias",	width:180},
-	     					{ id:"schemaName",	header:"SchemaName",width:120},
-	     					{ id:"account",		header:"Account",	width:120},
-	     					{ id:"port",		header:"Port",		width:80},
+	     					{ id:"driver",		header:"Driver",	width:100, sort:"string"},
+							{ id:"host",		header:"Host",		width:100, sort:"string"},
+	     					{ id:"hostAlias",	header:"HostAlias",	width:100, sort:"string"},
+	     					{ id:"schemaName",	header:"SchemaName",width:100, sort:"string"},
+	     					{ id:"account",		header:"Account",	width:100, sort:"string"},
+	     					{ id:"port",		header:"Port",		width:80,  sort:"int"},
 	     					{ id:"selected",	header:"선택",		width:50}
      				],
+     				tooltip:true,
+     				select:"row",
+     				resizeColumn:true,
     				autowidth:true,
     				autoheight:true,
     				data:[]
@@ -355,11 +383,15 @@
 	        // 데이터베이스 정보를 조회한다.
       		webix.ajax().get("/database/serverList.json", function(text,data){
 				// 데이터베이스 정보를 획득한 경우에 테이블에 넣는다.
-				console.log(data.json().result);
 				if(data.json().status ==200 && null!=data.json().result){	
 		    		$.each(data.json().result,function(){
 		    			$.each(this,function(index){
-		    				console.log(this);
+							// 이미 선택되어진 값인가 검증 한다. 
+							var selectedRow = "";
+							if(this.serverInfoSeq == serverInfoSeq){
+								selectedRow="선택";
+							}
+		    				
 		    				$$("select_database_loader").data.add({
 		    					id:this.serverInfoSeq,
 		    					driver:this.driver, 
@@ -368,11 +400,42 @@
 		    					schemaName:this.schemaName,
 		    					account:this.account,
 		    					port:this.port,
-		    					selected:"선택"}
+		    					selected:selectedRow}
 		    				,index);
 		    			});
 		    		});
 				}
+				// 이벤트 부여
+				$$("select_database_loader").attachEvent("onSelectChange", function(){
+					var selectedRow = $$("select_database_loader").getSelectedItem();
+					
+					// 이미 선택된 값을 삭제 한다.
+					$$("select_database_loader").eachRow( 
+    					function (id){
+    						$$("select_database_loader").getItem(id).selected="";
+    					}
+    				);
+					
+					// 설정 정보 저장
+					serverInfoSeq=selectedRow.id;
+					server=selectedRow.host;
+					schema=selectedRow.schemaName;
+					account=selectedRow.account;
+					selectedRow.selected="선택";
+					// 입력한 값을 재 로딩 한다.
+					$$("select_database_loader").refresh();
+					webix.message("데이터베이스를 선택 했습니다.");
+					// 선택 창을 닫는다.
+			   		window.setTimeout(function(){
+						$$("select_database_popup").hide();	
+					}, 500)										
+
+					// 선택된 서버 정보를 보여준다.
+					$$("toolbar").removeView("toolbar_notices");
+					$$("toolbar").addView({id:"toolbar_notices",view: "label", label: selectedRow.hostAlias+" ["+server+"] 선택"},3);
+					// front UI 를 활성화 시킨다.
+					
+				});
       		});
 		}
 
@@ -380,6 +443,9 @@
 		// function 리스트
 		// view 리스트
 		// procedure
+
+		
+		
 		// 쿼리 도우미
 		// CURD
 		// Mybatis
@@ -389,6 +455,10 @@
 		// create 테이블
 		// 인덱스
 		
+		
+		// 유틸리티
+
+		
 	</script>
 
 	<!-- 메뉴 리스트의 템플릿 -->
@@ -397,7 +467,7 @@
 	</div>
 	<!-- footer의 템플릿 -->
 	<div id="footer" style="display: none;">
-		<h3> Copyrightⓒ Song7749 Co., Ltd. All Rights Reserved. </h3>
+		Copyrightⓒ Song7749 Co., Ltd. All Rights Reserved.
 	</div>
 </body>
 </html>
