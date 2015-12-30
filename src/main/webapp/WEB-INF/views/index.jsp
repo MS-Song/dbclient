@@ -64,6 +64,9 @@
 									view:"tabview",
 									id:"database_info_tab",
 									animate:true,
+				     				resizeColumn:true,
+				    				autowidth:true,
+				    				autoheight:true,	
 									cells: database_info_cell
 								}},
 								{ view:"resizer",height:3},
@@ -129,66 +132,7 @@
 			});
 		}); 
 		
-   		// database info cell
-   		var database_info_cell = [
-			{	view : "datatable", 
-				header:"Table",		
-				id:"database_info_table_list_view", 	
-				columns:[],	
-				data:[],
-				tooltip:true,
- 				select:"row",
- 				resizeColumn:true,
-				autowidth:true,
-				autoheight:true
-			},
-			{	view : "datatable", 
-				header:"Index",		
-				id:"database_info_index_list_view",
-				columns:[],	
-				data:[],
-				tooltip:true,
- 				select:"row",
- 				resizeColumn:true,
-				autowidth:true,
-				autoheight:true
-			},
-			{	view : "datatable", 
-				header:"View",			
-				id:"database_info_view_list_view", 						
-				columns:[],	
-				data:[],
-				tooltip:true,
- 				select:"row",
- 				resizeColumn:true,
-				autowidth:true,
-				autoheight:true
-			},
-			{	view : "datatable", 
-				header:"Procedure",	
-				id:"database_info_procedure_list_view", 
-				columns:[],	
-				data:[],
-				tooltip:true,
- 				select:"row",
- 				resizeColumn:true,
-				autowidth:true,
-				autoheight:true
-			},
-			{	view : "datatable", 
-				header:"Function",		
-				id:"database_info_function_list_view",				
-				columns:[],	
-				data:[],
-				tooltip:true,
- 				select:"row",
- 				resizeColumn:true,
-				autowidth:true,
-				autoheight:true
-			}
-   		];
-   		
-		// 로그인 된 경우 처리 
+ 		// 로그인 된 경우 처리 
 		webix.ready(function(){
 			// 로그인 정보 획득
 			webix.ajax().get("/member/getLogin.json", function(text,data){
@@ -511,19 +455,97 @@
 					$$("toolbar").removeView("toolbar_notices");
 					$$("toolbar").addView({id:"toolbar_notices",view: "label", label: selectedRow.hostAlias+" ["+server+"] 선택"},3);
 					// front UI 를 활성화 시킨다.
-					//database_info_data_load();
+					database_info_data_load();
 					
 				});
       		});
 		}
 
+  		// database info cell
+   		var database_info_cell = [
+			{	view : "datatable", 
+				header:"Table",		
+				id:"database_info_table_list_view", 	
+				columns:[
+   					{ id:"tableName",	header:"Name",		sort:"string"},
+					{ id:"tableComment",header:"Comment",	sort:"string"},
+   				],
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			},
+			{	view : "datatable", 
+				header:"Index",		
+				id:"database_info_index_list_view",
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			},
+			{	view : "datatable", 
+				header:"View",			
+				id:"database_info_view_list_view", 						
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			},
+			{	view : "datatable", 
+				header:"Procedure",	
+				id:"database_info_procedure_list_view", 
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			},
+			{	view : "datatable", 
+				header:"Function",		
+				id:"database_info_function_list_view",				
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			}
+   		];
+		
 		// 데이터베이스 정보 로드 
 		var database_info_data_load=function(){
+			// 테이블 정보 로딩
+			webix.ajax().get("/database/tableList.json",{server:server,schema:schema,account:account}, function(text,data){
+				// 테이블 정보를 획득한 경우에 넣는다.
+				
+				//지우고 다시 넣는다. -- 무한루프에 걸려들음
+				if(data.json().status ==200 && null!=data.json().result){	
+		    		$.each(data.json().result,function(){
+		    			$.each(this,function(index){
+		    				$$("database_info_table_list_view").data.add({
+		    					tableName:this.tableName,
+		    					tableComment:this.tableComment
+		    				},index);
+			   			});
+	    			});
+		    		$$("database_info_table_list_view").refresh();
+				}
+			});
+			
+			// 인덱스 정보 로딩
 			console.log($$("database_info_table_list_view"));
-		};
-		webix.ready(function(){
-			database_info_data_load();
-		});
+		}
 		
 		// 테이블 리스트
 		// function 리스트
