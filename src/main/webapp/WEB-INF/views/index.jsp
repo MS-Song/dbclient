@@ -64,14 +64,8 @@
 									view:"tabview",
 									id:"database_info_tab",
 									animate:true,
-									cells: [
-										{header:"Table",	id:"database_info_table_list_view", 	body:""},
-										{header:"Index",	id:"database_info_index_list_view",	 	body:""},
-										{header:"View",		id:"database_info_view_list_view", 		body:""},
-										{header:"Procedure",id:"database_info_procedure_list_view", body:""},
-										{header:"Function",	id:"database_info_function_list_view", 	body:""}
-									]}
-								},
+									cells: database_info_cell
+								}},
 								{ view:"resizer",height:3},
 								{
 									id:"database_info_property",
@@ -135,6 +129,65 @@
 			});
 		}); 
 		
+   		// database info cell
+   		var database_info_cell = [
+			{	view : "datatable", 
+				header:"Table",		
+				id:"database_info_table_list_view", 	
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			},
+			{	view : "datatable", 
+				header:"Index",		
+				id:"database_info_index_list_view",
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			},
+			{	view : "datatable", 
+				header:"View",			
+				id:"database_info_view_list_view", 						
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			},
+			{	view : "datatable", 
+				header:"Procedure",	
+				id:"database_info_procedure_list_view", 
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			},
+			{	view : "datatable", 
+				header:"Function",		
+				id:"database_info_function_list_view",				
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				autowidth:true,
+				autoheight:true
+			}
+   		];
+   		
 		// 로그인 된 경우 처리 
 		webix.ready(function(){
 			// 로그인 정보 획득
