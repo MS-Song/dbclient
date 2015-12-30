@@ -58,9 +58,36 @@
 						multi:true,
 						view:"accordion",
 						cols:[
-							{ id:"database_info_view",	header:"Database 정보", 	body:"loading data", width:250},
+							{ 
+								rows:[{
+									id:"database_info_view",	header:"Database 정보", width:280, body:{
+									view:"tabview",
+									id:"database_info_tab",
+									animate:true,
+									cells: [
+										{header:"Table",	id:"database_info_table_list_view", 	body:""},
+										{header:"Index",	id:"database_info_index_list_view",	 	body:""},
+										{header:"View",		id:"database_info_view_list_view", 		body:""},
+										{header:"Procedure",id:"database_info_procedure_list_view", body:""},
+										{header:"Function",	id:"database_info_function_list_view", 	body:""}
+									]}
+								},
+								{ view:"resizer",height:3},
+								{
+									id:"database_info_property",
+									view:"datatable",
+					            	columns:[],
+				     				tooltip:true,
+				     				select:"row",
+				     				resizeColumn:true,
+				    				autowidth:true,
+				    				autoheight:true,									
+								}]
+							},
+							{ view:"resizer",width:5},
 							{rows:[
 								{ id:"database_query_view",	header:"쿼리 & 개발자도구", 	body:"loading data"},
+								{ view:"resizer",height:3},
 								{ id:"database_result_vew",	header:"Result", 		body:"loading data"}
 							]},
 						],
@@ -74,7 +101,7 @@
 					}
 				]
 			});
-	
+			
 			// 사이드 메뉴
 			webix.ui({
 				view: "sidemenu",
@@ -347,8 +374,6 @@
 		// 회원 권한 처리
 
 		// Database 관리
-		
-		
 		// 서버 & DB 선택
 		var select_database_popup=function(){
 	        webix.ui({
@@ -391,7 +416,6 @@
 							if(this.serverInfoSeq == serverInfoSeq){
 								selectedRow="선택";
 							}
-		    				
 		    				$$("select_database_loader").data.add({
 		    					id:this.serverInfoSeq,
 		    					driver:this.driver, 
@@ -434,11 +458,20 @@
 					$$("toolbar").removeView("toolbar_notices");
 					$$("toolbar").addView({id:"toolbar_notices",view: "label", label: selectedRow.hostAlias+" ["+server+"] 선택"},3);
 					// front UI 를 활성화 시킨다.
+					//database_info_data_load();
 					
 				});
       		});
 		}
 
+		// 데이터베이스 정보 로드 
+		var database_info_data_load=function(){
+			console.log($$("database_info_table_list_view"));
+		};
+		webix.ready(function(){
+			database_info_data_load();
+		});
+		
 		// 테이블 리스트
 		// function 리스트
 		// view 리스트
