@@ -39,6 +39,7 @@
    		var server=null;
    		var schema=null;
    		var account=null;
+   		var tableName=null;
    		
    		// 상단 화면 구성
 		webix.ready(function(){
@@ -59,29 +60,16 @@
 						view:"accordion",
 						cols:[
 							{ 
-								rows:[{
-									id:"database_info_view",	header:"Database 정보", width:280, body:{
+								id:"database_info_view",	header:"Database 정보", width:280, body:{
 									view:"tabview",
 									id:"database_info_tab",
-									animate:true,
-				     				resizeColumn:true,
+									animate:false,
 				    				autowidth:true,
 				    				autoheight:true,	
 									cells: database_info_cell
-								}},
-								{ view:"resizer",height:3},
-								{
-									id:"database_info_property",
-									view:"datatable",
-					            	columns:[],
-				     				tooltip:true,
-				     				select:"row",
-				     				resizeColumn:true,
-				    				autowidth:true,
-				    				autoheight:true,									
-								}]
+								}
 							},
-							{ view:"resizer",width:5},
+							{ view:"resizer"},
 							{rows:[
 								{ id:"database_query_view",	header:"쿼리 & 개발자도구", 	body:"loading data"},
 								{ view:"resizer",height:3},
@@ -203,12 +191,10 @@
 					{ view:"button", value:"Cancel", click:function(){ // 로그인 취소
 						// 로그인 팝업 닫기
 						$$("login_popup").hide();
-						$$("login_popup").blockEvent();
 					}},
 					{ view:"button", value:"회원가입", click:function(){// 회원 가입
 						// 로그인 팝업 닫기 
 						$$("login_popup").hide();
-						$$("login_popup").blockEvent();
 						// 회원 가입 팝업
 						resister_member_popup();
 					}}
@@ -230,7 +216,7 @@
 	            head:"Log In",
 	            body:webix.copy(login_form)
 	        }).show();
-	        $$("login_popup").unblockEvent();
+	        $$("menu").hide();
 		}
 
 		// 로그 아웃 처리
@@ -356,6 +342,8 @@
 	            head:"회원정보 수정",
 	            body:webix.copy(modify_member_form)
 	        }).show();
+	        // side menu 닫기
+	        $$("menu").hide();
 	        
 	        //$$("modify_member_form").getFormView().getValues();
 	        $$("modify_member_form").setValues({
@@ -402,6 +390,10 @@
     				data:[]
 	            }
 	        }).show();
+
+	        // side menu 닫기
+	        $$("menu").hide();
+	        
 	        // 데이터베이스 정보를 조회한다.
       		webix.ajax().get("/database/serverList.json", function(text,data){
 				// 데이터베이스 정보를 획득한 경우에 테이블에 넣는다.
@@ -454,7 +446,7 @@
 					// 선택된 서버 정보를 보여준다.
 					$$("toolbar").removeView("toolbar_notices");
 					$$("toolbar").addView({id:"toolbar_notices",view: "label", label: selectedRow.hostAlias+" ["+server+"] 선택"},3);
-					// front UI 를 활성화 시킨다.
+					// 선택된 데이터베이스의 정보를 읽는다.
 					database_info_data_load();
 					
 				});
@@ -463,30 +455,86 @@
 
   		// database info cell
    		var database_info_cell = [
-			{	view : "datatable", 
+			{	 
 				header:"Table",		
-				id:"database_info_table_list_view", 	
-				columns:[
-   					{ id:"tableName",	header:"Name",		sort:"string"},
-					{ id:"tableComment",header:"Comment",	sort:"string"},
-   				],
-				data:[],
-				tooltip:true,
- 				select:"row",
- 				resizeColumn:true,
-				autowidth:true,
-				autoheight:true
-			},
-			{	view : "datatable", 
-				header:"Index",		
-				id:"database_info_index_list_view",
-				columns:[],	
-				data:[],
-				tooltip:true,
- 				select:"row",
- 				resizeColumn:true,
-				autowidth:true,
-				autoheight:true
+				rows:[{
+					view : "datatable",
+					id:"database_info_table_list_view", 	
+					columns:[
+						{ id:"seq",	header:["#", {	// 검색창 구현
+								content:"textFilter", placeholder:"table name OR comment search",
+								compare:function(value, filter, obj){ // 검색창 필터조건 구현
+										if (equals(obj.tableName, filter)) return true;
+										if (equals(obj.tableComment, filter)) return true;
+										return false;
+								}, colspan:3}], 
+							adjust:true,	sort:"int"},					         
+	   					{ id:"tableName",	header:"Name",		sort:"string", adjust:true},
+						{ id:"tableComment",header:"Comment",	sort:"string", adjust:true},
+	   				],
+					data:[],
+					tooltip:true,
+	 				select:"row",
+	 				resizeColumn:true,
+					autowidth:true
+				},
+				{ view:"resizer"},
+				{
+					view:"tabview",
+					id:"table_info_tab",
+					animate:false,
+    				autowidth:true,
+    				autoheight:true,	
+					cells: [
+						{	
+							header:"Field",
+							view : "datatable",
+							id:"table_info_field_list", 	
+							columns:[
+								{ id:"columnId",	header:["#", {	// 검색창 구현
+										content:"textFilter", placeholder:"column name OR comment search",
+										compare:function(value, filter, obj){ // 검색창 필터조건 구현
+												if (equals(obj.columnName	, filter)) return true;
+												if (equals(obj.comment, filter)) return true;
+												return false;
+										}, colspan:10}], 
+									adjust:true,	sort:"int"},					         
+			   					{ id:"columnName",		header:"name",		sort:"string", adjust:true},
+								{ id:"nullable",		header:"null able",	sort:"string", adjust:true},
+								{ id:"columnKey",		header:"key",		sort:"string", adjust:true},
+								{ id:"dataType",		header:"type",		sort:"string", adjust:true},
+								{ id:"dataLegnth",		header:"length",	sort:"string", adjust:true},
+								{ id:"comment",			header:"comment",	sort:"string", adjust:true},
+								{ id:"defaultValue",	header:"defualt",	sort:"string", adjust:true},
+								{ id:"characterset",	header:"charset",	sort:"string", adjust:true},
+								{ id:"extra",			header:"extra",		sort:"string", adjust:true}
+
+							],
+							data:[],
+							tooltip:true,
+			 				resizeColumn:true,
+							autowidth:true
+						}, {
+							header:"index",
+							id:"table_info_index_list", 
+							view : "datatable",
+							columns:[
+			   					{ id:"owner",			header:"owner",			sort:"string", adjust:true},
+								{ id:"indexName",		header:"name",			sort:"string", adjust:true},
+								{ id:"indexType",		header:"type",			sort:"string", adjust:true},
+								{ id:"columnName",		header:"colName",		sort:"string", adjust:true},
+								{ id:"columnPosition",	header:"position",		sort:"string", adjust:true},
+								{ id:"cardinality",		header:"cardinality",	sort:"string", adjust:true},
+								{ id:"unique",			header:"unique",		sort:"string", adjust:true},
+								{ id:"descend",			header:"descend",		sort:"string", adjust:true}
+			   				],
+							data:[],
+							tooltip:true,
+			 				resizeColumn:true,
+							autowidth:true
+						}
+					]
+				}]
 			},
 			{	view : "datatable", 
 				header:"View",			
@@ -525,29 +573,73 @@
 		
 		// 데이터베이스 정보 로드 
 		var database_info_data_load=function(){
+			// progress 추가
+			webix.extend($$("database_info_table_list_view"), webix.ProgressBar);
+			// 로딩 프로그레스 
+			$$("database_info_table_list_view").showProgress();
+			// 담기 전에 모두 지운다
+			$$("database_info_table_list_view").clearAll();
 			// 테이블 정보 로딩
-			webix.ajax().get("/database/tableList.json",{server:server,schema:schema,account:account}, function(text,data){
-				// 테이블 정보를 획득한 경우에 넣는다.
-				
-				//지우고 다시 넣는다. -- 무한루프에 걸려들음
-				if(data.json().status ==200 && null!=data.json().result){	
-		    		$.each(data.json().result,function(){
-		    			$.each(this,function(index){
-		    				$$("database_info_table_list_view").data.add({
-		    					tableName:this.tableName,
-		    					tableComment:this.tableComment
-		    				},index);
-			   			});
-	    			});
-		    		$$("database_info_table_list_view").refresh();
+			webix.ajax().get("/database/tableList.json",{
+				server:server,
+				schema:schema,
+				account:account}, function(text,data){
+					// 테이블 정보를 획득한 경우에 넣는다.
+					if(data.json().status ==200 && null!=data.json().result){	
+						$.each(data.json().result,function(){
+			    			$.each(this,function(index){
+			    				$$("database_info_table_list_view").data.add({
+			    					seq:index,
+			    					tableName:this.tableName,
+			    					tableComment:this.tableComment
+			    				},index);
+				   			});
+		    			});
+						// 다시 읽는다.
+			    		$$("database_info_table_list_view").refresh();
+			    		$$("database_info_table_list_view").hideProgress();
+					}
 				}
-			});
+			);
 			
-			// 인덱스 정보 로딩
-			console.log($$("database_info_table_list_view"));
+			// change 이벤트 부여 -- 테이블 선택 값 이벤트
+			$$("database_info_table_list_view").attachEvent("onSelectChange", function(){
+				// 선택된 row
+				var selectedRow = $$("database_info_table_list_view").getSelectedItem();
+				// 테이블 명칭 저장
+				tableName = selectedRow.tableName; 
+
+				// progress 추가
+				webix.extend($$("table_info_field_list"), webix.ProgressBar);
+				// 로딩 프로그레스 
+				$$("table_info_field_list").showProgress();
+				// 담기 전에 모두 지운다
+				$$("table_info_field_list").clearAll();
+				// 필드 조회 
+				webix.ajax().get("/database/fieldList.json",{
+					server:server,
+					schema:schema,
+					account:account,
+					table:tableName}, 
+					function(text,data){
+						// 필드 정보를 획득한 경우에 넣는다.
+						if(data.json().status ==200 && null!=data.json().result){
+							console.log(data.json());
+							$$("table_info_field_list").parse(data.json().result.fieldList)
+							// 다시 읽는다.
+				    		$$("table_info_field_list").refresh();
+				    		$$("table_info_field_list").hideProgress();
+						}
+					}
+				);
+				
+				
+				// 인덱스 내용 조회
+				
+				console.log(selectedRow);
+			});
 		}
 		
-		// 테이블 리스트
 		// function 리스트
 		// view 리스트
 		// procedure
@@ -565,7 +657,14 @@
 		
 		
 		// 유틸리티
-
+		var equals=function (a,b){
+			if(a != null && b != null){
+				a = a.toString().toLowerCase();
+				return a.indexOf(b) !== -1;
+			} else {
+				return false;
+			}
+		};
 		
 	</script>
 
