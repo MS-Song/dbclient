@@ -624,7 +624,6 @@
 					function(text,data){
 						// 필드 정보를 획득한 경우에 넣는다.
 						if(data.json().status ==200 && null!=data.json().result){
-							console.log(data.json());
 							$$("table_info_field_list").parse(data.json().result.fieldList)
 							// 다시 읽는다.
 				    		$$("table_info_field_list").refresh();
@@ -633,8 +632,29 @@
 					}
 				);
 				
-				
 				// 인덱스 내용 조회
+				// progress 추가
+				webix.extend($$("table_info_index_list"), webix.ProgressBar);
+				// 로딩 프로그레스 
+				$$("table_info_index_list").showProgress();
+				// 담기 전에 모두 지운다
+				$$("table_info_index_list").clearAll();
+				// 인덱스 조회 
+				webix.ajax().get("/database/indexList.json",{
+					server:server,
+					schema:schema,
+					account:account,
+					table:tableName}, 
+					function(text,data){
+						// 필드 정보를 획득한 경우에 넣는다.
+						if(data.json().status ==200 && null!=data.json().result){
+							$$("table_info_index_list").parse(data.json().result.indexList)
+							// 다시 읽는다.
+				    		$$("table_info_index_list").refresh();
+				    		$$("table_info_index_list").hideProgress();
+						}
+					}
+				);
 				
 				console.log(selectedRow);
 			});
@@ -655,6 +675,9 @@
 		// create 테이블
 		// 인덱스
 		
+		// 결과 값
+		//grid.config.columns = [..new collection of columns..];
+		//grid.refreshColumns();
 		
 		// 유틸리티
 		var equals=function (a,b){
