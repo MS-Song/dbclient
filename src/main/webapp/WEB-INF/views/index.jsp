@@ -6,7 +6,6 @@
 <html>
 <head>
 	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
-	<!-- <link rel="stylesheet" href="./static/codebase/webix.css" type="text/css" media="screen" charset="utf-8"> -->
 	<link rel="stylesheet" href="./static/codebase/skins/web.css" type="text/css" media="screen" charset="utf-8">	
 	<script src="./static/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
@@ -71,7 +70,15 @@
 							},
 							{ view:"resizer"},
 							{rows:[
-								{ id:"database_query_view",	header:"쿼리 & 개발자도구", 	body:"loading data"},
+								{ id:"database_query_view",	header:"쿼리 & 개발자도구", 	body:{
+										view:"tabview",
+										id:"database_query_tab",
+										animate:false,
+					    				autowidth:true,
+					    				autoheight:true,
+										cells: database_query_cell
+									}	
+								},
 								{ view:"resizer",height:3},
 								{ id:"database_result_vew",	header:"Result", 		body:"loading data"}
 							]},
@@ -125,9 +132,7 @@
 			// 로그인 정보 획득
 			webix.ajax().get("/member/getLogin.json", function(text,data){
 				// 로그인 정보를 획득한 경우
-				console.log(data.json().result);
 				if(data.json().status ==200 && null!=data.json().result){	
-		    		console.log(data.json().result);
 		    		$.each(data.json().result,function(){
 		    			$.each(this,function(){
 		    				id=this.id;
@@ -141,7 +146,6 @@
 		    		$$("menu").getBody().data.remove(1);	// TODO ID Search 으로 변경
 		    		$$("menu").getBody().data.add({id: 1, value: id+" 님  (수정)", icon: "user", func: "modify_member_popup"},0);
 		    		$$("menu").getBody().data.add({id: 2, value: " 로그아웃 ", icon: "user", func: "log_out"},1);
-		    		console.log($$("menu").getBody().data.getItem(1));
 		    		
 		    		// 권한 할당이 안된 경우 표시
 		    		if(authType==null){
@@ -171,7 +175,6 @@
 				}},
 				{margin:5, cols:[
 					{ id:"login_button",view:"button", value:"Login" , type:"form", click:function(){// 로그인 실행
-						//console.log(this.getFormView().getValues());
 						webix.ajax().post("/member/doLogin.json", this.getFormView().getValues(), function(text,data){
 							// 로그인 실패 
 							if(data.json().status !=200){
@@ -230,7 +233,6 @@
 			 			// 로그 아웃 실행
 						webix.ajax().post("/member/doLogout.json", function(text,data){
 							// 로그 아웃 결과 확인
-							console.log(data.json().result);
 							if(data.json().status ==200){	
 								window.setTimeout(function(){
 									document.location = document.location.href;	
@@ -655,8 +657,6 @@
 						}
 					}
 				);
-				
-				console.log(selectedRow);
 			});
 		}
 		
@@ -667,6 +667,23 @@
 		
 		
 		// 쿼리 도우미
+		var database_query_cell = [
+			{	
+				id:"database_query_form",
+				header:"sql1",
+				adjust:true,
+				view : "form", 
+				autowidth:true,
+				autoheight:true,
+				scroll:false,
+				elements:[
+					{	id:"database_query_input",	view : "textarea" ,placeholder:"input query"}
+				]
+			}
+		]
+		
+		
+		
 		// CURD
 		// Mybatis
 		// hibernate
