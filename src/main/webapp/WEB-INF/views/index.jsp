@@ -80,7 +80,15 @@
 									}	
 								},
 								{ view:"resizer",height:3},
-								{ id:"database_result_vew",	header:"Result", 		body:"loading data"}
+								{ id:"database_result_vew",	header:"Result", 		body:{
+										view:"tabview",
+										id:"database_result_tab",
+										animate:false,
+					    				autowidth:true,
+					    				autoheight:true,
+										cells: database_result_cell
+									}	
+								}
 							]},
 						],
 						autoheigth:true,
@@ -478,7 +486,8 @@
 					tooltip:true,
 	 				select:"row",
 	 				resizeColumn:true,
-					autowidth:true
+	 				navigation:true,
+	 				autowidth:true
 				},
 				{ view:"resizer"},
 				{
@@ -515,7 +524,9 @@
 							data:[],
 							tooltip:true,
 			 				resizeColumn:true,
-							autowidth:true
+							autowidth:true,
+							select:"row",
+							navigation:true
 						}, {
 							header:"index",
 							id:"table_info_index_list", 
@@ -533,7 +544,9 @@
 							data:[],
 							tooltip:true,
 			 				resizeColumn:true,
-							autowidth:true
+							autowidth:true,
+							select:"row",
+							navigation:true
 						}
 					]
 				}]
@@ -666,22 +679,58 @@
 
 		
 		
-		// 쿼리 도우미
-		var database_query_cell = [
-			{	
+		// 쿼리 입력창
+		var database_query_cell = [{
+			header:"sql1",
+			cols:[{	
 				id:"database_query_form",
-				header:"sql1",
 				adjust:true,
 				view : "form", 
+				minHeight:300,
 				autowidth:true,
 				autoheight:true,
 				scroll:false,
 				elements:[
 					{	id:"database_query_input",	view : "textarea" ,placeholder:"input query"}
 				]
-			}
+			},
+			{
+				rows:[{
+					id:"database_query_execute_button",
+					view:"button",
+					value:"execute",
+					hotkey:"enter-Ctrl",
+					width:100,
+					height:100,
+					click:function(id,e){
+						// 멀티 뷰를 활성화 할 경우에는, 어떤 뷰를 선택했는지 path 를 통해 획득해야 한다. 
+						console.log($$("database_query_input").getValue());
+						// 쿼리를 실행 한다.
+					}
+				}]
+			}]
+		}]
+		
+		// 결과 창
+		var database_result_cell = [
+			{	view : "datatable", 
+				header:"sql1",			
+				id:"database_result_list_view", 						
+				columns:[],	
+				data:[],
+				tooltip:true,
+ 				select:"row",
+ 				resizeColumn:true,
+				minHeight:280,
+ 				autowidth:true,
+				autoheight:true
+			},
 		]
 		
+
+		//grid.config.columns = [..new collection of columns..];
+		//grid.refreshColumns();
+
 		
 		
 		// CURD
@@ -693,8 +742,6 @@
 		// 인덱스
 		
 		// 결과 값
-		//grid.config.columns = [..new collection of columns..];
-		//grid.refreshColumns();
 		
 		// 유틸리티
 		var equals=function (a,b){
