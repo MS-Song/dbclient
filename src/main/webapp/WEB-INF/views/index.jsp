@@ -9,6 +9,8 @@
 	<link rel="stylesheet" href="./static/codebase/skins/web.css" type="text/css" media="screen" charset="utf-8">	
 	<script src="./static/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./static/js/indentHelper.js" type="text/javascript" charset="utf-8"></script>
+
 	<title>DB Client</title>
 	<style>
 		.my_menu .webix_view{
@@ -173,31 +175,33 @@
 			view:"form",
 			borderless:true,
 			elements: [
-				{ view:"text", label:'ID', name:"id" },
-				{ view:"text", label:'Password', name:"password" ,type:"password", on:{
-					"onKeyPress":function(id,e){
-						if(e.keyCode == 13){
-							// 버튼을  trigger 할 방법을 찾아보자.. 버튼의 이벤트가 나중에 걸려서 문제다.
+				{ id:"login_id_input", view:"text", label:'ID', name:"id" },
+				{ id:"login_password_input", view:"text", label:'Password', name:"password" ,type:"password",
+					on:{"onKeyPress":function(key,e){// 로그인 실행
+							// enter 를 입력하면, 로그인을 실행 한다.
+							if(key==13) $$("login_button").callEvent("onItemClick");
 						}
 					}
-				}},
+				},
 				{margin:5, cols:[
-					{ id:"login_button",view:"button", value:"Login" , type:"form", click:function(){// 로그인 실행
-						webix.ajax().post("/member/doLogin.json", this.getFormView().getValues(), function(text,data){
-							// 로그인 실패 
-							if(data.json().status !=200){
-								// validate 메세지 
-								var message = data.json().desc.split("\n");
-								webix.message(message[0].replace("="," "));
-							} else { // 로그인 성공
-								// 로그인 성공 액션
-								webix.message("로그인 처리 완료");
-								// 1초 후에 리로드 한다.	
-								window.setTimeout(function(){
-									document.location = document.location.href;	
-								}, 1000)										
-							}
-						});
+					{ id:"login_button",view:"button", value:"Login" , type:"form", 
+						on:{"onItemClick":function(){// 로그인 실행
+							webix.ajax().post("/member/doLogin.json", this.getFormView().getValues(), function(text,data){
+								// 로그인 실패 
+								if(data.json().status !=200){
+									// validate 메세지 
+									var message = data.json().desc.split("\n");
+									webix.message(message[0].replace("="," "));
+								} else { // 로그인 성공
+									// 로그인 성공 액션
+									webix.message("로그인 처리 완료");
+									// 1초 후에 리로드 한다.	
+									window.setTimeout(function(){
+										document.location = document.location.href;	
+									}, 1000)										
+								}
+							});
+						}
 					}},
 					{ view:"button", value:"Cancel", click:function(){ // 로그인 취소
 						// 로그인 팝업 닫기
@@ -622,7 +626,8 @@
 				// 선택된 row
 				var selectedRow = $$("database_info_table_list_view").getSelectedItem();
 				// 테이블 명칭 저장
-				tableName = selectedRow.tableName; 
+				if(undefined != selectedRow.tableName)
+					tableName = selectedRow.tableName; 
 
 				// progress 추가
 				webix.extend($$("table_info_field_list"), webix.ProgressBar);
@@ -676,8 +681,6 @@
 		// function 리스트
 		// view 리스트
 		// procedure
-
-		
 		
 		// 쿼리 입력창
 		var database_query_cell = [{
@@ -687,11 +690,15 @@
 				adjust:true,
 				view : "form", 
 				minHeight:300,
+				minWidth:500,
 				autowidth:true,
 				autoheight:true,
 				scroll:false,
 				elements:[
-					{	id:"database_query_input",	view : "textarea" ,placeholder:"input query"}
+					{	id:"database_query_input",	
+						view : "textarea",
+						placeholder:"input query"
+					}
 				]
 			},
 			{
@@ -702,14 +709,74 @@
 					hotkey:"enter-Ctrl",
 					width:100,
 					height:100,
-					click:function(id,e){
-						// 멀티 뷰를 활성화 할 경우에는, 어떤 뷰를 선택했는지 path 를 통해 획득해야 한다. 
-						console.log($$("database_query_input").getValue());
-						// 쿼리를 실행 한다.
+					on:{
+						"onItemClick":function(){ // 쿼리 실행
+							console.log($$("database_query_input").getValue());
+
+							webix.ajax().post("/database/executeQuery.json",{
+								server:server,
+								schema:schema,
+								account:account,
+								query:encodeURIComponent($$("database_query_input").getValue()),
+					  		  	autoCommit:false,
+					  		  	htmlAllow:false}, 
+								function(text,data){
+									// 필드 정보를 획득한 경우에 넣는다.
+										if(data.json().status ==200 && null!=data.json().result){
+										// 이미 있는 내용은 모두 지운다 
+										$$("database_result_list_view").config.columns = [];
+										$$("database_result_list_view").clearAll();
+											
+										// 필드 정보를 갱신한다.
+										// row count 가 0이면 데이터가 없다고 표시한다.
+										if(data.json().result.rowCount == 0){
+											$$("database_result_list_view").config.columns = [
+                                            	{
+                                           			id:"result1",
+                                           			header:"데이터가 없습니다.",
+                                           			adjust:true
+                                           		}
+                                            ];
+											$$("database_result_list_view").refreshColumns();
+										} else {
+											// row 1개를 꺼내서 필드를 구성한다.
+											console.log(data.json().result.resultList);
+											
+											var loop=0;
+											$.each(data.json().result.resultList[0],function(index){
+												$$("database_result_list_view").config.columns[loop]={};
+												$$("database_result_list_view").config.columns[loop].id = index;
+												$$("database_result_list_view").config.columns[loop].header = index;
+												$$("database_result_list_view").config.columns[loop].adjust = true;
+												loop++;
+											});
+											
+											$$("database_result_list_view").refreshColumns();
+
+											$$("database_result_list_view").parse(data.json().result.resultList)
+								    		$$("database_result_list_view").refresh();
+										}
+										
+										
+										// 데이터를 갱신한다.
+
+									}
+								}
+							);
+						}
 					}
 				}]
 			}]
-		}]
+		}];
+		
+		// 쿼리 입력창 tab 키 허용
+		$(document).delegate("[name='database_query_input']", "keydown", function(e) {
+			var keyCode = e.keyCode || e.which;
+			if (keyCode == 9) {
+				event.preventDefault();
+				IndentHelper.indent(this, event.shiftKey);
+			}
+		});
 		
 		// 결과 창
 		var database_result_cell = [
@@ -723,7 +790,7 @@
  				resizeColumn:true,
 				minHeight:280,
  				autowidth:true,
-				autoheight:true
+				scroll:true
 			},
 		]
 		
@@ -753,6 +820,7 @@
 			}
 		};
 		
+		webix.UIManager.tabControl = false; 
 	</script>
 
 	<!-- 메뉴 리스트의 템플릿 -->
