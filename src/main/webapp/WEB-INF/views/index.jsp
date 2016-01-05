@@ -32,6 +32,10 @@
 	<script src="./static/js/webix/database.js" type="text/javascript" charset="utf-8"></script>
 	
 	<script>
+	
+	// 사이즈 안맞는 문제
+	// webix 에서 다시 그리면 사라지는 문제 
+	// 에디터에서 생성된 내용이 textarea 로 전송 안되는 문제
 	webix.ready(function(){
 		var editor = CodeMirror.fromTextArea(document.getElementsByName("database_query_input")[0], {
         lineNumbers: true,
@@ -47,11 +51,6 @@
 	    }}
       });
 	});
-	
-	
-	
-	
-
 
     </script>
 </body>
