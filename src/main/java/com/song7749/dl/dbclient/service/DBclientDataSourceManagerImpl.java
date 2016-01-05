@@ -114,7 +114,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getTableListQuery(serverInfo));
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new IllegalArgumentException(e.getCause());
+			throw new IllegalArgumentException(e.getMessage());
 		}
 
 		for(Map<String,String> map:resultList){
@@ -136,7 +136,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getFieldListQueryQuery(serverInfo));
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new IllegalArgumentException(e.getCause());
+			throw new IllegalArgumentException(e.getMessage());
 		}
 
 		for(Map<String,String> map:resultList){
@@ -166,7 +166,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getIndexListQuery(serverInfo));
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new IllegalArgumentException(e.getCause());
+			throw new IllegalArgumentException(e.getMessage());
 		}
 
 		for(Map<String,String> map:resultList){
@@ -190,7 +190,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	 * @param executeQuery
 	 * @return List<Map<String,String>>
 	 */
-	private List<Map<String,String>> executeQueryList(Connection conn,String executeQuery){
+	private List<Map<String,String>> executeQueryList(Connection conn,String executeQuery) throws SQLException{
 		return executeQueryList(conn,executeQuery,true);
 	}
 
@@ -201,8 +201,9 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	 * @param executeQuery
 	 * @param isHtmlAllow
 	 * @return List<Map<String,String>>
+	 * @throws SQLException
 	 */
-	private List<Map<String,String>> executeQueryList(Connection conn,String executeQuery, boolean isHtmlAllow){
+	private List<Map<String,String>> executeQueryList(Connection conn,String executeQuery, boolean isHtmlAllow) throws SQLException{
 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -228,7 +229,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
 			try {
 				closeAll(conn, ps, rs);
@@ -313,8 +314,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 				try{
 					list = executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
 				} catch (SQLException e) {
-					e.printStackTrace();
-					throw new IllegalArgumentException(e.getCause());
+					throw new IllegalArgumentException(e.getMessage());
 				}
 			} else {
 			// 별도의 explain 쿼리가 존재하면 쿼리를 실행한 뒤에 explain query 를 다시 실행한다.
@@ -323,8 +323,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 					conn.prepareStatement(dto.getQuery()).execute();
 					list = executeQueryList(conn, serverInfo.getDriver().getExplainQuery());
 				} catch (SQLException e) {
-					e.printStackTrace();
-					throw new IllegalArgumentException(e.getCause());
+					throw new IllegalArgumentException(e.getMessage());
 				}
 			}
 		} else if(dto.getQuery().toLowerCase().startsWith("select")
@@ -332,8 +331,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			try{
 				list=executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new IllegalArgumentException(e.getCause());
+				throw new IllegalArgumentException(e.getMessage());
 			}
 		} else {
 			try{
@@ -345,8 +343,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 				list = new ArrayList<Map<String,String>>();
 				list.add(affectedRowMap);
 			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new IllegalArgumentException(e.getCause());
+				throw new IllegalArgumentException(e.getMessage());
 			}
 		}
 		return list;
@@ -359,7 +356,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			try {
 				((BasicDataSource)dataSourceMap.get(ServerInfo)).close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new IllegalArgumentException(e.getMessage());
 			}
 		}
 		super.finalize();

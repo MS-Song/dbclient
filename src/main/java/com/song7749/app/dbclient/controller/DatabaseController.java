@@ -289,11 +289,29 @@ public class DatabaseController {
 			HttpServletRequest request,
 			ModelMap model){
 
+
+
+		if(null==host || host.trim().length()<1){
+			throw new IllegalArgumentException("선택된 서버가 없습니다. Database 선택메뉴에서 서버를 선택하세요");
+		}
+
+		if(null==schemaName || schemaName.trim().length()<1){
+			throw new IllegalArgumentException("선택된 Database 가 없습니다. Database 선택메뉴에서 Shema 를 선택하세요");
+		}
+
+		if(null==account  || account.trim().length()<1){
+			throw new IllegalArgumentException("선택된 계정이 없습니다. Database 선택메뉴에서 계정을 선택하세요");
+		}
+
+		if(null==query || query.trim().length()<1){
+			throw new IllegalArgumentException("입력된 쿼리가 없습니다. 쿼리 입력후에 실행하시기 바랍니다.");
+		}
+
 		String decodedQuery=null;
 		try {
 			decodedQuery=URLDecoder.decode(query, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			new IllegalArgumentException("query 데이터의 디코딩 실패. 쿼리 내용에 디코딩이 안되는 문자열이 존재합니다");
+			throw new IllegalArgumentException("query 데이터의 디코딩 실패. 쿼리 내용에 디코딩이 안되는 문자열이 존재합니다");
 		}
 
 		Long startTime = System.currentTimeMillis();

@@ -327,7 +327,7 @@ var explainQuery=function(){
 	if($("[name=driver]").val()=='mysql'){
 		$("[name=query]").val('explain '+$("[name=query]").val());
 		executeQuery();
-	} else if($("[name=driver]").val()=='mysql'){
+	} else if($("[name=driver]").val()=='oracle'){
 		$("[name=query]").val('explain plan for '+$("[name=query]").val());
 		executeQuery();
 	}
