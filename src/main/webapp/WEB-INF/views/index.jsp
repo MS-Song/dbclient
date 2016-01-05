@@ -18,10 +18,11 @@
 	<script src="./static/js/webix/databaseUtils.js" type="text/javascript" charset="utf-8"></script>
 	<!-- codemirror 	-->	
 	<link rel="stylesheet" href="./static/codemirror-5.10/lib/codemirror.css">
+	<link rel="stylesheet" href="./static/codemirror-5.10/addon/hint/show-hint.css">
 	<script src="./static/codemirror-5.10/lib/codemirror.js"></script>
-	<script src="./static/codemirror-5.10/mode/sql/sql.js"></script>
 	<script src="./static/codemirror-5.10/addon/hint/show-hint.js"></script>
 	<script src="./static/codemirror-5.10/addon/hint/sql-hint.js"></script>
+	<script src="./static/codemirror-5.10/mode/sql/sql.js"></script>
 
 	<title>DB Client</title>
 </head>
@@ -30,18 +31,28 @@
 	<script src="./static/js/webix/member.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/webix/database.js" type="text/javascript" charset="utf-8"></script>
 	
-	<form><textarea id="code" name="code">
-	
-	</textarea>
-	
 	<script>
 	webix.ready(function(){
-      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+		var editor = CodeMirror.fromTextArea(document.getElementsByName("database_query_input")[0], {
         lineNumbers: true,
-        extraKeys: {"Ctrl-Space": "autocomplete"},
-        mode: {name: "sql", globalVars: true}
+	    indentWithTabs: true,
+	    smartIndent: true,
+	    lineNumbers: true,
+	    matchBrackets : true,
+	    autofocus: true,
+	    extraKeys: {"Ctrl-Space": "autocomplete"},
+	    hintOptions: {tables: {
+	      users: {name: null, score: null, birthDate: null},
+	      countries: {name: null, population: null, size: null}
+	    }}
       });
 	});
+	
+	
+	
+	
+
+
     </script>
 </body>
 </html>

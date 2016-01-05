@@ -454,6 +454,7 @@ var database_query_cell = [{
 /**
  * 쿼리창에 이벤트 부여
  */
+
 $(document).delegate("[name='database_query_input']", "keydown", function(e) {
 	var keyCode = e.keyCode || e.which;
 	
