@@ -11,6 +11,8 @@ public class FieldVO extends AbstractVo{
 	private static final long serialVersionUID = -6548195910234084209L;
 
 	@ApiModelProperty
+	private String tableName;
+	@ApiModelProperty
 	private String columnId;
 	@ApiModelProperty
 	private String columnName;
@@ -33,10 +35,13 @@ public class FieldVO extends AbstractVo{
 
 	public FieldVO() {}
 
-	public FieldVO(String columnId, String columnName, String nullable,
-			String columnKey, String dataType, String dataLegnth,
-			String characterset, String extra, String defaultValue,
-			String comment) {
+
+
+	public FieldVO(String tableName, String columnId, String columnName,
+			String nullable, String columnKey, String dataType,
+			String dataLegnth, String characterset, String extra,
+			String defaultValue, String comment) {
+		this.tableName = tableName;
 		this.columnId = columnId;
 		this.columnName = columnName;
 		this.nullable = nullable;
@@ -47,6 +52,14 @@ public class FieldVO extends AbstractVo{
 		this.extra = extra;
 		this.defaultValue = defaultValue;
 		this.comment = comment;
+	}
+
+	public String getTableName() {
+		return tableName == null ? "" : tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
 	}
 
 	public String getColumnId() {

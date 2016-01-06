@@ -141,6 +141,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		for(Map<String,String> map:resultList){
 			list.add(new FieldVO(
+				tableName,
 				map.get("COLUMN_ID"),
 				map.get("COLUMN_NAME"),
 				map.get("NULLABLE"),
@@ -258,7 +259,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			ps = conn.prepareStatement(executeQuery);
 			affectedRows = ps.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
 			try {
 				closeAll(conn, ps, null);

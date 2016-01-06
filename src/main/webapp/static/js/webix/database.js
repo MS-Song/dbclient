@@ -298,6 +298,9 @@ var database_info_data_load=function(){
 						// 다시 읽는다.
 			    		$$("table_info_field_list").refresh();
 			    		$$("table_info_field_list").hideProgress();
+			    		
+			    		// 자동완성에 테이블 추가
+			    		autoCompleteAddTables(tableName,data.json().result.fieldList);
 					}
 				}
 			);
@@ -344,8 +347,6 @@ var database_info_data_load=function(){
 	});
 };
 
-
-
 // function 리스트
 // view 리스트
 // procedure
@@ -365,7 +366,7 @@ var database_query_cell = [{
 			scroll:false,
 			elements:[
 				{	id:"database_query_input",	
-					view : "textarea",
+					view : "codemirror-editor",
 					placeholder:"input query"
 				}
 			]
@@ -427,7 +428,6 @@ var database_query_cell = [{
 	
 										$$("database_result_list_view").parse(data.json().result.resultList)
 							    		$$("database_result_list_view").refresh();
-										$$("database_result_list_view").hideProgress();
 									}
 									// 실행이 종료되면 결과를 보여준다
 									$$("database_query_execute_info").define("label",'Row Count : '+data.json().result.rowCount + ', Total Time  : '+data.json().result.processTime + ' ms');
@@ -435,7 +435,8 @@ var database_query_cell = [{
 								} else { // 에러가 발생할 경우
 									webix.message({ type:"error", text:data.json().desc });
 								}
-							}
+								$$("database_result_list_view").hideProgress();
+				  		  	}
 						);
 						// 쿼리가 실행되는 동안 포커스를 되돌린다.
 						$$("database_query_form").focus();
@@ -443,46 +444,32 @@ var database_query_cell = [{
 				}
 			}] // end rows
 		}] // end cols
-	},{// 쿼리 결과 info 창
+	},		
+	{// 쿼리 결과 info 창
 		id:"database_query_execute_info",
 		view:"label", 
-	    label:"", 
-	    align:"left"
-	}] // end rows
+		label:"", 
+		align:"left"
+	}	
+] // end rows
 }];
 
-/**
- * 쿼리창에 이벤트 부여
- */
-
-$(document).delegate("[name='database_query_input']", "keydown", function(e) {
-	var keyCode = e.keyCode || e.which;
-	
-	// 쿼리 입력창 tab 키 허용
-	if (keyCode == 9) {
-		event.preventDefault();
-		IndentHelper.indent(this, event.shiftKey);
-	} 
-	// 컨트롤+엔터 로 쿼리 실행
-	else if(keyCode == 13 && event.ctrlKey){
-		event.preventDefault();
-		$$("database_query_execute_button").callEvent("onItemClick");
-	}
-});
-
 // 결과 창
-var database_result_cell = [
-	{	view : "datatable", 
-		header:"result1",			
-		id:"database_result_list_view", 						
-		columns:[],	
-		data:[],
-		tooltip:true,
-		select:"row",
-		resizeColumn:true,
-		scroll:true
-	},
-]
+var database_result_cell = [{
+	header:"result1",
+	rows:[
+		{	
+			view : "datatable", 
+			id:"database_result_list_view", 						
+			columns:[],	
+			data:[],
+			tooltip:true,
+			select:"row",
+			resizeColumn:true,
+			scroll:true
+		}
+	] // end rows
+}]
 
 // CURD
 // Mybatis
@@ -493,3 +480,17 @@ var database_result_cell = [
 // 인덱스
 
 // 결과 값
+
+// 자동완성 데이터 저장
+var autoCompleteAddTables = function(tableName,fieldList){
+	// 자동완성에 테이블을 입력한다.
+	if(null==$$("database_query_input").config.hintOptions.tables[tableName]){
+		// 테이블을 만든다.
+		$$("database_query_input").config.hintOptions.tables[tableName]={};							
+		// 필드를 만든다.
+		$.each(fieldList,function(index){
+			$$("database_query_input").config.hintOptions.tables[tableName][this.columnName] = null;
+		});							
+		$$("database_query_input").config.hintOptions.tables[tableName];	
+	}
+};
