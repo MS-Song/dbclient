@@ -14,12 +14,7 @@
 	<script src="./static/js/indentHelper.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/webix/databaseUtils.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/webix/utils.js" type="text/javascript" charset="utf-8"></script>
-
 	<!-- codemirror 	-->	
-	<script type="text/javascript">
-//		webix.require.disabled = true;
-		webix.codebase = "./static/codemirror-5.10/";
-	</script>
 	<script src="./static/js/webix/codemirror.js" type="text/javascript"></script>
 
 	<title>DB Client</title>
