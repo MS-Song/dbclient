@@ -8,6 +8,8 @@ var schema=null;
 var account=null;
 var driver=null;
 var tableName=null;
+var autoCommit=false;
+var htmlAllow=false;
 
 // Database 관리
 // 서버 & DB 선택
@@ -354,105 +356,192 @@ var database_info_data_load=function(){
 // 쿼리 입력창
 var database_query_cell = [{
 	header:"sql1",
-	rows:[{
-		cols:[{	
-			id:"database_query_form",
-			adjust:true,
-			view : "form", 
-			minHeight:200,
-			minWidth:500,
-			autowidth:true,
-			autoheight:true,
-			scroll:false,
-			elements:[
-				{	id:"database_query_input",	
-					view : "codemirror-editor",
-					placeholder:"input query"
-				}
-			]
+	rows:[
+	{
+		id:"database_query_form",
+		view : "form", 
+		scroll:false,
+		elements:[{	
+			rows:[{
+				cols:[
+				    {
+						id:"database_query_button_select_count_pk",
+						view:"button",
+						value:"select count",
+						tooltip:"select count(pk) from 쿼리를 생성한다. 단축키: ",
+				    }, 
+				    {
+						id:"database_query_button_select_all_field",
+						view:"button",
+						value:"select *",
+						tooltip:"select * from 쿼리를 생성한다. 단축키: ",
+				    }, 
+				    {
+						id:"database_query_button_select_name_field",
+						view:"button",
+						value:"select field",
+						tooltip:"select 필드명 from 쿼리를 생성한다. 단축키: ",
+				    }, 
+				    {
+						id:"database_query_button_insert_into",
+						view:"button",
+						value:"insert into",
+						tooltip:"INSERT INTO 쿼리를 생성한다. 단축키: ",
+				    }, 
+				    {
+						id:"database_query_button_insert_set",
+						view:"button",
+						value:"insert set",
+						tooltip:"INSERT SET 쿼리를 생성한다. 단축키: ",
+				    }, 
+				    {
+						id:"database_query_button_update_set",
+						view:"button",
+						value:"update set",
+						tooltip:"Update SET 쿼리를 생성한다. 단축키: ",
+				    }, 
+				    {
+						id:"database_query_button_delete",
+						view:"button",
+						value:"delete",
+						tooltip:"DELETE 쿼리를 생성한다. 단축키: ",
+				    }, 
+					{
+						id:"database_query_button_allow_html",
+						view:"button",
+						value:"allow HTML",
+						tooltip:"결과에 HTML 을 허용-비허용. 단축키:",
+						on:{"onItemClick":function(){
+							if(htmlAllow) 	htmlAllow=false;
+							else 			htmlAllow=true;
+
+							$$("database_query_html_allow_info").define("label","HTML-Allow : "+htmlAllow);
+							$$("database_query_html_allow_info").refresh();
+							webix.message({ type:"error", text:"HTML Allow : " + htmlAllow +" 상태로 변경"});
+						}}
+					},
+				    {
+						id:"database_query_button_auto_commit",
+						view:"button",
+						value:"auto commit",
+						tooltip:"Auto Commit 활성-비활성., 단축키:",
+						on:{"onItemClick":function(){
+							if(autoCommit) 	autoCommit=false;
+							else 			autoCommit=true;
+
+							$$("database_query_auto_commit_info").define("label","Auto-Commit : "+autoCommit);
+							$$("database_query_auto_commit_info").refresh();
+							webix.message({ type:"error", text:"Auto-Commit : " + autoCommit +" 상태로 변경"});
+						}}
+					},
+				    {
+						id:"database_query_button_execute",
+						view:"button",
+						value:"실행",
+						tooltip:"입력된 쿼리를 실행한다. 단축키: Ctrl+Enter ",
+						on:{"onItemClick":"executeQuery"}
+					}
+				]
+			},
+			{
+				id:"database_query_input",	
+				view : "codemirror-editor",
+			}]
+		}]
+	},	
+	{
+		cols:[{
+			// 쿼리 결과 info 창
+			id:"database_query_execute_info",
+			view:"label", 
+			label:"", 
+			align:"left",
+			adjust:true
 		},
 		{
-			rows:[{
-				id:"database_query_execute_button",
-				view:"button",
-				value:"execute",
-				width:100,
-				height:100,
-				on:{
-					"onItemClick":function(){ // 쿼리 실행
-
-						// 로딩 프로그레스						
-						webix.extend($$("database_result_list_view"), webix.ProgressBar);
-						$$("database_result_list_view").showProgress();
-						// 이미 있는 내용은 모두 지운다 
-						$$("database_result_list_view").config.columns = [];
-						$$("database_result_list_view").clearAll();
-						webix.ajax().post("/database/executeQuery.json",{
-							server:server,
-							schema:schema,
-							account:account,
-							query:encodeURIComponent($$("database_query_input").getValue()),
-				  		  	autoCommit:false,
-				  		  	htmlAllow:false}, 
-							function(text,data){
-								// 필드 정보를 획득한 경우에 넣는다.
-								if(data.json().status ==200 && null!=data.json().result){
-									// 필드 정보를 갱신한다.
-									// row count 가 0이면 데이터가 없다고 표시한다.
-									if(data.json().result.rowCount == 0){
-										$$("database_result_list_view").config.columns = [
-	                                    	{
-	                                   			id:"result1",
-	                                   			header:"데이터가 없습니다.",
-	                                   			adjust:true
-	                                   		}
-	                                    ];
-										$$("database_result_list_view").refreshColumns();
-									} else {
-										// row 1개를 꺼내서 필드를 구성한다.
-										var loop=0;
-										$.each(data.json().result.resultList[0],function(index){
-											$$("database_result_list_view").config.columns[loop]={};
-											$$("database_result_list_view").config.columns[loop].id = index;
-											$$("database_result_list_view").config.columns[loop].header = index;
-											$$("database_result_list_view").config.columns[loop].adjust = true;
-											if(!isNaN(this)){
-												$$("database_result_list_view").config.columns[loop].sort="int";
-											} else {
-												$$("database_result_list_view").config.columns[loop].sort="string";	
-											}
-											loop++;
-										});
-										
-										$$("database_result_list_view").refreshColumns();
-	
-										$$("database_result_list_view").parse(data.json().result.resultList)
-							    		$$("database_result_list_view").refresh();
-									}
-									// 실행이 종료되면 결과를 보여준다
-									$$("database_query_execute_info").define("label",'Row Count : '+data.json().result.rowCount + ', Total Time  : '+data.json().result.processTime + ' ms');
-									$$("database_query_execute_info").refresh();
-								} else { // 에러가 발생할 경우
-									webix.message({ type:"error", text:data.json().desc });
-								}
-								$$("database_result_list_view").hideProgress();
-				  		  	}
-						);
-						// 쿼리가 실행되는 동안 포커스를 되돌린다.
-						$$("database_query_form").focus();
-					}
-				}
-			}] // end rows
-		}] // end cols
-	},		
-	{// 쿼리 결과 info 창
-		id:"database_query_execute_info",
-		view:"label", 
-		label:"", 
-		align:"left"
+			// HTML Allow 상태 확인
+			id:"database_query_html_allow_info",
+			view:"label", 
+			label:"HTML-Allow : "+htmlAllow, 
+			align:"right",
+			adjust:true,
+			tooltip : "true : result 에 HTML 이 실행됨. false : result 에 HTML 이 TEXT 형태로 표시됨." 
+		},
+		{
+			// auto-commit 상태 확인
+			id:"database_query_auto_commit_info",
+			view:"label", 
+			label:"Auto-Commit : "+autoCommit, 
+			align:"right",
+			adjust:true,
+			tooltip : "true : 실행한 내용이 바로 DB에 반영됩니다. false : 실행한 내역이 DB에 반영되지 않습니다." 
+		}]
 	}	
 ] // end rows
 }];
+
+// 데이터 베이스 쿼리 실행
+var executeQuery = function (){
+	// 로딩 프로그레스						
+	webix.extend($$("database_result_list_view"), webix.ProgressBar);
+	$$("database_result_list_view").showProgress();
+	// 이미 있는 내용은 모두 지운다 
+	$$("database_result_list_view").config.columns = [];
+	$$("database_result_list_view").clearAll();
+	webix.ajax().post("/database/executeQuery.json",{
+		server:server,
+		schema:schema,
+		account:account,
+		query:encodeURIComponent($$("database_query_input").getValue()),
+		  	autoCommit:autoCommit,
+		  	htmlAllow:htmlAllow}, 
+		function(text,data){
+			// 필드 정보를 획득한 경우에 넣는다.
+			if(data.json().status ==200 && null!=data.json().result){
+				// 필드 정보를 갱신한다.
+				// row count 가 0이면 데이터가 없다고 표시한다.
+				if(data.json().result.rowCount == 0){
+					$$("database_result_list_view").config.columns = [
+                    	{
+                   			id:"result1",
+                   			header:"데이터가 없습니다.",
+                   			adjust:true
+                   		}
+                    ];
+					$$("database_result_list_view").refreshColumns();
+				} else {
+					// row 1개를 꺼내서 필드를 구성한다.
+					var loop=0;
+					$.each(data.json().result.resultList[0],function(index){
+						$$("database_result_list_view").config.columns[loop]={};
+						$$("database_result_list_view").config.columns[loop].id = index;
+						$$("database_result_list_view").config.columns[loop].header = index;
+						$$("database_result_list_view").config.columns[loop].adjust = true;
+						if(!isNaN(this)){
+							$$("database_result_list_view").config.columns[loop].sort="int";
+						} else {
+							$$("database_result_list_view").config.columns[loop].sort="string";	
+						}
+						loop++;
+					});
+					
+					$$("database_result_list_view").refreshColumns();
+
+					$$("database_result_list_view").parse(data.json().result.resultList)
+		    		$$("database_result_list_view").refresh();
+				}
+				// 실행이 종료되면 결과를 보여준다
+				$$("database_query_execute_info").define("label",'Row Count : '+data.json().result.rowCount + ', Total Time  : '+data.json().result.processTime + ' ms');
+				$$("database_query_execute_info").refresh();
+			} else { // 에러가 발생할 경우
+				webix.message({ type:"error", text:data.json().desc });
+			}
+			$$("database_result_list_view").hideProgress();
+		  	}
+	);
+	// 쿼리가 실행되는 동안 포커스를 되돌린다.
+	$$("database_query_form").focus();	
+}
 
 // 결과 창
 var database_result_cell = [{

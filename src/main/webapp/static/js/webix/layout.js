@@ -23,7 +23,7 @@ webix.ready(function(){
 				cols:[
 					{ 
 						id:"database_info_view",	
-						header:"Database 정보", 
+						header:"Database", 
 						width:350, 
 						body:{
 							view:"tabview",
@@ -35,27 +35,40 @@ webix.ready(function(){
 						}
 					},
 					{ view:"resizer"},
-					{rows:[
-						{ 
-							id:"database_query_view",	
-							header:"쿼리 & 개발자도구", 	
-							body:{
+					{
+						rows:[
+							{ 
+								id:"database_query_view",	
+								header:"Query", 	
+								body:{
+									view:"tabview",
+									id:"database_query_tab",
+									animate:false,
+									cells: database_query_cell
+								}	
+							},
+							{ view:"resizer",height:3},
+							{ 
 								view:"tabview",
-								id:"database_query_tab",
+								id:"database_result_tab",
 								animate:false,
-			    				autowidth:true,
-			    				autoheight:true,
-								cells: database_query_cell
-							}	
-						},
-						{ view:"resizer",height:3},
-						{ 
+								cells: database_result_cell
+							}
+						]
+					},
+					{ view:"resizer"},
+					{
+						id:"database_developer_view",	
+						header:"개발자 메뉴", 
+						width:350, 
+						collapsed:false,
+						body:{
 							view:"tabview",
-							id:"database_result_tab",
+							id:"database_developer_tab",
 							animate:false,
-							cells: database_result_cell
+							cells: database_developer_cell							
 						}
-					]},
+					}
 				]
 			},
 			{	// footer 구성
