@@ -11,6 +11,13 @@ var tableName=null;
 var autoCommit=false;
 var htmlAllow=false;
 
+function custom_checkbox(obj, common, value){
+	if (value)
+		return "<div class='webix_table_checkbox checked'> YES </div>";
+	else
+		return "<div class='webix_table_checkbox notchecked'> NO </div>";
+}
+
 // Database 관리
 // 서버 & DB 선택
 var select_database_popup=function(){
@@ -171,8 +178,9 @@ var database_info_cell = [
 					autowidth:true,
 					select:"row",
 					navigation:true
-				}, {
-					header:"index",
+				}, 
+				{
+					header:"Index",
 					id:"table_info_index_list", 
 					view : "datatable",
 					columns:[
@@ -190,6 +198,68 @@ var database_info_cell = [
 	 				resizeColumn:true,
 					autowidth:true,
 					select:"row",
+					navigation:true
+				}, 
+				{	
+					header:"Develop",
+					id:"table_info_develop_list",
+					view : "datatable",
+					editable:true,
+					columns:[
+						{ id:"columnId",	header:["SEQ", {	// 검색창 구현
+								content:"textFilter", placeholder:"column name OR comment search",
+								compare:function(value, filter, obj){ // 검색창 필터조건 구현
+										if (equals(obj.columnName	, filter)) return true;
+										if (equals(obj.comment, filter)) return true;
+										return false;
+								}, colspan:3}], 
+							width:40,	sort:"int"},					         
+	   					{ id:"columnName",		header:"name",		sort:"string", 	adjust:true},
+						{ id:"comment",			header:"comment",	sort:"string", 	width:100},
+						{ 
+							id:"field_checkbox",		
+							header:'S',
+							width:40,
+							template:"{common.checkbox()} ",
+							editor:"checkbox"
+						},
+						{ 
+							// date 의 경우 달력 출력 
+							id:"field_set",
+							header:'SET',
+							width:70,
+							template:'<input type="text" name="field_set[]" value="#field_set#" style="width:50px;">',
+							editor:"inline-text",
+						},
+						{ 
+							// date 의 경우 달력 출력 
+							id:"field_where",
+							header:'WHERE',
+							width:70,
+							template:'<input type="text" name="field_where[]" value="#field_where#" style="width:50px;">',
+							editor:"inline-text",
+						},
+						{ 
+							id:"field_operation",
+							header:'Operation',	
+							width:80,
+							editor:"select",
+							options:["=",">=","<=","in()","%like","like%","%like%"]
+						}
+					],
+					data:[],
+					tooltip:function(obj, common){
+						if(common.column.id=="columnId"
+							|| common.column.id=="columnName"
+							|| common.column.id=="comment"
+						){
+							return obj[common.column.id];
+						} else {
+							return "";
+						}
+				    },
+	 				resizeColumn:true,
+					autowidth:true,
 					navigation:true
 				}
 			]
@@ -271,19 +341,29 @@ var database_info_data_load=function(){
 
 		// progress 추가
 		webix.extend($$("table_info_field_list"), webix.ProgressBar);
+		webix.extend($$("table_info_develop_list"), webix.ProgressBar);
 		// 로딩 프로그레스 
 		$$("table_info_field_list").showProgress();
+		$$("table_info_develop_list").showProgress();
+		
 		// 담기 전에 모두 지운다
 		$$("table_info_field_list").clearAll();
+		$$("table_info_develop_list").clearAll();
 		// 필드 조회 
-		
 		// 캐시에 데이터가 있으면 ajax 를 실행하지 않는다.
 		var cachedFieldList = webix.storage.local.get(server + "_" + schema + "_" + account +"_fields_"+ tableName);
+		var cachedFieldDeveloperList = webix.storage.local.get(server + "_" + schema + "_" + account +"fieldDeveloperList"+ tableName);
+		// 캐시에 존재 하면..
 		if(null != cachedFieldList && cachedFieldList.length != 0){
+			// 필드정보
 			$$("table_info_field_list").parse(cachedFieldList);
-			// 다시 읽는다.
     		$$("table_info_field_list").refresh();
     		$$("table_info_field_list").hideProgress();
+    		// 개발자 화면
+    		$$("table_info_develop_list").parse(cachedFieldList);
+    		$$("table_info_develop_list").refresh();
+    		$$("table_info_develop_list").hideProgress();    		
+    		
 		} else {
 			webix.ajax().get("/database/fieldList.json",{
 				server:server,
@@ -294,15 +374,35 @@ var database_info_data_load=function(){
 					// 필드 정보를 획득한 경우에 넣는다.
 					if(data.json().status ==200 && null!=data.json().result){
 						// datatable 저장
-						$$("table_info_field_list").parse(data.json().result.fieldList)
+						$$("table_info_field_list").parse(data.json().result.fieldList);
 						//cache 저장
 						webix.storage.local.put(server + "_" + schema + "_" + account +"_fields_"+ tableName,$$("table_info_field_list").data.serialize());
 						// 다시 읽는다.
 			    		$$("table_info_field_list").refresh();
 			    		$$("table_info_field_list").hideProgress();
-			    		
 			    		// 자동완성에 테이블 추가
 			    		autoCompleteAddTables(tableName,data.json().result.fieldList);
+			    		
+			    		// 개발자 도구 설정
+			    		// 테이블 정보를 획득한 경우에 넣는다.
+						$.each(data.json().result,function(){
+			    			$.each(this,function(index){
+			    				$$("table_info_develop_list").data.add({
+			    					columnId:this.columnId,
+			    					columnName:this.columnName,
+			    					comment:this.comment,
+			    					dataType:this.dataType,
+			    					field_checkbox:"1",
+			    					field_set:" ",
+			    					field_where:" ",
+			    					field_operation:"="
+			    				},index);
+				   			});
+		    			});
+			    		$$("table_info_develop_list").refresh();
+			    		$$("table_info_develop_list").hideProgress();
+			    		// 캐시 저장
+			    		webix.storage.local.put(server + "_" + schema + "_" + account +"fieldDeveloperList"+ tableName,$$("table_info_develop_list").data.serialize());
 					}
 				}
 			);
@@ -363,7 +463,7 @@ var database_query_cell = [{
 		scroll:false,
 		elements:[{	
 			rows:[{
-				cols:[
+				cols:[ // 상단 기능 버튼 
 				    {
 						id:"database_query_button_select_count_pk",
 						view:"button",
@@ -444,9 +544,68 @@ var database_query_cell = [{
 				]
 			},
 			{
+				// 에디터 창
 				id:"database_query_input",	
 				view : "codemirror-editor",
-			}]
+			},
+			{	// 하단 기능 버튼
+				cols:[
+				    {
+						id:"database_developer_button_java_model",
+						view:"button",
+						value:"java model",
+						tooltip:""
+				    }, 
+				    {
+						id:"database_developer_button_java_hibernate_model",
+						view:"button",
+						value:"java H-model",
+						tooltip:""
+				    }, 
+				    {
+						id:"database_developer_button_java_model_set",
+						view:"button",
+						value:"java setter",
+						tooltip:""
+				    }, 
+				    {
+						id:"database_developer_button_java_model_get",
+						view:"button",
+						value:"java getter",
+						tooltip:""
+				    },				      
+				    {
+						id:"database_developer_button_mybatis_select",
+						view:"button",
+						value:"mybatis select",
+						tooltip:""
+				    }, 
+				    {
+						id:"database_developer_button_mybatis_insert",
+						view:"button",
+						value:"mybatis insert",
+						tooltip:""
+				    }, 
+				    {
+						id:"database_developer_button_mybatis_update",
+						view:"button",
+						value:"mybatis update",
+						tooltip:""
+				    }, 
+				    {
+						id:"database_developer_button_mybatis_delete",
+						view:"button",
+						value:"mybatis delete",
+						tooltip:""
+				    }, 
+				    {
+						id:"database_developer_button_mybatis_result",
+						view:"button",
+						value:"mybatis result",
+						tooltip:""
+				    }
+				] // end cols	
+			}] // end rows
 		}]
 	},	
 	{
@@ -569,6 +728,36 @@ var database_result_cell = [{
 // 인덱스
 
 // 결과 값
+
+
+/**
+ * 쿼리 로그 및 즐겨찾는 쿼리 
+ */
+var database_developer_cell = [{
+		id:"database_query_log_view",
+		header:"Query Log",
+		view : "datatable", 
+		columns:[],	
+		data:[],
+		tooltip:true,
+		select:"row",
+		resizeColumn:true,
+		autowidth:true,
+		autoheight:true
+	},
+	{
+		id:"database_query_favorities_view",
+		header:"Favorites Query",
+		view : "datatable", 
+		columns:[],	
+		data:[],
+		tooltip:true,
+		select:"row",
+		resizeColumn:true,
+		autowidth:true,
+		autoheight:true
+	}
+];
 
 // 자동완성 데이터 저장
 var autoCompleteAddTables = function(tableName,fieldList){

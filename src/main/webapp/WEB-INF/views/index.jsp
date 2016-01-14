@@ -5,6 +5,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>DB Client</title>
 	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
 	<!-- jQuery -->
 	<script src="./static/js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
@@ -15,8 +16,6 @@
 	<script src="./static/js/webix/utils.js" type="text/javascript" charset="utf-8"></script>
 	<!-- codemirror 	-->	
 	<script src="./static/js/webix/codemirror.js" type="text/javascript"></script>
-
-	<title>DB Client</title>
 </head>
 <body>
 	<script src="./static/js/webix/layout.js" type="text/javascript" charset="utf-8"></script>

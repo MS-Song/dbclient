@@ -59,7 +59,7 @@ webix.ready(function(){
 					{ view:"resizer"},
 					{
 						id:"database_developer_view",	
-						header:"개발자 메뉴", 
+						header:"Query Log & favorities", 
 						width:350, 
 						collapsed:false,
 						body:{
