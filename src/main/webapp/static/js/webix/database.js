@@ -80,6 +80,7 @@ var select_database_popup=function(){
 		}
 		// 이벤트 부여
 		$$("select_database_loader").attachEvent("onSelectChange", function(){
+
 			var selectedRow = $$("select_database_loader").getSelectedItem();
 			
 			// 이미 선택된 값을 삭제 한다.
@@ -228,7 +229,12 @@ var database_info_cell = [
 							id:"field_set",
 							header:'SET',
 							width:70,
-							template:'<input type="text" name="field_set[]" value="#field_set#" style="width:50px;">',
+							template:function(obj){
+								if(obj.field_set == undefined){
+									obj.field_set="";
+								}
+								return '<input type="text" name="field_set[]" value="'+obj.field_set+'" style="width:50px;">';
+							},
 							editor:"inline-text",
 						},
 						{ 
@@ -236,7 +242,12 @@ var database_info_cell = [
 							id:"field_where",
 							header:'WHERE',
 							width:70,
-							template:'<input type="text" name="field_where[]" value="#field_where#" style="width:50px;">',
+							template:function(obj){
+								if(obj.field_where == undefined){
+									obj.field_where="";
+								}
+								return '<input type="text" name="field_where[]" value="'+obj.field_where+'" style="width:50px;">';
+							},
 							editor:"inline-text",
 						},
 						{ 
@@ -244,7 +255,7 @@ var database_info_cell = [
 							header:'Operation',	
 							width:80,
 							editor:"select",
-							options:["=",">=","<=","in()","%like","like%","%like%"]
+							options:["=",">=","<=","IN()","%like","like%","%like%"]
 						}
 					],
 					data:[],
@@ -393,8 +404,8 @@ var database_info_data_load=function(){
 			    					comment:this.comment,
 			    					dataType:this.dataType,
 			    					field_checkbox:"1",
-			    					field_set:" ",
-			    					field_where:" ",
+			    					field_set:"",
+			    					field_where:"",
 			    					field_operation:"="
 			    				},index);
 				   			});
@@ -469,18 +480,21 @@ var database_query_cell = [{
 						view:"button",
 						value:"select count",
 						tooltip:"select count(pk) from 쿼리를 생성한다. 단축키: ",
+						click:"selectCountQuery",
 				    }, 
 				    {
 						id:"database_query_button_select_all_field",
 						view:"button",
 						value:"select *",
 						tooltip:"select * from 쿼리를 생성한다. 단축키: ",
+						click:"selectAllQuery",
 				    }, 
 				    {
 						id:"database_query_button_select_name_field",
 						view:"button",
 						value:"select field",
 						tooltip:"select 필드명 from 쿼리를 생성한다. 단축키: ",
+						click:"selectNameQuery",
 				    }, 
 				    {
 						id:"database_query_button_insert_into",
