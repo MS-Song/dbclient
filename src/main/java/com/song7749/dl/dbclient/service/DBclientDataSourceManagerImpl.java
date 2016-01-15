@@ -254,6 +254,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	private int executeQuery(Connection conn,String executeQuery,boolean isAutoCommit) throws SQLException{
 		PreparedStatement ps = null;
 		int affectedRows=0;
+
+		logger.debug(format("excute Query : {} ","databaseInfo"),executeQuery);
 		try {
 			conn.setAutoCommit(isAutoCommit);
 			ps = conn.prepareStatement(executeQuery);

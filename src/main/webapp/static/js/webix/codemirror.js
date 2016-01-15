@@ -19,7 +19,17 @@ webix.protoUI({
 		    },
 		    "Esc": function(cm) {
 		    	if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-		    }
+		    },
+		    "Alt-1":function(cm){selectCountQuery();},
+		    "Alt-2":function(cm){selectAllQuery();},
+		    "Alt-3":function(cm){selectNameQuery();},
+		    "Alt-4":function(cm){insertIntoQuery();},
+		    "Alt-5":function(cm){insertSetQuery();},
+		    "Alt-6":function(cm){updateSetQuery();},
+		    "Alt-7":function(cm){deleteQuery();},
+		    "Alt-8":function(cm){$$("database_query_button_allow_html").callEvent("onItemClick");},
+		    "Alt-9":function(cm){$$("database_query_button_auto_commit").callEvent("onItemClick");}
+		    
 		},
 		hintOptions: {tables: {}}		
 	},

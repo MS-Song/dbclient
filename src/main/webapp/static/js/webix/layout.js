@@ -61,7 +61,7 @@ webix.ready(function(){
 						id:"database_developer_view",	
 						header:"Query Log & favorities", 
 						width:350, 
-						collapsed:false,
+						collapsed:true,
 						body:{
 							view:"tabview",
 							id:"database_developer_tab",

@@ -219,7 +219,7 @@ var database_info_cell = [
 						{ id:"comment",			header:"comment",	sort:"string", 	width:100},
 						{ 
 							id:"field_checkbox",		
-							header:'S',
+							header:'<input type="checkbox" onClick="develop_field_clear(\'checkbox\',this);"/>',
 							width:40,
 							template:"{common.checkbox()} ",
 							editor:"checkbox"
@@ -227,32 +227,22 @@ var database_info_cell = [
 						{ 
 							// date 의 경우 달력 출력 
 							id:"field_set",
-							header:'SET',
+							header:['SET','<input type="button" value="reset" onClick="develop_field_clear(\'set\');" />'],
 							width:70,
-							template:function(obj){
-								if(obj.field_set == undefined){
-									obj.field_set="";
-								}
-								return '<input type="text" name="field_set[]" value="'+obj.field_set+'" style="width:50px;">';
-							},
+							template:'<input type="text" name="field_set[]" value="#field_set#" style="width:50px;">',
 							editor:"inline-text",
 						},
 						{ 
 							// date 의 경우 달력 출력 
 							id:"field_where",
-							header:'WHERE',
+							header:['WHERE','<input type="button" value="reset" onClick="develop_field_clear(\'where\');" />'],
 							width:70,
-							template:function(obj){
-								if(obj.field_where == undefined){
-									obj.field_where="";
-								}
-								return '<input type="text" name="field_where[]" value="'+obj.field_where+'" style="width:50px;">';
-							},
+							template:'<input type="text" name="field_where[]" value="#field_where#" style="width:50px;">',
 							editor:"inline-text",
 						},
 						{ 
 							id:"field_operation",
-							header:'Operation',	
+							header:['Operation','<input type="button" value="reset" onClick="develop_field_clear(\'operation\');" />'],	
 							width:80,
 							editor:"select",
 							options:["=",">=","<=","IN()","%like","like%","%like%"]
@@ -347,8 +337,13 @@ var database_info_data_load=function(){
 		// 선택된 row
 		var selectedRow = $$("database_info_table_list_view").getSelectedItem();
 		// 테이블 명칭 저장
-		if(undefined != selectedRow.tableName)
-			tableName = selectedRow.tableName; 
+		try {
+			if(undefined != selectedRow.tableName) tableName = selectedRow.tableName;			
+		} catch (e) {
+			webix.message({ type:"error", text:"데이터 베이스 정보 로드 실패.</br>데이터베이스를 다시 선택해주세요"});
+			$$("database_info_table_list_view").hideProgress();
+		}
+ 
 
 		// progress 추가
 		webix.extend($$("table_info_field_list"), webix.ProgressBar);
@@ -371,7 +366,7 @@ var database_info_data_load=function(){
     		$$("table_info_field_list").refresh();
     		$$("table_info_field_list").hideProgress();
     		// 개발자 화면
-    		$$("table_info_develop_list").parse(cachedFieldList);
+    		$$("table_info_develop_list").parse(cachedFieldDeveloperList);
     		$$("table_info_develop_list").refresh();
     		$$("table_info_develop_list").hideProgress();    		
     		
@@ -464,6 +459,25 @@ var database_info_data_load=function(){
 // view 리스트
 // procedure
 
+
+// develop 기능
+var develop_field_clear=function(mode,obj){
+	$.each($$("table_info_develop_list").data.pull,function(index){
+		switch(mode){
+		case 'checkbox': 
+			if(obj.checked==true) 	this.field_checkbox=1;
+			else 					this.field_checkbox=0;
+			break;
+		case 'set': this.field_set="";break;
+		case 'where': this.field_where="";break;
+		case 'operation': this.field_operation="=";break;
+		}
+	
+	});
+	$$("table_info_develop_list").refresh();
+	$$("table_info_develop_list").hideProgress();
+};
+
 // 쿼리 입력창
 var database_query_cell = [{
 	header:"sql1",
@@ -479,52 +493,56 @@ var database_query_cell = [{
 						id:"database_query_button_select_count_pk",
 						view:"button",
 						value:"select count",
-						tooltip:"select count(pk) from 쿼리를 생성한다. 단축키: ",
-						click:"selectCountQuery",
+						tooltip:"select count(pk) from 쿼리를 생성한다. 단축키: Alt+1 ",
+						click:"selectCountQuery"
 				    }, 
 				    {
 						id:"database_query_button_select_all_field",
 						view:"button",
 						value:"select *",
-						tooltip:"select * from 쿼리를 생성한다. 단축키: ",
-						click:"selectAllQuery",
+						tooltip:"select * from 쿼리를 생성한다. 단축키: Alt+2",
+						click:"selectAllQuery"
 				    }, 
 				    {
 						id:"database_query_button_select_name_field",
 						view:"button",
 						value:"select field",
-						tooltip:"select 필드명 from 쿼리를 생성한다. 단축키: ",
-						click:"selectNameQuery",
+						tooltip:"select 필드명 from 쿼리를 생성한다. 단축키: Alt+3",
+						click:"selectNameQuery"
 				    }, 
 				    {
 						id:"database_query_button_insert_into",
 						view:"button",
 						value:"insert into",
-						tooltip:"INSERT INTO 쿼리를 생성한다. 단축키: ",
+						tooltip:"INSERT INTO 쿼리를 생성한다. 단축키: Alt+4",
+						click:"insertIntoQuery"
 				    }, 
 				    {
 						id:"database_query_button_insert_set",
 						view:"button",
 						value:"insert set",
-						tooltip:"INSERT SET 쿼리를 생성한다. 단축키: ",
+						tooltip:"INSERT SET 쿼리를 생성한다. 단축키: Alt+5",
+						click:"insertSetQuery"
 				    }, 
 				    {
 						id:"database_query_button_update_set",
 						view:"button",
 						value:"update set",
-						tooltip:"Update SET 쿼리를 생성한다. 단축키: ",
+						tooltip:"Update SET 쿼리를 생성한다. 단축키: Alt+6",
+						click:"updateSetQuery"
 				    }, 
 				    {
 						id:"database_query_button_delete",
 						view:"button",
 						value:"delete",
-						tooltip:"DELETE 쿼리를 생성한다. 단축키: ",
+						tooltip:"DELETE 쿼리를 생성한다. 단축키: Alt+7",
+						click:"deleteQuery"
 				    }, 
 					{
 						id:"database_query_button_allow_html",
 						view:"button",
 						value:"allow HTML",
-						tooltip:"결과에 HTML 을 허용-비허용. 단축키:",
+						tooltip:"결과에 HTML 을 허용-비허용. 단축키: Alt+8",
 						on:{"onItemClick":function(){
 							if(htmlAllow) 	htmlAllow=false;
 							else 			htmlAllow=true;
@@ -538,7 +556,7 @@ var database_query_cell = [{
 						id:"database_query_button_auto_commit",
 						view:"button",
 						value:"auto commit",
-						tooltip:"Auto Commit 활성-비활성., 단축키:",
+						tooltip:"Auto Commit 활성-비활성., 단축키:Alt+9",
 						on:{"onItemClick":function(){
 							if(autoCommit) 	autoCommit=false;
 							else 			autoCommit=true;
@@ -565,58 +583,66 @@ var database_query_cell = [{
 			{	// 하단 기능 버튼
 				cols:[
 				    {
+						id:"database_developer_combo_prepare_style",
+						view:"combo",
+						value:"#{field}",
+						options:["?", ":field", "#{field}","${field}"],
+						tooltip:"prepare 스타일을 정의 한다.<br/>?,:field,#{field},${field} 정의 가능"
+				    }, 
+				    {
 						id:"database_developer_button_java_model",
 						view:"button",
 						value:"java model",
-						tooltip:""
+						tooltip:"java model 을 생성한다. 단축키 :",
+						click:"javaModel"
 				    }, 
 				    {
 						id:"database_developer_button_java_hibernate_model",
 						view:"button",
 						value:"java H-model",
-						tooltip:""
+						tooltip:"java hibernate model 을 생성한다. 단축키 :",
 				    }, 
 				    {
 						id:"database_developer_button_java_model_set",
 						view:"button",
 						value:"java setter",
-						tooltip:""
+						tooltip:"java model 의 setter 를 생성한다. 단축키 : ",
 				    }, 
 				    {
 						id:"database_developer_button_java_model_get",
 						view:"button",
 						value:"java getter",
-						tooltip:""
+						tooltip:"java model 의 getter 를 생성한다. 단축키 : ",
 				    },				      
 				    {
 						id:"database_developer_button_mybatis_select",
 						view:"button",
 						value:"mybatis select",
-						tooltip:""
+						tooltip:"mybatis select 구문을 생성한다. 단축키 : ",
 				    }, 
 				    {
 						id:"database_developer_button_mybatis_insert",
 						view:"button",
 						value:"mybatis insert",
-						tooltip:""
+						tooltip:"mybatis insert 구문을 생성한다. 단축키 : ",
 				    }, 
 				    {
 						id:"database_developer_button_mybatis_update",
 						view:"button",
 						value:"mybatis update",
-						tooltip:""
+						tooltip:"mybatis update 구문을 생성한다. 단축키 : ",
 				    }, 
 				    {
 						id:"database_developer_button_mybatis_delete",
 						view:"button",
 						value:"mybatis delete",
-						tooltip:""
+						tooltip:"mybatis delete 구문을 생성한다. 단축키 : ",
 				    }, 
 				    {
 						id:"database_developer_button_mybatis_result",
 						view:"button",
 						value:"mybatis result",
-						tooltip:""
+						tooltip:"mybatis result 를 생성한다. 단축키 : ",
 				    }
 				] // end cols	
 			}] // end rows
@@ -712,8 +738,6 @@ var executeQuery = function (){
 			$$("database_result_list_view").hideProgress();
 		  	}
 	);
-	// 쿼리가 실행되는 동안 포커스를 되돌린다.
-	$$("database_query_form").focus();	
 }
 
 // 결과 창
@@ -731,7 +755,79 @@ var database_result_cell = [{
 			scroll:true
 		}
 	] // end rows
-}]
+}];
+
+// 결과창 Context 메뉴
+webix.ui({
+    view:"contextmenu",
+    id:"database_result_context_menu",
+    data:[
+          "create insert query",
+          "create update query",
+          "create delete query",
+          "create select query",
+          { $template:"Separator" }
+          ,"copy data"],
+    on:{
+        onItemClick:function(id){
+        	var rowObject = this.getContext().obj.getItem(this.getContext().id.row);
+        	var contextMenu = this;
+        	
+
+            var setValue="";
+            var whereValue="";
+            // develop 창에 객체를 복사한다.
+            $.each($$("table_info_develop_list").data.pull,function(index){
+            	var value=rowObject[this.columnName];
+           	
+            	// 초기화
+            	this.field_set="";
+            	this.field_where="";
+            	
+            	switch (contextMenu.getItem(id).value) {
+				case 'create insert query':   	
+					this.field_set=value;
+					break;
+				case 'create update query':   	
+					this.field_set=value;
+					this.field_where=value;
+					break;
+				case 'create delete query':   	
+					this.field_where=value;
+					break;
+				case 'create select query':
+					this.field_where=value;					
+					break;
+				}
+            });
+            
+            $$("table_info_develop_list").refresh();
+            
+            // 액션을 클릭한다.
+            switch (contextMenu.getItem(id).value) {
+			case 'create insert query':   	
+				insertIntoQuery();
+				break;
+			case 'create update query':   	
+				updateSetQuery();
+				break;
+			case 'create delete query':   	
+				deleteQuery();
+				break;
+			case 'create select query':
+				selectAllQuery();
+				break;
+			}
+
+            webix.message(contextMenu.getItem(id).value+" Complete");
+        }
+    }
+});
+// result 에 context menu 추가
+webix.ready(function(){
+	$$("database_result_context_menu").attachTo($$("database_result_list_view"));
+});
+
 
 // CURD
 // Mybatis
