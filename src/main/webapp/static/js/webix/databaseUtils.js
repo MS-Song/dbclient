@@ -28,6 +28,11 @@ var selectAllQuery=function(){
  * select Query
  */
 var selectQuery=function(mode){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
+
 	var columnList=null;
 	var whereList=null;
 
@@ -59,10 +64,12 @@ var selectQuery=function(mode){
 		html+='\rwhere \r\t' + whereList.join("\r\tand ");
 	}
 	
-	// database 종류에 따라 한정자를 넣는다.
-	switch (driver) {
+	// database 종류에 따라 한정자를 넣는다. (count 가 아닌 경우에만)
+	if(mode!='count'){
+		switch (driver) {
 		case 'mysql'	: 	html+=' limit 10';									break;
 		case 'oracle'	: 	html='select * from (\r'+html+'\r) where rownum <= 10';	break;
+		}
 	}
 	
 //	html+= ';'; 		
@@ -75,9 +82,14 @@ var selectQuery=function(mode){
  * delete Query
  */
 var deleteQuery=function(){
-	var html='delete from '+tableName;
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
 
-	whereList=getColumns('whereList');
+	var html='delete from '+tableName;
+	var whereList=getColumns('whereList');
+
 	if(whereList.length>0){
 		html+='\rwhere \r\t' + whereList.join("\r\tand ");
 	}
@@ -96,6 +108,11 @@ var deleteQuery=function(){
  * insert into query
  */
 var insertIntoQuery=function(){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
+
 	var columnList=getColumns('selectList');
 	var intoList=getColumns('selectIntoList');
 	var html='INSERT INTO '+tableName;
@@ -115,6 +132,11 @@ var insertIntoQuery=function(){
  * insert set query
  */
 var insertSetQuery=function(){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
+
 	// database 종류에 따라 지원하지 않는다.
 	if(driver == 'oracle'){
 		insertIntoQuery();
@@ -134,6 +156,11 @@ var insertSetQuery=function(){
  * update Query
  */
 var updateSetQuery=function(){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
+
 	var setList=getColumns('selectSetList');
 	var whereList=getColumns('whereList');
 	
@@ -165,8 +192,9 @@ var getColumns = function (mode){
 	}
 	
   	var list= new Array();
-	
-	$.each($$("table_info_develop_list").data.pull,function(index){
+  	var listLength = $$("table_info_develop_list").data.order.length;
+  	var loop = 0;
+  	$.each($$("table_info_develop_list").data.pull,function(index){
 		switch(mode){
 		case 'columnList':	// 전체 컬럼 조회
 			list.push(this.columnName);
@@ -175,6 +203,20 @@ var getColumns = function (mode){
 			if(this.field_checkbox == 1){
 				list.push(this.columnName);
 			}
+			break;
+		case 'selectWithComment':
+			var html=aliasTable(tableName).toUpperCase();
+			html+=".";
+			html+=this.columnName;
+			html+=" AS ";
+			html+=aliasTable(tableName).toUpperCase();
+			html+="_";
+			html+=this.columnName; 
+			html+= (listLength -1 > loop) ? ",":"";
+			html+=" \t\t /*";
+			html+= this.comment; 
+			html+= "*/";
+			list.push(html);
 			break;
 		case 'selectIntoList':	// 체크박스에 선택된 set 값 into 스타일 조회
 			if(this.field_checkbox == 1){
@@ -220,7 +262,23 @@ var getColumns = function (mode){
 				list.push(this.dataType);
 			}
 			break;
+		case 'nullAbleList':
+			if(this.field_checkbox == 1){
+				list.push(this.nullable);
+			}
+			break;
+		case 'columnKeyList':
+			if(this.field_checkbox == 1){
+				list.push(this.columnKey);
+			}
+			break;
+		case 'extraList':
+			if(this.field_checkbox == 1){
+				list.push(this.extra);
+			}
+			break;
 		}
+		loop++;
 	});
 	return list;
 };
@@ -286,7 +344,7 @@ var columnTypeConverter=function(operation,type,value){
 /**
  * DB 타입에 매치되는 JAVA 타입을 검색한다.
  */
-var columnJavaTypeSearch=function(columnType){
+var columnJavaTypeSearch=function(columnTypeFull){
 	// datatype
 	var dataType="";
 	
@@ -345,29 +403,29 @@ var columnJavaTypeSearch=function(columnType){
 
 /**
  * prepare 스타일에 정의되어 있는 양식으로 필드명을 변경 한다.
- * TODO data tyle 처리는 차후에 잔행 한다. 
+ * TODO data type 처리는 차후에 잔행 한다. 
  */
 var prepareStyleConverter = function(dataType,columnName){
 	var prepareStyle = $$("database_developer_combo_prepare_style").getValue();
-	return prepareStyle.replace("field",columnName);
+	return prepareStyle.replace("field",columnStyleConverter(columnName));
 }
 
 /**
  * 테이블 명칭을 java 모델에 맞게 변경한다.
  */
 var tableStyleConverter=function(table){
-  	var tableName="";
+  	var className="";
   	// 컬럼 명칭을 변경하기 위한 처리
   	if(table.indexOf('_')>=0){
   		var names = table.split('_');
   		for(var i=0;i<names.length;i++){
-  			tableName+=names[i].substring(0,1).toUpperCase()+names[i].substring(1, names[i].length).toLowerCase();	
+  			className+=names[i].substring(0,1).toUpperCase()+names[i].substring(1, names[i].length).toLowerCase();	
   		}
   	} else {
-  		tableName+=table.substring(0,1).toUpperCase()+table.substring(1, table.length).toLowerCase();
+  		className+=table.substring(0,1).toUpperCase()+table.substring(1, table.length).toLowerCase();
   	}
   	
-  	return tableName;
+  	return className;
 };
 
 /**
@@ -375,22 +433,6 @@ var tableStyleConverter=function(table){
  */
 var columnStyleConverter=function(column){
 	var columnName="";
-// 네이밍 룰이 일정하지 않아 해결이 안된다.
-//	if(column.indexOf('n')==0){
-//		columnName=column.substring(1,2).toLowerCase()+column.substring(2, column.length);
-//	}
-//	else if(column.indexOf('f')==0){
-//		columnName=column.substring(1,2).toLowerCase()+column.substring(2, column.length);
-//	}
-//	else if(column.indexOf('s')==0){
-//		columnName=column.substring(1,2).toLowerCase()+column.substring(2, column.length);
-//	}
-//	else if(column.indexOf('dt')==0){
-//		columnName=column.substring(2,3).toLowerCase()+column.substring(3, column.length);
-//	}
-//	else if(column.indexOf('em')==0){
-//		columnName=column.substring(2,3).toLowerCase()+column.substring(3, column.length);
-//	}
 	
 	// 컬럼 명칭을 변경하기 위한 처리
 	var postFix = "";
@@ -420,8 +462,41 @@ var columnStyleConverter=function(column){
 	return columnName+postFix;
 };
 
+/**
+ * 테이블 명을 이용해서 Alias 를 생성한다.
+ */
+var aliasTable=function(table){
+  	var underbar = /_/g;
+  	var regAlphabetCapital = /[a-z]/g;
+  	var aliase="";
+  	// 테이블 명칭에 underVar 가 존재하면
+  	if(underbar.test(table)){
+  		var tmp=table.split("_");
+  		var tmpalias="";
+  		for(var i=0;i<tmp.length;i++){
+  			if(tmp[i] != null)
+  				tmpalias+=tmp[i].substring(0,1).toLowerCase();
+  		}
+  		aliase=tmpalias;
+  	} else if(table.replace(regAlphabetCapital,"").toLowerCase() != ""){
+  		aliase=table.replace(regAlphabetCapital,"").toLowerCase();
+  	} else{
+  		if(table.substring(0,1).toLowerCase()!='t'){
+  			aliase=table.substring(0,1);
+  		} else{
+  			aliase=table.substring(1,2);
+  		}
+  	}
+  
+  	return aliase;
+};
+
 
 var javaModel=function(){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
 
 	// 컬럼명칭
 	var columnList=getColumns('columnList');
@@ -438,7 +513,7 @@ var javaModel=function(){
 		for(var i=0;i<columnList.length;i++){
   				var column=columnStyleConverter(columnList[i]);
   				var columnComment=columnCommentList[i];
-  				var dataType=columnTypeSearch(columnTypeFullList[i]);
+  				var dataType=columnJavaTypeSearch(columnTypeFullList[i]);
   
   		html+='\n\t/**\n\t* column name : '+ columnList[i] +'\n\t* '+columnComment+'\n\t*/';
 		html+='\n\tprivate '+dataType+ ' ' + column +';\n';
@@ -454,225 +529,260 @@ var javaModel=function(){
 	html+="\n} ";
 
 	
-	$("[name=query]").val(html);
+	$$("database_query_input").setValue(html);
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
   };
   
   
-  var javaHibernateModel=function(){
-  	if($("#tableName").html() != ''){
-  		if($("#tableName").html() != ''){
-  			var tableName=$("#tableName").html();
-  
-  			var tableAnnotation ='@Entity'+"\n";
-  			tableAnnotation +='@Table(name = "'+tableName+'")'+"\n";
-  			tableAnnotation +='@org.hibernate.annotations.Table(comment = "'+$("#tableComment").val()+'", appliesTo = "'+tableName+'")'+"\n";
-  			
-  			if(tableName.indexOf('t')==0){
-  				tableName=tableName.substring(1, tableName.length);
-  			}
-  			
-  			var html=tableAnnotation+'public class '+ tableStyleConverter(tableName) +" extends BaseObject { \n";
-  			// 기본 생성자
-  			var constructBase ='\n\t/**\n\t* 기본 생성자 \n\t*/'+'\n\tpublic '+tableName +'(){}';
+var javaHibernateModel=function(){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
+
+	// 컬럼명칭
+	var columnList=getColumns('columnList');
+	// 코멘트
+	var columnCommentList=getColumns('commentList');
+	// 데이터 타입
+	var columnTypeFullList=getColumns('dataTypeList');
+	// null 필드 여부
+	var columnIsNullAbleList=getColumns('nullAbleList');
+	// pk 여부
+	var columnPKList=getColumns('columnKeyList');
+	// AI 여부
+	var columnAIList=getColumns('extraList');
+
+	// 테이블 네임을 변경하기 때문에 치환 한다.
+	var tableNameAlias=tableName;
+	
+	var tableAnnotation ='@Entity'+"\n";
+	tableAnnotation +='@Table(name = "'+tableNameAlias+'")'+"\n";
+	tableAnnotation +='@org.hibernate.annotations.Table(comment = "'+ tableComment +'", appliesTo = "'+tableNameAlias+'")'+"\n";
+	
+	if(tableNameAlias.indexOf('t')==0){
+		tableNameAlias=tableNameAlias.substring(1, tableNameAlias.length);
+	}
+	
+	var html=tableAnnotation+'public class '+ tableStyleConverter(tableNameAlias) +"{ \n";
+	// 기본 생성자
+	var constructBase ='\n\t/**\n\t* 기본 생성자 \n\t*/'+'\n\tpublic '+tableNameAlias +'(){}';
   
   			// 전체 생성자
-  			// setter 생성자 코멘트
-  			var constructSetterComment= '\n\t/**\n\t* Setter 전체 생성자';
-  			// setter 생성자 
-  			var constructSetterBody= '\n\tpublic '+tableName +'(';
-  			// setter 생성자 파라메터
-  			var constructSetterParamsList = new Array();
-  			// setter 생성자 바디			
-  			var constructSetterBodyList = new Array();
+	// setter 생성자 코멘트
+	var constructSetterComment= '\n\t/**\n\t* Setter 전체 생성자';
+	// setter 생성자 
+	var constructSetterBody= '\n\tpublic '+tableNameAlias +'(';
+	// setter 생성자 파라메터
+	var constructSetterParamsList = new Array();
+	// setter 생성자 바디			
+  	var constructSetterBodyList = new Array();
   
-  			// 필수값 생성자
-  			// setter 생성자 코멘트
-  			var constructSetterRequireComment= '\n\t/**\n\t* Setter 필수값 생성자';
-  			// setter 생성자 
-  			var constructSetterRequireBody= '\n\tpublic '+tableName +'(';
-  			// setter 생성자 파라메터
-  			var constructSetterRequireParamsList = new Array();
-  			// setter 생성자 바디			
-  			var constructSetterRequireBodyList = new Array();
-  			
-  			// getter/setter
-  			var getterSetters="";
-  			// 컬럼명칭
-  			var columnList=columns('columnList',$("#tableName").html());
-  			// 코멘트
-  			var columnCommentList=columns('columnCommentList',$("#tableName").html());
-  			// 데이터 타입
-  			var columnTypeFullList=columns('columnTypeFullList',$("#tableName").html());
-  			// null 필드 여부
-  			var columnIsNullAbleList=columns('columnIsNullAbleList',$("#tableName").html());
-  			// pk 여부
-  			var columnPKList=columns('columnPKList',$("#tableName").html());
-  			// AI 여부
-  			var columnAIList=columns('columnAIList',$("#tableName").html());
-  			
-  			var constructIndex=0;
-  			var constructRequireIndex=0;
-  			for(var i=0;i<columnList.length;i++){
-  				var column=columnStyleConverter(columnList[i]);
-  				var columnComment=columnCommentList[i];
-  				var dataType=columnTypeSearch(columnTypeFullList[i]);
-  				var printNullAble = 'nullable=true';
-  				if(columnIsNullAbleList[i] == 'NO')
-  					printNullAble = 'nullable=false';
+  	// 필수값 생성자
+	// setter 생성자 코멘트
+	var constructSetterRequireComment= '\n\t/**\n\t* Setter 필수값 생성자';
+	// setter 생성자 
+	var constructSetterRequireBody= '\n\tpublic '+tableNameAlias +'(';
+	// setter 생성자 파라메터
+	var constructSetterRequireParamsList = new Array();
+	// setter 생성자 바디			
+	var constructSetterRequireBodyList = new Array();
+	
+	// getter/setter
+	var getterSetters="";
+	
+	var constructIndex=0;
+	var constructRequireIndex=0;
+	for(var i=0;i<columnList.length;i++){
+		var column=columnStyleConverter(columnList[i]);
+		var columnComment=columnCommentList[i];
+		var dataType=columnJavaTypeSearch(columnTypeFullList[i]);
+		var printNullAble = 'nullable=true';
+		if(columnIsNullAbleList[i] == 'NO')
+			printNullAble = 'nullable=false';
   
-  				// construct require
-  				
-  				// construct All
-  				if(!(columnPKList[i] == 'PK' || columnPKList[i] == 'PRI')){ // pk 가 아닌 경우에만 생성한다.
-  					constructSetterComment+='\n\t* @param '+column;
-  					constructSetterParamsList[constructIndex]=dataType + ' ' + column; 
-  					constructSetterBodyList[constructIndex]	='this.'+column+'='+column+';';
-  					constructIndex++;
-  					
-  					// 필수값 생성자
-  					if(columnIsNullAbleList[i]=='NO'){
-  						constructSetterRequireComment+='\n\t* @param '+column;
-  						constructSetterRequireParamsList[constructRequireIndex]=dataType + ' ' + column; 
-  						constructSetterRequireBodyList[constructRequireIndex]	='this.'+column+'='+column+';';
+  		// construct require
+		// construct All
+		if(!(columnPKList[i] == 'PK' || columnPKList[i] == 'PRI')){ // pk 가 아닌 경우에만 생성한다.
+			constructSetterComment+='\n\t* @param '+column;
+			constructSetterParamsList[constructIndex]=dataType + ' ' + column; 
+			constructSetterBodyList[constructIndex]	='this.'+column+'='+column+';';
+			constructIndex++;
+			
+			// 필수값 생성자
+			if(columnIsNullAbleList[i]=='NO'){
+				constructSetterRequireComment+='\n\t* @param '+column;
+				constructSetterRequireParamsList[constructRequireIndex]=dataType + ' ' + column; 
+				constructSetterRequireBodyList[constructRequireIndex]	='this.'+column+'='+column+';';
   						constructRequireIndex++;
   					}
   				}
   
   				html+='\n\t/**\n\t* '+columnComment+'\n\t*/';
-  				if(columnPKList[i] == 'PK' || columnPKList[i] == 'PRI'){ // pk 인 경우에는 ID 를 생성
-  					html+='\n\t@Id';
-  				}
-  				if(columnAIList[i] == 'auto_increment'){
-  					html+='\n\t@GeneratedValue(strategy = GenerationType.AUTO)';
-  				}
-  				
-  				html+='\n\t@Column(name="' + columnList[i] +'" , columnDefinition="'+columnTypeFullList[i]+' COMMENT \''+columnCommentList[i]+'\'", '+printNullAble+')';
-  				html+='\n\tprivate '+dataType+ ' ' + column +';\n';
-  				
-  				// getset
-  				columnGetSet=column.substring(0,1).toUpperCase()+column.substring(1, column.length);
-  				getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' setter '; 
-  				getterSetters+='\n\t* @param '+column;
-  				getterSetters+='\n\t*/';
-  				getterSetters+='\n\tpublic void set'+columnGetSet+'('+dataType+' '+column+'){\n\t\tthis.'+column+' = '+column+';\n\t}';
-  				getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' getter';
-  				getterSetters+='\n\t* @return '+dataType;
-  				getterSetters+='\n\t*/';
-  				getterSetters+='\n\tpublic '+dataType+' get'+columnGetSet+'(){\n\t\treturn this.'+column+';\n\t}';
-  			}
-  
-  			constructSetterBody+=constructSetterParamsList.join(',')+'){';
-  			constructSetterBody+='\n\t\t'+constructSetterBodyList.join('\n\t\t');
-  			constructSetterBody+='\n\t}';
-  			constructSetterComment+='\n\t*/';
-  			
-  			constructSetterRequireBody+=constructSetterRequireParamsList.join(',')+'){';
-  			constructSetterRequireBody+='\n\t\t'+constructSetterRequireBodyList.join('\n\t\t');
-  			constructSetterRequireBody+='\n\t}';
-  			constructSetterRequireComment+='\n\t*/';
-  			
-  			html+=constructBase;
-  			html+=constructSetterRequireComment;
-  			html+=constructSetterRequireBody;
-  			html+=constructSetterComment;
-  			html+=constructSetterBody;
-  			html+=getterSetters;
-  			html+="\n} ";
-  			$("[name=query]").val(html);
-  
-  		}
-  		else{
-  			printQuery('테이블을 선택하세요');
-  		}
+		if(columnPKList[i] == 'PK' || columnPKList[i] == 'PRI'){ // pk 인 경우에는 ID 를 생성
+			html+='\n\t@Id';
+		}
+		if(columnAIList[i] == 'auto_increment'){
+			html+='\n\t@GeneratedValue(strategy = GenerationType.AUTO)';
+		}
+		
+		html+='\n\t@Column(name="' + columnList[i] +'" , columnDefinition="'+columnTypeFullList[i]+' COMMENT \''+columnCommentList[i]+'\'", '+printNullAble+')';
+		html+='\n\tprivate '+dataType+ ' ' + column +';\n';
+		
+		// getset
+		columnGetSet=column.substring(0,1).toUpperCase()+column.substring(1, column.length);
+		getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' setter '; 
+		getterSetters+='\n\t* @param '+column;
+		getterSetters+='\n\t*/';
+		getterSetters+='\n\tpublic void set'+columnGetSet+'('+dataType+' '+column+'){\n\t\tthis.'+column+' = '+column+';\n\t}';
+		getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' getter';
+		getterSetters+='\n\t* @return '+dataType;
+		getterSetters+='\n\t*/';
+		getterSetters+='\n\tpublic '+dataType+' get'+columnGetSet+'(){\n\t\treturn this.'+column+';\n\t}';
   	}
-  };
   
-  var javaModelSet=function(){
-  	if($("#tableName").html() != ''){
-  		var columnHtml='';
-  		var columnName='';
-  		var columnParamName='';
-  		var tableName=$("#tableName").html();
-  //		if(tableName.indexOf('t')==0){
-  //			// 첫글자 자르기
-  //			tableName=tableName.substring(1, tableName.length);
-  //			// 첫글자 소문자
-  //			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
-  //		}
+  	constructSetterBody+=constructSetterParamsList.join(',')+'){';
+	constructSetterBody+='\n\t\t'+constructSetterBodyList.join('\n\t\t');
+	constructSetterBody+='\n\t}';
+	constructSetterComment+='\n\t*/';
+	
+	constructSetterRequireBody+=constructSetterRequireParamsList.join(',')+'){';
+	constructSetterRequireBody+='\n\t\t'+constructSetterRequireBodyList.join('\n\t\t');
+	constructSetterRequireBody+='\n\t}';
+	constructSetterRequireComment+='\n\t*/';
+	
+	html+=constructBase;
+	html+=constructSetterRequireComment;
+	html+=constructSetterRequireBody;
+	html+=constructSetterComment;
+	html+=constructSetterBody;
+	html+=getterSetters;
+	html+="\n} ";
+
+	$$("database_query_input").setValue(html);
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
+};
   
-  		// 컬럼명칭
-  		var columnList=columns('columnList',$("#tableName").html());
-  		// set 되어 있는 값
-  		var setList=columns('setList',$("#tableName").html());
-  		for(var i=0;i<columnList.length;i++){
-  			columnParamName=columnStyleConverter(columnList[i]);
-  			columnName=columnParamName.substring(0,1).toUpperCase()+columnParamName.substring(1, columnParamName.length);
-  			if(setList[i]!="")
-  				columnParamName=setList[i];
-  			columnHtml+=tableStyleConverter(tableName)+'.set'+columnName+'('+columnParamName+');\n';
-  		}
-  		$("[name=query]").val(columnHtml);
+var javaModelSet=function(){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
+
+	// 컬럼명칭
+	var columnList=getColumns('columnList');
+	
+	var columnHtml='';
+	var columnName='';
+	var columnParamName='';
+	var tableNameAlias=tableName;
+
+	for(var i=0;i<columnList.length;i++){
+		columnParamName=columnStyleConverter(columnList[i]);
+		columnName=columnParamName.substring(0,1).toUpperCase()+columnParamName.substring(1, columnParamName.length);
+		columnHtml+=tableStyleConverter(tableNameAlias)+'.set'+columnName+'('+columnParamName+');\n';
+	}
+	$$("database_query_input").setValue(columnHtml);
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
+};
   
-  	}
-  	else{
-  		printQuery('테이블을 선택하세요');
-  	}
-  };
+var javaModelGet=function(){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
+
+	// 컬럼명칭
+	var columnList=getColumns('columnList');
+	var columnHtml='';
+	var columnName='';
+	var columnParamName='';
+	var tableNameAlias=tableName;
+ 
+	for(var i=0;i<columnList.length;i++){
+		columnParamName=columnStyleConverter(columnList[i]);
+		columnName=columnParamName.substring(0,1).toUpperCase()+columnParamName.substring(1, columnParamName.length);
+		columnHtml+=tableStyleConverter(tableNameAlias)+'.get'+columnName+'();\n';
+	}
+	
+	$$("database_query_input").setValue(columnHtml);
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
+};
+
+
+var mybatisSelect = function(){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
+	$$("database_query_input").setValue(getColumns('selectWithComment').join("\n"));
+  	var columnHtml ='<sql id="selectBy'+tableStyleConverter(tableName)+'">\n';
+  	columnHtml+=$$("database_query_input").getValue();
+  	columnHtml+='\n</sql>';	
+	$$("database_query_input").setValue(columnHtml);
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
+};
+
+var mybatisInsert = function(){
+	insertIntoQuery();
+  	var columnHtml ='<insert parameterType="'+tableStyleConverter(tableName)+'" id="insert'+tableStyleConverter(tableName)+'" statementType="PREPARED">\n';
+  	columnHtml+='\n/* insert'+tableStyleConverter(tableName)+' */\n';
+  	columnHtml+=$$("database_query_input").getValue();
+  	columnHtml+='\n</insert>';
+	$$("database_query_input").setValue(columnHtml);
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
+};
+
+var mybatisUpdate = function(){
+  	updateSetQuery();
+  	var columnHtml ='<update parameterType="'+tableStyleConverter(tableName)+'" id="update'+tableStyleConverter(tableName)+'" statementType="PREPARED">\n';
+  	columnHtml+='\n/* update'+tableStyleConverter(tableName)+' */\n';
+  	columnHtml+=$$("database_query_input").getValue();
+  	columnHtml+='\n</update>';
+	$$("database_query_input").setValue(columnHtml);
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
+};
+
+var mybatisDelete = function(){
+  	deleteQuery();
+  	var columnHtml ='<delete parameterType="'+tableStyleConverter(tableName)+'" id="delete'+tableStyleConverter(tableName)+'" statementType="PREPARED">\n';
+  	columnHtml+='\n/* delete'+tableStyleConverter(tableName)+' */\n';
+  	columnHtml+=$$("database_query_input").getValue();
+  	columnHtml+='\n</delete>';
+  	$("[name=query]").val(columnHtml);
+	$$("database_query_input").setValue(columnHtml);
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
+};
+
+var mybatisResultMap = function(){
+	if(null==tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
+	var columnList=getColumns('columnList');
+	var columnHtml='';
+	var columnName='';
+	var columnParamName='';
+	var tableNameAlias=tableName;
+
+	columnHtml+='<resultMap type="'+tableStyleConverter(tableName)+'" id="resultBy'+tableStyleConverter(tableName)+'">\n';
   
-  var javaModelGet=function(){
-  	if($("#tableName").html() != ''){
-  		var columnHtml='';
-  		var columnName='';
-  		var columnParamName='';
-  		var tableName=$("#tableName").html();
-  //		if(tableName.indexOf('t')==0){
-  //			// 첫글자 자르기
-  //			tableName=tableName.substring(1, tableName.length);
-  //			// 첫글자 소문자
-  //			tableName=tableName.substring(0,1).toLowerCase()+tableName.substring(1, tableName.length);
-  //		}
-  
-  		// 컬럼명칭
-  		var columnList=columns('columnList',$("#tableName").html());
-  		for(var i=0;i<columnList.length;i++){
-  			columnParamName=columnStyleConverter(columnList[i]);
-  			columnName=columnParamName.substring(0,1).toUpperCase()+columnParamName.substring(1, columnParamName.length);
-  			columnHtml+=tableStyleConverter(tableName)+'.get'+columnName+'();\n';
-  		}
-  		$("[name=query]").val(columnHtml);
-  
-  	}
-  	else{
-  		printQuery('테이블을 선택하세요');
-  	}
-  };
-  
-  var resultMap = function(){
-  	if($("#tableName").html() != ''){
-  		if($("#tableName").html() != ''){
-  			var columnHtml='';
-  			var columnName='';
-  			var columnParamName='';
-  			var tableName=$("#tableName").html();
-  //			if(tableName.indexOf('t')==0){
-  //				// 첫글자 자르기
-  //				tableName=tableName.substring(1, tableName.length);
-  //			}
-  			columnHtml+='<resultMap type="'+tableStyleConverter(tableName)+'" id="resultBy'+tableStyleConverter(tableName)+'">\n';
-  
-  			// 컬럼명칭
-  			var columnList=columns('columnList',$("#tableName").html());
-  			for(var i=0;i<columnList.length;i++){
-  				columnParamName=columnStyleConverter(columnList[i]);
-  				columnName=columnParamName.substring(0,1).toLowerCase()+columnParamName.substring(1, columnParamName.length);
-  				columnHtml+='\t<result property="'+columnName+'" column="'+ aliasTable($("#tableName").html()).toUpperCase() +"_"+columnList[i]+'" />\n';
-  			}
-  			columnHtml+='</resultMap>';
-  			$("[name=query]").val(columnHtml);
-  
-  		}
-  		else{
-  			printQuery('테이블을 선택하세요');
-  		}
-  	}
-  };
+	for(var i=0;i<columnList.length;i++){
+		columnParamName=columnStyleConverter(columnList[i]);
+		columnName=columnParamName.substring(0,1).toLowerCase()+columnParamName.substring(1, columnParamName.length);
+		columnHtml+='\t<result property="'+columnName+'" column="'+ aliasTable(tableNameAlias).toUpperCase() +"_"+columnList[i]+'" />\n';
+	}
+	columnHtml+='</resultMap>';
+
+	$$("database_query_input").setValue(columnHtml);
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
+};

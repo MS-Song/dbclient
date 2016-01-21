@@ -8,6 +8,7 @@ var schema=null;
 var account=null;
 var driver=null;
 var tableName=null;
+var tableComment=null;
 var autoCommit=false;
 var htmlAllow=false;
 
@@ -139,15 +140,12 @@ var database_info_cell = [
 			select:"row",
 			resizeColumn:true,
 			navigation:true,
-			autowidth:true
 		},
 		{ view:"resizer"},
 		{
 			view:"tabview",
 			id:"table_info_tab",
 			animate:false,
-			autowidth:true,
-			autoheight:true,	
 			cells: [
 				{	
 					header:"Field",
@@ -176,7 +174,6 @@ var database_info_cell = [
 					data:[],
 					tooltip:true,
 	 				resizeColumn:true,
-					autowidth:true,
 					select:"row",
 					navigation:true
 				}, 
@@ -197,7 +194,6 @@ var database_info_cell = [
 					data:[],
 					tooltip:true,
 	 				resizeColumn:true,
-					autowidth:true,
 					select:"row",
 					navigation:true
 				}, 
@@ -260,7 +256,6 @@ var database_info_cell = [
 						}
 				    },
 	 				resizeColumn:true,
-					autowidth:true,
 					navigation:true
 				}
 			]
@@ -274,8 +269,6 @@ var database_info_cell = [
 		tooltip:true,
 		select:"row",
 		resizeColumn:true,
-		autowidth:true,
-		autoheight:true
 	},
 	{	view : "datatable", 
 		header:"Procedure",	
@@ -285,8 +278,6 @@ var database_info_cell = [
 		tooltip:true,
 		select:"row",
 		resizeColumn:true,
-		autowidth:true,
-		autoheight:true
 	},
 	{	view : "datatable", 
 		header:"Function",		
@@ -296,8 +287,6 @@ var database_info_cell = [
 		tooltip:true,
 		select:"row",
 		resizeColumn:true,
-		autowidth:true,
-		autoheight:true
 	}
 ];
 
@@ -338,7 +327,10 @@ var database_info_data_load=function(){
 		var selectedRow = $$("database_info_table_list_view").getSelectedItem();
 		// 테이블 명칭 저장
 		try {
-			if(undefined != selectedRow.tableName) tableName = selectedRow.tableName;			
+			if(undefined != selectedRow.tableName) {
+				tableName = selectedRow.tableName;
+				tableComment = selectedRow.tableComment;
+			}
 		} catch (e) {
 			webix.message({ type:"error", text:"데이터 베이스 정보 로드 실패.</br>데이터베이스를 다시 선택해주세요"});
 			$$("database_info_table_list_view").hideProgress();
@@ -398,6 +390,9 @@ var database_info_data_load=function(){
 			    					columnName:this.columnName,
 			    					comment:this.comment,
 			    					dataType:this.dataType,
+			    					nullable:this.nullable,
+			    					columnKey:this.columnKey,
+			    					extra:this.extra,
 			    					field_checkbox:"1",
 			    					field_set:"",
 			    					field_where:"",
@@ -593,7 +588,7 @@ var database_query_cell = [{
 						id:"database_developer_button_java_model",
 						view:"button",
 						value:"java model",
-						tooltip:"java model 을 생성한다. 단축키 :",
+						tooltip:"java model 을 생성한다. 단축키 : Ctrl+1",
 						click:"javaModel"
 				    }, 
 				    {
@@ -601,48 +596,57 @@ var database_query_cell = [{
 						view:"button",
 						value:"java H-model",
 						tooltip:"java hibernate model 을 생성한다. 단축키 :",
+						click:"javaHibernateModel"
 				    }, 
 				    {
 						id:"database_developer_button_java_model_set",
 						view:"button",
 						value:"java setter",
 						tooltip:"java model 의 setter 를 생성한다. 단축키 : ",
+						click:"javaModelSet"
 				    }, 
 				    {
 						id:"database_developer_button_java_model_get",
 						view:"button",
 						value:"java getter",
 						tooltip:"java model 의 getter 를 생성한다. 단축키 : ",
+						click:"javaModelGet"
 				    },				      
 				    {
 						id:"database_developer_button_mybatis_select",
 						view:"button",
 						value:"mybatis select",
 						tooltip:"mybatis select 구문을 생성한다. 단축키 : ",
+						click:"mybatisSelect"
+						
 				    }, 
 				    {
 						id:"database_developer_button_mybatis_insert",
 						view:"button",
 						value:"mybatis insert",
 						tooltip:"mybatis insert 구문을 생성한다. 단축키 : ",
+						click:"mybatisInsert"						
 				    }, 
 				    {
 						id:"database_developer_button_mybatis_update",
 						view:"button",
 						value:"mybatis update",
 						tooltip:"mybatis update 구문을 생성한다. 단축키 : ",
+						click:"mybatisUpdate"
 				    }, 
 				    {
 						id:"database_developer_button_mybatis_delete",
 						view:"button",
 						value:"mybatis delete",
 						tooltip:"mybatis delete 구문을 생성한다. 단축키 : ",
+						click:"mybatisDelete"
 				    }, 
 				    {
 						id:"database_developer_button_mybatis_result",
 						view:"button",
 						value:"mybatis result",
 						tooltip:"mybatis result 를 생성한다. 단축키 : ",
+						click:"mybatisResultMap"						
 				    }
 				] // end cols	
 			}] // end rows
@@ -852,8 +856,6 @@ var database_developer_cell = [{
 		tooltip:true,
 		select:"row",
 		resizeColumn:true,
-		autowidth:true,
-		autoheight:true
 	},
 	{
 		id:"database_query_favorities_view",
@@ -864,8 +866,6 @@ var database_developer_cell = [{
 		tooltip:true,
 		select:"row",
 		resizeColumn:true,
-		autowidth:true,
-		autoheight:true
 	}
 ];
 

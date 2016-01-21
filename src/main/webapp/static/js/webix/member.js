@@ -109,6 +109,7 @@ var login_popup = function(){
         body:webix.copy(login_form)
     }).show();
     $$("menu").hide();
+    $$("login_id_input").focus();
 }
 
 // 로그 아웃 처리

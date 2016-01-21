@@ -1,7 +1,10 @@
 /**
  * 페이지 전체 화면구성 layout 
  */
+
+// 에디터의 tab 을 활성화 하기 위해 webix 의 tab 을 제거 한다.
 webix.UIManager.tabControl = false;
+
 webix.ready(function(){
 	webix.ui({
 		rows:[{	// 상단 타이틀 구성 및 sidemenu 제어
@@ -18,8 +21,6 @@ webix.ready(function(){
 				id:"main_body",
 				multi:true,
 				view:"accordion",
-				autoheigth:true,
-				autowidth:true,
 				cols:[
 					{ 
 						id:"database_info_view",	
@@ -29,12 +30,10 @@ webix.ready(function(){
 							view:"tabview",
 							id:"database_info_tab",
 							animate:false,
-		    				autowidth:true,
-		    				autoheight:true,	
 							cells: database_info_cell
 						}
 					},
-					{ view:"resizer"},
+					{ view:"resizer", id:"screen_heighter"},
 					{
 						rows:[
 							{ 
@@ -110,4 +109,6 @@ webix.ready(function(){
 			}
 		}
 	});
+	
+	// 리사이즈 이벤트 1회 발생 시킨다.
 }); 
