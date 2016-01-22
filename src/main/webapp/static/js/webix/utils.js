@@ -6,6 +6,7 @@
 var equals=function (a,b){
 	if(a != null && b != null){
 		a = a.toString().toLowerCase();
+		b = b.toString().toLowerCase();
 		return a.indexOf(b) !== -1;
 	} else {
 		return false;

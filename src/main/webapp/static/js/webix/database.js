@@ -225,7 +225,7 @@ var database_info_cell = [
 							id:"field_set",
 							header:['SET','<input type="button" value="reset" onClick="develop_field_clear(\'set\');" />'],
 							width:70,
-							template:'<input type="text" name="field_set[]" value="#field_set#" style="width:50px;">',
+							template:'<input type="text" name="field_set[]" value="#field_set#" style="width:50px;" />',
 							editor:"inline-text",
 						},
 						{ 
@@ -233,7 +233,7 @@ var database_info_cell = [
 							id:"field_where",
 							header:['WHERE','<input type="button" value="reset" onClick="develop_field_clear(\'where\');" />'],
 							width:70,
-							template:'<input type="text" name="field_where[]" value="#field_where#" style="width:50px;">',
+							template:'<input type="text" name="field_where[]" value="#field_where#" style="width:50px;" />',
 							editor:"inline-text",
 						},
 						{ 
@@ -736,11 +736,24 @@ var executeQuery = function (){
 				// 실행이 종료되면 결과를 보여준다
 				$$("database_query_execute_info").define("label",'Row Count : '+data.json().result.rowCount + ', Total Time  : '+data.json().result.processTime + ' ms');
 				$$("database_query_execute_info").refresh();
+				
+				//쿼리 로그 기록
+				var time = new Date();
+				$$("database_query_log_view").data.add({
+					seq:$$("database_query_log_view").data.order.length+1,
+					date:time.getHours()+'시 '+time.getMinutes()+'분 '+time.getSeconds()+'초 <br/>'+time.getFullYear()+'년 '+(time.getMonth()+1)+'월 '+time.getDate()+'일',
+					query:$$("database_query_input").getValue(),
+					reTry:"",
+					favorities:""
+				},$$("database_query_log_view").data.order.length+1);
+				$$("database_query_log_view").sort("seq", "desc","int");
+				$$("database_query_log_view").refresh();
+				
 			} else { // 에러가 발생할 경우
 				webix.message({ type:"error", text:data.json().desc });
 			}
 			$$("database_result_list_view").hideProgress();
-		  	}
+		}
 	);
 }
 
@@ -765,25 +778,28 @@ var database_result_cell = [{
 webix.ui({
     view:"contextmenu",
     id:"database_result_context_menu",
+    width:170,
     data:[
           "create insert query",
           "create update query",
           "create delete query",
           "create select query",
+          "copy selected row",
           { $template:"Separator" }
-          ,"copy data"],
+          ,"create All insert query "
+          ,"result excel download"
+          ,"copy all rows "],
     on:{
         onItemClick:function(id){
+
+        	// 선택된 row 에 대한 작업
         	var rowObject = this.getContext().obj.getItem(this.getContext().id.row);
         	var contextMenu = this;
-        	
-
             var setValue="";
             var whereValue="";
             // develop 창에 객체를 복사한다.
             $.each($$("table_info_develop_list").data.pull,function(index){
             	var value=rowObject[this.columnName];
-           	
             	// 초기화
             	this.field_set="";
             	this.field_where="";
@@ -821,6 +837,12 @@ webix.ui({
 			case 'create select query':
 				selectAllQuery();
 				break;
+    		case 'create insert query All':
+				break;
+			case 'result excel download':
+				break;
+			case 'copy data':
+				break;
 			}
 
             webix.message(contextMenu.getItem(id).value+" Complete");
@@ -832,44 +854,7 @@ webix.ready(function(){
 	$$("database_result_context_menu").attachTo($$("database_result_list_view"));
 });
 
-
-// CURD
-// Mybatis
-// hibernate
-// model 생성
-// 히스토리
-// create 테이블
-// 인덱스
-
-// 결과 값
-
-
-/**
- * 쿼리 로그 및 즐겨찾는 쿼리 
- */
-var database_developer_cell = [{
-		id:"database_query_log_view",
-		header:"Query Log",
-		view : "datatable", 
-		columns:[],	
-		data:[],
-		tooltip:true,
-		select:"row",
-		resizeColumn:true,
-	},
-	{
-		id:"database_query_favorities_view",
-		header:"Favorites Query",
-		view : "datatable", 
-		columns:[],	
-		data:[],
-		tooltip:true,
-		select:"row",
-		resizeColumn:true,
-	}
-];
-
-// 자동완성 데이터 저장
+//자동완성 데이터 저장
 var autoCompleteAddTables = function(tableName,fieldList){
 	// 자동완성에 테이블을 입력한다.
 	if(null==$$("database_query_input").config.hintOptions.tables[tableName]){
@@ -882,3 +867,10 @@ var autoCompleteAddTables = function(tableName,fieldList){
 		$$("database_query_input").config.hintOptions.tables[tableName];	
 	}
 };
+
+// view
+// function
+// procedure
+// sequence
+// create 테이블
+

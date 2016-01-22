@@ -354,6 +354,23 @@ public class DatabaseController {
 		model.addAttribute("databaseDriverList", DatabaseDriver.values());
 	}
 
+
+	@ApiOperation(value = "즐겨찾는 쿼리 입력"
+			,notes = "자주 사용하는 쿼리를 저장하기 위한 컨트롤러"
+			,response=ResponseResult.class)
+	@RequestMapping(value="/addFavoritiesQuery",method=RequestMethod.POST)
+	public void addFavoritiesQuery(
+			@RequestParam(value="memo",required=true)
+			@ApiParam	String memo,
+			@RequestParam(value="query",required=true)
+			@ApiParam	String  query,
+			HttpServletRequest request,
+			ModelMap model){
+
+
+
+	}
+
 //	@ApiOperation(value = "엑셀 다운로드"
 //			,notes = "Request parameter 를 기반으로 엑셀파일을 생성하여 다운로드 한다."
 //					+ "타이틀은 엑셀 컬럼 제목이며, 타이틀 배열 개수만큼 밸류를 row 로 생성한다."
