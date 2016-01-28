@@ -66,6 +66,7 @@ public class LoginManagerImpl implements LoginManager{
 				// 로그인 cookie 정보를 생성 한다.
 				Cookie ciperCookie = new Cookie(cipher,CryptoAES.encrypt(member.getId()));
 				ciperCookie.setMaxAge(60*60*2);
+				ciperCookie.setPath("/");
 				response.addCookie(ciperCookie);
 				return true;
 			} else {
@@ -84,6 +85,7 @@ public class LoginManagerImpl implements LoginManager{
 	public String getLoginID(HttpServletRequest request) {
 		String cipher = null;
 		Cookie[] cookie = request.getCookies();
+
 		// 쿠키에서 cipher 를 찾아낸다.
 		if (cookie != null) {
 			for (int i=0; i<cookie.length; i++) {

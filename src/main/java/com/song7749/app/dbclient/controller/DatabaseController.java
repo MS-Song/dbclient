@@ -3,6 +3,7 @@ package com.song7749.app.dbclient.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,22 +21,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.song7749.app.dbclient.view.GenericExcelView;
 import com.song7749.dl.base.ResponseResult;
+import com.song7749.dl.dbclient.dto.DeleteFavorityQueryDTO;
 import com.song7749.dl.dbclient.dto.DeleteServerInfoDTO;
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
+import com.song7749.dl.dbclient.dto.FindFavorityQueryListDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.dto.FindTableDTO;
 import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
+import com.song7749.dl.dbclient.dto.SaveFavorityQueryDTO;
 import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
+import com.song7749.dl.dbclient.entities.FavorityQuery;
+import com.song7749.dl.dbclient.service.FavorityQueryManager;
 import com.song7749.dl.dbclient.service.ServerInfoManager;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
+import com.song7749.dl.dbclient.vo.FavorityQueryVO;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.login.exception.AuthorityUserException;
+import com.song7749.dl.login.service.LoginManager;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
 /**
  * <pre>
  * Class Name : DatabaseController.java
@@ -60,6 +68,12 @@ public class DatabaseController {
 
 	@Autowired
 	ServerInfoManager serverInfoManager;
+
+	@Autowired
+	FavorityQueryManager favorityQueryManager;
+
+	@Autowired
+	LoginManager loginManager;
 
 	@Resource(name="genericExcelView")
 	GenericExcelView genericExcelView;
@@ -358,8 +372,8 @@ public class DatabaseController {
 	@ApiOperation(value = "즐겨찾는 쿼리 입력"
 			,notes = "자주 사용하는 쿼리를 저장하기 위한 컨트롤러"
 			,response=ResponseResult.class)
-	@RequestMapping(value="/addFavoritiesQuery",method=RequestMethod.POST)
-	public void addFavoritiesQuery(
+	@RequestMapping(value="/saveFavoritiesQuery",method=RequestMethod.POST)
+	public void saveFavoritiesQuery(
 			@RequestParam(value="memo",required=true)
 			@ApiParam	String memo,
 			@RequestParam(value="query",required=true)
@@ -367,8 +381,68 @@ public class DatabaseController {
 			HttpServletRequest request,
 			ModelMap model){
 
+		String id = loginManager.getLoginID(request);
+		if(null==id){
+			throw new AuthorityUserException("로그인 뒤에 사용 가능 합니다.");
+		}
 
+		favorityQueryManager.saveFavorityQuery(new SaveFavorityQueryDTO(
+			id,
+			memo,
+			query,
+			new Date()));
 
+		model.clear();
+		model.addAttribute("message", "쿼리가 저장되었습니다.");
+	}
+
+	@ApiOperation(value = "즐겨찾는 쿼리 삭제"
+			,notes = "자주 사용하는 쿼리를 삭제하기 위한 컨트롤러"
+			,response=ResponseResult.class)
+	@RequestMapping(value="/removeFavoritiesQuery",method=RequestMethod.DELETE)
+	public void removeFavoritiesQuery(
+			@RequestParam(value="favorityQuerySeq",required=true)
+			@ApiParam	Integer favorityQuerySeq,
+			HttpServletRequest request,
+			ModelMap model){
+
+		String id = loginManager.getLoginID(request);
+		if(null==id){
+			throw new AuthorityUserException("로그인 뒤에 사용 가능 합니다.");
+		}
+
+		favorityQueryManager.deleteFavorityQuery(
+				new DeleteFavorityQueryDTO(favorityQuerySeq, id));
+
+		model.clear();
+		model.addAttribute("message", "쿼리가 삭제되었습니다.");
+	}
+
+	@ApiOperation(value = "즐겨찾는 쿼리 조회"
+			,notes = "자주 사용하는 쿼리 리스트를 조회 한다."
+			,response=FavorityQuery.class)
+	@RequestMapping(value="/findFavoritiesQuery",method=RequestMethod.GET)
+	public void findFavoritiesQuery(
+			@RequestParam(value="limit",required=false)
+			@ApiParam	Long limit,
+			@RequestParam(value="offset",required=false)
+			@ApiParam	Long offset,
+			HttpServletRequest request,
+			ModelMap model){
+
+		String id = loginManager.getLoginID(request);
+		if(null==id){
+			throw new AuthorityUserException("로그인 뒤에 사용 가능 합니다.");
+		}
+
+		FindFavorityQueryListDTO dto = new FindFavorityQueryListDTO(id);
+		dto.setLimit(limit);
+		dto.setOffset(offset);
+
+		List<FavorityQueryVO> fqList = favorityQueryManager.findFavorityQueryVOList(dto );
+
+		logger.trace("FavorityQueryVOList {}",fqList);
+		model.addAttribute("favorityQueryList", fqList);
 	}
 
 //	@ApiOperation(value = "엑셀 다운로드"

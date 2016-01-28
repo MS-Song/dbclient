@@ -52,7 +52,7 @@ var selectQuery=function(mode){
 			html+=columnList.join(",\r\t");	
 			break;
 		case '*'	://select all query	
-			html+='\r\t*';					
+			html+='\r\t* ';					
 			break;
 	}
 
@@ -67,7 +67,7 @@ var selectQuery=function(mode){
 	// database 종류에 따라 한정자를 넣는다. (count 가 아닌 경우에만)
 	if(mode!='count'){
 		switch (driver) {
-		case 'mysql'	: 	html+=' limit 10';									break;
+		case 'mysql'	: 	html+=' limit 10';										break;
 		case 'oracle'	: 	html='select * from (\r'+html+'\r) where rownum <= 10';	break;
 		}
 	}
@@ -788,131 +788,3 @@ var mybatisResultMap = function(){
 };
 
 
-/**
- * 쿼리 로그 및 즐겨찾는 쿼리 
- */
-var database_developer_cell = [{
-		id:"database_query_log_view",
-		header:"Query Log",
-		view : "datatable", 
-    	columns:[
-			{ 	id:"seq",	header:["Seq", {	// 검색창 구현
-				content:"textFilter", placeholder:"sql search",
-				compare:function(value, filter, obj){ // 검색창 필터조건 구현
-						if (equals(obj.query	, filter)) return true;
-						return false;
-				}, colspan:5}]
-				,width:40
-			},
-			{ id:"date",		header:"DateTime",	width:95},
-			{ id:"query",		header:"Query",		width:150},
-			{ 
-				id:"reTry",		header:"재사용",		width:60,
-				template:'<input type="button" value="사용" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
-			},
-			{ 
-				id:"favorities",	header:"즐겨찾기",		width:70,
-				template:'<input type="button" value="저장" style="width:40px;" data="#query#" onClick="addFavorityQueryPopup(this);"/>',
-			}
-		],
-		data:[],
-		tooltip:true,
-		resizeColumn:true,
-	},
-	{
-		id:"database_query_favorities_view",
-		header:"Favorites Query",
-		view : "datatable", 
-    	columns:[
-			{ 	id:"seq",	header:["Seq", {	// 검색창 구현
-				content:"textFilter", placeholder:"memo and sql search",
-				compare:function(value, filter, obj){ // 검색창 필터조건 구현
-						if (equals(obj.memo	, filter)) return true;
-						if (equals(obj.query, filter)) return true;
-						return false;
-				}, colspan:5}]
-				,width:40
-			},
-			{ id:"memo",			header:"Memo",		width:100},
-			{ id:"query",			header:"Query",		width:150},
-			{ id:"date",			header:"DateTime",	width:80},
-			{ 
-				id:"reTry",			header:"사용",		width:60,
-				template:'<input type="button" value="사용" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
-			},
-			{ 
-				id:"favorities",	header:"삭제",	width:70,
-				template:'<input type="button" value="삭제" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
-			}
-		],
-		data:[],
-		tooltip:true,
-		select:"row",
-		resizeColumn:true,
-	}
-];
-
-// 쿼리 재사용
-var reUseQuery=function(obj){
-	console.log(obj);
-	$$("database_query_input").setValue(obj.getAttribute("data"));
-	// 에디터 창으로 focus 를 되돌린다.
-	$$("database_query_input").focus(); 
-};
-
-// 즐겨찾는 쿼리 폼
-var add_favority_query_form = {
-	id:" add_favority_query_form",
-	view:"form",
-	borderless:true,
-	elements: [
-		{ id:"favority_memo", 	view:"text", label:'memo', 	name:"memo", value:""},
-		{ id:"favority_query", 	view:"text", label:'query', name:"query", value:""},
-		{margin:5, cols:[
-			{ 
-				id:"favority_query_button",view:"button", value:"추가" , type:"form", 
-				on:{"onItemClick":function(){// 로그인 실행
-//					webix.ajax().post("/member/doLogin.json", this.getFormView().getValues(), function(text,data){
-//						// 로그인 실패 
-//						if(data.json().status !=200){
-//							// validate 메세지 
-//							var message = data.json().desc.split("\n");
-//							webix.message({ type:"error", text:message[0].replace("="," ") });
-//						} else { // 로그인 성공
-//							// 로그인 성공 액션
-//							webix.message("로그인 처리 완료");
-//							// 1초 후에 리로드 한다.	
-//							window.setTimeout(function(){
-//								document.location = document.location.href;	
-//							}, 1000)										
-//						}
-//					});
-				}
-			}},
-			{ view:"button", value:"취소", click:function(){
-				// 팝업 닫기
-				$$("add_favority_query_popup").hide();
-			}}
-		]},
-	],
-	elementsConfig:{
-		labelPosition:"top"
-	}
-};
-
-//즐겨찾는 쿼리 추가 창
-var addFavorityQueryPopup = function(obj){
-	// 쿼리 value 입력
-	add_favority_query_form.elements[1].value=obj.getAttribute("data");
-
-	webix.ui({
-        view:"window",
-        id:"add_favority_query_popup",
-        width:300,
-        position:"center",
-        modal:true,
-        head:"즐겨 찾는 쿼리 추가",
-        body:webix.copy(add_favority_query_form)
-    }).show();
-    $$("favority_memo").focus();
-};

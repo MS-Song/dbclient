@@ -36,6 +36,7 @@ import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.song7749.app.dbclient.loader.WebContextLoader;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
+import com.song7749.util.crypto.CryptoAES;
 import com.song7749.util.filter.XSSFilter;
 
 
@@ -209,4 +210,26 @@ public class DatabaseControllerTest {
 		assertThat(responseObject.get("result"), 			notNullValue());
 	}
 
+	@Test
+	public void testAddFavoritiesQuery() throws Exception {
+		drb = post("/database/saveFavoritiesQuery.json")
+				.param("memo","테스트쿼리")
+				.param("query","select * from dual")
+				;
+		// 로그인 cookie 정보 추가
+		cookies = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookies);
+
+		result = mockMvc.perform(drb)
+				.andExpect(status().isOk())
+				.andDo(print())
+				.andReturn()
+				;
+
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 			notNullValue());
+		assertThat((Integer)responseObject.get("status"),	is(200));
+		assertThat(responseObject.get("result"), 			notNullValue());
+	}
 }

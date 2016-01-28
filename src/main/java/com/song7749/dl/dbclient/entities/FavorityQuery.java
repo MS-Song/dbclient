@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.song7749.dl.base.Entities;
 import com.song7749.util.validate.ValidateGroupDelete;
@@ -41,35 +42,38 @@ public class FavorityQuery extends Entities {
 	private Integer favorityQuerySeq;
 
 
+	// TODO Member ID 와 관계를 형성해야 한다.
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupDelete.class})
+	@Size(min=4,max=20)
 	private String id;
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
+	@Size(min=4)
 	private String memo;
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
+	@Size(min=10)
 	private String query;
 
 	@Column
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private Date inputDate;
 
+	public FavorityQuery() {}
+
 	public FavorityQuery(Integer favorityQuerySeq) {
 		this.favorityQuerySeq = favorityQuerySeq;
 	}
 
-	public FavorityQuery(Integer favorityQuerySeq, String memo, String query,
-			Date inputDate) {
-		this.favorityQuerySeq = favorityQuerySeq;
+	public FavorityQuery(String id, String memo, String query, Date inputDate) {
+		this.id = id;
 		this.memo = memo;
 		this.query = query;
 		this.inputDate = inputDate;
 	}
-
-
 
 	public Integer getFavorityQuerySeq() {
 		return favorityQuerySeq;
@@ -77,6 +81,14 @@ public class FavorityQuery extends Entities {
 
 	public void setFavorityQuerySeq(Integer favorityQuerySeq) {
 		this.favorityQuerySeq = favorityQuerySeq;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getMemo() {

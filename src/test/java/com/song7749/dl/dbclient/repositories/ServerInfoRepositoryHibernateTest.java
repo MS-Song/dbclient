@@ -104,6 +104,6 @@ public class ServerInfoRepositoryHibernateTest {
 		// when
 		List<ServerInfo> infoList = serverInfoRepository.findServerInfoList(dto);
 		// then
-		logger.trace("\ninfoList : {}",infoList);
+		assertThat(infoList.get(0).getServerInfoSeq(), is(serverInfo.getServerInfoSeq()));
 	}
 }

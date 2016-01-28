@@ -874,3 +874,195 @@ var autoCompleteAddTables = function(tableName,fieldList){
 // sequence
 // create 테이블
 
+
+/**
+ * 쿼리 로그 및 즐겨찾는 쿼리 
+ */
+var database_developer_cell = [{
+		id:"database_query_log_view",
+		header:"Query Log",
+		view : "datatable", 
+    	columns:[
+			{ 	id:"seq",	header:["Seq", {	// 검색창 구현
+				content:"textFilter", placeholder:"sql search",
+				compare:function(value, filter, obj){ // 검색창 필터조건 구현
+						if (equals(obj.query	, filter)) return true;
+						return false;
+				}, colspan:5}]
+				,width:40
+			},
+			{ id:"date",		header:"DateTime",	width:95},
+			{ id:"query",		header:"Query",		width:150},
+			{ 
+				id:"reTry",		header:"재사용",		width:60,
+				template:'<input type="button" value="사용" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
+			},
+			{ 
+				id:"favorities",	header:"즐겨찾기",		width:70,
+				template:'<input type="button" value="저장" style="width:40px;" data="#query#" onClick="addFavorityQueryPopup(this);"/>',
+			}
+		],
+		data:[],
+		tooltip:true,
+		resizeColumn:true,
+	},
+	{
+		id:"database_query_favorities_view",
+		header:"Favorites Query",
+		view : "datatable", 
+    	columns:[
+			{ 	id:"favorityQuerySeq",	header:["Seq", {	// 검색창 구현
+				content:"textFilter", placeholder:"memo and sql search",
+				compare:function(value, filter, obj){ // 검색창 필터조건 구현
+						if (equals(obj.memo	, filter)) return true;
+						if (equals(obj.query, filter)) return true;
+						return false;
+				}, colspan:5}]
+				,width:40
+			},
+			{ id:"memo",			header:"Memo",		width:100},
+			{ id:"query",			header:"Query",		width:150},
+			{ 
+				id:"reTry",			header:"사용",		width:60,
+				template:'<input type="button" value="사용" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
+			},
+			{ 
+				id:"favorities",	header:"삭제",	width:60,
+				template:'<input type="button" value="삭제" style="width:40px;" data="#query#" onClick="removeFavorityQuery(#favorityQuerySeq#);"/>',
+			}
+		],
+		data:[],
+		tooltip:true,
+		select:"row",
+		resizeColumn:true,
+	}
+];
+
+// 쿼리 재사용
+var reUseQuery=function(obj){
+	$$("database_query_input").setValue(obj.getAttribute("data"));
+	// 에디터 창으로 focus 를 되돌린다.
+	$$("database_query_input").focus(); 
+};
+
+// 즐겨찾는 쿼리 폼
+var add_favority_query_form = {
+	id:" add_favority_query_form",
+	view:"form",
+	borderless:true,
+	elements: [
+		{ id:"favority_memo", 	view:"text", label:'memo', 	name:"memo", value:"",
+			on:{"onKeyPress":function(key,e){// 실행
+				// enter 를 입력하면, 즐겨찾는 쿼리 저장을 실행 한다.
+				if(key==13) $$("favority_query_button").callEvent("onItemClick");
+			}
+		}},
+		{ id:"favority_query", 	view:"text", label:'query', name:"query", value:""},
+		{margin:5, cols:[
+			{ 
+				id:"favority_query_button",view:"button", value:"추가" , type:"form", 
+				on:{"onItemClick":function(){// 로그인 실행
+					webix.ajax().post("/database/saveFavoritiesQuery.json", 
+						{
+							memo:$$("favority_memo").getValue(),
+							query:encodeURIComponent($$("favority_query").getValue())
+						}, 
+						function(text,data){
+							// 저장 실패
+							if(data.json().status !=200){
+								// validate 메세지 
+								var message = data.json().desc.split("\n");
+								webix.message({ type:"error", text:message[0].replace("="," ") });
+							} else { // 저장성공
+								webix.message(data.json().result.message);
+								database_query_favorities_view_load();
+								$$("add_favority_query_popup").hide();
+							}
+					});
+				}
+			}},
+			{ view:"button", value:"취소", click:function(){
+				// 팝업 닫기
+				$$("add_favority_query_popup").hide();
+			}}
+		]},
+	],
+	elementsConfig:{
+		labelPosition:"top"
+	}
+};
+
+//즐겨찾는 쿼리 추가 창
+var addFavorityQueryPopup = function(obj){
+	// 쿼리 value 입력
+	add_favority_query_form.elements[1].value=obj.getAttribute("data");
+
+	webix.ui({
+        view:"window",
+        id:"add_favority_query_popup",
+        width:300,
+        position:"center",
+        modal:true,
+        head:"즐겨 찾는 쿼리 추가",
+        body:webix.copy(add_favority_query_form)
+    }).show();
+    $$("favority_memo").focus();
+};
+
+var removeFavorityQuery = function(favorityQuerySeq){
+	console.log(favorityQuerySeq);
+	webix.ajax().del("/database/removeFavoritiesQuery.json?favorityQuerySeq="+favorityQuerySeq, 
+	function(text, data){
+		// 실패
+		if(data.json().status !=200){
+			// validate 메세지 
+			var message = data.json().desc.split("\n");
+			webix.message({ type:"error", text:message[0].replace("="," ") });
+		} else { // 성공
+			webix.message(data.json().result.message);
+			database_query_favorities_view_load();
+			$$("add_favority_query_popup").hide();
+		}
+	});
+};
+
+
+// 즐겨 찾는 쿼리 리스트 loading
+var database_query_favorities_view_load = function(){
+
+	webix.extend($$("database_query_favorities_view"), webix.ProgressBar);
+	$$("database_query_favorities_view").showProgress();
+
+	// TODO 내용을 모두 지우고 새로 읽을 것인가. 추가된 내용만 추가 할 것인가 처리 필요.
+	// 이미 있는 내용은 모두 지운다 
+	$$("database_query_favorities_view").clearAll();
+
+	webix.ajax().get("/database/findFavoritiesQuery.json",{},function(text,data){
+		// 정보를 획득한 경우에 넣는다.
+		if(data.json().status ==200 && null!=data.json().result){
+    		$.each(data.json().result,function(){
+	    		$.each(this,function(index){
+					$$("database_query_favorities_view").data.add({
+						favorityQuerySeq:this.favorityQuerySeq,
+						memo:this.memo, 
+						query:decodeURIComponent(this.query), 
+						inputDate:this.inputDate, 
+						reTry:"",
+						favorities:""}
+					,index);
+	    		});
+    		});
+			$$("database_query_favorities_view").sort("favorityQuerySeq", "desc","int");
+			$$("database_query_favorities_view").refresh();
+    		$$("database_query_favorities_view").hideProgress();
+		} else {
+			var message = data.json().desc.split("\n");
+			webix.message({ type:"error", text:message[0].replace("="," ") });
+			$$("database_query_favorities_view").hideProgress();
+		}
+	});
+};
+
+webix.ready(function(){
+	database_query_favorities_view_load();
+});

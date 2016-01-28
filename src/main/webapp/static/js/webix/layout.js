@@ -110,5 +110,12 @@ webix.ready(function(){
 		}
 	});
 	
-	// 리사이즈 이벤트 1회 발생 시킨다.
+	setTimeout(function(){
+		// 화면에서 toolbar 와 footer 의 사이즈를 제외하고 리사이즈 시킨다.
+		var height=$(window).height()-$$("toolbar").$height-$$("footer").$height
+		// 리사이즈 이벤트 1회 발생 시킨다.
+		$$("main_body").define("height", height);
+		$$("main_body").resize();
+		$$("main_body").define("height", "auto");
+	}, 300);
 }); 
