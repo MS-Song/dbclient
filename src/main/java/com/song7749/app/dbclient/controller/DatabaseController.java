@@ -25,6 +25,7 @@ import com.song7749.dl.dbclient.dto.DeleteFavorityQueryDTO;
 import com.song7749.dl.dbclient.dto.DeleteServerInfoDTO;
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.dto.FindFavorityQueryListDTO;
+import com.song7749.dl.dbclient.dto.FindServerInfoDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.dto.FindTableDTO;
 import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
@@ -39,8 +40,11 @@ import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.login.annotations.Login;
 import com.song7749.dl.login.exception.AuthorityUserException;
 import com.song7749.dl.login.service.LoginManager;
+import com.song7749.dl.login.type.LoginResponseType;
+import com.song7749.dl.member.type.AuthType;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -78,11 +82,27 @@ public class DatabaseController {
 	@Resource(name="genericExcelView")
 	GenericExcelView genericExcelView;
 
+	@ApiOperation(value = "데이터 베이스 서버 조회"
+			,notes = "serverInfoSeq 를 이용해서 1개의 정보만 조회 한다."
+			,response=ServerInfoVO.class)
+	@RequestMapping(value="/server",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getServer(
+			@RequestParam(value="serverInfoSeq",required=true)
+			@ApiParam	Integer serverInfoSeq,
+			HttpServletRequest request,
+			ModelMap model){
+
+		ServerInfoVO infoList = serverInfoManager.findServerInfo(new FindServerInfoDTO(serverInfoSeq));
+
+		model.addAttribute("server", infoList);
+	}
 
 	@ApiOperation(value = "데이터 베이스 서버 리스트 조회"
 					,notes = "등록되어 있는 Database 서버 리스트를 조회 한다."
 					,response=ServerInfoVO.class)
 	@RequestMapping(value="/serverList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getServerList(
 			HttpServletRequest request,
 			ModelMap model){
@@ -97,6 +117,7 @@ public class DatabaseController {
 			,notes = "등록되어 있는 Database 서버 의 스키마(Mysql), SID(Oracle) 을 조회 한다."
 			,response=ServerInfoVO.class)
 	@RequestMapping(value="/schemaList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getSchemaList(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -113,6 +134,7 @@ public class DatabaseController {
 			,notes = "등록되어 있는 Database 서버의 Table 을 조회 한다."
 			,response=TableVO.class)
 	@RequestMapping(value="/tableList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getTableList(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -138,6 +160,7 @@ public class DatabaseController {
 			,notes = "등록되어 있는 Database 서버의 Table 의 필드를 조회 한다."
 			,response=FieldVO.class)
 	@RequestMapping(value="/fieldList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getFieldList(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -167,6 +190,7 @@ public class DatabaseController {
 			,notes = "등록되어 있는 Database 서버의 Table 의 인덱스 리스트 조회."
 			,response=IndexVO.class)
 	@RequestMapping(value="/indexList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getIndexList(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -190,13 +214,14 @@ public class DatabaseController {
 		model.addAttribute("indexList", indexList);
 	}
 
-	@ApiOperation(value = "데이터베이스 서버 정보 저장"
-			,notes = "데이터베이스 서버 정보를 저장한다.<br/>"
+	@ApiOperation(value = "데이터베이스 서버 정보 저장 All Rows"
+			,notes = "데이터베이스 서버 정보를 저장한다.여러 서버를 한번에 입력 한다.<br/>"
 					+ "여러 개의 서버를 동시에 입력할 수 있으며, 모든 필드의 값을 row 별로 동일하게 입력해야 한다.<br/>"
 					+ "정보를 Row 별로 빠짐없이 넣지 않으면 입력되지 않는다.<br/><br/>"
 					+ "serverInfoSeq[] 를 넣지 않으면 입력, 있으면 업데이트 한다."
 			,response=ResponseResult.class)
 	@RequestMapping(value="/saveDatabases",method=RequestMethod.POST)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.ADMIN})
 	public void saveDatabases(
 			@RequestParam(value="serverInfoSeq[]",required=true)
 			@ApiParam	Integer[] serverInfoSeq,
@@ -265,10 +290,96 @@ public class DatabaseController {
 		model.addAttribute("message", "서버 정보가 저장되었습니다.");
 	}
 
+	@ApiOperation(value = "데이터베이스 서버 정보 저장 1 Row"
+			,notes = "데이터베이스 서버 정보를 저장한다. 1 Row 만 입력 가능<br/>"
+			,response=ResponseResult.class)
+	@RequestMapping(value="/addDatabases",method=RequestMethod.POST)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.ADMIN})
+	public void addDatabases(
+			@RequestParam(value="host",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="hostAlias",required=false)
+			@ApiParam	String hostAlias,
+			@RequestParam(value="schemaName",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam	String  account,
+			@RequestParam(value="password",required=true)
+			@ApiParam	String  password,
+			@RequestParam(value="driver",required=true)
+			@ApiParam	DatabaseDriver  driver,
+			@RequestParam(value="charset",required=true)
+			@ApiParam	String  charset,
+			@RequestParam(value="port",required=true)
+			@ApiParam	String  port,
+			HttpServletRequest request,
+			ModelMap model){
+
+		SaveServerInfoDTO dto = new SaveServerInfoDTO(
+				host,
+				hostAlias,
+				schemaName,
+				account,
+				password,
+				driver,
+				charset,
+				port);
+		serverInfoManager.saveServerInfo(dto);
+
+
+		model.clear();
+		model.addAttribute("message", "서버 정보가 저장되었습니다.");
+	}
+
+
+	@ApiOperation(value = "데이터베이스 서버 정보 수정 1 Row"
+			,notes = "데이터베이스 서버 정보를 수정한다. 1 Row 만 입력 가능<br/>"
+			,response=ResponseResult.class)
+	@RequestMapping(value="/modifyDatabase",method=RequestMethod.POST)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.ADMIN})
+	public void modifyDatabases(
+			@RequestParam(value="serverInfoSeq",required=true)
+			@ApiParam	Integer serverInfoSeq,
+			@RequestParam(value="host",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="hostAlias",required=false)
+			@ApiParam	String hostAlias,
+			@RequestParam(value="schemaName",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam	String  account,
+			@RequestParam(value="password",required=true)
+			@ApiParam	String  password,
+			@RequestParam(value="driver",required=true)
+			@ApiParam	DatabaseDriver  driver,
+			@RequestParam(value="charset",required=true)
+			@ApiParam	String  charset,
+			@RequestParam(value="port",required=true)
+			@ApiParam	String  port,
+			HttpServletRequest request,
+			ModelMap model){
+
+		ModifyServerInfoDTO dto = new ModifyServerInfoDTO(
+				serverInfoSeq,
+				host,
+				hostAlias,
+				schemaName,
+				account,
+				password,
+				driver,
+				charset,
+				port);
+		serverInfoManager.modifyServerInfo(dto);
+
+		model.clear();
+		model.addAttribute("message", "서버 정보가 수정되었습니다.");
+	}
+
 	@ApiOperation(value = "서버 정보를 삭제한다"
 			,notes = "등록된 서버 정보를 삭제 한다."
 			,response=ResponseResult.class)
 	@RequestMapping(value="/deleteDatabases",method=RequestMethod.DELETE)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.ADMIN})
 	public void saveDatabases(
 			@RequestParam(value="serverInfoSeq",required=true)
 			@ApiParam	Integer serverInfoSeq,
@@ -287,6 +398,7 @@ public class DatabaseController {
 			,notes = "입력된 database query 를 실행 한다."
 			,response=ResponseResult.class)
 	@RequestMapping(value="/executeQuery",method=RequestMethod.POST)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void executeQuery(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
@@ -363,6 +475,7 @@ public class DatabaseController {
 			,notes = "데이터 베이스 드라이버를 조회한다."
 			,response=DatabaseDriver.class)
 	@RequestMapping(value="/getDatabaseDriver",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getDatabaseDriver(
 			ModelMap model){
 		model.addAttribute("databaseDriverList", DatabaseDriver.values());
@@ -373,6 +486,7 @@ public class DatabaseController {
 			,notes = "자주 사용하는 쿼리를 저장하기 위한 컨트롤러"
 			,response=ResponseResult.class)
 	@RequestMapping(value="/saveFavoritiesQuery",method=RequestMethod.POST)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void saveFavoritiesQuery(
 			@RequestParam(value="memo",required=true)
 			@ApiParam	String memo,
@@ -400,6 +514,7 @@ public class DatabaseController {
 			,notes = "자주 사용하는 쿼리를 삭제하기 위한 컨트롤러"
 			,response=ResponseResult.class)
 	@RequestMapping(value="/removeFavoritiesQuery",method=RequestMethod.DELETE)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void removeFavoritiesQuery(
 			@RequestParam(value="favorityQuerySeq",required=true)
 			@ApiParam	Integer favorityQuerySeq,
@@ -422,6 +537,7 @@ public class DatabaseController {
 			,notes = "자주 사용하는 쿼리 리스트를 조회 한다."
 			,response=FavorityQuery.class)
 	@RequestMapping(value="/findFavoritiesQuery",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void findFavoritiesQuery(
 			@RequestParam(value="limit",required=false)
 			@ApiParam	Long limit,

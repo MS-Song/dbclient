@@ -22,5 +22,10 @@
 	<script src="./static/js/webix/member.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/webix/database.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/webix/databaseUtils.js" type="text/javascript" charset="utf-8"></script>
+
+	<c:if test="${isAdmin=='true'}">
+  		<!-- 관리자 로그인 시에 admin 기능 활성화 -->
+		<script src="./static/js/webix/admin.js" type="text/javascript" charset="utf-8"></script>
+	</c:if>  	
 </body>
 </html>

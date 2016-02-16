@@ -1,16 +1,28 @@
 package com.song7749.dl.dbclient.vo;
 
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
+
 import com.song7749.dl.base.AbstractVo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description="데이터베이스 서버 정보",subTypes={DatabaseDriver.class})
+@JsonPropertyOrder({
+	"serverInfoSeq",
+	"host",
+	"hostAlias",
+	"schemaName",
+	"account",
+	"password",
+	"driver",
+	"charset",
+	"port"})
 public class ServerInfoVO extends AbstractVo{
 
 	private static final long serialVersionUID = -8989212849769127761L;
 
-	@ApiModelProperty(hidden=true)
+	@ApiModelProperty(hidden=true,position=1)
 	private Integer serverInfoSeq;
 
 	@ApiModelProperty(position=2)

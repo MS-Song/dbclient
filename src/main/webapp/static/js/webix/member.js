@@ -20,7 +20,6 @@ webix.ready(function(){
     				authType=this.authType;
     				email=this.email;
     		   		passwordQuestion=this.passwordQuestion;
-    		   		webix.storage.local.put();
     			});
     		});
     		// 로그인 정보 획득에 성공한 경우에는 메뉴의 로그인 버튼을 변경한다.
@@ -34,7 +33,13 @@ webix.ready(function(){
     			$$("menu").getBody().data.remove(3);
     			$$("toolbar").addView({view: "label", label: "권한이 없습니다. 관리자에게 연락하시기 바랍니다."},3);
     			return false;
+    		} else if(authType=='ADMIN') { // 관리자 권한이 있는 경우 메뉴 활성화
+    			$$("menu").getBody().data.add({id: 5, value: null, 				icon: null, 		func: null},					4);
+    			$$("menu").getBody().data.add({id: 6, value: " 관리자 메뉴", 		icon: "cog", 		func: null},					5);
+        		$$("menu").getBody().data.add({id: 7, value: " Database 관리", 	icon: "database", 	func: "adminDatabaseListPopup"},6);
+        		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 		icon: "user", 		func: ""},						7);
     		}
+
     		// 로그인 된 경우 서버 선택이 되어 있지 않으면 서버 선택 창을 활성화 한다. 
     		if(serverInfoSeq==null){
     			select_database_popup();
@@ -244,8 +249,4 @@ var modify_member_popup = function(){
 		email:email,
    		passwordQuestion:passwordQuestion
     });
-}
-
-
-// 회원 관리 처리
-// 회원 권한 처리
+};

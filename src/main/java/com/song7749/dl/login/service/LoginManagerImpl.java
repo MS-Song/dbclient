@@ -78,7 +78,9 @@ public class LoginManagerImpl implements LoginManager{
 
 	@Override
 	public void doLogout(HttpServletResponse response) {
-		response.addCookie(new Cookie(cipher,""));
+		Cookie cookie = new Cookie(cipher,"");
+		cookie.setPath("/");
+		response.addCookie(cookie);
 	}
 
 	@Override

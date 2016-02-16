@@ -62,7 +62,7 @@ public class DatabaseControllerTest {
 	List<Object> contentList;
 
 	// login 을 위한 cookie 정보
-	Cookie cookies;
+	Cookie cookie;
 
 	/**
 	 * 테스트 서버 관련 객체
@@ -95,8 +95,10 @@ public class DatabaseControllerTest {
 		drb = get("/database/serverList.json")
 //				.param("","")
 				;
+
 		// 로그인 cookie 정보 추가
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())
@@ -116,8 +118,10 @@ public class DatabaseControllerTest {
 		drb = get("/database/schemaList.json")
 				.param("server",serverInfo.getHost())
 				;
+
 		// 로그인 cookie 정보 추가
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())
@@ -140,7 +144,8 @@ public class DatabaseControllerTest {
 				;
 
 		// 로그인 cookie 정보 추가
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())
@@ -167,8 +172,10 @@ public class DatabaseControllerTest {
 				.param("charset[]",serverInfo.getCharset())
 				.param("port[]",serverInfo.getPort())
 				;
+
 		// 로그인 cookie 정보 추가
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())
@@ -194,8 +201,11 @@ public class DatabaseControllerTest {
 				.param("charset[]",serverInfo.getCharset(),serverInfo.getCharset())
 				.param("port[]",serverInfo.getPort(),serverInfo.getPort())
 				;
+
 		// 로그인 cookie 정보 추가
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
+
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())
@@ -217,14 +227,76 @@ public class DatabaseControllerTest {
 				.param("query","select * from dual")
 				;
 		// 로그인 cookie 정보 추가
-		cookies = new Cookie("cipher", CryptoAES.encrypt("root"));
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
+
 
 		result = mockMvc.perform(drb)
 				.andExpect(status().isOk())
 				.andDo(print())
 				.andReturn()
 				;
+
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 			notNullValue());
+		assertThat((Integer)responseObject.get("status"),	is(200));
+		assertThat(responseObject.get("result"), 			notNullValue());
+	}
+
+	@Test
+	public void testAddDatabases() throws Exception {
+		drb = post("/database/addDatabases.json")
+				.param("host",serverInfo.getHost())
+				.param("hostAlias",serverInfo.getHostAlias())
+				.param("schemaName",serverInfo.getSchemaName())
+				.param("account",serverInfo.getAccount())
+				.param("password",serverInfo.getPassword())
+				.param("driver",serverInfo.getDriver().mysql.toString())
+				.param("charset",serverInfo.getCharset())
+				.param("port",serverInfo.getPort())
+				;
+
+		// 로그인 cookie 정보 추가
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
+
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 			notNullValue());
+		assertThat((Integer)responseObject.get("status"),	is(200));
+		assertThat(responseObject.get("result"), 			notNullValue());
+	}
+
+	@Test
+	public void testModifyDatabase() throws Exception {
+		drb = post("/database/modifyDatabase.json")
+				.param("serverInfoSeq","1")
+				.param("host",serverInfo.getHost())
+				.param("hostAlias",serverInfo.getHostAlias())
+				.param("schemaName",serverInfo.getSchemaName())
+				.param("account",serverInfo.getAccount())
+				.param("password",serverInfo.getPassword())
+				.param("driver",serverInfo.getDriver().mysql.toString())
+				.param("charset",serverInfo.getCharset())
+				.param("port",serverInfo.getPort())
+				;
+
+		// 로그인 cookie 정보 추가
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
+
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
 
 		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
 

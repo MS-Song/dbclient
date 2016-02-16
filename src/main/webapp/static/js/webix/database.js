@@ -78,6 +78,8 @@ var select_database_popup=function(){
     				,index);
     			});
     		});
+		} else {
+			webix.message(data.json().desc);
 		}
 		// 이벤트 부여
 		$$("select_database_loader").attachEvent("onSelectChange", function(){
@@ -1009,6 +1011,9 @@ var addFavorityQueryPopup = function(obj){
     $$("favority_memo").focus();
 };
 
+/**
+ * 즐겨 찾는 쿼리 제거
+ */
 var removeFavorityQuery = function(favorityQuerySeq){
 	console.log(favorityQuerySeq);
 	webix.ajax().del("/database/removeFavoritiesQuery.json?favorityQuerySeq="+favorityQuerySeq, 

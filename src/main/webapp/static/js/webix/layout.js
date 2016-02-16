@@ -94,22 +94,41 @@ webix.ready(function(){
 			view:"list",
 			borderless:true,
 			scroll: false,
-			template: "<span class='webix_icon fa-#icon#'></span> #value#",
+			template:function(obj){
+				var html='<span';
+				if(null!=obj.icon){
+					html+=' class="webix_icon fa-' + obj.icon +'"';
+				}
+				html+='></span>';
+				if(null!=obj.value){
+					html+=' '+obj.value;
+				}
+				return html;
+			},
 			data:[
-				{id: 1, value: "Login", icon: "user", func: "login_popup"},
-				{id: 3, value: "Database 선택", icon: "database", func: "select_database_popup"},
-				{id: 4, value: "Settings", icon: "cog", func: "config_popup"}
+				{id: 1, value: "Login", 		icon: "user", 		func: "login_popup"},
+				{id: 3, value: "Database 선택", 	icon: "database", 	func: "select_database_popup"},
+				{id: 4, value: "Settings", 		icon: "cog", 		func: "config_popup"}
 			],
 			select:true,
 			type:{ height: 30 },
 			click:function(id,e){
 				// 사이드 메뉴 액션
 				console.log(this.getItem(id).func);
-				eval(this.getItem(id).func+"()");
+				try {
+					// 기능이 정의 되어 있는 경우에만 실행
+					if(null!=this.getItem(id).func && ""!=null!=this.getItem(id).func){
+						eval(this.getItem(id).func+"()");
+					}
+				} catch (e) {
+					console.log("기능 호출에 실패 했습니다: "+e);
+				}
+				
 			}
 		}
 	});
 	
+	// layout 화면 사이즈를 재 계산한다.
 	setTimeout(function(){
 		// 화면에서 toolbar 와 footer 의 사이즈를 제외하고 리사이즈 시킨다.
 		var height=$(window).height()-$$("toolbar").$height-$$("footer").$height
