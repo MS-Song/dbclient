@@ -68,6 +68,7 @@ public class FindMemberListDTO extends AbstractDto{
 		this.email = email;
 	}
 
+
 	public AuthType getAuthType() {
 		return authType;
 	}
@@ -75,6 +76,4 @@ public class FindMemberListDTO extends AbstractDto{
 	public void setAuthType(AuthType authType) {
 		this.authType = authType;
 	}
-
-
 }

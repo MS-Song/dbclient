@@ -37,7 +37,7 @@ webix.ready(function(){
     			$$("menu").getBody().data.add({id: 5, value: null, 				icon: null, 		func: null},					4);
     			$$("menu").getBody().data.add({id: 6, value: " 관리자 메뉴", 		icon: "cog", 		func: null},					5);
         		$$("menu").getBody().data.add({id: 7, value: " Database 관리", 	icon: "database", 	func: "adminDatabaseListPopup"},6);
-        		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 		icon: "user", 		func: ""},						7);
+        		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 		icon: "user", 		func: "adminMemberListPopup"},	7);
     		}
 
     		// 로그인 된 경우 서버 선택이 되어 있지 않으면 서버 선택 창을 활성화 한다. 

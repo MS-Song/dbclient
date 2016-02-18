@@ -147,4 +147,15 @@ public class MemberController {
 		model.clear();
 		model.addAttribute("memberList",list);
 	}
+
+	@ApiOperation(value = "회원 권한 목록 조회"
+			,notes = "회원 권한 목록을 조회 한다"
+			,response=AuthType.class)
+	@RequestMapping(value="/getAuthTypes",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.ADMIN})
+	public void getAuthTypes(
+			ModelMap model){
+		model.addAttribute("authTypeList", AuthType.values());
+	}
+
 }

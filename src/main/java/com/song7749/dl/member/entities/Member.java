@@ -2,6 +2,8 @@ package com.song7749.dl.member.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -73,6 +75,7 @@ public class Member extends Entities {
 	private String passwordAnswer;
 
 	@Column
+	@Enumerated(EnumType.STRING)
 	private AuthType authType;
 
 	public Member() {}

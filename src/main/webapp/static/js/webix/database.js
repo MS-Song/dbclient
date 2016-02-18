@@ -7,17 +7,22 @@ var server=null;
 var schema=null;
 var account=null;
 var driver=null;
+var drivers=null;
 var tableName=null;
 var tableComment=null;
 var autoCommit=false;
 var htmlAllow=false;
 
-function custom_checkbox(obj, common, value){
-	if (value)
-		return "<div class='webix_table_checkbox checked'> YES </div>";
-	else
-		return "<div class='webix_table_checkbox notchecked'> NO </div>";
-}
+
+// database driver 리스트 조회
+webix.ajax().get("/database/getDatabaseDriver.json",function(text,data){
+	if(data.json().status !=200){
+		// validate 메세지 
+		webix.message({ type:"error", text:data.json().desc});
+	} else { // database driver loading
+		drivers=data.json().result.databaseDriverList;
+	}
+});
 
 // Database 관리
 // 서버 & DB 선택
@@ -751,6 +756,8 @@ var executeQuery = function (){
 				$$("database_query_log_view").sort("seq", "desc","int");
 				$$("database_query_log_view").refresh();
 				
+				// TODO 쿼리 로그 DB 기록
+				
 			} else { // 에러가 발생할 경우
 				webix.message({ type:"error", text:data.json().desc });
 			}
@@ -1068,6 +1075,11 @@ var database_query_favorities_view_load = function(){
 	});
 };
 
+// 즐겨 찾는 쿼리 로딩
 webix.ready(function(){
 	database_query_favorities_view_load();
 });
+
+
+
+
