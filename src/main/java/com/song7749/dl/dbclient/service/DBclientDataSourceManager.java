@@ -62,6 +62,7 @@ public interface DBclientDataSourceManager {
 
 	/**
 	 * result set List
+	 * 유저가 실행 요청한 쿼리를 실행하고 실행 결과를 리턴 한다.
 	 * @param serverInfo
 	 * @param dto
 	 * @return List<Map<String, String>>

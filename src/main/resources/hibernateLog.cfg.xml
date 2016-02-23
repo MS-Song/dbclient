@@ -9,18 +9,17 @@
 		<!-- 스프링에서 트랜잭션 관리를 하고 싶다면 비활성화 한다.
 			<property name="hibernate.current_session_context_class">thread</property>
 		 -->
-
 		<!-- 
-			최초 기동 시에 활성화 하고, 그 뒤에는 막아 놓는다. 
+			최초 기동 시에 활성화 하고, 그 뒤에는 막아 놓는다.
 			<property name="hibernate.hbm2ddl.auto">create</property>
-			<property name="hibernate.hbm2ddl.import_files">./dbClient.sql,./dbClientSampleDatabase.sql</property>
-		 -->
+		 -->			 
+
 		<!-- 
 			<property name="hibernate.hbm2ddl.auto">validate</property>
 			<property name="hibernate.hbm2ddl.auto">update</property>
 			<property name="hibernate.hbm2ddl.auto">create-drop</property>
 			<property name="hibernate.hbm2ddl.auto">create</property>
-			<property name="hibernate.hbm2ddl.import_files">./dbClient.sql,./dbClientSampleDatabase.sql</property>
+			<property name="hibernate.hbm2ddl.import_files">./dbClient.sql</property>
 		 -->
 		<property name="hibernate.connection.CharSet">UTF-8</property>
 		<property name="hibernate.connection.characterEncoding">UTF-8</property>

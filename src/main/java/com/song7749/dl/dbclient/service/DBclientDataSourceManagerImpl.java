@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +20,10 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.task.TaskRejectedException;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
@@ -26,6 +31,8 @@ import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.log.dto.SaveQueryExecuteLogDTO;
+import com.song7749.log.service.LogManager;
 /**
  * <pre>
  * Class Name : DBclientDataSourceManagerImpl.java
@@ -47,6 +54,13 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final Map<ServerInfo, DataSource> dataSourceMap = new HashMap<ServerInfo, DataSource>();
+
+
+	@Autowired
+	ApplicationContext context;
+
+	@Autowired
+	private LogManager logManager;
 
 	@Override
 	public Connection getConnection(ServerInfo serverInfo) throws SQLException {
@@ -349,6 +363,31 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 				throw new IllegalArgumentException(e.getMessage());
 			}
 		}
+
+		// 쿼리 실행 로그 기록
+		final SaveQueryExecuteLogDTO executeLogdto = new SaveQueryExecuteLogDTO(
+				dto.getId(),
+				dto.getIp(),
+				dto.getHost(),
+				"",
+				dto.getSchemaName(),
+				dto.getAccount(),
+				dto.getQuery(),
+				new Date());
+
+		// 서비스 실행기 로딩
+		ThreadPoolTaskExecutor serviceExecutor = (ThreadPoolTaskExecutor) context.getBean("QueryExecuteLogExecutor");
+
+		serviceExecutor.execute(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					logManager.saveQueryExecuteLog(executeLogdto);
+				} catch (TaskRejectedException e) {
+					throw new TaskRejectedException("로그인 로그 기록 실패. 관리자에게 문의 바랍니다.");
+				}
+			}
+		});
 		return list;
 	}
 

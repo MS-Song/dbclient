@@ -2,6 +2,9 @@ package com.song7749.dl.login.service;
 
 import static com.song7749.util.LogMessageFormatter.format;
 
+import java.util.Date;
+
+import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +14,9 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.task.TaskRejectedException;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +25,8 @@ import com.song7749.dl.login.dto.DoLoginDTO;
 import com.song7749.dl.member.entities.Member;
 import com.song7749.dl.member.repositories.MemberRepository;
 import com.song7749.dl.member.type.AuthType;
+import com.song7749.log.dto.SaveMemberLoginLogDTO;
+import com.song7749.log.service.LogManager;
 import com.song7749.util.crypto.CryptoAES;
 
 /**
@@ -44,8 +52,14 @@ public class LoginManagerImpl implements LoginManager{
 	// 로그인 정보 저장 쿠키 명칭
 	private final String cipher = "cipher";
 
-	@Autowired
+	@Resource
 	MemberRepository memberRepository;
+
+	@Autowired
+	ApplicationContext context;
+
+	@Autowired
+	LogManager logManager;
 
 	@Override
 	public boolean isLogin(HttpServletRequest request) {
@@ -55,7 +69,7 @@ public class LoginManagerImpl implements LoginManager{
 	@Override
 	@Valid
 	@Transactional(value = "dbClientTransactionManager",readOnly=true)
-	public boolean doLogin(DoLoginDTO dto,HttpServletResponse response){
+	public boolean doLogin(DoLoginDTO dto,HttpServletRequest request,HttpServletResponse response){
 		Member findMember = new Member(dto.getId());
 		Member member = memberRepository.find(findMember);
 
@@ -68,6 +82,29 @@ public class LoginManagerImpl implements LoginManager{
 				ciperCookie.setMaxAge(60*60*2);
 				ciperCookie.setPath("/");
 				response.addCookie(ciperCookie);
+
+				// 로그인 로그 기록
+				final SaveMemberLoginLogDTO logDto = new SaveMemberLoginLogDTO(
+						dto.getId(),
+						request.getRemoteAddr(),
+						CryptoAES.encrypt(member.getId()),
+						new Date());
+
+				logger.debug(format("{}","Login Log"),logDto);
+				// 서비스 실행기 로딩
+				ThreadPoolTaskExecutor serviceExecutor = (ThreadPoolTaskExecutor) context.getBean("memberLoginLogExecutor");
+
+				serviceExecutor.execute(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							logManager.saveMemberLoginLog(logDto);
+						} catch (TaskRejectedException e) {
+							throw new TaskRejectedException("로그인 로그 기록 실패. 관리자에게 문의 바랍니다.");
+						}
+					}
+				});
+
 				return true;
 			} else {
 				throw new IllegalArgumentException("password=PASSWORD 가 일치하지 않습니다.");

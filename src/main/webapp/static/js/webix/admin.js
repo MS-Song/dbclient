@@ -7,7 +7,12 @@ webix.ajax().get("/member/getAuthTypes.json",function(text,data){
 		// validate 메세지 
 		webix.message({ type:"error", text:data.json().desc});
 	} else { // database driver loading
-		authtypeList=data.json().result.authTypeList;
+		authtypeList=[];
+		authtypeList.push('');
+	
+		for(var i=0;i<data.json().result.authTypeList.length;i++)
+			authtypeList.push(data.json().result.authTypeList[i]);
+
 	}
 });
 
@@ -298,11 +303,11 @@ var adminMemberListPopup = function(){
 		    				},
 		    				{ 
 		    					id:"admin_search_authType",	
-		    					view:"text", 	
-		    					placeholder:'authType search', 	
+		    					view:"select",  	
 		    					name:"authType",
-		    					on:{"onKeyPress":function(key,e){// 검색 실행
-		    						if(key==13) loadAdminMemberList();
+		    					options:authtypeList,
+		    					on:{"onChange":function(key,e){// 검색 실행
+		    						loadAdminMemberList();
 		    					}}
 		    				},
     						{ 
@@ -454,11 +459,11 @@ var adminModifyMemberPopup = function(id){
     });
 };
 
-// 데이터 베이스와 회원간의 연결
+// TODO 데이터 베이스와 회원간의 연결
 
-// 쿼리 로그 검색 
+// TODO 쿼리 로그 검색 
 
-// 개인정보 필드에 대한 정의
+// TODO 개인정보 필드에 대한 정의
 
 
-// 각종 환경 설정
+// TODO 각종 환경 설정

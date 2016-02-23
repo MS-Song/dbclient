@@ -453,7 +453,9 @@ public class DatabaseController {
 					account,
 					autoCommit,
 					decodedQuery,
-					htmlAllow);
+					htmlAllow,
+					loginManager.getLoginID(request),
+					request.getRemoteAddr());
 			resultList=serverInfoManager.executeResultList(dto);
 		}
 

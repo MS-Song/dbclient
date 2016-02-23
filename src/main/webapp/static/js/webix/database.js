@@ -294,6 +294,24 @@ var database_info_cell = [
 		tooltip:true,
 		select:"row",
 		resizeColumn:true,
+	},
+	{	view : "datatable", 
+		header:"Sequence",		
+		id:"database_info_Sequence_list_view",				
+		columns:[],	
+		data:[],
+		tooltip:true,
+		select:"row",
+		resizeColumn:true,
+	},
+	{	view : "datatable", 
+		header:"Trigger",		
+		id:"database_info_Trigger_list_view",				
+		columns:[],	
+		data:[],
+		tooltip:true,
+		select:"row",
+		resizeColumn:true,
 	}
 ];
 
@@ -457,9 +475,11 @@ var database_info_data_load=function(){
 	});
 };
 
-// function 리스트
-// view 리스트
-// procedure
+// TODO function 리스트
+// TODO view 리스트
+// TODO procedure
+// TODO Sequence 
+// TODO Trigger 
 
 
 // develop 기능

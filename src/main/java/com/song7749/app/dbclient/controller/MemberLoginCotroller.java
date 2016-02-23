@@ -51,7 +51,7 @@ public class MemberLoginCotroller {
 			HttpServletResponse response,
 			ModelMap model){
 
-		loginManager.doLogin(dto, response);
+		loginManager.doLogin(dto, request, response);
 
 		model.clear();
 		model.addAttribute("message","로그인 처리가 완료되었습니다.");

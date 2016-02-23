@@ -14,7 +14,7 @@
     
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<context:annotation-config />
-	<context:component-scan base-package="com.song7749.dl" />
+	<context:component-scan base-package="com.song7749.dl,com.song7749.log" />
 
 	<!-- AOP 를 autoproxy 를 통해서 작동시킨다. -->
 	<aop:aspectj-autoproxy />
@@ -31,6 +31,10 @@
 
 	<!-- 커넥션 정보 -->
 	<import resource="connection-context.xml" />
+
+	<!-- executerService -->
+	<import resource="task-context.xml" />
+
 
 	<!-- validate Service Manager Dao 등에서 사용될 Validate 설정 -->
 	<bean id="validatorAdvisor" class="org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">

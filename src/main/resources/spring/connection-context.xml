@@ -38,8 +38,33 @@
 		<qualifier value="dbClientTransactionManager" />
 	</bean>
 
+	<!-- dbClient Log-->
+	<bean id="dbClientLogDatasource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${dbClientLog.database.driver}" />
+		<property name="url" value="${dbClientLog.database.url}" />
+	</bean>
+
+	<!-- sessionFactory Log-->
+	<bean id="dbClientLogSessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dbClientLogDatasource" />
+		<property name="configLocation" value="classpath:/hibernateLog.cfg.xml" />
+		<property name="packagesToScan" value="com.song7749.log" />
+		<property name="entityInterceptor">
+			<bean class="com.song7749.hibernate.util.HibernateSecurityInterceptor" />
+		</property>
+	</bean>
+
+	<!-- Log 트랜잭션 매니저 -->
+	<bean id="dbClientLogTransactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="dbClientLogSessionFactory" />
+		<qualifier value="dbClientLogTransactionManager" />
+	</bean>
+
 	<!-- 애노테이션 기반의 트랜잭션 설정 -->
-	<tx:annotation-driven transaction-manager="dbClientTransactionManager" />
+	<tx:annotation-driven />
 
 	<!-- 하이버네이트 익셉션 핸들러 -->
 	<bean class="org.springframework.orm.hibernate4.HibernateExceptionTranslator" />

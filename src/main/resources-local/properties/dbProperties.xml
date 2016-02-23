@@ -6,4 +6,10 @@
 	<entry key="dbClient.database.driver">org.sqlite.JDBC</entry>
 	<!-- 접속정보 : 경로를 수정하세요.-->
 	<entry key="dbClient.database.url">jdbc:sqlite:/sqliteDatabase/dbClient.db</entry>
+
+	<!-- driver 정보  -->
+	<entry key="dbClientLog.database.driver">org.sqlite.JDBC</entry>
+	<!-- 접속정보 : 경로를 수정하세요.-->
+	<entry key="dbClientLog.database.url">jdbc:sqlite:/sqliteDatabase/dbClientLog.db</entry>
+
 </properties>

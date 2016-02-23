@@ -35,10 +35,11 @@ public interface LoginManager {
 	/**
 	 * 로그인 실행
 	 * @param dto
+	 * @param request
 	 * @param response
 	 * @return boolean
 	 */
-	public boolean doLogin(DoLoginDTO dto,HttpServletResponse response);
+	public boolean doLogin(DoLoginDTO dto,HttpServletRequest request,HttpServletResponse response);
 
 	/**
 	 * 로그아웃 실행

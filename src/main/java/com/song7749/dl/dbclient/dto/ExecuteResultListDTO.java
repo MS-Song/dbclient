@@ -23,6 +23,10 @@ public class ExecuteResultListDTO extends AbstractDto{
 	private String query;
 	@NotNull
 	private boolean htmlAllow;
+	@NotNull
+	private String id;
+	@NotNull
+	private String ip;
 
 
 	public ExecuteResultListDTO() {}
@@ -36,7 +40,8 @@ public class ExecuteResultListDTO extends AbstractDto{
 	}
 
 	public ExecuteResultListDTO(Integer serverInfoSeq, String host,
-			String schemaName, String account, boolean autoCommit, String query,boolean htmlAllow) {
+			String schemaName, String account, boolean autoCommit,
+			String query, boolean htmlAllow, String id, String ip) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
 		this.schemaName = schemaName;
@@ -44,6 +49,8 @@ public class ExecuteResultListDTO extends AbstractDto{
 		this.autoCommit = autoCommit;
 		this.query = query;
 		this.htmlAllow = htmlAllow;
+		this.id = id;
+		this.ip = ip;
 	}
 
 	public Integer getServerInfoSeq() {
@@ -100,5 +107,21 @@ public class ExecuteResultListDTO extends AbstractDto{
 
 	public void setHtmlAllow(boolean htmlAllow) {
 		this.htmlAllow = htmlAllow;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 }
