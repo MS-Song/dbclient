@@ -16,8 +16,6 @@ webix.ajax().get("/member/getAuthTypes.json",function(text,data){
 	}
 });
 
-
-
 // 데이터 베이스 관리 리스트 팝업
 var adminDatabaseListPopup = function(){
 	if($$("admin_database_list_popup")==undefined){

@@ -27,39 +27,79 @@ webix.ajax().get("/database/getDatabaseDriver.json",function(text,data){
 // Database 관리
 // 서버 & DB 선택
 var select_database_popup=function(){
-    webix.ui({
-        view:"window",
-        id:"select_database_popup",
-        autowidth:true,
-        position:"center",
-        modal:true,
-        head:{view:"button",value:"서버 선택 닫기" , click:function(){
-       		$$("select_database_popup").hide();
-    	}},
-        body:{
-        	id:"select_database_loader",
-        	view:"datatable",
-        	columns:[
- 					{ id:"driver",		header:"Driver",	width:100, sort:"string"},
-					{ id:"host",		header:"Host",		width:100, sort:"string"},
- 					{ id:"hostAlias",	header:"HostAlias",	width:100, sort:"string"},
- 					{ id:"schemaName",	header:"SchemaName",width:100, sort:"string"},
- 					{ id:"account",		header:"Account",	width:100, sort:"string"},
- 					{ id:"port",		header:"Port",		width:80,  sort:"int"},
- 					{ id:"selected",	header:"선택",		width:50}
-			],
-			tooltip:true,
-			select:"row",
-			resizeColumn:true,
-			autowidth:true,
-			autoheight:true,
-			data:[]
-        }
-    }).show();
-
-    // side menu 닫기
-    $$("menu").hide();
-    
+	// 팝업이 생성 안된 경우에만 생성
+	if($$("select_database_popup")==undefined){
+		webix.ui({
+	        view:"window",
+	        id:"select_database_popup",
+	        autowidth:true,
+	        position:"center",
+	        modal:true,
+	        head:{view:"button",value:"서버 선택 닫기" , click:function(){
+	       		$$("select_database_popup").hide();
+	    	}},
+	        body:{
+	        	id:"select_database_loader",
+	        	view:"datatable",
+	        	columns:[
+	 					{ id:"driver",		header:"Driver",	width:100, sort:"string"},
+						{ id:"host",		header:"Host",		width:100, sort:"string"},
+	 					{ id:"hostAlias",	header:"HostAlias",	width:100, sort:"string"},
+	 					{ id:"schemaName",	header:"SchemaName",width:100, sort:"string"},
+	 					{ id:"account",		header:"Account",	width:100, sort:"string"},
+	 					{ id:"port",		header:"Port",		width:80,  sort:"int"},
+	 					{ id:"selected",	header:"선택",		width:50}
+				],
+				tooltip:true,
+				select:"row",
+				resizeColumn:true,
+				autowidth:true,
+				autoheight:true,
+				data:[],
+		    	on:{
+		    		onSelectChange:function(id){
+		    			var selectedRow = $$("select_database_loader").getSelectedItem();
+		    			
+		    			// 이미 선택된 값을 삭제 한다.
+		    			$$("select_database_loader").eachRow( 
+		    				function (id){
+		    					$$("select_database_loader").getItem(id).selected="";
+		    				}
+		    			);
+		    			
+		    			// 설정 정보 저장
+		    			serverInfoSeq=selectedRow.id;
+		    			server=selectedRow.host;
+		    			schema=selectedRow.schemaName;
+		    			account=selectedRow.account;
+		    			driver=selectedRow.driver;
+		    			tableName=null;
+		    			tableComment=null;
+		    			selectedRow.selected="선택";
+		    			// 입력한 값을 재 로딩 한다.
+		    			$$("select_database_loader").refresh();
+		    			webix.message("데이터베이스를 선택 했습니다.");
+		    			// 선택 창을 닫는다.
+		    	   		window.setTimeout(function(){
+		    				$$("select_database_popup").hide();	
+		    			}, 500)										
+	
+		    			// 선택된 서버 정보를 보여준다.
+		    			$$("toolbar").removeView("toolbar_notices");
+		    			$$("toolbar").addView({id:"toolbar_notices",view: "label", label: selectedRow.hostAlias+" ["+server+"] 선택"},3);
+		    			// 선택된 데이터베이스의 정보를 읽는다.
+		    			clearAllViews();
+		    			database_info_data_load();
+		            }}
+		        }
+	    });
+	}
+	
+	$$("select_database_popup").show();
+	
+	
+	// 데이터 초기화
+	$$("select_database_loader").clearAll();
     // 데이터베이스 정보를 조회한다.
 	webix.ajax().get("/database/serverList.json", function(text,data){
 		// 데이터베이스 정보를 획득한 경우에 테이블에 넣는다.
@@ -86,40 +126,6 @@ var select_database_popup=function(){
 		} else {
 			webix.message(data.json().desc);
 		}
-		// 이벤트 부여
-		$$("select_database_loader").attachEvent("onSelectChange", function(){
-
-			var selectedRow = $$("select_database_loader").getSelectedItem();
-			
-			// 이미 선택된 값을 삭제 한다.
-			$$("select_database_loader").eachRow( 
-				function (id){
-					$$("select_database_loader").getItem(id).selected="";
-				}
-			);
-			
-			// 설정 정보 저장
-			serverInfoSeq=selectedRow.id;
-			server=selectedRow.host;
-			schema=selectedRow.schemaName;
-			account=selectedRow.account;
-			driver=selectedRow.driver;
-			selectedRow.selected="선택";
-			// 입력한 값을 재 로딩 한다.
-			$$("select_database_loader").refresh();
-			webix.message("데이터베이스를 선택 했습니다.");
-			// 선택 창을 닫는다.
-	   		window.setTimeout(function(){
-				$$("select_database_popup").hide();	
-			}, 500)										
-
-			// 선택된 서버 정보를 보여준다.
-			$$("toolbar").removeView("toolbar_notices");
-			$$("toolbar").addView({id:"toolbar_notices",view: "label", label: selectedRow.hostAlias+" ["+server+"] 선택"},3);
-			// 선택된 데이터베이스의 정보를 읽는다.
-			database_info_data_load();
-			
-		});
 	});
 }
 
@@ -147,6 +153,11 @@ var database_info_cell = [
 			select:"row",
 			resizeColumn:true,
 			navigation:true,
+	    	on:{	// 테이블 아이템 클릭시에 동작
+	    		onSelectChange:function(id){
+    				database_info_field_data_load();
+	    		}
+	    	}
 		},
 		{ view:"resizer"},
 		{
@@ -317,8 +328,6 @@ var database_info_cell = [
 
 // 데이터베이스 정보 로드 
 var database_info_data_load=function(){
-	// progress 추가
-	webix.extend($$("database_info_table_list_view"), webix.ProgressBar);
 	// 로딩 프로그레스 
 	$$("database_info_table_list_view").showProgress();
 	// 담기 전에 모두 지운다
@@ -345,134 +354,128 @@ var database_info_data_load=function(){
 			}
 		}
 	);
-	
-	// change 이벤트 부여 -- 테이블 선택 값 이벤트
-	$$("database_info_table_list_view").attachEvent("onSelectChange", function(){
-		// 선택된 row
-		var selectedRow = $$("database_info_table_list_view").getSelectedItem();
-		// 테이블 명칭 저장
-		try {
-			if(undefined != selectedRow.tableName) {
-				tableName = selectedRow.tableName;
-				tableComment = selectedRow.tableComment;
-			}
-		} catch (e) {
-			webix.message({ type:"error", text:"데이터 베이스 정보 로드 실패.</br>데이터베이스를 다시 선택해주세요"});
-			$$("database_info_table_list_view").hideProgress();
+};
+
+// 테이블 정보 로딩
+var database_info_field_data_load = function(){
+	// 선택된 row
+	var selectedRow = $$("database_info_table_list_view").getSelectedItem();
+	// 테이블 명칭 저장
+	try {
+		if(undefined != selectedRow.tableName) {
+			tableName = selectedRow.tableName;
+			tableComment = selectedRow.tableComment;
 		}
+	} catch (e) {
+		//webix.message({ type:"error", text:"데이터 베이스 정보 로드 실패.</br>데이터베이스를 다시 선택해주세요"});
+		$$("database_info_table_list_view").hideProgress();
+	}
  
-
-		// progress 추가
-		webix.extend($$("table_info_field_list"), webix.ProgressBar);
-		webix.extend($$("table_info_develop_list"), webix.ProgressBar);
 		// 로딩 프로그레스 
-		$$("table_info_field_list").showProgress();
-		$$("table_info_develop_list").showProgress();
+	$$("table_info_field_list").showProgress();
+	$$("table_info_develop_list").showProgress();
+	
+	// 담기 전에 모두 지운다
+	$$("table_info_field_list").clearAll();
+	$$("table_info_develop_list").clearAll();
+	// 필드 조회 
+	// 캐시에 데이터가 있으면 ajax 를 실행하지 않는다.
+	var cachedFieldList = webix.storage.local.get(server + "_" + schema + "_" + account +"_fields_"+ tableName);
+	var cachedFieldDeveloperList = webix.storage.local.get(server + "_" + schema + "_" + account +"fieldDeveloperList"+ tableName);
+	// 캐시에 존재 하면..
+	if(null != cachedFieldList && cachedFieldList.length != 0){
+		// 필드정보
+		$$("table_info_field_list").parse(cachedFieldList);
+		$$("table_info_field_list").refresh();
+		$$("table_info_field_list").hideProgress();
+		// 개발자 화면
+		$$("table_info_develop_list").parse(cachedFieldDeveloperList);
+		$$("table_info_develop_list").refresh();
+		$$("table_info_develop_list").hideProgress();    		
 		
-		// 담기 전에 모두 지운다
-		$$("table_info_field_list").clearAll();
-		$$("table_info_develop_list").clearAll();
-		// 필드 조회 
-		// 캐시에 데이터가 있으면 ajax 를 실행하지 않는다.
-		var cachedFieldList = webix.storage.local.get(server + "_" + schema + "_" + account +"_fields_"+ tableName);
-		var cachedFieldDeveloperList = webix.storage.local.get(server + "_" + schema + "_" + account +"fieldDeveloperList"+ tableName);
-		// 캐시에 존재 하면..
-		if(null != cachedFieldList && cachedFieldList.length != 0){
-			// 필드정보
-			$$("table_info_field_list").parse(cachedFieldList);
-    		$$("table_info_field_list").refresh();
-    		$$("table_info_field_list").hideProgress();
-    		// 개발자 화면
-    		$$("table_info_develop_list").parse(cachedFieldDeveloperList);
-    		$$("table_info_develop_list").refresh();
-    		$$("table_info_develop_list").hideProgress();    		
-    		
-		} else {
-			webix.ajax().get("/database/fieldList.json",{
-				server:server,
-				schema:schema,
-				account:account,
-				table:tableName}, 
-				function(text,data){
-					// 필드 정보를 획득한 경우에 넣는다.
-					if(data.json().status ==200 && null!=data.json().result){
-						// datatable 저장
-						$$("table_info_field_list").parse(data.json().result.fieldList);
-						//cache 저장
-						webix.storage.local.put(server + "_" + schema + "_" + account +"_fields_"+ tableName,$$("table_info_field_list").data.serialize());
-						// 다시 읽는다.
-			    		$$("table_info_field_list").refresh();
-			    		$$("table_info_field_list").hideProgress();
-			    		// 자동완성에 테이블 추가
-			    		autoCompleteAddTables(tableName,data.json().result.fieldList);
-			    		
-			    		// 개발자 도구 설정
-			    		// 테이블 정보를 획득한 경우에 넣는다.
-						$.each(data.json().result,function(){
-			    			$.each(this,function(index){
-			    				$$("table_info_develop_list").data.add({
-			    					columnId:this.columnId,
-			    					columnName:this.columnName,
-			    					comment:this.comment,
-			    					dataType:this.dataType,
-			    					nullable:this.nullable,
-			    					columnKey:this.columnKey,
-			    					extra:this.extra,
-			    					field_checkbox:"1",
-			    					field_set:"",
-			    					field_where:"",
-			    					field_operation:"="
-			    				},index);
-				   			});
-		    			});
-			    		$$("table_info_develop_list").refresh();
-			    		$$("table_info_develop_list").hideProgress();
-			    		// 캐시 저장
-			    		webix.storage.local.put(server + "_" + schema + "_" + account +"fieldDeveloperList"+ tableName,$$("table_info_develop_list").data.serialize());
-					}
+	} else {
+		webix.ajax().get("/database/fieldList.json",{
+			server:server,
+			schema:schema,
+			account:account,
+			table:tableName}, 
+			function(text,data){
+				// 필드 정보를 획득한 경우에 넣는다.
+				if(data.json().status ==200 && null!=data.json().result){
+					// datatable 저장
+					$$("table_info_field_list").parse(data.json().result.fieldList);
+					//cache 저장
+					webix.storage.local.put(server + "_" + schema + "_" + account +"_fields_"+ tableName,$$("table_info_field_list").data.serialize());
+					// 다시 읽는다.
+		    		$$("table_info_field_list").refresh();
+		    		$$("table_info_field_list").hideProgress();
+		    		// 자동완성에 테이블 추가
+		    		autoCompleteAddTables(tableName,data.json().result.fieldList);
+		    		
+		    		// 개발자 도구 설정
+		    		// 테이블 정보를 획득한 경우에 넣는다.
+					$.each(data.json().result,function(){
+		    			$.each(this,function(index){
+		    				$$("table_info_develop_list").data.add({
+		    					columnId:this.columnId,
+		    					columnName:this.columnName,
+		    					comment:this.comment,
+		    					dataType:this.dataType,
+		    					nullable:this.nullable,
+		    					columnKey:this.columnKey,
+		    					extra:this.extra,
+		    					field_checkbox:"1",
+		    					field_set:"",
+		    					field_where:"",
+		    					field_operation:"="
+		    				},index);
+			   			});
+	    			});
+		    		$$("table_info_develop_list").refresh();
+		    		$$("table_info_develop_list").hideProgress();
+		    		// 캐시 저장
+		    		webix.storage.local.put(server + "_" + schema + "_" + account +"fieldDeveloperList"+ tableName,$$("table_info_develop_list").data.serialize());
 				}
-			);
-		}
-		
-		// 인덱스 내용 조회
-		// progress 추가
-		webix.extend($$("table_info_index_list"), webix.ProgressBar);
-		// 로딩 프로그레스 
-		$$("table_info_index_list").showProgress();
-		// 담기 전에 모두 지운다
-		$$("table_info_index_list").clearAll();
-		 
-		// 캐시에 데이터가 있으면 ajax 를 실행하지 않는다.
-		var cachedIndexList = webix.storage.local.get(server + "_" + schema + "_" + account +"_indexes_"+ tableName);
+			}
+		);
+	}
+	
+	// 인덱스 내용 조회
+	// 로딩 프로그레스 
+	$$("table_info_index_list").showProgress();
+	// 담기 전에 모두 지운다
+	$$("table_info_index_list").clearAll();
+	 
+	// 캐시에 데이터가 있으면 ajax 를 실행하지 않는다.
+	var cachedIndexList = webix.storage.local.get(server + "_" + schema + "_" + account +"_indexes_"+ tableName);
 
-		if(null != cachedIndexList){
-			$$("table_info_index_list").parse(cachedIndexList);
-			// 다시 읽는다.
-    		$$("table_info_index_list").refresh();
-    		$$("table_info_index_list").hideProgress();
-		} else {
-			// 인덱스 조회
-			webix.ajax().get("/database/indexList.json",{
-				server:server,
-				schema:schema,
-				account:account,
-				table:tableName}, 
-				function(text,data){
-					// 필드 정보를 획득한 경우에 넣는다.
-					if(data.json().status ==200 && null!=data.json().result){
-						// 인덱스는 없는 경우가 존재한다.
-						if(null != data.json().result.indexList){
-							$$("table_info_index_list").parse(data.json().result.indexList)
-						}
-						webix.storage.local.put(server + "_" + schema + "_" + account +"_indexes_"+ tableName,$$("table_info_index_list").data.serialize());
-						// 다시 읽는다.
-			    		$$("table_info_index_list").refresh();
-			    		$$("table_info_index_list").hideProgress();
+	if(null != cachedIndexList){
+		$$("table_info_index_list").parse(cachedIndexList);
+		// 다시 읽는다.
+		$$("table_info_index_list").refresh();
+		$$("table_info_index_list").hideProgress();
+	} else {
+		// 인덱스 조회
+		webix.ajax().get("/database/indexList.json",{
+			server:server,
+			schema:schema,
+			account:account,
+			table:tableName}, 
+			function(text,data){
+				// 필드 정보를 획득한 경우에 넣는다.
+				if(data.json().status ==200 && null!=data.json().result){
+					// 인덱스는 없는 경우가 존재한다.
+					if(null != data.json().result.indexList){
+						$$("table_info_index_list").parse(data.json().result.indexList)
 					}
+					webix.storage.local.put(server + "_" + schema + "_" + account +"_indexes_"+ tableName,$$("table_info_index_list").data.serialize());
+					// 다시 읽는다.
+		    		$$("table_info_index_list").refresh();
+		    		$$("table_info_index_list").hideProgress();
 				}
-			);
-		}
-	});
+			}
+		);
+	}
 };
 
 // TODO function 리스트
@@ -713,7 +716,6 @@ var database_query_cell = [{
 // 데이터 베이스 쿼리 실행
 var executeQuery = function (){
 	// 로딩 프로그레스						
-	webix.extend($$("database_result_list_view"), webix.ProgressBar);
 	$$("database_result_list_view").showProgress();
 	// 이미 있는 내용은 모두 지운다 
 	$$("database_result_list_view").config.columns = [];
@@ -1061,8 +1063,7 @@ var removeFavorityQuery = function(favorityQuerySeq){
 
 // 즐겨 찾는 쿼리 리스트 loading
 var database_query_favorities_view_load = function(){
-
-	webix.extend($$("database_query_favorities_view"), webix.ProgressBar);
+	// 프로그레스 바
 	$$("database_query_favorities_view").showProgress();
 
 	// TODO 내용을 모두 지우고 새로 읽을 것인가. 추가된 내용만 추가 할 것인가 처리 필요.
@@ -1100,6 +1101,11 @@ webix.ready(function(){
 	database_query_favorities_view_load();
 });
 
-
-
-
+// 뷰의 데이터를 모두 초기화 한다.
+var clearAllViews = function(){
+	$$("database_info_table_list_view").clearAll();
+	$$("table_info_field_list").clearAll();
+	$$("table_info_develop_list").clearAll();
+	$$("table_info_index_list").clearAll();
+	$$("database_result_list_view").clearAll();	
+};

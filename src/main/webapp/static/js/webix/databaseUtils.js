@@ -499,7 +499,7 @@ var javaModel=function(){
 	}
 
 	// 컬럼명칭
-	var columnList=getColumns('columnList');
+	var columnList=getColumns('selectList');
 	// 코멘트
 	var columnCommentList=getColumns('commentList');
 	// 데이터 타입
@@ -510,15 +510,15 @@ var javaModel=function(){
 	var html='\n/**\n\r* Table Name '+tableName+'\n\r*/\n\r';
 		html+='public class '+ tableStyleConverter(tableName) + " { \n";
 
-		for(var i=0;i<columnList.length;i++){
-  				var column=columnStyleConverter(columnList[i]);
-  				var columnComment=columnCommentList[i];
-  				var dataType=columnJavaTypeSearch(columnTypeFullList[i]);
+	for(var i=0;i<columnList.length;i++){
+		var column=columnStyleConverter(columnList[i]);
+		var columnComment=columnCommentList[i];
+		var dataType=columnJavaTypeSearch(columnTypeFullList[i]);
   
-  		html+='\n\t/**\n\t* column name : '+ columnList[i] +'\n\t* '+columnComment+'\n\t*/';
+		html+='\n\t/**\n\t* column name : '+ columnList[i] +'\n\t* '+columnComment+'\n\t*/';
 		html+='\n\tprivate '+dataType+ ' ' + column +';\n';
   
-  				// getset
+		// getset
 		columnGetSet=column.substring(0,1).toUpperCase()+column.substring(1, column.length);
 		getterSetters+='\n\t/**\n\t* column name : '+ columnList[i] +' \n\t* '+columnComment+' setter \n\t*/';
 		getterSetters+='\n\tpublic void set'+columnGetSet+'('+dataType+' '+column+'){\n\t\tthis.'+column+' = '+column+';\n\t}';
@@ -542,7 +542,7 @@ var javaHibernateModel=function(){
 	}
 
 	// 컬럼명칭
-	var columnList=getColumns('columnList');
+	var columnList=getColumns('selectList');
 	// 코멘트
 	var columnCommentList=getColumns('commentList');
 	// 데이터 타입
@@ -672,7 +672,7 @@ var javaModelSet=function(){
 	}
 
 	// 컬럼명칭
-	var columnList=getColumns('columnList');
+	var columnList=getColumns('selectList');
 	
 	var columnHtml='';
 	var columnName='';
@@ -696,7 +696,7 @@ var javaModelGet=function(){
 	}
 
 	// 컬럼명칭
-	var columnList=getColumns('columnList');
+	var columnList=getColumns('selectList');
 	var columnHtml='';
 	var columnName='';
 	var columnParamName='';
