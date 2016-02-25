@@ -31,6 +31,7 @@ import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.ViewVO;
 import com.song7749.log.dto.SaveQueryExecuteLogDTO;
 import com.song7749.log.service.LogManager;
 /**
@@ -392,6 +393,28 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
+	public List<ViewVO> selectViewVOList(ServerInfo serverInfo) {
+		List<ViewVO> list = new ArrayList<ViewVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getViewListQuery(serverInfo));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(
+				new ViewVO(
+					map.get("VIEW_NAME"),
+					map.get("TEXT")));
+		}
+		return list;
+	}
+
+
+	@Override
 	@PreDestroy
 	protected void finalize() throws Throwable {
 		for(ServerInfo ServerInfo : dataSourceMap.keySet()){
@@ -403,4 +426,5 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 		super.finalize();
 	}
+
 }

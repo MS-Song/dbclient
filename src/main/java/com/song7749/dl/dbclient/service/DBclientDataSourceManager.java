@@ -10,6 +10,7 @@ import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.ViewVO;
 
 /**
  * <pre>
@@ -69,4 +70,12 @@ public interface DBclientDataSourceManager {
 	 */
 	List<Map<String, String>> executeQueryList(ServerInfo serverInfo,
 			ExecuteResultListDTO dto);
+
+
+	/**
+	 * database view infomation
+	 * @param serverInfo
+	 * @return List<ViewVO>
+	 */
+	List<ViewVO> selectViewVOList(ServerInfo serverInfo);
 }

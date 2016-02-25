@@ -26,8 +26,10 @@ import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.ViewVO;
 import com.song7749.util.validate.ValidateGroupSelect;
 import com.song7749.util.validate.annotation.Validate;
+
 
 @Service("serverInfoManager")
 @TransactionConfiguration(transactionManager = "dbClientTransactionManager", defaultRollback = true)
@@ -145,6 +147,16 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 				.selectTableIndexVOList(serverInfoRepository
 						.find(new ServerInfo(dto.getServerInfoSeq())), dto
 						.getTableName());
+	}
+
+	@Override
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Validate(VG = { ValidateGroupSelect.class })
+	public List<ViewVO> findViewVOList(FindTableDTO dto) {
+
+		return dbClientDataSourceManager
+				.selectViewVOList(serverInfoRepository
+						.find(new ServerInfo(dto.getServerInfoSeq())));
 	}
 
 	@Override

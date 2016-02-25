@@ -113,7 +113,7 @@ var login_popup = function(){
         head:"Log In",
         body:webix.copy(login_form)
     }).show();
-    $$("menu").hide();
+	if($$("menu").isVisible()) $$("menu").hide();
     $$("login_id_input").focus();
 }
 
@@ -240,7 +240,7 @@ var modify_member_popup = function(){
         body:webix.copy(modify_member_form)
     }).show();
     // side menu 닫기
-    $$("menu").hide();
+	if($$("menu").isVisible()) $$("menu").hide();
     
     //$$("modify_member_form").getFormView().getValues();
     $$("modify_member_form").setValues({

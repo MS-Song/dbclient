@@ -14,6 +14,7 @@ import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.ViewVO;
 /**
  * <pre>
  * Class Name : ServerInfoManager.java
@@ -102,6 +103,13 @@ public interface ServerInfoManager {
 	 * @return List<IndexVO>
 	 */
 	List<IndexVO> findTableIndexVOList(FindTableDTO dto);
+
+	/**
+	 * View 정보 리스트
+	 * @param dto
+	 * @return List<ViewVO>
+	 */
+	List<ViewVO> findViewVOList(FindTableDTO dto);
 
 	/**
 	 * Query Result Set List

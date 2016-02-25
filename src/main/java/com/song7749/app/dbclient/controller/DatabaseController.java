@@ -40,6 +40,7 @@ import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.ViewVO;
 import com.song7749.dl.login.annotations.Login;
 import com.song7749.dl.login.exception.AuthorityUserException;
 import com.song7749.dl.login.service.LoginManager;
@@ -155,6 +156,33 @@ public class DatabaseController {
 		logger.trace("tableList : {}",tableList);
 		model.addAttribute("tableList", tableList);
 	}
+
+	@ApiOperation(value = "데이터베이스 View 리스트 조회"
+			,notes = "등록되어 있는 Database 서버의 View 리스트를 조회 한다."
+			,response=ViewVO.class)
+	@RequestMapping(value="/viewList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getViewList(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
+
+		List<ViewVO> viewList=null;
+		if(null!=list & list.size()>0){
+			viewList=serverInfoManager.findViewVOList(new FindTableDTO(list.get(0).getServerInfoSeq()));
+		}
+
+		logger.trace("viewList : {}",viewList);
+		model.addAttribute("viewList", viewList);
+	}
+
 
 	@ApiOperation(value = "데이터베이스 테이블  필드 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 의 필드를 조회 한다."
