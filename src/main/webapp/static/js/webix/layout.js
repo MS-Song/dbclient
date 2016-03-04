@@ -51,7 +51,10 @@ webix.ready(function(){
 								view:"tabview",
 								id:"database_result_tab",
 								animate:false,
-								cells: database_result_cell
+								cells: database_result_cell,
+								on:{
+							        'onClick': function(id){ alert("you have clicked on an item with id="+id); }
+							    }
 							}
 						]
 					},

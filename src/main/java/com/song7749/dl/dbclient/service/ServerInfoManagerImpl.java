@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.googlecode.ehcache.annotations.Cacheable;
+import com.googlecode.ehcache.annotations.TriggersRemove;
 import com.song7749.dl.dbclient.dto.DeleteServerInfoDTO;
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.dto.FindServerInfoDTO;
@@ -45,6 +47,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Override
 	@Validate
 	@Transactional("dbClientTransactionManager")
+	@TriggersRemove(cacheName="com.song7749.cache.serverInfo.cache",removeAll=true)
 	public void saveServerInfo(SaveServerInfoDTO dto) {
 
 		ServerInfo serverInfo = new ServerInfo(dto.getHost(), dto.getHostAlias(),
@@ -57,6 +60,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Override
 	@Validate
 	@Transactional("dbClientTransactionManager")
+	@TriggersRemove(cacheName="com.song7749.cache.serverInfo.cache",removeAll=true)
 	public void modifyServerInfo(ModifyServerInfoDTO dto) {
 		ServerInfo serverInfo = serverInfoRepository.find(new ServerInfo(dto
 				.getServerInfoSeq()));
@@ -75,6 +79,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 
 	@Override
 	@Transactional(value = "dbClientTransactionManager")
+	@TriggersRemove(cacheName="com.song7749.cache.serverInfo.cache",removeAll=true)
 	public void deleteServerInfo(DeleteServerInfoDTO dto) {
 		serverInfoRepository.delete(new ServerInfo(dto.getServerInfoSeq()));
 	}
@@ -82,6 +87,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Override
 	@Validate
 	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
 	public ServerInfoVO findServerInfo(FindServerInfoDTO dto) {
 		ServerInfo serverInfo = new ServerInfo(dto.getServerInfoSeq());
 		return convert(serverInfoRepository.find(serverInfo));
@@ -90,12 +96,14 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Override
 	@Validate
 	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
 	public List<ServerInfoVO> findServerInfoList(FindServerInfoListDTO dto) {
 		return convert(serverInfoRepository.findServerInfoList(dto));
 	}
 
 	@Override
 	@Transactional(value = "dbClientTransactionManager")
+	@TriggersRemove(cacheName="com.song7749.cache.serverInfo.cache",removeAll=true)
 	public void saveServerInfoFacade(List<SaveServerInfoDTO> list) {
 		for (SaveServerInfoDTO saveServerInfoDTO : list) {
 			saveServerInfo(saveServerInfoDTO);
@@ -104,6 +112,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 
 	@Override
 	@Transactional(value = "dbClientTransactionManager")
+	@TriggersRemove(cacheName="com.song7749.cache.serverInfo.cache",removeAll=true)
 	public void modifyServerInfoFacade(List<ModifyServerInfoDTO> list) {
 		for (ModifyServerInfoDTO modifyServerInfoDTO : list) {
 			modifyServerInfo(modifyServerInfoDTO);
@@ -112,6 +121,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 
 	@Override
 	@Transactional(value = "dbClientTransactionManager")
+	@TriggersRemove(cacheName="com.song7749.cache.serverInfo.cache",removeAll=true)
 	public void deleteServerInfoFacade(List<DeleteServerInfoDTO> list) {
 		for (DeleteServerInfoDTO deleteServerInfoDTO : list) {
 			deleteServerInfo(deleteServerInfoDTO);
@@ -119,8 +129,9 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	}
 
 	@Override
-	@Transactional(value = "dbClientTransactionManager", readOnly = true)
 	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
 	public List<TableVO> findTableVOList(FindTableDTO dto) {
 
 		return dbClientDataSourceManager.selectTableVOList(serverInfoRepository
@@ -128,8 +139,9 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	}
 
 	@Override
-	@Transactional(value = "dbClientTransactionManager", readOnly = true)
 	@Validate
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
 	public List<FieldVO> findTableFieldVOList(FindTableDTO dto) {
 
 		return dbClientDataSourceManager
@@ -139,8 +151,9 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	}
 
 	@Override
-	@Transactional(value = "dbClientTransactionManager", readOnly = true)
 	@Validate
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
 	public List<IndexVO> findTableIndexVOList(FindTableDTO dto) {
 
 		return dbClientDataSourceManager
@@ -150,8 +163,9 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	}
 
 	@Override
-	@Transactional(value = "dbClientTransactionManager", readOnly = true)
 	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
 	public List<ViewVO> findViewVOList(FindTableDTO dto) {
 
 		return dbClientDataSourceManager
@@ -160,9 +174,13 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	}
 
 	@Override
-	@Transactional(value = "dbClientTransactionManager")
 	@Validate
+	@Transactional(value = "dbClientTransactionManager")
 	public List<Map<String, String>> executeResultList(ExecuteResultListDTO dto) {
 		return dbClientDataSourceManager.executeQueryList(serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq())), dto);
 	}
+
+	@Override
+	@TriggersRemove(cacheName="com.song7749.cache.serverInfo.cache",removeAll=true)
+	public void clearCache() {}
 }

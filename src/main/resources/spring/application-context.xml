@@ -32,6 +32,9 @@
 	<!-- 커넥션 정보 -->
 	<import resource="connection-context.xml" />
 
+	<!-- 캐시 정보 -->
+	<import resource="ehcache-context.xml" />
+
 	<!-- executerService -->
 	<import resource="task-context.xml" />
 

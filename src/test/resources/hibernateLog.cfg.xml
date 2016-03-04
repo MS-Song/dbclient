@@ -21,12 +21,14 @@
 		<property name="hibernate.connection.useUnicode">true</property>
 		<property name="hibernate.connection.release_mode">after_transaction</property>
 		
- 		<property name="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
-    	<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
-    	<property name="hibernate.cache.use_query_cache">true</property>
-    	<property name="hibernate.cache.use_second_level_cache">true</property>
-    	<property name="hibernate.cache.use_structured_entries">true</property>     
-    	<property name="hibernate.cache.generate_statistics">true</property>		
+ 		<!-- 하이버 네이트 2차 캐시는 사용하지 않는다. 캐시 인터셉터 사용이 불가능 함으로 사용 금지
+	 		<property name="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
+	    	<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+	    	<property name="hibernate.cache.use_query_cache">true</property>
+	    	<property name="hibernate.cache.use_second_level_cache">true</property>
+	    	<property name="hibernate.cache.use_structured_entries">true</property>     
+	    	<property name="hibernate.cache.generate_statistics">true</property>		
+		 -->
 		
 	</session-factory>
 </hibernate-configuration>

@@ -17,4 +17,17 @@
         copyOnWrite="true"
         memoryStoreEvictionPolicy="LRU" /> 
         
+	<!-- 서버 정보 캐시 -->
+	<cache name="com.song7749.cache.serverInfo.cache" 
+		eternal="false"   
+        maxElementsInMemory="10000"  
+        timeToIdleSeconds="600" 
+        timeToLiveSeconds="600" 
+        overflowToDisk="false"
+        diskPersistent="false" 
+        diskExpiryThreadIntervalSeconds="600"
+        copyOnRead="false" 
+        copyOnWrite="false"        
+        memoryStoreEvictionPolicy="LRU" />        
+        
 </ehcache>

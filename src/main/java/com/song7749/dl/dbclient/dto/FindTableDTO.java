@@ -17,13 +17,19 @@ public class FindTableDTO extends AbstractDto{
 
 	public FindTableDTO() {}
 
-	public FindTableDTO(Integer serverInfoSeq) {
-		this.serverInfoSeq = serverInfoSeq;
+	public FindTableDTO(boolean useCache) {
+		super.setUseCache(useCache);
 	}
 
-	public FindTableDTO(Integer serverInfoSeq, String tableName) {
+	public FindTableDTO(Integer serverInfoSeq,boolean useCache) {
+		this.serverInfoSeq = serverInfoSeq;
+		super.setUseCache(useCache);
+	}
+
+	public FindTableDTO(Integer serverInfoSeq, String tableName,boolean useCache) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.tableName = tableName;
+		super.setUseCache(useCache);
 	}
 
 	public Integer getServerInfoSeq() {

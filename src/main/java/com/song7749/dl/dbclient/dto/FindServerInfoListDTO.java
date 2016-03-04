@@ -14,14 +14,20 @@ public class FindServerInfoListDTO extends AbstractDto{
 
 	public FindServerInfoListDTO() {}
 
-	public FindServerInfoListDTO(String host) {
-		this.host = host;
+	public FindServerInfoListDTO(boolean useCache) {
+		super.setUseCache(useCache);
 	}
 
-	public FindServerInfoListDTO(String host, String schemaName, String account) {
+	public FindServerInfoListDTO(String host, boolean useCache) {
+		this.host = host;
+		super.setUseCache(useCache);
+	}
+
+	public FindServerInfoListDTO(String host, String schemaName, String account, boolean useCache) {
 		this.host = host;
 		this.schemaName = schemaName;
 		this.account = account;
+		super.setUseCache(useCache);
 	}
 
 	public String getHost() {

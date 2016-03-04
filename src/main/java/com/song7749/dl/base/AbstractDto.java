@@ -1,5 +1,6 @@
 package com.song7749.dl.base;
 
+import com.song7749.cache.Cacheable;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -20,7 +21,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  * @since 2015. 4. 28.
  */
 @ApiModel("BASE DTO")
-public abstract class AbstractDto extends BaseObject implements Dto {
+public abstract class AbstractDto extends BaseObject implements Dto , Cacheable{
 
 	private static final long serialVersionUID = 8863605294397638654L;
 
@@ -41,6 +42,9 @@ public abstract class AbstractDto extends BaseObject implements Dto {
 	 */
 	@ApiModelProperty("Result 수를 지정할 것인가?")
 	private boolean useLimit = true;
+
+	@ApiModelProperty("캐시를 사용할 것인가?")
+	private boolean useCache = false;
 
 	/**
 	 * @return the limit
@@ -85,5 +89,15 @@ public abstract class AbstractDto extends BaseObject implements Dto {
 	 */
 	public void setUseLimit(boolean useLimit) {
 		this.useLimit = useLimit;
+	}
+
+	@Override
+	public boolean isUseCache() {
+		return useCache;
+	}
+
+	@Override
+	public void setUseCache(boolean useCache) {
+		this.useCache = useCache;
 	}
 }

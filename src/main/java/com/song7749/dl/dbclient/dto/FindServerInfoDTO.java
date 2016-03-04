@@ -13,9 +13,14 @@ public class FindServerInfoDTO extends AbstractDto{
 
 	public FindServerInfoDTO() {}
 
+	public FindServerInfoDTO(boolean useCache) {
+		super.setUseCache(useCache);
+	}
 
-	public FindServerInfoDTO(Integer serverInfoSeq) {
+
+	public FindServerInfoDTO(Integer serverInfoSeq, boolean useCache) {
 		this.serverInfoSeq = serverInfoSeq;
+		super.setUseCache(useCache);
 	}
 
 

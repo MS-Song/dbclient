@@ -91,10 +91,12 @@ public class DatabaseController {
 	public void getServer(
 			@RequestParam(value="serverInfoSeq",required=true)
 			@ApiParam	Integer serverInfoSeq,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
 			HttpServletRequest request,
 			ModelMap model){
 
-		ServerInfoVO infoList = serverInfoManager.findServerInfo(new FindServerInfoDTO(serverInfoSeq));
+		ServerInfoVO infoList = serverInfoManager.findServerInfo(new FindServerInfoDTO(serverInfoSeq,useCache));
 
 		model.addAttribute("server", infoList);
 	}
@@ -105,10 +107,13 @@ public class DatabaseController {
 	@RequestMapping(value="/serverList",method=RequestMethod.GET)
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getServerList(
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
 			HttpServletRequest request,
 			ModelMap model){
 
-		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(new FindServerInfoListDTO());
+		// 캐시를 사용한다.
+		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(useCache));
 
 		logger.trace("serverList {}",infoList);
 		model.addAttribute("serverInfo", infoList);
@@ -122,10 +127,12 @@ public class DatabaseController {
 	public void getSchemaList(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
 			HttpServletRequest request,
 			ModelMap model){
-		// 테스트 데이터 설정
-		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host));
+		// 캐시를 사용한다.
+		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host,useCache));
 
 		logger.trace("serverList {}",infoList);
 		model.addAttribute("serverInfo", infoList);
@@ -143,14 +150,18 @@ public class DatabaseController {
 			@ApiParam	String  schemaName,
 			@RequestParam(value="account",required=true)
 			@ApiParam 	String  account,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
 			HttpServletRequest request,
 			ModelMap model){
 
-		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
+		// 캐시 사용 여부를 결정한다.
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
 
 		List<TableVO> tableList=null;
 		if(null!=list & list.size()>0){
-			tableList=serverInfoManager.findTableVOList(new FindTableDTO(list.get(0).getServerInfoSeq()));
+			// TODO cache 적용
+			tableList=serverInfoManager.findTableVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache));
 		}
 
 		logger.trace("tableList : {}",tableList);
@@ -169,14 +180,16 @@ public class DatabaseController {
 			@ApiParam	String  schemaName,
 			@RequestParam(value="account",required=true)
 			@ApiParam 	String  account,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
 			HttpServletRequest request,
 			ModelMap model){
 
-		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
 
 		List<ViewVO> viewList=null;
 		if(null!=list & list.size()>0){
-			viewList=serverInfoManager.findViewVOList(new FindTableDTO(list.get(0).getServerInfoSeq()));
+			viewList=serverInfoManager.findViewVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache));
 		}
 
 		logger.trace("viewList : {}",viewList);
@@ -198,15 +211,17 @@ public class DatabaseController {
 			@ApiParam	String account,
 			@RequestParam(value="table",required=true)
 			@ApiParam	String tableName,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
 			HttpServletRequest request,
 			ModelMap model){
 
 
-		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
 
 		List<FieldVO> fieldList=null;
 		if(null!=list & list.size()>0){
-			fieldList=serverInfoManager.findTableFieldVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),tableName));
+			fieldList=serverInfoManager.findTableFieldVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),tableName,useCache));
 		}
 
 		logger.trace("fieldList : {}",fieldList);
@@ -228,14 +243,16 @@ public class DatabaseController {
 			@ApiParam	String account,
 			@RequestParam(value="table",required=true)
 			@ApiParam	String tableName,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
 			HttpServletRequest request,
 			ModelMap model){
 
-		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
 
 		List<IndexVO> indexList=null;
 		if(null!=list & list.size()>0){
-			indexList=serverInfoManager.findTableIndexVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),tableName));
+			indexList=serverInfoManager.findTableIndexVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),tableName,useCache));
 		}
 
 		logger.trace("indexList : {}",indexList);
@@ -470,7 +487,7 @@ public class DatabaseController {
 
 		Long startTime = System.currentTimeMillis();
 
-		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account));
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, true));
 
 		// reference 를 이용해서 실행시간, query 시간을 측정한다.
 		List<Map<String,String>> resultList=null;
@@ -589,6 +606,21 @@ public class DatabaseController {
 
 		logger.trace("FavorityQueryVOList {}",fqList);
 		model.addAttribute("favorityQueryList", fqList);
+	}
+
+
+	@ApiOperation(value = "캐시 데이터 삭제"
+			,notes = "database 정보 캐시 데이터를 삭제한다."
+			,response=ResponseResult.class)
+	@RequestMapping(value="/deleteCache",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void deleteCache(
+			HttpServletRequest request,
+			ModelMap model){
+
+		serverInfoManager.clearCache();
+		model.clear();
+		model.addAttribute("message", "캐시가 삭제되었습니다.");
 	}
 
 //	@ApiOperation(value = "엑셀 다운로드"

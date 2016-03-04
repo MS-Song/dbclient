@@ -12,7 +12,8 @@ var tableName=null;
 var tableComment=null;
 var autoCommit=false;
 var htmlAllow=false;
-
+// 서버 인포 캐시 활성화
+var useCache=true;
 
 // database driver 리스트 조회
 webix.ajax().get("/database/getDatabaseDriver.json",function(text,data){
@@ -85,6 +86,31 @@ var select_database_popup=function(){
 	    			// 선택된 서버 정보를 보여준다.
 	    			$$("toolbar").removeView("toolbar_notices");
 	    			$$("toolbar").addView({id:"toolbar_notices",view: "label", label: selectedRow.hostAlias+" ["+server+"] 선택"},3);
+	    			
+	    			// 캐시 삭제 버튼을 노출 한다.
+	    			$$("toolbar").removeView("toolbar_cache_remove");
+	    			$$("toolbar").addView({id:"toolbar_cache_remove",
+	    				view:"button", 
+	    				value:"캐시삭제" , 
+	    				type:"form",
+	    				width:100,
+	    				on:{"onItemClick":function(){// 캐시 삭제 실행
+	    					webix.ajax().get("/database/deleteCache.json", function(text,data){
+	    						if(data.json().status ==200){
+	    							webix.message("캐시 삭제가 완료 되었습니다.");
+	    							// 1초 후에 리로드 한다.	
+	    							window.setTimeout(function(){
+	    								document.location = document.location.href;	
+	    							}, 2000)										
+	    						} else { // 캐시 삭제 실패
+	    							// validate 메세지 
+	    							var message = data.json().desc.split("\n");
+	    							webix.message({ type:"error", text:message[0].replace("="," ") });
+	    						}
+	    					});
+	    				}
+	    			}});
+	    			
 	    			// 선택된 데이터베이스의 정보를 읽는다.
 	    			clearAllViews();
 	    			database_info_data_load();
@@ -101,7 +127,7 @@ var select_database_popup=function(){
 	// 데이터 초기화
 	$$("select_database_loader").clearAll();
     // 데이터베이스 정보를 조회한다.
-	webix.ajax().get("/database/serverList.json", function(text,data){
+	webix.ajax().get("/database/serverList.json",{useCache:useCache}, function(text,data){
 		// 데이터베이스 정보를 획득한 경우에 테이블에 넣는다.
 		if(data.json().status ==200 && null!=data.json().result){	
     		$.each(data.json().result,function(){
@@ -282,11 +308,26 @@ var database_info_cell = [
 	{	view : "datatable", 
 		header:"View",			
 		id:"database_info_view_list_view", 						
-		columns:[],	
+		columns:[
+			{ id:"viewName",	header:["#", {	// 검색창 구현
+					content:"textFilter", placeholder:"view name search",
+					compare:function(value, filter, obj){ // 검색창 필터조건 구현
+							if (equals(obj.viewName, filter)) return true;
+							return false;
+					}, colspan:2}], 
+				adjust:true,	sort:"string"
+			},
+			{ 
+				id:"modify",
+				header:"수정",		
+				width:60,
+				template:'<input type="button" value="수정" style="width:40px;" data="#text#" onClick="copyEditer(this.data);"/>',
+			},				
+		],
 		data:[],
 		tooltip:true,
 		select:"row",
-		resizeColumn:true,
+		resizeColumn:true
 	},
 	{	view : "datatable", 
 		header:"Procedure",	
@@ -336,7 +377,8 @@ var database_info_data_load=function(){
 	webix.ajax().get("/database/tableList.json",{
 		server:server,
 		schema:schema,
-		account:account}, function(text,data){
+		account:account,
+		useCache:useCache}, function(text,data){
 			// 테이블 정보를 획득한 경우에 넣는다.
 			if(data.json().status ==200 && null!=data.json().result){	
 				$.each(data.json().result,function(){
@@ -398,7 +440,8 @@ var database_info_field_data_load = function(){
 			server:server,
 			schema:schema,
 			account:account,
-			table:tableName}, 
+			table:tableName,
+			useCache:useCache}, 
 			function(text,data){
 				// 필드 정보를 획득한 경우에 넣는다.
 				if(data.json().status ==200 && null!=data.json().result){
@@ -460,7 +503,8 @@ var database_info_field_data_load = function(){
 			server:server,
 			schema:schema,
 			account:account,
-			table:tableName}, 
+			table:tableName,
+			useCache:useCache}, 
 			function(text,data){
 				// 필드 정보를 획득한 경우에 넣는다.
 				if(data.json().status ==200 && null!=data.json().result){

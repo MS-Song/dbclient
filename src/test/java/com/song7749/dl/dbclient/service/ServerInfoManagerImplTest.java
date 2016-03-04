@@ -131,12 +131,10 @@ public class ServerInfoManagerImplTest {
 	@Test
 	public void testFindServerInfo() throws Exception {
 		// give
-		FindServerInfoDTO dto = new FindServerInfoDTO(1);
+		FindServerInfoDTO dto = new FindServerInfoDTO(1,false);
 		// when
 		serverInfoManager.findServerInfo(dto);
 		// then
 		verify(serverInfoRepository).find(any(ServerInfo.class));
 	}
-
-
 }

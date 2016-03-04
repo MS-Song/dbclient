@@ -117,4 +117,9 @@ public interface ServerInfoManager {
 	 * @return List<Map<String,String>>
 	 */
 	List<Map<String,String>> executeResultList(ExecuteResultListDTO dto);
+
+	/**
+	 * 등록되어 있는 서버 관련 캐시를 모두 삭제 한다
+	 */
+	void clearCache();
 }
