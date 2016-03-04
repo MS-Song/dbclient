@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -90,6 +91,7 @@ public class DBclientDataSourceManagerImplTest {
 		assertThat(list, notNullValue());
 	}
 
+	@Ignore
 	@Test
 	public void testExecuteQueryListServerInfoStringBoolean() throws Exception {
 		List<Map<String,String>> list=null;
@@ -101,7 +103,10 @@ public class DBclientDataSourceManagerImplTest {
 		queryList.add("delete from serverinfo");
 
 		for(String query:queryList){
-			list =dbClientDataSourceManager.executeQueryList(serverInfo,new ExecuteResultListDTO(query));
+			list =dbClientDataSourceManager.executeQueryList(serverInfo,
+					new ExecuteResultListDTO(
+							serverInfo.getServerInfoSeq(), serverInfo.getHost(),
+							serverInfo.getSchemaName(), serverInfo.getAccount(), false, query, false, "song7749", "127.0.0.1"));
 			assertTrue(true);
 		}
 	}

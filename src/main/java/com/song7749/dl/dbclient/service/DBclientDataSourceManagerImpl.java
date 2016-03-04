@@ -328,7 +328,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		if(dto.getQuery().toLowerCase().startsWith("explain")){
 			// 별도의 explain 쿼리가 존재하지 않으면..
-			if(serverInfo.getDriver().getExplainQuery().equals("")){
+			if(null!=serverInfo.getDriver().getExplainQuery()
+					&& serverInfo.getDriver().getExplainQuery().equals("")){
 				try{
 					list = executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
 				} catch (SQLException e) {

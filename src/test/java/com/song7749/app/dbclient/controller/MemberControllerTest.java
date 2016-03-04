@@ -7,7 +7,6 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +35,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.song7749.app.dbclient.loader.WebContextLoader;
+import com.song7749.util.crypto.CryptoAES;
 import com.song7749.util.filter.XSSFilter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -61,7 +61,7 @@ public class MemberControllerTest {
 	List<Object> contentList;
 
 	// login 을 위한 cookie 정보
-	Cookie cookies;
+	Cookie cookie;
 
 	@Before
 	public void setUp() throws ClassNotFoundException, InvalidPropertiesFormatException, IOException {
@@ -74,16 +74,17 @@ public class MemberControllerTest {
 	@Test
 	public void testAddMember_id_duplicate_validate() throws Exception {
 		drb = post("/member/add.json")
-				.param("id","root")
+				.param("id","song7749")
 				.param("email","song7749@gmail.com")
 				.param("password","12345678")
-				.param("passwordQuestion","1234")
-				.param("passwordAnswer","1234")
+				.param("passwordQuestion","123412")
+				.param("passwordAnswer","123412")
 				.param("authType","ADMIN")
 				;
 
 		// login cookie add
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())
@@ -95,7 +96,7 @@ public class MemberControllerTest {
 		assertThat(responseObject.get("status"), 						notNullValue());
 		assertThat((Integer)responseObject.get("status"),				is(500));
 		assertThat(responseObject.get("result"), 						nullValue());
-		assertThat((String)responseObject.get("desc"),	is(" 이미 가입된  회원 ID 입니다."));
+		assertThat((String)responseObject.get("desc"),	is("이미 가입된  회원 ID 입니다."));
 
 
 	}
@@ -104,16 +105,17 @@ public class MemberControllerTest {
 	@Test
 	public void testAddMember() throws Exception {
 		drb = post("/member/add.json")
-				.param("id","song7749")
+				.param("id","song77499")
 				.param("email","song7749@gmail.com")
 				.param("password","12345678")
-				.param("passwordQuestion","1234")
-				.param("passwordAnswer","1234")
+				.param("passwordQuestion","123456")
+				.param("passwordAnswer","123456")
 				.param("authType","ADMIN")
 				;
 
 		// 로그인 cookie 정보 추가
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())
@@ -131,17 +133,18 @@ public class MemberControllerTest {
 
 	@Test
 	public void testModifyMember() throws Exception {
-		drb = put("/member/modify.json")
-				.param("id","root")
+		drb = post("/member/modify.json")
+				.param("id","song7749")
 				.param("email","song7749@gmail.com")
 				.param("password","12345678")
-				.param("passwordQuestion","5678")
-				.param("passwordAnswer","5678")
+				.param("passwordQuestion","567812")
+				.param("passwordAnswer","567812")
 				.param("authType","ADMIN")
 				;
 
 		// 로그인 cookie 정보 추가
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("song7749"));
+		drb.cookie(cookie);
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())
@@ -163,7 +166,8 @@ public class MemberControllerTest {
 				;
 
 		// 로그인 cookie 정보 추가
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())
@@ -180,11 +184,12 @@ public class MemberControllerTest {
 	@Test
 	public void testRemoveMember() throws Exception {
 		drb = delete("/member/remove.json")
-				.param("id","root")
+				.param("id","song77499")
 				;
 
 		// 로그인 cookie 정보 추가
-		drb.cookie(cookies);
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
 
 		result = mockMvc.perform(drb)
 			.andExpect(status().isOk())

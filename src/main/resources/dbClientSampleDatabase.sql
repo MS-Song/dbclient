@@ -1,0 +1,1 @@
+INSERT INTO `ServerInfo` (serverInfoSeq,account,charset,driver,host,hostAlias,password,port,schemaName) VALUES (1,'dbclient','UTF-8','mysql','127.0.0.1','local_Mysql','1234','3306','dbclient'),(2,'STYLE','UTF-8','oracle','10.10.13.211','GMO_TEST','STYLE','1521','TESTWEB'),(3,'GHSADM','UTF-8','oracle','10.10.26.123','GHS_TEST_Aliance','GHSADM','1521','GHSTEST');

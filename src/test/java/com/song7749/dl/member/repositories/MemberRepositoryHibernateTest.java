@@ -100,7 +100,7 @@ public class MemberRepositoryHibernateTest {
 
 	public Member testSave() throws Exception {
 		// give
-		Member member=new Member("song7749", "12345678", "song7749@gmail.com", "출신초등학교는?", "대한민국초등학교",AuthType.ADMIN);
+		Member member=new Member("song774999", "12345678", "song7749@gmail.com", "출신초등학교는?", "대한민국초등학교",AuthType.ADMIN);
 
 		// when
 		memberRepository.save(member);
@@ -138,7 +138,7 @@ public class MemberRepositoryHibernateTest {
 	public void testFindMemberList(Member member) throws Exception {
 		// give
 		FindMemberListDTO dto=new FindMemberListDTO();
-		dto.setId("song7749");
+		dto.setId("song774999");
 		dto.setEmail("song7749@gmail.com");
 		dto.setAuthType(AuthType.ADMIN);
 		// when
