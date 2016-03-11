@@ -9,6 +9,7 @@ import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
+import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 
@@ -73,9 +74,23 @@ public interface DBclientDataSourceManager {
 
 
 	/**
-	 * database view infomation
+	 * database view search
 	 * @param serverInfo
 	 * @return List<ViewVO>
 	 */
 	List<ViewVO> selectViewVOList(ServerInfo serverInfo);
+
+	/**
+	 * database stored procedure search
+	 * @param serverInfo
+	 * @return
+	 */
+	List<ProcedureVO> selectProcedureVOList(ServerInfo serverInfo);
+
+	/**
+	 * 유저가 실행한 쿼리를 취소 한다.
+	 * @param serverInfo
+	 * @param dto
+	 */
+	void killQuery(ServerInfo serverInfo, ExecuteResultListDTO dto);
 }

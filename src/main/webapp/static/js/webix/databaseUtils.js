@@ -787,4 +787,12 @@ var mybatisResultMap = function(){
 	$$("database_query_input").focus(); 
 };
 
+var addslashes = function (str) {
+	return (str + '')
+		.replace(/[\\"']/g, '\\$&')
+		.replace(/\u0000/g, '\\0');
+};
 
+var htmlEntities=function (str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+};

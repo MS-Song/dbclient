@@ -39,7 +39,9 @@ public enum DatabaseDriver {
 			"SELECT TABLE_NAME OWNER, INDEX_NAME, INDEX_TYPE, if(NON_UNIQUE=0,'UNIQUE','NOT_UNIQUE') as UNIQUENESS, CARDINALITY, COLUMN_NAME, SEQ_IN_INDEX COLUMN_POSITION, 'ASC' as DESCEND FROM information_schema.statistics WHERE table_name='{tableName}' AND TABLE_SCHEMA='{schemaName}'",
 			null,
 			"SELECT TABLE_NAME AS VIEW_NAME,VIEW_DEFINITION AS TEXT FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}'",
-			"SELECT * FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='PROCEDURE' AND ROUTINE_SCHEMA='{schemaName}'"),
+			"SELECT ROUTINE_NAME as PROCEDURE_NAME,ROUTINE_DEFINITION as TEXT FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='PROCEDURE' AND ROUTINE_SCHEMA='{schemaName}'",
+			"SELECT ID, info as SQL_TEXT FROM information_schema.processlist",
+			"KILL CONNECTION {id}"),
 
 	@ApiModelProperty
 	oracle(
@@ -51,19 +53,9 @@ public enum DatabaseDriver {
 			"SELECT a.OWNER, a.INDEX_NAME, a.INDEX_TYPE, a.UNIQUENESS, a.NUM_ROWS CARDINALITY , b.COLUMN_NAME, b.COLUMN_POSITION,b.DESCEND FROM ALL_INDEXES a, ALL_IND_COLUMNS b WHERE a.index_name = b.index_name  AND a.table_name='{tableName}'",
 			"select * from table(dbms_xplan.display('plan_table',null,'typical',null))",
 			"SELECT VIEW_NAME,TEXT FROM USER_VIEWS",
-			"select * from user_objects uo where object_type = 'PROCEDURE'");
-
-/* SQLite 지원을 위한 테스트 진행 중
-	@ApiModelProperty
-	sqlite(
-			"org.sqlite.JDBC",
-			"jdbc:sqlite:{host}",
-			"SELECT tbl_name as TABLE_NAME, '' as TABLE_COMMENT FROM sqlite_master",
-			"pragma table_info({tableName})",
-			"SELECT 'LOCAL' as OWNER, name as INDEX_NAME, '' as INDEX_TYPE, sql as COLUMN_NAME, '' as COLUMN_POSITION, '' as CARDINALITY, '' as UNIQUENESS, 'ASC' as DESCEND  FROM sqlite_master WHERE type = 'index' and tbl_name='{tableName}'",
-			"");
-*/
-
+			"select * from user_objects uo where object_type = 'PROCEDURE'",
+			"select concat(concat(s.sid , ','), s.serial#) as ID, sql.sql_text as SQL_TEXT from v$session s join v$sql sql on s.sql_id = sql.sql_id where s.program='dbClient'",
+			"alter system kill session '{id}'");
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -76,6 +68,33 @@ public enum DatabaseDriver {
 	private String explainQuery;
 	private String viewListQuery;
 	private String procedureListQuery;
+	private String processListQuery;
+	private String killProcessQuery;
+
+	DatabaseDriver(
+			String dbms,
+			String drivaerName,
+			String url,
+			String tableListQuery,
+			String fieldListQuery,
+			String indexListQuery,
+			String explainQuery,
+			String viewListQuery,
+			String viewTableQuery,
+			String processListQuery,
+			String killProcessQuery) {
+		this.dbms = dbms;
+		this.driverName = drivaerName;
+		this.url = url;
+		this.tableListQuery = tableListQuery;
+		this.fieldListQuery = fieldListQuery;
+		this.indexListQuery = indexListQuery;
+		this.explainQuery 	= explainQuery;
+		this.viewListQuery 	= viewListQuery;
+		this.procedureListQuery	= viewTableQuery;
+		this.processListQuery = processListQuery;
+		this.killProcessQuery = killProcessQuery;
+	}
 
 	public String getDriverName() {
 		return driverName;
@@ -138,26 +157,20 @@ public enum DatabaseDriver {
 		}
 	}
 
+	public String getProcessListQuery(){
+		return processListQuery;
+	}
+
+	public String getProcessKillQuery(String id){
+		return StringUtils.replace("\\{id\\}",id, killProcessQuery);
+	}
+
 	public String getDbms() {
 		return dbms;
 	}
 
 	public String getExplainQuery() {
 		return explainQuery;
-	}
-
-	DatabaseDriver(String dbms, String drivaerName, String url, String tableListQuery,
-			String fieldListQuery, String indexListQuery,String explainQuery,
-			String viewListQuery,String viewTableQuery) {
-		this.dbms = dbms;
-		this.driverName = drivaerName;
-		this.url = url;
-		this.tableListQuery = tableListQuery;
-		this.fieldListQuery = fieldListQuery;
-		this.indexListQuery = indexListQuery;
-		this.explainQuery 	= explainQuery;
-		this.viewListQuery 	= viewListQuery;
-		this.procedureListQuery	= viewTableQuery;
 	}
 
 	private String repalceServerInfo(ServerInfo serverInfo, String str)

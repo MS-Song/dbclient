@@ -9411,10 +9411,11 @@ webix.ValidateCollection = {
 	},
 	validate:function(id){
 		var result = true;
-		if (!id)
-			for (var key in this.data.pull)
+		if (!id){
+			for (var key in this.data.pull) {
 				var result = this.validate(key) && result;
-		else {
+			}
+		} else {
 			this._validate_details = {};
 			var obj = this.getItem(id);
 			result = webix.ValidateData.validate.call(this, null, obj);

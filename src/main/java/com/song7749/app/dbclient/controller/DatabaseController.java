@@ -623,6 +623,69 @@ public class DatabaseController {
 		model.addAttribute("message", "캐시가 삭제되었습니다.");
 	}
 
+
+	@ApiOperation(value = "데이터 베이스에 실행중인 쿼리를 중단"
+			,notes = "사용자가 실행한 쿼리를 중단시킨다. 컨트롤+C 를 한 효과를 만든다."
+			,response=ResponseResult.class)
+	@RequestMapping(value="/killExecuteQuery",method=RequestMethod.POST)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void killExecuteQuery(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam	String  account,
+			@RequestParam(value="query",required=true)
+			@ApiParam("Database Query SQL")	String  query,
+			HttpServletRequest request,
+			ModelMap model){
+
+
+
+		if(null==host || host.trim().length()<1){
+			throw new IllegalArgumentException("선택된 서버가 없습니다. Database 선택메뉴에서 서버를 선택하세요");
+		}
+
+		if(null==schemaName || schemaName.trim().length()<1){
+			throw new IllegalArgumentException("선택된 Database 가 없습니다. Database 선택메뉴에서 Shema 를 선택하세요");
+		}
+
+		if(null==account  || account.trim().length()<1){
+			throw new IllegalArgumentException("선택된 계정이 없습니다. Database 선택메뉴에서 계정을 선택하세요");
+		}
+
+		if(null==query || query.trim().length()<1){
+			throw new IllegalArgumentException("입력된 쿼리가 없습니다. 쿼리 입력후에 실행하시기 바랍니다.");
+		}
+
+		String decodedQuery=null;
+		try {
+			decodedQuery=URLDecoder.decode(query, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalArgumentException("query 데이터의 디코딩 실패. 쿼리 내용에 디코딩이 안되는 문자열이 존재합니다");
+		}
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, true));
+
+		// reference 를 이용해서 실행시간, query 시간을 측정한다.
+		if(null!=list & list.size()>0){
+			serverInfoManager.killExecutedQuery(
+				new ExecuteResultListDTO(
+					list.get(0).getServerInfoSeq(),
+					host,
+					schemaName,
+					account,
+					true,
+					decodedQuery,
+					false,
+					loginManager.getLoginID(request),
+					request.getRemoteAddr()));
+		}
+		model.clear();
+		model.addAttribute("message", "쿼리가 중지 되었습니다.");
+	}
+
 //	@ApiOperation(value = "엑셀 다운로드"
 //			,notes = "Request parameter 를 기반으로 엑셀파일을 생성하여 다운로드 한다."
 //					+ "타이틀은 엑셀 컬럼 제목이며, 타이틀 배열 개수만큼 밸류를 row 로 생성한다."

@@ -19,10 +19,6 @@
 	<!-- AOP 를 autoproxy 를 통해서 작동시킨다. -->
 	<aop:aspectj-autoproxy />
 
-	<!-- 환경변수 검증 -->
-	<bean class="com.song7749.dl.base.EnviromentCheck"
-		init-method="checkHostEnviroment" />
-
 	<!-- 프로퍼티 파일 로딩 -->
 	<context:property-placeholder location="classpath:properties/dbProperties.xml" />
 

@@ -183,4 +183,10 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Override
 	@TriggersRemove(cacheName="com.song7749.cache.serverInfo.cache",removeAll=true)
 	public void clearCache() {}
+
+	@Override
+	@Transactional(value = "dbClientTransactionManager")
+	public void killExecutedQuery(ExecuteResultListDTO dto) {
+		dbClientDataSourceManager.killQuery(serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq())), dto);
+	}
 }

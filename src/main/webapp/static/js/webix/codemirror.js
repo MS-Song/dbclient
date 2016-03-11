@@ -28,8 +28,17 @@ webix.protoUI({
 		    "Alt-6":function(cm){updateSetQuery();},
 		    "Alt-7":function(cm){deleteQuery();},
 		    "Alt-8":function(cm){$$("database_query_button_allow_html").callEvent("onItemClick");},
-		    "Alt-9":function(cm){$$("database_query_button_auto_commit").callEvent("onItemClick");}
-		    
+		    "Alt-9":function(cm){$$("database_query_button_auto_commit").callEvent("onItemClick");},
+		    "Alt-0":function(cm){killExecuteQuery();},
+		    "Ctrl-1":function(cm){javaModel();},
+		    "Ctrl-2":function(cm){javaHibernateModel();},
+		    "Ctrl-3":function(cm){javaModelSet();},
+		    "Ctrl-4":function(cm){javaModelGet();},
+		    "Ctrl-5":function(cm){mybatisSelect();},
+		    "Ctrl-6":function(cm){mybatisInsert();},
+		    "Ctrl-7":function(cm){mybatisUpdate();},
+		    "Ctrl-8":function(cm){mybatisDelete();},
+		    "Ctrl-9":function(cm){mybatisResultMap();},
 		},
 		hintOptions: {tables: {}}		
 	},

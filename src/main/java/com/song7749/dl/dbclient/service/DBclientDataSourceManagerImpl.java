@@ -3,6 +3,8 @@ package com.song7749.dl.dbclient.service;
 import static com.song7749.util.LogMessageFormatter.format;
 import static com.song7749.util.StringUtils.htmlentities;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,8 +30,10 @@ import org.springframework.stereotype.Service;
 
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
+import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
+import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 import com.song7749.log.dto.SaveQueryExecuteLogDTO;
@@ -65,8 +69,9 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	@Override
 	public Connection getConnection(ServerInfo serverInfo) throws SQLException {
+
 		/**
-		 * 테이블 정보를 제거하기 위해 추가함. 추후 변경 고려
+		 * serverInfo 안에 포함된 테이블 정보를 삭제하기 위해 객체를 새로 만든다.
 		 */
 		ServerInfo keyServerInfo = new ServerInfo();
 		keyServerInfo.setServerInfoSeq(serverInfo.getServerInfoSeq());
@@ -109,9 +114,21 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			bds.setRemoveAbandonedTimeout(60);
 			bds.setLogAbandoned(true);
 			bds.setPoolPreparedStatements(true);
+
+			// 오라클의 경우 client, terminal 이름을 변경 한다.
+			if(serverInfo.getDriver().equals(DatabaseDriver.oracle)){
+				bds.addConnectionProperty("v$session.program","dbClient");
+				try {
+					InetAddress localhost = java.net.InetAddress.getLocalHost();
+					bds.addConnectionProperty("v$session.terminal",localhost.getHostName());
+				} catch (UnknownHostException e) {
+					logger.info(format("{}","oracle terminal name fail"),e.getMessage());
+				}
+			}
 			dataSourceMap.put(keyServerInfo, bds);
 		}
 		try {
+
 			return dataSourceMap.get(keyServerInfo).getConnection();
 		} catch (SQLException e) {
 			dataSourceMap.remove(keyServerInfo);
@@ -229,7 +246,6 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		try {
 			ps = conn.prepareStatement(executeQuery);
 			rs = ps.executeQuery();
-
 			while (rs.next()) {
 				Map<String, String> map=new LinkedHashMap<String, String>();
 				for(int i=1;i<=rs.getMetaData().getColumnCount();i++){
@@ -257,6 +273,33 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 		return list;
 	}
+
+	/**
+	 * Query를 실행한다.
+	 * 리턴 값이 없고, 실행만 할 경우에 사용한다.
+	 * @param conn
+	 * @param executeQuery
+	 * @param isAutoCommit
+	 * @return int affected rows
+	 * @throws SQLException
+	 */
+	private void executeQuery(Connection conn,String executeQuery) throws SQLException{
+		logger.debug(format("excute Query : {} ","databaseInfo"),executeQuery);
+		try {
+			conn.prepareStatement(executeQuery).execute();
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			try {
+				closeAll(conn, null, null);
+			} catch (SQLException e) {
+				logger.info(format("{}","executeQuery Error"),e.getMessage());
+			} finally {
+				nullAll(conn, null, null);
+			}
+		}
+	}
+
 
 	/**
 	 * Query를 실행한다.
@@ -325,6 +368,10 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	@Override
 	public List<Map<String, String>> executeQueryList(ServerInfo serverInfo,ExecuteResultListDTO dto) {
 		List<Map<String, String>> list = null;
+
+		// 실행 전에 Thread ID 를 Query 내에 추가 한다. 맨 뒤에 주석으로 추가 한다.
+//		long threadId = Thread.currentThread().getId();
+//		dto.setQuery(dto.getQuery() + " /* dbclient_thred_id["+ String.valueOf(threadId) +"] */");
 
 		if(dto.getQuery().toLowerCase().startsWith("explain")){
 			// 별도의 explain 쿼리가 존재하지 않으면..
@@ -416,6 +463,12 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 
 	@Override
+	public List<ProcedureVO> selectProcedureVOList(ServerInfo serverInfo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	@PreDestroy
 	protected void finalize() throws Throwable {
 		for(ServerInfo ServerInfo : dataSourceMap.keySet()){
@@ -428,4 +481,45 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		super.finalize();
 	}
 
+	@Override
+	public void killQuery(ServerInfo serverInfo, ExecuteResultListDTO dto) {
+		// 프로세스 리스트를 조회 한다.
+		List<Map<String, String>> list = null;
+		try {
+			list = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getProcessListQuery());
+		} catch (SQLException e) {
+			logger.info(format("{}","prorcessList 조회 실패"),e.getMessage());
+		}
+
+		// 프로세스 리스트를 검색해서 맞는 조건일 경우 해당 쿼리를 kill 한다.
+		if(null!=list && list.size()>0){
+			for(Map<String,String> porcess : list){
+				// 실행중인 쿼리
+				String runQuery = porcess.get("SQL_TEXT").replace("\n", "").replace("\t", "").replace(" ", "");
+				// 중지 대상 쿼리
+				String stopQuery = dto.getQuery().replace("\n", "").replace("\t", "").replace(" ", "");
+
+				logger.debug(
+						format(
+								"{}\n{}",
+								"SQL 중지 쿼리 비교"),
+								runQuery,
+								stopQuery);
+
+				// 방금 사용한 쿼리가 맞을 경우
+				if(runQuery.indexOf(stopQuery) >= 0){
+					// 쿼리 실행 중단
+					logger.debug(format("{}","SQL쿼리 중단 실행"),runQuery);
+					try {
+						executeQuery(getConnection(serverInfo),serverInfo.getDriver().getProcessKillQuery(porcess.get("ID")),true);
+						// TODO thread 중단
+
+					} catch (SQLException e) {
+						logger.debug(format("{}","prorcess kill 실패"),e.getMessage());
+					}
+					break; // 해당하는 쿼리를 찾은 경우에는 중단 시킨다.
+				}
+			}
+		}
+	}
 }

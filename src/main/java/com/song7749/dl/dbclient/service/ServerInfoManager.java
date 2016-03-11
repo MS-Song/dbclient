@@ -119,6 +119,12 @@ public interface ServerInfoManager {
 	List<Map<String,String>> executeResultList(ExecuteResultListDTO dto);
 
 	/**
+	 * 실행 중인 쿼리를 중단한다.
+	 * @param dto
+	 */
+	void killExecutedQuery(ExecuteResultListDTO dto);
+
+	/**
 	 * 등록되어 있는 서버 관련 캐시를 모두 삭제 한다
 	 */
 	void clearCache();
