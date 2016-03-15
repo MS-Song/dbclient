@@ -28,7 +28,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	 * @param target
 	 * @return String
 	 */
-	public static String replace(String before, String after, String target) {
+	public static String replacePatten(String before, String after, String target) {
 		if(!isEmpty(before)){
 			Pattern p = Pattern.compile(before);
 			Matcher m = p.matcher(target);

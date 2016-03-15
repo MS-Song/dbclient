@@ -12,6 +12,7 @@ import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
 import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
+import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
@@ -110,6 +111,22 @@ public interface ServerInfoManager {
 	 * @return List<ViewVO>
 	 */
 	List<ViewVO> findViewVOList(FindTableDTO dto);
+
+	/**
+	 * Procedure 정보 리스트
+	 * @param dto
+	 * @return List<ProcedureVO>
+	 */
+	List<ProcedureVO> findProcedureVOList(FindTableDTO dto);
+
+	/**
+	 * Procedure 상세 정보 리스트
+	 * @param dto
+	 * @param name
+	 * @return List<ProcedureVO>
+	 */
+	List<ProcedureVO> findProcedureVODetailList(FindTableDTO dto,String name);
+
 
 	/**
 	 * Query Result Set List

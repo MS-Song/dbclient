@@ -26,6 +26,7 @@ import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.repositories.ServerInfoRepository;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
+import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
@@ -188,5 +189,27 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Transactional(value = "dbClientTransactionManager")
 	public void killExecutedQuery(ExecuteResultListDTO dto) {
 		dbClientDataSourceManager.killQuery(serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq())), dto);
+	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<ProcedureVO> findProcedureVOList(FindTableDTO dto) {
+
+		return dbClientDataSourceManager
+				.selectProcedureVOList(serverInfoRepository
+						.find(new ServerInfo(dto.getServerInfoSeq())));
+	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<ProcedureVO> findProcedureVODetailList(FindTableDTO dto,String name){
+
+		return dbClientDataSourceManager
+				.selectProcedureVODetailList(serverInfoRepository
+						.find(new ServerInfo(dto.getServerInfoSeq())),name);
 	}
 }

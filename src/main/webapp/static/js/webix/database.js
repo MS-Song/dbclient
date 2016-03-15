@@ -1,3 +1,4 @@
+
 // 최초 기동시에는 캐시를 모두 삭제 처리 한다.
 webix.storage.local.clear();
 
@@ -315,7 +316,7 @@ var database_info_cell = [
 					compare:function(value, filter, obj){ // 검색창 필터조건 구현
 							if (equals(obj.viewName, filter)) return true;
 							return false;
-					}, colspan:2}], 
+					}, colspan:1}], 
 				adjust:true,	sort:"string"
 			},
 			{ 
@@ -355,7 +356,28 @@ var database_info_cell = [
 	{	view : "datatable", 
 		header:"Procedure",	
 		id:"database_info_procedure_list_view", 
-		columns:[],	
+		columns:[
+			{ id:"name",	header:["#", {	// 검색창 구현
+					content:"textFilter", placeholder:"name search",
+					compare:function(value, filter, obj){ // 검색창 필터조건 구현
+							if (equals(obj.name, filter)) return true;
+							return false;
+					}, colspan:1}], 
+				adjust:true,	sort:"string"
+			},
+			{ 
+				id:"procedureModify",
+				header:"수정",		
+				width:60,
+				template:function(obj){
+					var html = '<input type="button" value="수정" style="width:40px;" data="';
+					html+= htmlEntities(obj.name); 
+					html+= '" onClick="database_info_procedure_detail_loading(this);"/>';
+					return html;
+				}
+			},
+			{ id:"lastUpdateDate", adjust:true,	sort:"string" }
+		],	
 		data:[],
 		tooltip:true,
 		select:"row",
@@ -422,6 +444,8 @@ var database_info_data_load=function(){
 	
 	// view list 조회
 	database_info_view_list_view_loading();
+	// procedure list 조회
+	database_info_procedure_list_view_loading();
 };
 
 // 테이블 정보 로딩
@@ -589,10 +613,76 @@ var database_info_view_list_view_loading = function(){
 	}
 } 
 
+// procedure loading
+var database_info_procedure_list_view_loading = function(){
+	// 로딩 프로그레스 
+	$$("database_info_procedure_list_view").showProgress();
+	
+	// 담기 전에 모두 지운다
+	$$("database_info_procedure_list_view").clearAll();
+	 
+	// 캐시에 데이터가 있으면 ajax 를 실행하지 않는다.
+	var cachedViewList = webix.storage.local.get(server + "_" + schema + "_" + account +"_procedureList");
+
+	if(null != cachedViewList){
+		$$("database_info_procedure_list_view").parse(cachedViewList);
+		// 다시 읽는다.
+		$$("database_info_procedure_list_view").refresh();
+		$$("database_info_procedure_list_view").hideProgress();
+	} else {
+		// 프로시저 조회
+		webix.ajax().get("/database/procedureList.json",{
+			server:server,
+			schema:schema,
+			account:account,
+			useCache:useCache}, 
+			function(text,data){
+				console.log(data.json());
+				if(data.json().status ==200 && null!=data.json().result){
+					if(null != data.json().result.procedureList){
+						$$("database_info_procedure_list_view").parse(data.json().result.procedureList)
+					}
+					webix.storage.local.put(server + "_" + schema + "_" + account +"_procedureList",$$("database_info_procedure_list_view").data.serialize());
+					// 다시 읽는다.
+		    		$$("database_info_procedure_list_view").refresh();
+		    		$$("database_info_procedure_list_view").hideProgress();
+				} else {
+					var message = data.json().desc.split("\n");
+					webix.message({ type:"error", text:message[0].replace("="," ") });
+				}
+			}
+		);
+	}
+} 
+
+var database_info_procedure_detail_loading = function(obj){
+	var name = obj.getAttribute("data");
+	if(null!=name){
+		// 프로시저 상세 조회
+		webix.ajax().get("/database/procedureDetailList.json",{
+			server:server,
+			schema:schema,
+			account:account,
+			name:name,
+			useCache:useCache}, 
+			function(text,data){
+				console.log(data.json());
+				if(data.json().status ==200 && null!=data.json().result){
+					$$("database_query_input").setValue(data.json().result.procedureList[0].text);
+					// 에디터 창으로 focus 를 되돌린다.
+					$$("database_query_input").focus(); 
+				} else {
+					var message = data.json().desc.split("\n");
+					webix.message({ type:"error", text:message[0].replace("="," ") });
+				}
+			}
+		);
+	}
+}; 
+
+
 
 // TODO function 리스트
-
-// TODO procedure
 // TODO Sequence 
 // TODO Trigger 
 

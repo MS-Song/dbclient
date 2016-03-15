@@ -38,6 +38,7 @@ import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.dl.dbclient.vo.FavorityQueryVO;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
+import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
@@ -194,6 +195,64 @@ public class DatabaseController {
 
 		logger.trace("viewList : {}",viewList);
 		model.addAttribute("viewList", viewList);
+	}
+
+	@ApiOperation(value = "데이터베이스 Procedure 리스트 조회"
+			,notes = "등록되어 있는 Database 서버의 Procedure 리스트를 조회 한다."
+			,response=ProcedureVO.class)
+	@RequestMapping(value="/procedureList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getProcedure(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<ProcedureVO> procedureList=null;
+		if(null!=list & list.size()>0){
+			procedureList=serverInfoManager.findProcedureVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache));
+		}
+
+		logger.trace("procedureList : {}",procedureList);
+		model.addAttribute("procedureList", procedureList);
+	}
+
+	@ApiOperation(value = "데이터베이스 Procedure 상세 조회"
+			,notes = "등록되어 있는 Database 서버의 Procedure 내용을 조회 한다."
+			,response=ProcedureVO.class)
+	@RequestMapping(value="/procedureDetailList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void procedureDetail(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="name",required=true)
+			@ApiParam 	String  name,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<ProcedureVO> procedureList=null;
+		if(null!=list & list.size()>0){
+			procedureList=serverInfoManager.findProcedureVODetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache),name);
+		}
+
+		logger.trace("procedureList : {}",procedureList);
+		model.addAttribute("procedureList", procedureList);
 	}
 
 

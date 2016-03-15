@@ -39,7 +39,8 @@ public enum DatabaseDriver {
 			"SELECT TABLE_NAME OWNER, INDEX_NAME, INDEX_TYPE, if(NON_UNIQUE=0,'UNIQUE','NOT_UNIQUE') as UNIQUENESS, CARDINALITY, COLUMN_NAME, SEQ_IN_INDEX COLUMN_POSITION, 'ASC' as DESCEND FROM information_schema.statistics WHERE table_name='{tableName}' AND TABLE_SCHEMA='{schemaName}'",
 			null,
 			"SELECT TABLE_NAME AS VIEW_NAME,VIEW_DEFINITION AS TEXT FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}'",
-			"SELECT ROUTINE_NAME as PROCEDURE_NAME,ROUTINE_DEFINITION as TEXT FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='PROCEDURE' AND ROUTINE_SCHEMA='{schemaName}'",
+			"select SPECIFIC_NAME as NAME, LAST_ALTERED as LAST_UPDATE FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='PROCEDURE' AND ROUTINE_SCHEMA='{schemaName}'",
+			"SELECT ROUTINE_DEFINITION as TEXT FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='PROCEDURE' AND ROUTINE_SCHEMA='{schemaName}' AND SPECIFIC_NAME='{name}'",
 			"SELECT ID, info as SQL_TEXT FROM information_schema.processlist",
 			"KILL CONNECTION {id}"),
 
@@ -53,7 +54,8 @@ public enum DatabaseDriver {
 			"SELECT a.OWNER, a.INDEX_NAME, a.INDEX_TYPE, a.UNIQUENESS, a.NUM_ROWS CARDINALITY , b.COLUMN_NAME, b.COLUMN_POSITION,b.DESCEND FROM ALL_INDEXES a, ALL_IND_COLUMNS b WHERE a.index_name = b.index_name  AND a.table_name='{tableName}'",
 			"select * from table(dbms_xplan.display('plan_table',null,'typical',null))",
 			"SELECT VIEW_NAME,TEXT FROM USER_VIEWS",
-			"select * from user_objects uo where object_type = 'PROCEDURE'",
+			"select OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE from user_objects uo where uo.object_type = 'PROCEDURE'",
+			"select SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 4) as text from user_source us where name = upper('{name}') GROUP BY us.name",
 			"select concat(concat(s.sid , ','), s.serial#) as ID, sql.sql_text as SQL_TEXT from v$session s join v$sql sql on s.sql_id = sql.sql_id where s.program='dbClient'",
 			"alter system kill session '{id}'");
 
@@ -68,6 +70,7 @@ public enum DatabaseDriver {
 	private String explainQuery;
 	private String viewListQuery;
 	private String procedureListQuery;
+	private String procedureDetailQuery;
 	private String processListQuery;
 	private String killProcessQuery;
 
@@ -80,20 +83,22 @@ public enum DatabaseDriver {
 			String indexListQuery,
 			String explainQuery,
 			String viewListQuery,
-			String viewTableQuery,
+			String procedureListQuery,
+			String procedureDetailQuery,
 			String processListQuery,
 			String killProcessQuery) {
 		this.dbms = dbms;
 		this.driverName = drivaerName;
 		this.url = url;
-		this.tableListQuery = tableListQuery;
-		this.fieldListQuery = fieldListQuery;
-		this.indexListQuery = indexListQuery;
-		this.explainQuery 	= explainQuery;
-		this.viewListQuery 	= viewListQuery;
-		this.procedureListQuery	= viewTableQuery;
-		this.processListQuery = processListQuery;
-		this.killProcessQuery = killProcessQuery;
+		this.tableListQuery 	= tableListQuery;
+		this.fieldListQuery 	= fieldListQuery;
+		this.indexListQuery 	= indexListQuery;
+		this.explainQuery 		= explainQuery;
+		this.viewListQuery 		= viewListQuery;
+		this.procedureListQuery		= procedureListQuery;
+		this.procedureDetailQuery	= procedureDetailQuery;
+		this.processListQuery 	= processListQuery;
+		this.killProcessQuery 	= killProcessQuery;
 	}
 
 	public String getDriverName() {
@@ -143,7 +148,6 @@ public enum DatabaseDriver {
 		try {
 			return repalceServerInfo(serverInfo, viewListQuery);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new IllegalArgumentException(e.getCause());
 		}
 	}
@@ -152,7 +156,17 @@ public enum DatabaseDriver {
 		try {
 			return repalceServerInfo(serverInfo, procedureListQuery);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
+	public String getprocedureDetailQuery(ServerInfo serverInfo,String name){
+		try{
+			// oracle 인 경우 치환한 것을 다시 replace 한다.
+			String procedureDetailReplace = StringUtils.replace(procedureDetailQuery,"$^$","\n");
+
+			return StringUtils.replacePatten("\\{name\\}",name, repalceServerInfo(serverInfo, procedureDetailReplace));
+		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
 		}
 	}
@@ -162,7 +176,7 @@ public enum DatabaseDriver {
 	}
 
 	public String getProcessKillQuery(String id){
-		return StringUtils.replace("\\{id\\}",id, killProcessQuery);
+		return StringUtils.replacePatten("\\{id\\}",id, killProcessQuery);
 	}
 
 	public String getDbms() {
@@ -179,7 +193,7 @@ public enum DatabaseDriver {
 		for (Field f : serverInfo.getClass().getDeclaredFields()) {
 			f.setAccessible(true);
 			if(null!=f.get(serverInfo)){
-				str = StringUtils.replace("\\{" + f.getName() + "\\}",f.get(serverInfo).toString(), str);
+				str = StringUtils.replacePatten("\\{" + f.getName() + "\\}",f.get(serverInfo).toString(), str);
 			}
 		}
 		return str;

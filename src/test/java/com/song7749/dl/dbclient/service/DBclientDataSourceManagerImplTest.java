@@ -25,6 +25,7 @@ import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
+import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -109,5 +110,23 @@ public class DBclientDataSourceManagerImplTest {
 							serverInfo.getSchemaName(), serverInfo.getAccount(), false, query, false, "song7749", "127.0.0.1"));
 			assertTrue(true);
 		}
+	}
+
+	@Test
+	public void testSelectProcedureVOList() throws Exception {
+		// give
+		// when
+		List<ProcedureVO> list = dbClientDataSourceManager.selectProcedureVOList(serverInfo);
+		// then
+		assertThat(list, notNullValue());
+	}
+
+	@Test
+	public void testSelectProcedureVODetailList() throws Exception {
+		// give
+		// when
+		List<ProcedureVO> list = dbClientDataSourceManager.selectProcedureVODetailList(serverInfo, "sp_serverinfo");
+		// then
+		assertThat(list, notNullValue());
 	}
 }

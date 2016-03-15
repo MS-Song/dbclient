@@ -448,7 +448,6 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		try {
 			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getViewListQuery(serverInfo));
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
@@ -464,8 +463,39 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	@Override
 	public List<ProcedureVO> selectProcedureVOList(ServerInfo serverInfo) {
-		// TODO Auto-generated method stub
-		return null;
+		List<ProcedureVO> list = new ArrayList<ProcedureVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getProcedureListQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(
+				new ProcedureVO(
+					map.get("NAME"),
+					map.get("LAST_UPDATE")));
+		}
+		return list;
+	}
+
+	@Override
+	public List<ProcedureVO> selectProcedureVODetailList(ServerInfo serverInfo,String name) {
+		List<ProcedureVO> list = new ArrayList<ProcedureVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getprocedureDetailQuery(serverInfo,name));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(new ProcedureVO(map.get("TEXT")));
+		}
+		return list;
 	}
 
 	@Override

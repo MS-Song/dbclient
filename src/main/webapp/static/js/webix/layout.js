@@ -139,6 +139,7 @@ webix.ready(function(){
 	webix.extend($$("database_result_list_view"), webix.ProgressBar);
 	webix.extend($$("database_query_favorities_view"), webix.ProgressBar);
 	webix.extend($$("database_info_view_list_view"), webix.ProgressBar);
+	webix.extend($$("database_info_procedure_list_view"), webix.ProgressBar);
 	
 	// layout 화면 사이즈를 재 계산한다.
 	setTimeout(function(){

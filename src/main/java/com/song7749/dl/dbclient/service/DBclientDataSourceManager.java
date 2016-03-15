@@ -83,9 +83,17 @@ public interface DBclientDataSourceManager {
 	/**
 	 * database stored procedure search
 	 * @param serverInfo
-	 * @return
+	 * @return List<ProcedureVO>
 	 */
 	List<ProcedureVO> selectProcedureVOList(ServerInfo serverInfo);
+
+	/**
+	 * database stored procedure Detail search
+	 * @param serverInfo
+	 * @param name
+	 * @return List<ProcedureVO>
+	 */
+	List<ProcedureVO> selectProcedureVODetailList(ServerInfo serverInfo, String name);
 
 	/**
 	 * 유저가 실행한 쿼리를 취소 한다.
