@@ -972,7 +972,8 @@ var executeQuery = function (){
 		    		$$("database_result_list_view").refresh();
 				}
 				// 실행이 종료되면 결과를 보여준다
-				$$("database_query_execute_info").define("label",'Row Count : '+data.json().result.rowCount + ', Total Time  : '+data.json().result.processTime + ' ms');
+				console.log(data.json().result.processTime)
+				$$("database_query_execute_info").define("label",'Rows: '+data.json().result.rowCount + ', Time: '+data.json().result.processTime + ' ms');
 				$$("database_query_execute_info").refresh();
 				
 				//쿼리 로그 기록

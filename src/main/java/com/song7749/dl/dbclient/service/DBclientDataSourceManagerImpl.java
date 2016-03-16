@@ -82,53 +82,58 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		keyServerInfo.setAccount(serverInfo.getAccount());
 		keyServerInfo.setCharset(serverInfo.getCharset());
 
-		if (dataSourceMap.containsKey(keyServerInfo)) {
-			logger.debug(format("Return Saved Connection!"));
-		} else {
-			logger.debug(format("Return New Connection!"));
+		// connection 이 중복 생성 되는 것을 방지
+		synchronized (dataSourceMap) {
+			if (dataSourceMap.containsKey(keyServerInfo)) {
+				logger.debug(format("Return Saved Connection! " + serverInfo.getHostAlias()));
+			} else {
+				logger.debug(format("Return New Connection! " + serverInfo.getHostAlias()));
 
-			BasicDataSource bds = new BasicDataSource();
-			bds.setDriverClassName(serverInfo.getDriver().getDriverName());
-			try {
-				bds.setUrl(serverInfo.getDriver().getUrl(serverInfo));
-			} catch (Exception e) {
-				throw new IllegalArgumentException(e.getMessage());
-			}
-			bds.setUsername(serverInfo.getAccount());
-			bds.setPassword(serverInfo.getPassword());
-			bds.setValidationQuery("SELECT 1 FROM DUAL");
-			bds.setValidationQueryTimeout(60);
-			bds.setDefaultAutoCommit(false);
-			bds.setMaxActive(20);
-			bds.setInitialSize(10);
-			bds.setMinIdle(10);
-			bds.setMaxIdle(20);
-			bds.setMaxWait(5000);
-			bds.setTestOnReturn(true);
-			bds.setTestOnReturn(false);
-			bds.setTestWhileIdle(true);
-			bds.setNumTestsPerEvictionRun(5);
-			bds.setMinEvictableIdleTimeMillis(10000);
-			bds.setTimeBetweenEvictionRunsMillis(50000);
-			bds.setRemoveAbandoned(true);
-			bds.setRemoveAbandonedTimeout(60);
-			bds.setLogAbandoned(true);
-			bds.setPoolPreparedStatements(true);
+				BasicDataSource bds = new BasicDataSource();
+				// reference 를 미리 넣는다 (중복 생성 방지)
+				dataSourceMap.put(keyServerInfo, bds);
 
-			// 오라클의 경우 client, terminal 이름을 변경 한다.
-			if(serverInfo.getDriver().equals(DatabaseDriver.oracle)){
-				bds.addConnectionProperty("v$session.program","dbClient");
+				bds.setDriverClassName(serverInfo.getDriver().getDriverName());
 				try {
-					InetAddress localhost = java.net.InetAddress.getLocalHost();
-					bds.addConnectionProperty("v$session.terminal",localhost.getHostName());
-				} catch (UnknownHostException e) {
-					logger.info(format("{}","oracle terminal name fail"),e.getMessage());
+					bds.setUrl(serverInfo.getDriver().getUrl(serverInfo));
+				} catch (Exception e) {
+					throw new IllegalArgumentException(e.getMessage());
+				}
+				bds.setUsername(serverInfo.getAccount());
+				bds.setPassword(serverInfo.getPassword());
+				bds.setValidationQuery("SELECT 1 FROM DUAL");
+				bds.setValidationQueryTimeout(60);
+				bds.setDefaultAutoCommit(false);
+				bds.setMaxActive(20);
+				bds.setInitialSize(10);
+				bds.setMinIdle(10);
+				bds.setMaxIdle(20);
+				bds.setMaxWait(5000);
+				bds.setTestOnReturn(true);
+				bds.setTestOnReturn(false);
+				bds.setTestWhileIdle(true);
+				bds.setNumTestsPerEvictionRun(5);
+				bds.setMinEvictableIdleTimeMillis(10000);
+				bds.setTimeBetweenEvictionRunsMillis(50000);
+				bds.setRemoveAbandoned(true);
+				bds.setRemoveAbandonedTimeout(60);
+				bds.setLogAbandoned(true);
+				bds.setPoolPreparedStatements(true);
+
+				// 오라클의 경우 client, terminal 이름을 변경 한다.
+				if(serverInfo.getDriver().equals(DatabaseDriver.oracle)){
+					bds.addConnectionProperty("v$session.program","dbClient");
+					try {
+						InetAddress localhost = java.net.InetAddress.getLocalHost();
+						bds.addConnectionProperty("v$session.terminal",localhost.getHostName());
+					} catch (UnknownHostException e) {
+						logger.info(format("{}","oracle terminal name fail"),e.getMessage());
+					}
 				}
 			}
-			dataSourceMap.put(keyServerInfo, bds);
 		}
-		try {
 
+		try {
 			return dataSourceMap.get(keyServerInfo).getConnection();
 		} catch (SQLException e) {
 			dataSourceMap.remove(keyServerInfo);
@@ -246,6 +251,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		try {
 			ps = conn.prepareStatement(executeQuery);
 			rs = ps.executeQuery();
+			rs.setFetchSize(100);
+			logger.debug(format("{}","fetch size"),rs.getFetchSize());
 			while (rs.next()) {
 				Map<String, String> map=new LinkedHashMap<String, String>();
 				for(int i=1;i<=rs.getMetaData().getColumnCount();i++){
