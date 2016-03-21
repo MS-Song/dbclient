@@ -19,5 +19,6 @@ import com.wordnik.swagger.annotations.ApiModel;
  */
 @ApiModel("BASE VO")
 public abstract class AbstractVo extends BaseObject implements Vo {
+
 	private static final long serialVersionUID = -8005676524782732033L;
 }

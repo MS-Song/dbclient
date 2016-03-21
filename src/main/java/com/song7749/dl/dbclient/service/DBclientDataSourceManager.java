@@ -8,8 +8,10 @@ import java.util.Map;
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.vo.FieldVO;
+import com.song7749.dl.dbclient.vo.FunctionVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ProcedureVO;
+import com.song7749.dl.dbclient.vo.SequenceVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 
@@ -94,6 +96,28 @@ public interface DBclientDataSourceManager {
 	 * @return List<ProcedureVO>
 	 */
 	List<ProcedureVO> selectProcedureVODetailList(ServerInfo serverInfo, String name);
+
+	/**
+	 * database function search
+	 * @param serverInfo
+	 * @return List<FunctionVO>
+	 */
+	List<FunctionVO> selectFunctionVOList(ServerInfo serverInfo);
+
+	/**
+	 * database function Detail search
+	 * @param serverInfo
+	 * @param name
+	 * @return List<FunctionVO>
+	 */
+	List<FunctionVO> selectFunctionVODetailList(ServerInfo serverInfo, String name);
+
+	/**
+	 * Sequence List search
+	 * @param serverInfo
+	 * @return
+	 */
+	List<SequenceVO> selectSequenceVOList(ServerInfo serverInfo);
 
 	/**
 	 * 유저가 실행한 쿼리를 취소 한다.

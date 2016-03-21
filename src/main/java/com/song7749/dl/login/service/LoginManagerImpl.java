@@ -79,7 +79,7 @@ public class LoginManagerImpl implements LoginManager{
 			if(dto.getPassword().equals(member.getPassword())){
 				// 로그인 cookie 정보를 생성 한다.
 				Cookie ciperCookie = new Cookie(cipher,CryptoAES.encrypt(member.getId()));
-				ciperCookie.setMaxAge(60*60*2);
+				ciperCookie.setMaxAge(60*60*24);
 				ciperCookie.setPath("/");
 				response.addCookie(ciperCookie);
 

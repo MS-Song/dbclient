@@ -387,19 +387,52 @@ var database_info_cell = [
 		header:"Function",		
 		id:"database_info_function_list_view",				
 		columns:[],	
-		data:[],
+		columns:[
+			{ id:"name",	header:["#", {	// 검색창 구현
+					content:"textFilter", placeholder:"name search",
+					compare:function(value, filter, obj){ // 검색창 필터조건 구현
+							if (equals(obj.name, filter)) return true;
+							return false;
+					}, colspan:1}], 
+				adjust:true,	sort:"string"
+			},
+			{ 
+				id:"functionModify",
+				header:"수정",		
+				width:60,
+				template:function(obj){
+					var html = '<input type="button" value="수정" style="width:40px;" data="';
+					html+= htmlEntities(obj.name); 
+					html+= '" onClick="database_info_function_detail_loading(this);"/>';
+					return html;
+				}
+			},
+			{ id:"lastUpdateDate", adjust:true,	sort:"string" }
+		],	
 		tooltip:true,
 		select:"row",
 		resizeColumn:true,
 	},
 	{	view : "datatable", 
 		header:"Sequence",		
-		id:"database_info_Sequence_list_view",				
-		columns:[],	
+		id:"database_info_sequence_list_view",				
+		columns:[
+			{ id:"name",	header:["#", {	// 검색창 구현
+					content:"textFilter", placeholder:"name search",
+					compare:function(value, filter, obj){ // 검색창 필터조건 구현
+							if (equals(obj.name	, filter)) return true;
+							return false;
+					}, colspan:1}], 
+				adjust:true,	sort:"string"},					         
+			{ id:"lastValue",		header:"lastValue",		sort:"int", 	adjust:true},
+			{ id:"minValue",		header:"minValue",		sort:"int", 	adjust:true},
+			{ id:"maxValue",		header:"maxValue",		sort:"int", 	adjust:true},
+			{ id:"incrementBy",		header:"incrementBy",	sort:"int", 	adjust:true}
+		],	
 		data:[],
 		tooltip:true,
 		select:"row",
-		resizeColumn:true,
+		resizeColumn:true
 	},
 	{	view : "datatable", 
 		header:"Trigger",		
@@ -408,7 +441,7 @@ var database_info_cell = [
 		data:[],
 		tooltip:true,
 		select:"row",
-		resizeColumn:true,
+		resizeColumn:true
 	}
 ];
 
@@ -446,6 +479,10 @@ var database_info_data_load=function(){
 	database_info_view_list_view_loading();
 	// procedure list 조회
 	database_info_procedure_list_view_loading();
+	// function list 조회
+	database_info_function_list_view_loading();
+	// sequence List 로딩
+	database_info_sequence_list_view_loading();
 };
 
 // 테이블 정보 로딩
@@ -596,8 +633,6 @@ var database_info_view_list_view_loading = function(){
 			account:account,
 			useCache:useCache}, 
 			function(text,data){
-				// 필드 정보를 획득한 경우에 넣는다.
-				console.log(data.json());
 				if(data.json().status ==200 && null!=data.json().result){
 					// 인덱스는 없는 경우가 존재한다.
 					if(null != data.json().result.viewList){
@@ -622,10 +657,10 @@ var database_info_procedure_list_view_loading = function(){
 	$$("database_info_procedure_list_view").clearAll();
 	 
 	// 캐시에 데이터가 있으면 ajax 를 실행하지 않는다.
-	var cachedViewList = webix.storage.local.get(server + "_" + schema + "_" + account +"_procedureList");
+	var cachedList = webix.storage.local.get(server + "_" + schema + "_" + account +"_procedureList");
 
-	if(null != cachedViewList){
-		$$("database_info_procedure_list_view").parse(cachedViewList);
+	if(null != cachedList){
+		$$("database_info_procedure_list_view").parse(cachedList);
 		// 다시 읽는다.
 		$$("database_info_procedure_list_view").refresh();
 		$$("database_info_procedure_list_view").hideProgress();
@@ -637,7 +672,6 @@ var database_info_procedure_list_view_loading = function(){
 			account:account,
 			useCache:useCache}, 
 			function(text,data){
-				console.log(data.json());
 				if(data.json().status ==200 && null!=data.json().result){
 					if(null != data.json().result.procedureList){
 						$$("database_info_procedure_list_view").parse(data.json().result.procedureList)
@@ -666,7 +700,6 @@ var database_info_procedure_detail_loading = function(obj){
 			name:name,
 			useCache:useCache}, 
 			function(text,data){
-				console.log(data.json());
 				if(data.json().status ==200 && null!=data.json().result){
 					$$("database_query_input").setValue(data.json().result.procedureList[0].text);
 					// 에디터 창으로 focus 를 되돌린다.
@@ -680,10 +713,115 @@ var database_info_procedure_detail_loading = function(obj){
 	}
 }; 
 
+// function loading
+var database_info_function_list_view_loading = function(){
+	// 로딩 프로그레스 
+	$$("database_info_function_list_view").showProgress();
+	
+	// 담기 전에 모두 지운다
+	$$("database_info_function_list_view").clearAll();
+	 
+	// 캐시에 데이터가 있으면 ajax 를 실행하지 않는다.
+	var cachedList = webix.storage.local.get(server + "_" + schema + "_" + account +"_functionList");
+
+	if(null != cachedList){
+		$$("database_info_function_list_view").parse(cachedList);
+		// 다시 읽는다.
+		$$("database_info_function_list_view").refresh();
+		$$("database_info_function_list_view").hideProgress();
+	} else {
+		// 프로시저 조회
+		webix.ajax().get("/database/functionList.json",{
+			server:server,
+			schema:schema,
+			account:account,
+			useCache:useCache}, 
+			function(text,data){
+				if(data.json().status ==200 && null!=data.json().result){
+					if(null != data.json().result.functionList){
+						$$("database_info_function_list_view").parse(data.json().result.functionList)
+						webix.storage.local.put(server + "_" + schema + "_" + account +"_functionList",$$("database_info_function_list_view").data.serialize());
+					}
+					// 다시 읽는다.
+				} else {
+					var message = data.json().desc.split("\n");
+					webix.message({ type:"error", text:message[0].replace("="," ") });
+				}
+	    		$$("database_info_function_list_view").refresh();
+	    		$$("database_info_function_list_view").hideProgress();
+			}
+		);
+	}
+}; 
+
+var database_info_function_detail_loading = function(obj){
+	var name = obj.getAttribute("data");
+	if(null!=name){
+		// 프로시저 상세 조회
+		webix.ajax().get("/database/functionDetailList.json",{
+			server:server,
+			schema:schema,
+			account:account,
+			name:name,
+			useCache:useCache}, 
+			function(text,data){
+				console.log(data.json());
+				if(data.json().status ==200 && null!=data.json().result){
+					$$("database_query_input").setValue(data.json().result.functionList[0].text);
+					// 에디터 창으로 focus 를 되돌린다.
+					$$("database_query_input").focus(); 
+				} else {
+					var message = data.json().desc.split("\n");
+					webix.message({ type:"error", text:message[0].replace("="," ") });
+				}
+			}
+		);
+	}
+}; 
+
+//Sequence
+var database_info_sequence_list_view_loading = function(){
+	// 로딩 프로그레스 
+	$$("database_info_sequence_list_view").showProgress();
+	
+	// 담기 전에 모두 지운다
+	$$("database_info_sequence_list_view").clearAll();
+	 
+	// 캐시에 데이터가 있으면 ajax 를 실행하지 않는다.
+	var cachedList = webix.storage.local.get(server + "_" + schema + "_" + account +"_sequenceList");
+
+	if(null != cachedList){
+		$$("database_info_sequence_list_view").parse(cachedList);
+		// 다시 읽는다.
+		$$("database_info_sequence_list_view").refresh();
+		$$("database_info_sequence_list_view").hideProgress();
+	} else {
+		// 인덱스 조회
+		webix.ajax().get("/database/sequenceList.json",{
+			server:server,
+			schema:schema,
+			account:account,
+			useCache:useCache}, 
+			function(text,data){
+				console.log(data.json());
+				if(data.json().status ==200 && null!=data.json().result){
+					if(null != data.json().result.sequenceList){
+						$$("database_info_sequence_list_view").parse(data.json().result.sequenceList);
+						webix.storage.local.put(server + "_" + schema + "_" + account +"_sequenceList",$$("database_info_sequence_list_view").data.serialize());
+					}
+				} else {
+					var message = data.json().desc.split("\n");
+					webix.message({ type:"error", text:message[0].replace("="," ") });
+				}
+				// 다시 읽는다.
+	    		$$("database_info_sequence_list_view").refresh();
+	    		$$("database_info_sequence_list_view").hideProgress();
+			}
+		);
+	}
+}
 
 
-// TODO function 리스트
-// TODO Sequence 
 // TODO Trigger 
 
 

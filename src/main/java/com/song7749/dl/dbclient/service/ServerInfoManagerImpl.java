@@ -25,8 +25,10 @@ import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.repositories.ServerInfoRepository;
 import com.song7749.dl.dbclient.vo.FieldVO;
+import com.song7749.dl.dbclient.vo.FunctionVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ProcedureVO;
+import com.song7749.dl.dbclient.vo.SequenceVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
@@ -211,5 +213,38 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 		return dbClientDataSourceManager
 				.selectProcedureVODetailList(serverInfoRepository
 						.find(new ServerInfo(dto.getServerInfoSeq())),name);
+	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<FunctionVO> findFunctionVOList(FindTableDTO dto) {
+
+		return dbClientDataSourceManager
+				.selectFunctionVOList(serverInfoRepository
+						.find(new ServerInfo(dto.getServerInfoSeq())));
+	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<FunctionVO> findFunctionVODetailList(FindTableDTO dto,String name){
+
+		return dbClientDataSourceManager
+				.selectFunctionVODetailList(serverInfoRepository
+						.find(new ServerInfo(dto.getServerInfoSeq())),name);
+	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<SequenceVO> findSequenceVOList(FindTableDTO dto){
+
+		return dbClientDataSourceManager
+				.selectSequenceVOList(serverInfoRepository
+						.find(new ServerInfo(dto.getServerInfoSeq())));
 	}
 }

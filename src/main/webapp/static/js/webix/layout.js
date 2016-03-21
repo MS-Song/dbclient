@@ -131,16 +131,6 @@ webix.ready(function(){
 		}
 	});
 	
-	// progress 추가
-	webix.extend($$("database_info_table_list_view"), webix.ProgressBar);
-	webix.extend($$("table_info_field_list"), webix.ProgressBar);
-	webix.extend($$("table_info_develop_list"), webix.ProgressBar);
-	webix.extend($$("table_info_index_list"), webix.ProgressBar);
-	webix.extend($$("database_result_list_view"), webix.ProgressBar);
-	webix.extend($$("database_query_favorities_view"), webix.ProgressBar);
-	webix.extend($$("database_info_view_list_view"), webix.ProgressBar);
-	webix.extend($$("database_info_procedure_list_view"), webix.ProgressBar);
-	
 	// layout 화면 사이즈를 재 계산한다.
 	setTimeout(function(){
 		// 화면에서 toolbar 와 footer 의 사이즈를 제외하고 리사이즈 시킨다.
@@ -150,6 +140,23 @@ webix.ready(function(){
 		$$("main_body").resize();
 		$$("main_body").define("height", "auto");
 	}, 300);
+
+	// 로딩후 0.5 초 이후에 progress 를 만든다.
+	setTimeout(function(){
+		// progress 추가
+		webix.extend($$("database_info_table_list_view"), webix.ProgressBar);
+		webix.extend($$("table_info_field_list"), webix.ProgressBar);
+		webix.extend($$("table_info_develop_list"), webix.ProgressBar);
+		webix.extend($$("table_info_index_list"), webix.ProgressBar);
+		webix.extend($$("database_result_list_view"), webix.ProgressBar);
+		webix.extend($$("database_query_favorities_view"), webix.ProgressBar);
+		webix.extend($$("database_info_view_list_view"), webix.ProgressBar);
+		webix.extend($$("database_info_procedure_list_view"), webix.ProgressBar);
+		webix.extend($$("database_info_function_list_view"), webix.ProgressBar);
+		webix.extend($$("database_info_sequence_list_view"), webix.ProgressBar);
+	}, 500);
+
+	
 	
 	// 뒤로가기 버튼으로 뒤로가기 금지 
 	$(document).keydown(function(e){   

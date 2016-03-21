@@ -32,8 +32,10 @@ import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.dl.dbclient.vo.FieldVO;
+import com.song7749.dl.dbclient.vo.FunctionVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ProcedureVO;
+import com.song7749.dl.dbclient.vo.SequenceVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 import com.song7749.log.dto.SaveQueryExecuteLogDTO;
@@ -494,7 +496,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		List<Map<String, String>> resultList = null;
 		try {
-			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getprocedureDetailQuery(serverInfo,name));
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getProcedureDetailQuery(serverInfo,name));
 		} catch (SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
@@ -504,6 +506,67 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 		return list;
 	}
+
+	@Override
+	public List<FunctionVO> selectFunctionVOList(ServerInfo serverInfo) {
+		List<FunctionVO> list = new ArrayList<FunctionVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getFunctionListQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(
+				new FunctionVO(
+					map.get("NAME"),
+					map.get("LAST_UPDATE")));
+		}
+		return list;
+	}
+
+	@Override
+	public List<FunctionVO> selectFunctionVODetailList(ServerInfo serverInfo,String name) {
+		List<FunctionVO> list = new ArrayList<FunctionVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getFunctionDetailQuery(serverInfo,name));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(new FunctionVO(map.get("TEXT")));
+		}
+		return list;
+	}
+
+
+	@Override
+	public List<SequenceVO> selectSequenceVOList(ServerInfo serverInfo) {
+		List<SequenceVO> list = new ArrayList<SequenceVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getSequenceListQueryQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(new SequenceVO(
+					map.get("NAME"),
+					map.get("LAST_VALUE"),
+					map.get("MIN_VALUE"),
+					map.get("MAX_VALUE"),
+					map.get("INCREMENT_BY")));
+		}
+		return list;
+	}
+
 
 	@Override
 	@PreDestroy

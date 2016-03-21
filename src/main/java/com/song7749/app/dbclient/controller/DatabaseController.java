@@ -37,8 +37,10 @@ import com.song7749.dl.dbclient.service.ServerInfoManager;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
 import com.song7749.dl.dbclient.vo.FavorityQueryVO;
 import com.song7749.dl.dbclient.vo.FieldVO;
+import com.song7749.dl.dbclient.vo.FunctionVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ProcedureVO;
+import com.song7749.dl.dbclient.vo.SequenceVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
@@ -255,6 +257,91 @@ public class DatabaseController {
 		model.addAttribute("procedureList", procedureList);
 	}
 
+	@ApiOperation(value = "데이터베이스 Function 리스트 조회"
+			,notes = "등록되어 있는 Database 서버의 function 리스트를 조회 한다."
+			,response=FunctionVO.class)
+	@RequestMapping(value="/functionList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getFunction(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<FunctionVO> functionList=null;
+		if(null!=list & list.size()>0){
+			functionList=serverInfoManager.findFunctionVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache));
+		}
+
+		logger.trace("functionList : {}",functionList);
+		model.addAttribute("functionList", functionList);
+	}
+
+	@ApiOperation(value = "데이터베이스 Function 상세 조회"
+			,notes = "등록되어 있는 Database 서버의 Function 내용을 조회 한다."
+			,response=FunctionVO.class)
+	@RequestMapping(value="/functionDetailList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void functionDetail(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="name",required=true)
+			@ApiParam 	String  name,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<FunctionVO> functionList=null;
+		if(null!=list & list.size()>0){
+			functionList=serverInfoManager.findFunctionVODetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache),name);
+		}
+
+		logger.trace("functionList : {}",functionList);
+		model.addAttribute("functionList", functionList);
+	}
+
+	@ApiOperation(value = "데이터베이스 Sequence 리스트 조회"
+			,notes = "등록되어 있는 Database 서버의 Sequence 리스트를 조회 한다."
+			,response=SequenceVO.class)
+	@RequestMapping(value="/sequenceList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getSequence(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<SequenceVO> sequenceList=null;
+		if(null!=list & list.size()>0){
+			sequenceList=serverInfoManager.findSequenceVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache));
+		}
+
+		logger.trace("sequenceList : {}",sequenceList);
+		model.addAttribute("sequenceList", sequenceList);
+	}
 
 	@ApiOperation(value = "데이터베이스 테이블  필드 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 의 필드를 조회 한다."

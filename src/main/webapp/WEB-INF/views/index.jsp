@@ -6,7 +6,7 @@
 <html>
 <head>
 	<title>DB Client</title>
-	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
+	<meta  name = "viewport" content = "initial-scale = 0.8, maximum-scale = 1.0, user-scalable = no">
 	<!-- jQuery -->
 	<script src="./static/js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
 	<!-- webix -->
