@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
@@ -60,7 +61,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	private final Map<ServerInfo, DataSource> dataSourceMap = new HashMap<ServerInfo, DataSource>();
+	// ConcurrentHashMap 중복 생성을 방지하고자 함.
+	private final Map<ServerInfo, DataSource> dataSourceMap = new ConcurrentHashMap<ServerInfo, DataSource>();
 
 
 	@Autowired
@@ -71,6 +73,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	@Override
 	public Connection getConnection(ServerInfo serverInfo) throws SQLException {
+
+		logger.debug(format("{}","database server info"),serverInfo);
 
 		/**
 		 * serverInfo 안에 포함된 테이블 정보를 삭제하기 위해 객체를 새로 만든다.
@@ -85,56 +89,54 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		keyServerInfo.setCharset(serverInfo.getCharset());
 
 		// connection 이 중복 생성 되는 것을 방지
-		synchronized (dataSourceMap) {
-			if (dataSourceMap.containsKey(keyServerInfo)) {
-				logger.debug(format("Return Saved Connection! " + serverInfo.getHostAlias()));
-			} else {
-				logger.debug(format("Return New Connection! " + serverInfo.getHostAlias()));
+		if (dataSourceMap.containsKey(keyServerInfo)) {
+			logger.debug(format("Return Saved Connection! " + serverInfo.getHostAlias()));
+		} else {
+			logger.debug(format("Return New Connection! " + serverInfo.getHostAlias()));
 
-				BasicDataSource bds = new BasicDataSource();
-				// reference 를 미리 넣는다 (중복 생성 방지)
-				dataSourceMap.put(keyServerInfo, bds);
+			BasicDataSource bds = new BasicDataSource();
+			// reference 를 미리 넣는다 (중복 생성 방지)
+			dataSourceMap.put(keyServerInfo, bds);
 
-				bds.setDriverClassName(serverInfo.getDriver().getDriverName());
+			bds.setDriverClassName(serverInfo.getDriver().getDriverName());
+			try {
+				logger.debug(format("{}","database connect URL"),serverInfo.getDriver().getUrl(serverInfo));
+				bds.setUrl(serverInfo.getDriver().getUrl(serverInfo));
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e.getMessage());
+			}
+			bds.setUsername(serverInfo.getAccount());
+			bds.setPassword(serverInfo.getPassword());
+			bds.setValidationQuery("SELECT 1 FROM DUAL");
+			bds.setValidationQueryTimeout(60);
+			bds.setDefaultAutoCommit(false);
+			bds.setMaxActive(20);
+			bds.setInitialSize(10);
+			bds.setMinIdle(10);
+			bds.setMaxIdle(20);
+			bds.setMaxWait(5000);
+			bds.setTestOnReturn(true);
+			bds.setTestOnReturn(false);
+			bds.setTestWhileIdle(true);
+			bds.setNumTestsPerEvictionRun(5);
+			bds.setMinEvictableIdleTimeMillis(10000);
+			bds.setTimeBetweenEvictionRunsMillis(50000);
+			bds.setRemoveAbandoned(true);
+			bds.setRemoveAbandonedTimeout(60);
+			bds.setLogAbandoned(true);
+			bds.setPoolPreparedStatements(true);
+
+			// 오라클의 경우 client, terminal 이름을 변경 한다.
+			if(serverInfo.getDriver().equals(DatabaseDriver.oracle)){
+				bds.addConnectionProperty("v$session.program","dbClient");
 				try {
-					bds.setUrl(serverInfo.getDriver().getUrl(serverInfo));
-				} catch (Exception e) {
-					throw new IllegalArgumentException(e.getMessage());
-				}
-				bds.setUsername(serverInfo.getAccount());
-				bds.setPassword(serverInfo.getPassword());
-				bds.setValidationQuery("SELECT 1 FROM DUAL");
-				bds.setValidationQueryTimeout(60);
-				bds.setDefaultAutoCommit(false);
-				bds.setMaxActive(20);
-				bds.setInitialSize(10);
-				bds.setMinIdle(10);
-				bds.setMaxIdle(20);
-				bds.setMaxWait(5000);
-				bds.setTestOnReturn(true);
-				bds.setTestOnReturn(false);
-				bds.setTestWhileIdle(true);
-				bds.setNumTestsPerEvictionRun(5);
-				bds.setMinEvictableIdleTimeMillis(10000);
-				bds.setTimeBetweenEvictionRunsMillis(50000);
-				bds.setRemoveAbandoned(true);
-				bds.setRemoveAbandonedTimeout(60);
-				bds.setLogAbandoned(true);
-				bds.setPoolPreparedStatements(true);
-
-				// 오라클의 경우 client, terminal 이름을 변경 한다.
-				if(serverInfo.getDriver().equals(DatabaseDriver.oracle)){
-					bds.addConnectionProperty("v$session.program","dbClient");
-					try {
-						InetAddress localhost = java.net.InetAddress.getLocalHost();
-						bds.addConnectionProperty("v$session.terminal",localhost.getHostName());
-					} catch (UnknownHostException e) {
-						logger.info(format("{}","oracle terminal name fail"),e.getMessage());
-					}
+					InetAddress localhost = java.net.InetAddress.getLocalHost();
+					bds.addConnectionProperty("v$session.terminal",localhost.getHostName());
+				} catch (UnknownHostException e) {
+					logger.info(format("{}","oracle terminal name fail"),e.getMessage());
 				}
 			}
 		}
-
 		try {
 			return dataSourceMap.get(keyServerInfo).getConnection();
 		} catch (SQLException e) {

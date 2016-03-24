@@ -33,7 +33,7 @@ public class LogMessageFormatter {
 		int bothPadSize = 100;
 
 		StringBuffer sb = new StringBuffer();
-		sb.append(" \n ");
+		sb.append("\n");
 
 		for(int i=0;i<bothPadSize/2 - title.length()/2 - 1;i++){
 			sb.append("*");
@@ -45,14 +45,14 @@ public class LogMessageFormatter {
 			sb.append("*");
 		}
 
-		sb.append(" \n ");
+		sb.append("\n");
 		sb.append(message);
-		sb.append(" \n ");
+		sb.append("\n");
 
 		for(int i=0;i<bothPadSize;i++){
 			sb.append("*");
 		}
-		sb.append(" \n ");
+		sb.append("\n");
 		return sb.toString();
 	}
 

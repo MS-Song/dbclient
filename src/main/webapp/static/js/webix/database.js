@@ -1128,9 +1128,9 @@ var executeQuery = function (){
 			} else { // 에러가 발생할 경우
 				webix.message({ type:"error", text:data.json().desc });
 			}
-			$$("database_result_list_view").hideProgress();
 		}
 	);
+	$$("database_result_list_view").hideProgress();
 }
 
 // 실행중인 쿼리 중단
