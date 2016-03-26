@@ -667,11 +667,11 @@ Operation.prototype.execute = function(arg1, arg2, arg3, arg4, parent) {
   for(var i = 0; i < this.parameters.length; i++) {
     var param = this.parameters[i];
     if(typeof args[param.name] !== 'undefined') {
-      if(param.in === 'path') {
+      if(param['in'] === 'path') {
         var reg = new RegExp('\{' + param.name + '[^\}]*\}', 'gi');
         requestUrl = requestUrl.replace(reg, this.encodePathParam(args[param.name]));
       }
-      else if (param.in === 'query') {
+      else if (param['in'] === 'query') {
         if(querystring === '')
           querystring += '?';
         else
@@ -686,9 +686,9 @@ Operation.prototype.execute = function(arg1, arg2, arg3, arg4, parent) {
         else
           querystring += this.encodeQueryParam(param.name) + '=' + this.encodeQueryParam(args[param.name]);
       }
-      else if (param.in === 'header')
+      else if (param['in'] === 'header')
         headers[param.name] = args[param.name];
-      else if (param.in === 'form')
+      else if (param['in'] === 'form')
         formParams[param.name] = args[param.name];
     }
   }

@@ -158,8 +158,10 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
+		int seq=0;
 		for(Map<String,String> map:resultList){
 			list.add(new TableVO(
+				++seq,
 				map.get("TABLE_NAME"),
 				map.get("TABLE_COMMENT")));
 		}
@@ -498,6 +500,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		List<Map<String, String>> resultList = null;
 		try {
+			logger.debug(format("{}","procedureDetail"),serverInfo.getDriver().getProcedureDetailQuery(serverInfo,name));
 			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getProcedureDetailQuery(serverInfo,name));
 		} catch (SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());

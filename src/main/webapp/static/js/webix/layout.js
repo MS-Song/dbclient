@@ -150,10 +150,6 @@ webix.ready(function(){
 		webix.extend($$("table_info_index_list"), webix.ProgressBar);
 		webix.extend($$("database_result_list_view"), webix.ProgressBar);
 		webix.extend($$("database_query_favorities_view"), webix.ProgressBar);
-		webix.extend($$("database_info_view_list_view"), webix.ProgressBar);
-		webix.extend($$("database_info_procedure_list_view"), webix.ProgressBar);
-		webix.extend($$("database_info_function_list_view"), webix.ProgressBar);
-		webix.extend($$("database_info_sequence_list_view"), webix.ProgressBar);
 	}, 500);
 
 	

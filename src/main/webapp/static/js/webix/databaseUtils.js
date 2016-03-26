@@ -28,7 +28,7 @@ var selectAllQuery=function(){
  * select Query
  */
 var selectQuery=function(mode){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
@@ -57,7 +57,7 @@ var selectQuery=function(mode){
 	}
 
 	html+='\rfrom ';
-	html+=tableName;
+	html+=serverInfo.tableName;
 	
 	whereList=getColumns('selectWhereList');
 	if(whereList.length>0){
@@ -66,7 +66,7 @@ var selectQuery=function(mode){
 	
 	// database 종류에 따라 한정자를 넣는다. (count 가 아닌 경우에만)
 	if(mode!='count'){
-		switch (driver) {
+		switch (serverInfo.driver) {
 		case 'mysql'	: 	html+=' limit 10';										break;
 		case 'oracle'	: 	html='select * from (\r'+html+'\r) where rownum <= 10';	break;
 		}
@@ -82,19 +82,19 @@ var selectQuery=function(mode){
  * delete Query
  */
 var deleteQuery=function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
 
-	var html='delete from '+tableName;
+	var html='delete from '+serverInfo.tableName;
 	var whereList=getColumns('whereList');
 
 	if(whereList.length>0){
 		html+='\rwhere \r\t' + whereList.join("\r\tand ");
 	}
 	// database 종류에 따라 한정자를 넣는다.
-	switch (driver) {
+	switch (serverInfo.driver) {
 		case 'mysql':html+=' limit 10';break;
 	}
 	
@@ -108,14 +108,14 @@ var deleteQuery=function(){
  * insert into query
  */
 var insertIntoQuery=function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
 
 	var columnList=getColumns('selectList');
 	var intoList=getColumns('selectIntoList');
-	var html='INSERT INTO '+tableName;
+	var html='INSERT INTO '+serverInfo.tableName;
 	
 	html+='\r(';
 	html+=columnList.join(",");
@@ -132,17 +132,17 @@ var insertIntoQuery=function(){
  * insert set query
  */
 var insertSetQuery=function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
 
 	// database 종류에 따라 지원하지 않는다.
-	if(driver == 'oracle'){
+	if(serverInfo.driver == 'oracle'){
 		insertIntoQuery();
 	} else {
 		var setList=getColumns('selectSetList');
-		var html='INSERT INTO '+tableName;
+		var html='INSERT INTO '+serverInfo.tableName;
 		html+='\rSET\r\t';
 		html+=setList.join("\r\t,");
 
@@ -156,7 +156,7 @@ var insertSetQuery=function(){
  * update Query
  */
 var updateSetQuery=function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
@@ -164,7 +164,7 @@ var updateSetQuery=function(){
 	var setList=getColumns('selectSetList');
 	var whereList=getColumns('whereList');
 	
-	var html='UPDATE '+tableName;
+	var html='UPDATE '+serverInfo.tableName;
 	html+='\rSET\r\t';
 	html+=setList.join("\r\t,");
 	if(whereList.length>0){
@@ -174,7 +174,7 @@ var updateSetQuery=function(){
 	}
 	
 	// database 종류에 따라 한정자를 넣는다.
-	switch (driver) {
+	switch (serverInfo.driver) {
 		case 'mysql':html+=' limit 10';break;
 	}
 	$$("database_query_input").setValue(html);
@@ -186,7 +186,7 @@ var updateSetQuery=function(){
  * 테이블에서 mode 에 따라 컬럼 데이터를 획득한다.
  */
 var getColumns = function (mode){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
@@ -205,11 +205,11 @@ var getColumns = function (mode){
 			}
 			break;
 		case 'selectWithComment':
-			var html=aliasTable(tableName).toUpperCase();
+			var html=aliasTable(serverInfo.tableName).toUpperCase();
 			html+=".";
 			html+=this.columnName;
 			html+=" AS ";
-			html+=aliasTable(tableName).toUpperCase();
+			html+=aliasTable(serverInfo.tableName).toUpperCase();
 			html+="_";
 			html+=this.columnName; 
 			html+= (listLength -1 > loop) ? ",":"";
@@ -304,7 +304,7 @@ var columnTypeConverter=function(operation,type,value){
   	
 	// database 종류에 따라 날짜 관련 설정을 한다.
   	if(value!=null && type.toUpperCase().indexOf("DATE")>=0 ){
-  		switch (driver) {
+  		switch (serverInfo.driver) {
 		case 'oracle':
 			//날짜에 0 이 들어가 있으면 잘라 낸다.
 			if(value.indexOf(".") >=0){
@@ -493,7 +493,7 @@ var aliasTable=function(table){
 
 
 var javaModel=function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
@@ -507,8 +507,8 @@ var javaModel=function(){
 	
 	var getterSetters="";
 	
-	var html='\n/**\n\r* Table Name '+tableName+'\n\r*/\n\r';
-		html+='public class '+ tableStyleConverter(tableName) + " { \n";
+	var html='\n/**\n\r* Table Name '+serverInfo.tableName+'\n\r*/\n\r';
+		html+='public class '+ tableStyleConverter(serverInfo.tableName) + " { \n";
 
 	for(var i=0;i<columnList.length;i++){
 		var column=columnStyleConverter(columnList[i]);
@@ -536,7 +536,7 @@ var javaModel=function(){
   
   
 var javaHibernateModel=function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
@@ -555,11 +555,11 @@ var javaHibernateModel=function(){
 	var columnAIList=getColumns('extraList');
 
 	// 테이블 네임을 변경하기 때문에 치환 한다.
-	var tableNameAlias=tableName;
+	var tableNameAlias=serverInfo.tableName;
 	
 	var tableAnnotation ='@Entity'+"\n";
 	tableAnnotation +='@Table(name = "'+tableNameAlias+'")'+"\n";
-	tableAnnotation +='@org.hibernate.annotations.Table(comment = "'+ tableComment +'", appliesTo = "'+tableNameAlias+'")'+"\n";
+	tableAnnotation +='@org.hibernate.annotations.Table(comment = "'+ serverInfo.tableComment +'", appliesTo = "'+tableNameAlias+'")'+"\n";
 	
 	if(tableNameAlias.indexOf('t')==0){
 		tableNameAlias=tableNameAlias.substring(1, tableNameAlias.length);
@@ -666,7 +666,7 @@ var javaHibernateModel=function(){
 };
   
 var javaModelSet=function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
@@ -677,7 +677,7 @@ var javaModelSet=function(){
 	var columnHtml='';
 	var columnName='';
 	var columnParamName='';
-	var tableNameAlias=tableName;
+	var tableNameAlias=serverInfo.tableName;
 
 	for(var i=0;i<columnList.length;i++){
 		columnParamName=columnStyleConverter(columnList[i]);
@@ -690,7 +690,7 @@ var javaModelSet=function(){
 };
   
 var javaModelGet=function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
@@ -700,7 +700,7 @@ var javaModelGet=function(){
 	var columnHtml='';
 	var columnName='';
 	var columnParamName='';
-	var tableNameAlias=tableName;
+	var tableNameAlias=serverInfo.tableName;
  
 	for(var i=0;i<columnList.length;i++){
 		columnParamName=columnStyleConverter(columnList[i]);
@@ -715,12 +715,12 @@ var javaModelGet=function(){
 
 
 var mybatisSelect = function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
 	$$("database_query_input").setValue(getColumns('selectWithComment').join("\n"));
-  	var columnHtml ='<sql id="selectBy'+tableStyleConverter(tableName)+'">\n';
+  	var columnHtml ='<sql id="selectBy'+tableStyleConverter(serverInfo.tableName)+'">\n';
   	columnHtml+=$$("database_query_input").getValue();
   	columnHtml+='\n</sql>';	
 	$$("database_query_input").setValue(columnHtml);
@@ -730,8 +730,8 @@ var mybatisSelect = function(){
 
 var mybatisInsert = function(){
 	insertIntoQuery();
-  	var columnHtml ='<insert parameterType="'+tableStyleConverter(tableName)+'" id="insert'+tableStyleConverter(tableName)+'" statementType="PREPARED">\n';
-  	columnHtml+='\n/* insert'+tableStyleConverter(tableName)+' */\n';
+  	var columnHtml ='<insert parameterType="'+tableStyleConverter(serverInfo.tableName)+'" id="insert'+tableStyleConverter(serverInfo.tableName)+'" statementType="PREPARED">\n';
+  	columnHtml+='\n/* insert'+tableStyleConverter(serverInfo.tableName)+' */\n';
   	columnHtml+=$$("database_query_input").getValue();
   	columnHtml+='\n</insert>';
 	$$("database_query_input").setValue(columnHtml);
@@ -741,8 +741,8 @@ var mybatisInsert = function(){
 
 var mybatisUpdate = function(){
   	updateSetQuery();
-  	var columnHtml ='<update parameterType="'+tableStyleConverter(tableName)+'" id="update'+tableStyleConverter(tableName)+'" statementType="PREPARED">\n';
-  	columnHtml+='\n/* update'+tableStyleConverter(tableName)+' */\n';
+  	var columnHtml ='<update parameterType="'+tableStyleConverter(serverInfo.tableName)+'" id="update'+tableStyleConverter(serverInfo.tableName)+'" statementType="PREPARED">\n';
+  	columnHtml+='\n/* update'+tableStyleConverter(serverInfo.tableName)+' */\n';
   	columnHtml+=$$("database_query_input").getValue();
   	columnHtml+='\n</update>';
 	$$("database_query_input").setValue(columnHtml);
@@ -752,8 +752,8 @@ var mybatisUpdate = function(){
 
 var mybatisDelete = function(){
   	deleteQuery();
-  	var columnHtml ='<delete parameterType="'+tableStyleConverter(tableName)+'" id="delete'+tableStyleConverter(tableName)+'" statementType="PREPARED">\n';
-  	columnHtml+='\n/* delete'+tableStyleConverter(tableName)+' */\n';
+  	var columnHtml ='<delete parameterType="'+tableStyleConverter(serverInfo.tableName)+'" id="delete'+tableStyleConverter(serverInfo.tableName)+'" statementType="PREPARED">\n';
+  	columnHtml+='\n/* delete'+tableStyleConverter(serverInfo.tableName)+' */\n';
   	columnHtml+=$$("database_query_input").getValue();
   	columnHtml+='\n</delete>';
   	$("[name=query]").val(columnHtml);
@@ -763,7 +763,7 @@ var mybatisDelete = function(){
 };
 
 var mybatisResultMap = function(){
-	if(null==tableName){
+	if(null==serverInfo.tableName){
 		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
 		return;
 	}
@@ -771,9 +771,9 @@ var mybatisResultMap = function(){
 	var columnHtml='';
 	var columnName='';
 	var columnParamName='';
-	var tableNameAlias=tableName;
+	var tableNameAlias=serverInfo.tableName;
 
-	columnHtml+='<resultMap type="'+tableStyleConverter(tableName)+'" id="resultBy'+tableStyleConverter(tableName)+'">\n';
+	columnHtml+='<resultMap type="'+tableStyleConverter(serverInfo.tableName)+'" id="resultBy'+tableStyleConverter(serverInfo.tableName)+'">\n';
   
 	for(var i=0;i<columnList.length;i++){
 		columnParamName=columnStyleConverter(columnList[i]);

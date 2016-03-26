@@ -10,6 +10,8 @@ public class TableVO extends AbstractVo{
 	private static final long serialVersionUID = -3104451423491045532L;
 
 	@ApiModelProperty
+	private Integer tableSeq;
+	@ApiModelProperty
 	private String tableName;
 	@ApiModelProperty
 	private String tableComment;
@@ -20,6 +22,13 @@ public class TableVO extends AbstractVo{
 		this.tableName = tableName;
 		this.tableComment = tableComment;
 	}
+
+	public TableVO(Integer tableSeq, String tableName, String tableComment) {
+		this.tableSeq = tableSeq;
+		this.tableName = tableName;
+		this.tableComment = tableComment;
+	}
+
 	public String getTableName() {
 		return tableName;
 	}
@@ -31,5 +40,13 @@ public class TableVO extends AbstractVo{
 	}
 	public void setTableComment(String tableComment) {
 		this.tableComment = tableComment;
+	}
+
+	public Integer getTableSeq() {
+		return tableSeq;
+	}
+
+	public void setTableSeq(Integer tableSeq) {
+		this.tableSeq = tableSeq;
 	}
 }

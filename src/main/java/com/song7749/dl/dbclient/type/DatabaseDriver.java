@@ -50,25 +50,25 @@ public enum DatabaseDriver {
 			null,
 			// view list
 			"SELECT TABLE_NAME AS VIEW_NAME,VIEW_DEFINITION AS TEXT FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}'",
-			// view detail
+			// TODO view detail
 			"",
-			// view source
+			// TODO view source
 			"",
 			// procedure list
 			"SELECT SPECIFIC_NAME as NAME, LAST_ALTERED as LAST_UPDATE FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='PROCEDURE' AND ROUTINE_SCHEMA='{schemaName}'",
-			// procedure detail
-			"",
+			// TODO procedure detail
+			"SELECT ROUTINE_DEFINITION as TEXT FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='PROCEDURE' AND ROUTINE_SCHEMA='{schemaName}' AND SPECIFIC_NAME='{name}'",
 			// procedure source
 			"SELECT ROUTINE_DEFINITION as TEXT FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='PROCEDURE' AND ROUTINE_SCHEMA='{schemaName}' AND SPECIFIC_NAME='{name}'",
 			// function list
 			"SELECT SPECIFIC_NAME as NAME, LAST_ALTERED as LAST_UPDATE FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='FUNCTION' AND ROUTINE_SCHEMA='{schemaName}'",
-			// function detail
-			"",
+			// TODO function detail
+			"SELECT SPECIFIC_NAME as NAME, LAST_ALTERED as LAST_UPDATE FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='FUNCTION' AND ROUTINE_SCHEMA='{schemaName}'",
 			// function source
 			"SELECT ROUTINE_DEFINITION as TEXT FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='FUNCTION' AND ROUTINE_SCHEMA='{schemaName}' AND SPECIFIC_NAME='{name}'",
 			// sequence list
 			"SELECT concat(c.table_name, '.', c.column_name) as NAME, t.AUTO_INCREMENT as LAST_VALUE, '1' as MIN_VALUE, COLUMN_TYPE as MAX_VALUE, '1' as INCREMENT_BY from information_schema.columns c join information_schema.tables t on(c.table_schema=t.table_schema and c.table_name=t.table_name) where c.table_schema='{schemaName}' and c.extra='auto_increment'",
-			// sequence detail
+			// TODO sequence detail
 			"",
 			// process list
 			"SELECT ID, info as SQL_TEXT FROM information_schema.processlist",
@@ -93,26 +93,26 @@ public enum DatabaseDriver {
 			"SELECT * from table(dbms_xplan.display('plan_table',null,'typical',null))",
 			// view list
 			"SELECT VIEW_NAME,TEXT FROM USER_VIEWS",
-			// view detail
-			"",
-			// view source
-			"",
+			// TODO view detail
+			"SELECT VIEW_NAME,TEXT FROM USER_VIEWS",
+			// TODO view source
+			"SELECT VIEW_NAME,TEXT FROM USER_VIEWS",
 			// procedure list
 			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE from user_objects uo where uo.object_type = 'PROCEDURE'",
-			// procedure detail
-			"",
+			// TODO procedure detail
+			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
 			// procedure source
 			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
 			// function list
 			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE from user_objects uo where uo.object_type = 'FUNCTION'",
-			// function detail
-			"",
+			// TODO function detail
+			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
 			// function source
 			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
-			// sequence list
+			// TODO sequence list
 			"SELECT SEQUENCE_NAME as NAME,LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from user_sequences",
 			// sequence source
-			"",
+			"SELECT SEQUENCE_NAME as NAME,LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from user_sequences",
 			// process list
 			"SELECT concat(concat(s.sid , ','), s.serial#) as ID, sql.sql_text as SQL_TEXT from v$session s join v$sql sql on s.sql_id = sql.sql_id where s.program='dbClient'",
 			// kill process

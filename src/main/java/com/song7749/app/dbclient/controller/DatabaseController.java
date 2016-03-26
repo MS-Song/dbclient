@@ -355,7 +355,7 @@ public class DatabaseController {
 			@ApiParam	String schemaName,
 			@RequestParam(value="account",required=true)
 			@ApiParam	String account,
-			@RequestParam(value="table",required=true)
+			@RequestParam(value="tableName",required=true)
 			@ApiParam	String tableName,
 			@RequestParam(value="useCache",required=false)
 			@ApiParam 	boolean  useCache,
@@ -387,7 +387,7 @@ public class DatabaseController {
 			@ApiParam	String schemaName,
 			@RequestParam(value="account",required=true)
 			@ApiParam	String account,
-			@RequestParam(value="table",required=true)
+			@RequestParam(value="tableName",required=true)
 			@ApiParam	String tableName,
 			@RequestParam(value="useCache",required=false)
 			@ApiParam 	boolean  useCache,

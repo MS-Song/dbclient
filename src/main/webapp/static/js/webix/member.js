@@ -41,7 +41,7 @@ webix.ready(function(){
     		}
 
     		// 로그인 된 경우 서버 선택이 되어 있지 않으면 서버 선택 창을 활성화 한다. 
-    		if(serverInfoSeq==null){
+    		if(serverInfo.serverInfoSeq==null){
     			select_database_popup();
     		}
     		
@@ -250,3 +250,8 @@ var modify_member_popup = function(){
    		passwordQuestion:passwordQuestion
     });
 };
+
+// 로그인 에러 처리
+var login_error = function(){
+	console.log("로그인 에러처리 진입");
+}
