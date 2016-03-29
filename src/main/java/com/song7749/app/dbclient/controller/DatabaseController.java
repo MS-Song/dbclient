@@ -588,7 +588,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터 베이스 쿼리 실행"
 			,notes = "입력된 database query 를 실행 한다."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/executeQuery",method=RequestMethod.POST)
+	@RequestMapping(value="/executeQuery",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void executeQuery(
 			@RequestParam(value="server",required=true)

@@ -1,7 +1,20 @@
 /**
  * 데이터를 조회하여, data view 에 넣는다.
  */
-var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache){
+var views = [];
+var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,isWriteLog){
+	// 기존에 등록되어 있는 뷰 인가 검증한다.
+	var isAlreadyInputView = false;
+	for(var key in views){
+		if(viewName == views[key]){
+			isAlreadyInputView=true;
+			break;
+		}
+	}
+	// 이미 등록된 경우가 아니면 view 를 넣는다.
+	if(isAlreadyInputView==false){
+		views.push(viewName);
+	}
 	
 	// progress 시작
 	try {
@@ -30,27 +43,34 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache){
 			// 데이터가 있는 경우에만 진입
 			if(data.json().status ==200 && null!=data.json().result){
 				$.each(data.json().result,function(index, obj){
-//					console.log(obj);
-					// header 를 만들어야 하는 경우에 처리
-					if(isCreateHeader){
-						// 기존 헤더를 삭제 한다.
-						if(isCreateHeader) $$(viewName).config.columns = [];
-						// row 1개를 꺼내서 필드를 구성한다.
-						var loop=0;
-						$.each(obj,function(header){
-							$$(viewName).config.columns[loop]={};
-							$$(viewName).config.columns[loop].id = header;
-							$$(viewName).config.columns[loop].header = header;
-							$$(viewName).config.columns[loop].adjust = true;
-							if(!isNaN(this)){
-								$$(viewName).config.columns[loop].sort="int";
+					// 배열인 경우에만 처리한다. response 에 배열은 결과 데이터외에 없다.
+					if(Array.isArray(obj)){
+						// header 를 만들어야 하는 경우에 처리
+						if(isCreateHeader){
+							// 데이터가 없는 경우를 걸러낸다.
+							if(obj.length>0){
+								// 기존 헤더를 삭제 한다.
+								$$(viewName).config.columns = [];
+								// row 1개를 꺼내서 필드를 구성한다.
+								var loop=0;
+								$.each(obj[0],function(header,name){
+									$$(viewName).config.columns[loop]={};
+									$$(viewName).config.columns[loop].id = header;
+									$$(viewName).config.columns[loop].header = header;
+									$$(viewName).config.columns[loop].adjust = true;
+									if(!isNaN(this)){
+										$$(viewName).config.columns[loop].sort="int";
+									} else {
+										$$(viewName).config.columns[loop].sort="string";	
+									}
+									loop++;
+								});
+								$$(viewName).refreshColumns();
 							} else {
-								$$(viewName).config.columns[loop].sort="string";	
+								webix.message({ type:"error", text:"데이터가 없습니다."});
 							}
-							loop++;
-						});
-						$$(header).refreshColumns();
-					} else { // 헤더가 있는 경우에 처리
+						}
+						// 객체가 있는 경우 리스를 그린다.
 						if(null != obj){
 							// 데이터를 파싱 한다.
 							$$(viewName).parse(obj)
@@ -62,6 +82,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache){
 					}
 				});
 			} else {
+				// 공용 에러처리
 				var message = data.json().desc.split("\n");
 				webix.message({ type:"error", text:message[0].replace("="," ") });
 			}
@@ -69,17 +90,47 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache){
 			$$(viewName).refresh();
 			// progress 를 닫는다.
     		$$(viewName).hideProgress();
+
+    		// 실행 로그 기록
+    		if(isWriteLog){
+    			// 실행이 종료되면 결과를 보여준다
+    			$$("database_query_execute_info").define("label",'Rows: '+data.json().result.rowCount + ', Time: '+data.json().result.processTime + ' ms');
+    			$$("database_query_execute_info").refresh();
+    			
+    			//쿼리 로그 기록
+    			var time = new Date();
+    			$$("database_query_log_view").data.add({
+    				seq:$$("database_query_log_view").data.order.length+1,
+    				date:time.getHours()+'시 '+time.getMinutes()+'분 '+time.getSeconds()+'초 <br/>'+time.getFullYear()+'년 '+(time.getMonth()+1)+'월 '+time.getDate()+'일',
+    				query:$$("database_query_input").getValue(),
+    				reTry:"",
+    				favorities:""
+    			},$$("database_query_log_view").data.order.length+1);
+    			$$("database_query_log_view").sort("seq", "desc","int");
+    			$$("database_query_log_view").refresh();
+    		}
 		});
 	}
 };
 
-
-
 /**
  * 데이터를 조회하여, editor 에 넣는다.
  */
-var getDateParseEditor = function(url,parmeters,viewName){
-	
+var getDateParseEditor = function(url,parmeters,returnValueName){
+	webix.ajax().get(url+".json",parmeters, 
+		function(text,data){
+			if(data.json().status ==200 && null!=data.json().result){
+				
+				$.each(data.json().result,function(index, obj){
+					$$("database_query_input").setValue(obj[0][returnValueName]);
+				});
+				$$("database_query_input").focus(); 
+			} else {
+				var message = data.json().desc.split("\n");
+				webix.message({ type:"error", text:message[0].replace("="," ") });
+			}
+		}
+	);
 };
 
 /**

@@ -141,19 +141,6 @@ webix.ready(function(){
 		$$("main_body").define("height", "auto");
 	}, 300);
 
-	// 로딩후 0.5 초 이후에 progress 를 만든다.
-	setTimeout(function(){
-		// progress 추가
-		webix.extend($$("database_info_table_list_view"), webix.ProgressBar);
-		webix.extend($$("table_info_field_list"), webix.ProgressBar);
-		webix.extend($$("table_info_develop_list"), webix.ProgressBar);
-		webix.extend($$("table_info_index_list"), webix.ProgressBar);
-		webix.extend($$("database_result_list_view"), webix.ProgressBar);
-		webix.extend($$("database_query_favorities_view"), webix.ProgressBar);
-	}, 500);
-
-	
-	
 	// 뒤로가기 버튼으로 뒤로가기 금지 
 	$(document).keydown(function(e){   
         if(e.target.nodeName != "INPUT" && e.target.nodeName != "TEXTAREA"){       

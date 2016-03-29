@@ -7,10 +7,27 @@ var serverInfo = {
 		driver:null,
 		tableName:null,
 		tableComment:null,
-		autoCommit:null,
-		htmlAllow:null,
+		autoCommit:false,
+		htmlAllow:false,
 		useCache:true,
 }
+/**
+ * serverInfo 객체에 파라메터를 변조하기 위해 복제 한다.
+ */
+var copyServerInfo = function(serverInfoObject){
+	var obj={};
+	obj.serverInfoSeq 	=  serverInfoObject.serverInfoSeq; 	
+	obj.server			=  serverInfoObject.server;			
+	obj.schema			=  serverInfoObject.schema;			
+	obj.account			=  serverInfoObject.account;			
+	obj.driver			=  serverInfoObject.driver;			
+	obj.tableName		=  serverInfoObject.tableName;		
+	obj.autoCommit		=  serverInfoObject.autoCommit;		
+	obj.htmlAllow		=  serverInfoObject.htmlAllow;		
+	obj.useCache		=  serverInfoObject.useCache;		
+	return obj;
+}
+
 
 // 데이터베이스 드라이버 정보
 var drivers=null;
@@ -116,19 +133,15 @@ var select_database_popup=function(){
 	    					});
 	    				}
 	    			}});
-	    			
 	    			// 선택된 데이터베이스의 정보를 읽는다.
-	    			clearAllViews();
 	    			database_info_data_load();
 	            }}
 	        }
     }).show();
 	// 사이드 메뉴가 열려 있을 경우에만 닫는다.
 	if($$("menu").isVisible()) $$("menu").hide();
-	// 데이터 초기화
-	$$("select_database_loader").clearAll();
-    // 데이터베이스 정보를 조회한다.
-	getDataParseView("/database/serverList",serverInfo,"select_database_loader",false,true);
+	// 데이터베이스 정보를 조회한다.
+	getDataParseView("/database/serverList",serverInfo,"select_database_loader",false,true,false);
 }
 
 // database info cell
@@ -261,7 +274,7 @@ var database_info_cell = [
 							width:70,
 							template : function(obj){
 								var html='<input type="text" name="field_set[]" value="';
-								if(undefined == obj.field_set){
+								if(undefined == obj.field_set || null == obj.field_set){
 									obj.field_set="";
 								}
 								html +=obj.field_set+'" style="width:50px;" />';
@@ -276,7 +289,7 @@ var database_info_cell = [
 							width:70,
 							template : function(obj){
 								var html='<input type="text" name="field_where[]" value="';
-								if(undefined == obj.field_where){
+								if(undefined == obj.field_where || null == obj.field_where){
 									obj.field_where="";
 								}
 								html +=obj.field_where+'" style="width:50px;" />';
@@ -291,7 +304,7 @@ var database_info_cell = [
 							editor:"select",
 							options:["=",">=","<=","IN()","%like","like%","%like%"],
 							template : function(obj){
-								if(undefined==obj.field_operation){
+								if(undefined==obj.field_operation || null == obj.field_operation){
 									obj.field_operation="=";
 								} 
 								return obj.field_operation;
@@ -456,16 +469,18 @@ var database_info_cell = [
 
 // 데이터베이스 정보 로드 
 var database_info_data_load=function(){
+	// 즐겨 찾는 쿼리 로딩
+	database_query_favorities_view_load();
 	// 테이블 리스트 조회
-	getDataParseView("/database/tableList",serverInfo,"database_info_table_list_view",false,true);
+	getDataParseView("/database/tableList",serverInfo,"database_info_table_list_view",false,true,false);
 	// view list 조회
-	getDataParseView("/database/viewList",serverInfo,"database_info_view_list_view",false,true);	
+	getDataParseView("/database/viewList",serverInfo,"database_info_view_list_view",false,true,false);	
 	// procedure list 조회
-	getDataParseView("/database/procedureList",serverInfo,"database_info_procedure_list_view",false,true);
+	getDataParseView("/database/procedureList",serverInfo,"database_info_procedure_list_view",false,true,false);
 	// function list 조회
-	getDataParseView("/database/functionList",serverInfo,"database_info_function_list_view",false,true);
+	getDataParseView("/database/functionList",serverInfo,"database_info_function_list_view",false,true,false);
 	// sequence List 로딩
-	getDataParseView("/database/sequenceList",serverInfo,"database_info_sequence_list_view",false,true);
+	getDataParseView("/database/sequenceList",serverInfo,"database_info_sequence_list_view",false,true,false);
 	// TODO trigger
 };
 
@@ -480,59 +495,35 @@ var database_info_field_data_load = function(){
 			serverInfo.tableComment = selectedRow.tableComment;
 		}
 	} catch (e) {
-		//webix.message({ type:"error", text:"데이터 베이스 정보 로드 실패.</br>데이터베이스를 다시 선택해주세요"});
 		$$("database_info_table_list_view").hideProgress();
 	}
 	
 	// 필드 리스트
-	getDataParseView("/database/fieldList",serverInfo,"table_info_field_list",false,true);
+	getDataParseView("/database/fieldList",serverInfo,"table_info_field_list",false,true,false);
 	// 개발자 도구 리스트
-	getDataParseView("/database/fieldList",serverInfo,"table_info_develop_list",false,true);
+	getDataParseView("/database/fieldList",serverInfo,"table_info_develop_list",false,true,false);
 	// 인덱스 리스트
-	getDataParseView("/database/indexList",serverInfo,"table_info_index_list",false,true);
+	getDataParseView("/database/indexList",serverInfo,"table_info_index_list",false,true,false);
 };
 
 
+// procedure detail
 var database_info_procedure_detail_loading = function(obj){
 	var name = obj.getAttribute("data");
 	if(null!=name){
-		// procedure 이름 추가
-		serverInfo.name=name;
-		// 프로시저 상세 조회
-		webix.ajax().get("/database/procedureDetailList.json",serverInfo, 
-			function(text,data){
-				if(data.json().status ==200 && null!=data.json().result){
-					$$("database_query_input").setValue(data.json().result.procedureList[0].text);
-					// 에디터 창으로 focus 를 되돌린다.
-					$$("database_query_input").focus(); 
-				} else {
-					var message = data.json().desc.split("\n");
-					webix.message({ type:"error", text:message[0].replace("="," ") });
-				}
-			}
-		);
+		var newServerInfo = copyServerInfo(serverInfo);
+		newServerInfo.name=name;
+		getDateParseEditor("/database/procedureDetailList",newServerInfo,'text');
 	}
 }; 
 
 // function loading
-
 var database_info_function_detail_loading = function(obj){
 	var name = obj.getAttribute("data");
 	if(null!=name){
-		// 프로시저 상세 조회
-		webix.ajax().get("/database/functionDetailList.json",serverInfo, 
-			function(text,data){
-				console.log(data.json());
-				if(data.json().status ==200 && null!=data.json().result){
-					$$("database_query_input").setValue(data.json().result.functionList[0].text);
-					// 에디터 창으로 focus 를 되돌린다.
-					$$("database_query_input").focus(); 
-				} else {
-					var message = data.json().desc.split("\n");
-					webix.message({ type:"error", text:message[0].replace("="," ") });
-				}
-			}
-		);
+		var newServerInfo = copyServerInfo(serverInfo);
+		newServerInfo.name=name;
+		getDateParseEditor("/database/functionDetailList",newServerInfo,'text');
 	}
 }; 
 
@@ -773,76 +764,12 @@ var database_query_cell = [{
 
 // 데이터 베이스 쿼리 실행
 var executeQuery = function (){
-	// 로딩 프로그레스						
-	$$("database_result_list_view").showProgress();
-	// 이미 있는 내용은 모두 지운다 
-	$$("database_result_list_view").config.columns = [];
-	$$("database_result_list_view").clearAll();
-	webix.ajax().post("/database/executeQuery.json",{
-			server:serverInfo.server,
-			schema:serverInfo.schema,
-			account:serverInfo.account,
-		  	autoCommit:serverInfo.autoCommit,
-		  	htmlAllow:serverInfo.htmlAllow,
-			query:encodeURIComponent($$("database_query_input").getValue())
-	  	}, 
-		function(text,data){
-			// 필드 정보를 획득한 경우에 넣는다.
-			if(data.json().status ==200 && null!=data.json().result){
-				// 필드 정보를 갱신한다.
-				// row count 가 0이면 데이터가 없다고 표시한다.
-				if(data.json().result.rowCount == 0){
-					$$("database_result_list_view").config.columns = [
-                    	{
-                   			id:"result1",
-                   			header:"데이터가 없습니다.",
-                   			adjust:true
-                   		}
-                    ];
-					$$("database_result_list_view").refreshColumns();
-				} else {
-					// row 1개를 꺼내서 필드를 구성한다.
-					var loop=0;
-					$.each(data.json().result.resultList[0],function(index){
-						$$("database_result_list_view").config.columns[loop]={};
-						$$("database_result_list_view").config.columns[loop].id = index;
-						$$("database_result_list_view").config.columns[loop].header = index;
-						$$("database_result_list_view").config.columns[loop].adjust = true;
-						if(!isNaN(this)){
-							$$("database_result_list_view").config.columns[loop].sort="int";
-						} else {
-							$$("database_result_list_view").config.columns[loop].sort="string";	
-						}
-						loop++;
-					});
-					
-					$$("database_result_list_view").refreshColumns();
-
-					$$("database_result_list_view").parse(data.json().result.resultList)
-		    		$$("database_result_list_view").refresh();
-				}
-				// 실행이 종료되면 결과를 보여준다
-				console.log(data.json().result.processTime)
-				$$("database_query_execute_info").define("label",'Rows: '+data.json().result.rowCount + ', Time: '+data.json().result.processTime + ' ms');
-				$$("database_query_execute_info").refresh();
-				
-				//쿼리 로그 기록
-				var time = new Date();
-				$$("database_query_log_view").data.add({
-					seq:$$("database_query_log_view").data.order.length+1,
-					date:time.getHours()+'시 '+time.getMinutes()+'분 '+time.getSeconds()+'초 <br/>'+time.getFullYear()+'년 '+(time.getMonth()+1)+'월 '+time.getDate()+'일',
-					query:$$("database_query_input").getValue(),
-					reTry:"",
-					favorities:""
-				},$$("database_query_log_view").data.order.length+1);
-				$$("database_query_log_view").sort("seq", "desc","int");
-				$$("database_query_log_view").refresh();
-			} else { // 에러가 발생할 경우
-				webix.message({ type:"error", text:data.json().desc });
-			}
-		}
-	);
-	$$("database_result_list_view").hideProgress();
+	// 객체 복사
+	var newServerInfo = copyServerInfo(serverInfo);
+	// 쿼리 정보 입력
+	newServerInfo.query=encodeURIComponent($$("database_query_input").getValue());
+	
+	getDataParseView("/database/executeQuery",newServerInfo,"database_result_list_view",true,false,true);
 }
 
 // 실행중인 쿼리 중단
@@ -1028,7 +955,12 @@ var database_developer_cell = [{
 				,width:40
 			},
 			{ id:"memo",			header:"Memo",		width:100},
-			{ id:"query",			header:"Query",		width:150},
+			{ id:"query",			header:"Query",		width:150,
+				template:function(obj){
+					obj.query=decodeURIComponent(obj.query)
+					return obj.query;
+				}
+			},
 			{ 
 				id:"reTry",			header:"사용",		width:60,
 				template:'<input type="button" value="사용" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
@@ -1141,49 +1073,7 @@ var removeFavorityQuery = function(favorityQuerySeq){
 var database_query_favorities_view_load = function(){
 	// 로그인 되어 있는 경우에만 호출
 	if(null!=id){
-		// 프로그레스 바
-		$$("database_query_favorities_view").showProgress();
-		// 이미 있는 내용은 모두 지운다 
-		$$("database_query_favorities_view").clearAll();
-		webix.ajax().get("/database/findFavoritiesQuery.json",{},function(text,data){
-			// 정보를 획득한 경우에 넣는다.
-			if(data.json().status ==200 && null!=data.json().result){
-	    		$.each(data.json().result,function(){
-		    		$.each(this,function(index){
-						$$("database_query_favorities_view").data.add({
-							favorityQuerySeq:this.favorityQuerySeq,
-							memo:this.memo, 
-							query:decodeURIComponent(this.query), 
-							inputDate:this.inputDate, 
-							reTry:"",
-							favorities:""}
-						,index);
-		    		});
-	    		});
-				$$("database_query_favorities_view").sort("favorityQuerySeq", "desc","int");
-				$$("database_query_favorities_view").refresh();
-	    		$$("database_query_favorities_view").hideProgress();
-			} else {
-				var message = data.json().desc.split("\n");
-				webix.message({ type:"error", text:message[0].replace("="," ") });
-				$$("database_query_favorities_view").hideProgress();
-			}
-		});
+		getDataParseView("/database/findFavoritiesQuery",{},"database_query_favorities_view",false,false,false);
+		$$("database_query_favorities_view").sort("favorityQuerySeq", "desc","int");
 	}
-};
-
-// 즐겨 찾는 쿼리 로딩
-webix.ready(function(){
-	// 로그인 확인 후에 실행 한다.
-	setTimeout(database_query_favorities_view_load, 500);
-});
-
-
-// 뷰의 데이터를 모두 초기화 한다.
-var clearAllViews = function(){
-	$$("database_info_table_list_view").clearAll();
-	$$("table_info_field_list").clearAll();
-	$$("table_info_develop_list").clearAll();
-	$$("table_info_index_list").clearAll();
-	$$("database_result_list_view").clearAll();	
 };
