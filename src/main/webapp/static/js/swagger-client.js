@@ -729,11 +729,11 @@ Operation.prototype.setContentTypes = function(args, opts) {
   var i;
   for(i = 0; i < allDefinedParams.length; i++) {
     var param = allDefinedParams[i];
-    if(param.in === 'form')
+    if(param['in'] === 'form')
       definedFormParams.push(param);
-    else if(param.in === 'file')
+    else if(param['in'] === 'file')
       definedFileParams.push(param);
-    else if(param.in === 'header' && this.headers) {
+    else if(param['in'] === 'header' && this.headers) {
       var key = param.name;
       var headerValue = this.headers[param.name];
       if(typeof this.headers[param.name] !== 'undefined')
