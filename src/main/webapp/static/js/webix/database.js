@@ -383,10 +383,7 @@ var database_info_cell = [
 	    			var selectedRow = $$("database_info_view_list_view").getSelectedItem();
 	    			var param = copyServerInfo(serverInfo);
 	    			param.name=selectedRow.viewName;
-
 	    			getDataParseEditor("/database/viewSourceList",param,"text");
-	    			
-	    			
 	    		}
 	    	}
 		},
