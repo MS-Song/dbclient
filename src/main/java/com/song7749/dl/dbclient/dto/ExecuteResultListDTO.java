@@ -94,7 +94,7 @@ public class ExecuteResultListDTO extends AbstractDto{
 	}
 
 	public String getQuery() {
-		return query;
+		return query == null ? null : query.trim();
 	}
 
 	public void setQuery(String query) {

@@ -74,8 +74,12 @@ public class ServerInfo extends Entities {
 	@NotNull(groups={ValidateGroupInsert.class,ValidateGroupUpdate.class})
 	private String port;
 
+	/**
+	 * Object Name
+	 */
 	@Transient
-	private String tableName;
+	private String name;
+
 
 	public ServerInfo() {}
 
@@ -83,9 +87,9 @@ public class ServerInfo extends Entities {
 		this.serverInfoSeq = serverInfoSeq;
 	}
 
-	public ServerInfo(Integer serverInfoSeq , String tableName) {
+	public ServerInfo(Integer serverInfoSeq , String name) {
 		this.serverInfoSeq = serverInfoSeq;
-		this.tableName = tableName;
+		this.name = name;
 	}
 
 	public ServerInfo(String host,String hostAlias, String schemaName,
@@ -185,11 +189,11 @@ public class ServerInfo extends Entities {
 		this.port = port;
 	}
 
-	public String getTableName() {
-		return tableName;
+	public String getName() {
+		return name;
 	}
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
+	public void setName(String name) {
+		this.name = name;
 	}
 }

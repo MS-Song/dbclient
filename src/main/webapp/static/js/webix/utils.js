@@ -41,6 +41,8 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 	} else {
 		webix.ajax().get(url+".json",parmeters, function(text,data){
 			// 데이터가 있는 경우에만 진입
+//			console.log(data.json());
+			
 			if(data.json().status ==200 && null!=data.json().result){
 				$.each(data.json().result,function(index, obj){
 					// 배열인 경우에만 처리한다. response 에 배열은 결과 데이터외에 없다.
@@ -116,7 +118,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 /**
  * 데이터를 조회하여, editor 에 넣는다.
  */
-var getDateParseEditor = function(url,parmeters,returnValueName){
+var getDataParseEditor = function(url,parmeters,returnValueName){
 	webix.ajax().get(url+".json",parmeters, 
 		function(text,data){
 			if(data.json().status ==200 && null!=data.json().result){
@@ -133,6 +135,49 @@ var getDateParseEditor = function(url,parmeters,returnValueName){
 	);
 };
 
+var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
+	webix.ajax().get(url+".json",parmeters, 
+		function(text,data){
+			if(data.json().status ==200 && null!=data.json().result){
+				
+				$.each(data.json().result,function(index, obj){
+					$$(viewName).setValue(obj[0][returnValueName]);
+				});
+
+			} else {
+				var message = data.json().desc.split("\n");
+				webix.message({ type:"error", text:message[0].replace("="," ") });
+			}
+		}
+	);
+};
+
+
+var getDataParseProperty = function(url,parmeters,viewName){
+	webix.ajax().get(url+".json",parmeters, 
+			function(text,data){
+				if(data.json().status ==200 && null!=data.json().result){
+
+					var elementList=[];
+					var valueList={};
+					$.each(data.json().result,function(index, obj){
+						var loop=0
+						$.each(obj[0],function(name,value){
+							elementList.push({"label":name,type:"text","id":name,width:300})
+							valueList[name]=value;
+							
+						})
+					});
+					$$(viewName).define("elements",elementList);
+					$$(viewName).setValues(valueList);
+					$$(viewName).refresh();
+				} else {
+					var message = data.json().desc.split("\n");
+					webix.message({ type:"error", text:message[0].replace("="," ") });
+				}
+			}
+		);
+	};
 /**
  * POST Method 로 데이터를 서버에 전송한다.
  */

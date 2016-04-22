@@ -42,6 +42,14 @@ public interface DBclientDataSourceManager {
 	Connection getConnection(ServerInfo serverInfo) throws SQLException;
 
 	/**
+	 * connection close
+	 * @param serverInfo
+	 * @return boolean
+	 * @throws SQLException
+	 */
+	boolean closeConnection(ServerInfo serverInfo) throws SQLException;
+
+	/**
 	 * database table information
 	 * @param serverInfo
 	 * @return List<TableVO>
@@ -54,7 +62,7 @@ public interface DBclientDataSourceManager {
 	 * @param tableName
 	 * @return List<FieldVO>
 	 */
-	List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo, String tableName);
+	List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo);
 
 	/**
 	 * database index information
@@ -62,7 +70,7 @@ public interface DBclientDataSourceManager {
 	 * @param tableName
 	 * @return List<IndexVO>
 	 */
-	List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo, String tableName);
+	List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo);
 
 	/**
 	 * result set List
@@ -83,6 +91,20 @@ public interface DBclientDataSourceManager {
 	List<ViewVO> selectViewVOList(ServerInfo serverInfo);
 
 	/**
+	 * database view detail search
+	 * @param serverInfo
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> selectViewDetailList(ServerInfo serverInfo);
+
+	/**
+	 * database view source search
+	 * @param serverInfo
+	 * @return List<ViewVO>
+	 */
+	List<ViewVO> selectViewVOSourceList(ServerInfo serverInfo);
+
+	/**
 	 * database stored procedure search
 	 * @param serverInfo
 	 * @return List<ProcedureVO>
@@ -95,7 +117,7 @@ public interface DBclientDataSourceManager {
 	 * @param name
 	 * @return List<ProcedureVO>
 	 */
-	List<ProcedureVO> selectProcedureVODetailList(ServerInfo serverInfo, String name);
+	List<ProcedureVO> selectProcedureVODetailList(ServerInfo serverInfo);
 
 	/**
 	 * database function search
@@ -110,7 +132,7 @@ public interface DBclientDataSourceManager {
 	 * @param name
 	 * @return List<FunctionVO>
 	 */
-	List<FunctionVO> selectFunctionVODetailList(ServerInfo serverInfo, String name);
+	List<FunctionVO> selectFunctionVODetailList(ServerInfo serverInfo);
 
 	/**
 	 * Sequence List search

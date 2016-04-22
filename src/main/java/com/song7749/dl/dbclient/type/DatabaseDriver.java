@@ -43,9 +43,9 @@ public enum DatabaseDriver {
 			// table list
 			"SELECT TABLE_NAME, TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA='{schemaName}' AND TABLE_TYPE='BASE TABLE'",
 			// field list
-			"SELECT ORDINAL_POSITION COLUMN_ID,COLUMN_NAME,IS_NULLABLE NULLABLE,COLUMN_KEY,DATA_TYPE,COLUMN_TYPE DATA_LENGTH,CHARACTER_SET_NAME CHARACTER_SET,EXTRA,COLUMN_DEFAULT DEFAULT_VALUE,COLUMN_COMMENT COMMENTS FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}' AND TABLE_NAME='{tableName}'",
+			"SELECT ORDINAL_POSITION COLUMN_ID,COLUMN_NAME,IS_NULLABLE NULLABLE,COLUMN_KEY,DATA_TYPE,COLUMN_TYPE DATA_LENGTH,CHARACTER_SET_NAME CHARACTER_SET,EXTRA,COLUMN_DEFAULT DEFAULT_VALUE,COLUMN_COMMENT COMMENTS FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}' AND TABLE_NAME='{name}'",
 			// index list
-			"SELECT TABLE_NAME OWNER, INDEX_NAME, INDEX_TYPE, if(NON_UNIQUE=0,'UNIQUE','NOT_UNIQUE') as UNIQUENESS, CARDINALITY, COLUMN_NAME, SEQ_IN_INDEX COLUMN_POSITION, 'ASC' as DESCEND FROM information_schema.statistics WHERE table_name='{tableName}' AND TABLE_SCHEMA='{schemaName}'",
+			"SELECT TABLE_NAME OWNER, INDEX_NAME, INDEX_TYPE, if(NON_UNIQUE=0,'UNIQUE','NOT_UNIQUE') as UNIQUENESS, CARDINALITY, COLUMN_NAME, SEQ_IN_INDEX COLUMN_POSITION, 'ASC' as DESCEND FROM information_schema.statistics WHERE table_name='{name}' AND TABLE_SCHEMA='{schemaName}'",
 			// explain
 			null,
 			// view list
@@ -86,17 +86,17 @@ public enum DatabaseDriver {
 			// table list
 			"SELECT T1.TABLE_NAME TABLE_NAME,T2.COMMENTS TABLE_COMMENT FROM USER_TABLES T1, USER_TAB_COMMENTS T2 WHERE T2.TABLE_NAME(+) = T1.TABLE_NAME",
 			// field list
-			"SELECT a.COLUMN_ID,a.COLUMN_NAME,a.NULLABLE,decode(b.CONSTRAINT_TYPE,null,'NO','YES') COLUMN_KEY,a.DATA_TYPE,a.DATA_LENGTH,'' CHARACTER_SET,a.DATA_SCALE EXTRA,a.DATA_DEFAULT DEFAULT_VALUE,c.COMMENTS COMMENTS FROM USER_TAB_COLUMNS a, ( SELECT a.TABLE_NAME,a.COLUMN_NAME,b.CONSTRAINT_TYPE FROM USER_CONS_COLUMNS a, USER_CONSTRAINTS b WHERE a.TABLE_NAME = b.TABLE_NAME AND a.CONSTRAINT_NAME = b.CONSTRAINT_NAME AND b.CONSTRAINT_TYPE='P') b, USER_COL_COMMENTS c  WHERE a.TABLE_NAME = b.TABLE_NAME (+) AND a.COLUMN_NAME = b.COLUMN_NAME (+) AND a.TABLE_NAME = c.TABLE_NAME (+) AND a.COLUMN_NAME = c.COLUMN_NAME (+) AND a.TABLE_NAME = '{tableName}' ORDER BY a.COLUMN_ID",
+			"SELECT a.COLUMN_ID,a.COLUMN_NAME,a.NULLABLE,decode(b.CONSTRAINT_TYPE,null,'NO','YES') COLUMN_KEY,a.DATA_TYPE,a.DATA_LENGTH,'' CHARACTER_SET,a.DATA_SCALE EXTRA,a.DATA_DEFAULT DEFAULT_VALUE,c.COMMENTS COMMENTS FROM USER_TAB_COLUMNS a, ( SELECT a.TABLE_NAME,a.COLUMN_NAME,b.CONSTRAINT_TYPE FROM USER_CONS_COLUMNS a, USER_CONSTRAINTS b WHERE a.TABLE_NAME = b.TABLE_NAME AND a.CONSTRAINT_NAME = b.CONSTRAINT_NAME AND b.CONSTRAINT_TYPE='P') b, USER_COL_COMMENTS c  WHERE a.TABLE_NAME = b.TABLE_NAME (+) AND a.COLUMN_NAME = b.COLUMN_NAME (+) AND a.TABLE_NAME = c.TABLE_NAME (+) AND a.COLUMN_NAME = c.COLUMN_NAME (+) AND a.TABLE_NAME = '{name}' ORDER BY a.COLUMN_ID",
 			// index list
-			"SELECT a.OWNER, a.INDEX_NAME, a.INDEX_TYPE, a.UNIQUENESS, a.NUM_ROWS CARDINALITY , b.COLUMN_NAME, b.COLUMN_POSITION,b.DESCEND FROM ALL_INDEXES a, ALL_IND_COLUMNS b WHERE a.index_name = b.index_name  AND a.table_name='{tableName}'",
+			"SELECT a.OWNER, a.INDEX_NAME, a.INDEX_TYPE, a.UNIQUENESS, a.NUM_ROWS CARDINALITY , b.COLUMN_NAME, b.COLUMN_POSITION,b.DESCEND FROM ALL_INDEXES a, ALL_IND_COLUMNS b WHERE a.index_name = b.index_name  AND a.table_name='{name}'",
 			// explain
 			"SELECT * from table(dbms_xplan.display('plan_table',null,'typical',null))",
 			// view list
-			"SELECT VIEW_NAME,TEXT FROM USER_VIEWS",
+			"SELECT uv.VIEW_NAME, utc.COMMENTS AS COMMENTS, uo.LAST_DDL_TIME AS LAST_UPDATE_TIME, uo.STATUS FROM  USER_VIEWS uv LEFT JOIN USER_TAB_COMMENTS utc ON (uv.VIEW_NAME=utc.TABLE_NAME and utc.TABLE_TYPE='VIEW') JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW')",
 			// TODO view detail
-			"SELECT VIEW_NAME,TEXT FROM USER_VIEWS",
+			"SELECT uv.VIEW_NAME, uv.TEXT_LENGTH, uv.TYPE_TEXT_LENGTH, uv.TYPE_TEXT, uv.OID_TEXT_LENGTH, uv.OID_TEXT, uv.VIEW_TYPE_OWNER, uv.VIEW_TYPE, uv.SUPERVIEW_NAME, uv.EDITIONING_VIEW, uv.READ_ONLY, uo.OBJECT_NAME, uo.SUBOBJECT_NAME, uo.OBJECT_ID, uo.DATA_OBJECT_ID, uo.OBJECT_TYPE, uo.CREATED, uo.LAST_DDL_TIME, uo.TIMESTAMP, uo.STATUS, uo.TEMPORARY, uo.GENERATED, uo.SECONDARY, uo.NAMESPACE, uo.EDITION_NAME FROM USER_VIEWS uv JOIN USER_OBJECTS uo on(uv.VIEW_NAME=uo.OBJECT_NAME) WHERE uv.VIEW_NAME=upper('{name}')",
 			// TODO view source
-			"SELECT VIEW_NAME,TEXT FROM USER_VIEWS",
+			"SELECT uv.VIEW_NAME, uv.TEXT FROM USER_VIEWS uv JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW') WHERE  uv.VIEW_NAME=upper('{name}')",
 			// procedure list
 			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE from user_objects uo where uo.object_type = 'PROCEDURE'",
 			// TODO procedure detail
@@ -185,10 +185,27 @@ public enum DatabaseDriver {
 		this.killProcessQuery		= killProcessQuery;
 	}
 
+	/**
+	 * DBMS 정보 조회
+	 * @return String
+	 */
+	public String getDbms() {
+		return dbms;
+	}
+
+	/**
+	 * JDBC Driver Name 조회
+	 * @return String
+	 */
 	public String getDriverName() {
 		return driverName;
 	}
 
+	/**
+	 * Connect url 정보 조회
+	 * @param serverInfo
+	 * @return String
+	 */
 	public String getUrl(ServerInfo serverInfo) {
 		try {
 			return repalceServerInfo(serverInfo, url);
@@ -198,6 +215,11 @@ public enum DatabaseDriver {
 		}
 	}
 
+	/**
+	 * table list Query 조회
+	 * @param serverInfo
+	 * @return
+	 */
 	public String getTableListQuery(ServerInfo serverInfo) {
 		try {
 			return repalceServerInfo(serverInfo, tableListQuery);
@@ -208,6 +230,11 @@ public enum DatabaseDriver {
 
 	}
 
+	/**
+	 * field list Query 조회
+	 * @param serverInfo
+	 * @return String
+	 */
 	public String getFieldListQueryQuery(ServerInfo serverInfo) {
 		try {
 			return repalceServerInfo(serverInfo, fieldListQuery);
@@ -218,6 +245,11 @@ public enum DatabaseDriver {
 
 	}
 
+	/**
+	 * index list Query 조회
+	 * @param serverInfo
+	 * @return String
+	 */
 	public String getIndexListQuery(ServerInfo serverInfo) {
 		try {
 			return repalceServerInfo(serverInfo, indexListQuery);
@@ -228,6 +260,11 @@ public enum DatabaseDriver {
 
 	}
 
+	/**
+	 * view list Query 조회
+	 * @param serverInfo
+	 * @return String
+	 */
 	public String getViewListQuery(ServerInfo serverInfo) {
 		try {
 			return repalceServerInfo(serverInfo, viewListQuery);
@@ -235,6 +272,35 @@ public enum DatabaseDriver {
 			throw new IllegalArgumentException(e.getCause());
 		}
 	}
+
+	/**
+	 * view detail Query 조회
+	 * @param serverInfo
+	 * @param name
+	 * @return String
+	 */
+	public String getViewDetailQuery(ServerInfo serverInfo) {
+		try {
+			return repalceServerInfo(serverInfo, viewDetailQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
+	/**
+	 * view source Query 조회
+	 * @param serverInfo
+	 * @param name
+	 * @return String
+	 */
+	public String getViewSourceQuery(ServerInfo serverInfo) {
+		try {
+			return repalceServerInfo(serverInfo, viewSourceQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
 
 	public String getProcedureListQuery(ServerInfo serverInfo) {
 		try {
@@ -244,10 +310,10 @@ public enum DatabaseDriver {
 		}
 	}
 
-	public String getProcedureDetailQuery(ServerInfo serverInfo,String name){
+	public String getProcedureDetailQuery(ServerInfo serverInfo){
 		try{
-			String detailReplace = StringUtils.replace(procedureDetailQuery,"$^$","\n");
-			return StringUtils.replacePatten("\\{name\\}",name, repalceServerInfo(serverInfo, detailReplace));
+			String replacement = StringUtils.replace(procedureDetailQuery,"$^$","\n");
+			return repalceServerInfo(serverInfo, replacement);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
 		}
@@ -261,10 +327,10 @@ public enum DatabaseDriver {
 		}
 	}
 
-	public String getFunctionDetailQuery(ServerInfo serverInfo,String name){
+	public String getFunctionDetailQuery(ServerInfo serverInfo){
 		try{
-			String detailReplace = StringUtils.replace(functionDetailQuery,"$^$","\n");
-			return StringUtils.replacePatten("\\{name\\}",name, repalceServerInfo(serverInfo, detailReplace));
+			String replacement = StringUtils.replace(functionDetailQuery,"$^$","\n");
+			return repalceServerInfo(serverInfo, replacement);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
 		}
@@ -284,10 +350,6 @@ public enum DatabaseDriver {
 
 	public String getProcessKillQuery(String id){
 		return StringUtils.replacePatten("\\{id\\}",id, killProcessQuery);
-	}
-
-	public String getDbms() {
-		return dbms;
 	}
 
 	public String getExplainQuery() {

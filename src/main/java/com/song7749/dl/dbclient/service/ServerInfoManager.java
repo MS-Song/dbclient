@@ -115,6 +115,20 @@ public interface ServerInfoManager {
 	List<ViewVO> findViewVOList(FindTableDTO dto);
 
 	/**
+	 * database view detail search
+	 * @param serverInfo
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> findViewDetailList(FindTableDTO dto);
+
+	/**
+	 * database view source search
+	 * @param serverInfo
+	 * @return List<ViewVO>
+	 */
+	List<ViewVO> findViewVOSourceList(FindTableDTO dto);
+
+	/**
 	 * Procedure 정보 리스트
 	 * @param dto
 	 * @return List<ProcedureVO>
@@ -127,7 +141,7 @@ public interface ServerInfoManager {
 	 * @param name
 	 * @return List<ProcedureVO>
 	 */
-	List<ProcedureVO> findProcedureVODetailList(FindTableDTO dto,String name);
+	List<ProcedureVO> findProcedureVODetailList(FindTableDTO dto);
 
 	/**
 	 * Function 정보 리스트
@@ -142,7 +156,7 @@ public interface ServerInfoManager {
 	 * @param name
 	 * @return List<FunctionVO>
 	 */
-	List<FunctionVO> findFunctionVODetailList(FindTableDTO dto,String name);
+	List<FunctionVO> findFunctionVODetailList(FindTableDTO dto);
 
 	/**
 	 * Sequence 리스트 조회

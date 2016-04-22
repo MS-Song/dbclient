@@ -145,6 +145,16 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 	}
 
+
+	@Override
+	public boolean closeConnection(ServerInfo serverInfo) throws SQLException {
+		if(dataSourceMap.containsKey(serverInfo)){
+			BasicDataSource bds = (BasicDataSource) dataSourceMap.get(serverInfo);
+			bds.close();
+		}
+		return true;
+	}
+
 	@Override
 	public List<TableVO> selectTableVOList(ServerInfo serverInfo) {
 
@@ -154,7 +164,6 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		try {
 			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getTableListQuery(serverInfo));
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
@@ -169,8 +178,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
-	public List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo, String tableName) {
-		serverInfo.setTableName(tableName);
+	public List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo) {
 
 		List<FieldVO> list = new ArrayList<FieldVO>();
 
@@ -178,13 +186,12 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		try {
 			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getFieldListQueryQuery(serverInfo));
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
 		for(Map<String,String> map:resultList){
 			list.add(new FieldVO(
-				tableName,
+				serverInfo.getName(),
 				map.get("COLUMN_ID"),
 				map.get("COLUMN_NAME"),
 				map.get("NULLABLE"),
@@ -200,8 +207,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
-	public List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo, String tableName) {
-		serverInfo.setTableName(tableName);
+	public List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo) {
 
 		List<IndexVO> list = new ArrayList<IndexVO>();
 
@@ -209,7 +215,6 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		try {
 			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getIndexListQuery(serverInfo));
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
@@ -439,7 +444,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		// 서비스 실행기 로딩
 		ThreadPoolTaskExecutor serviceExecutor = (ThreadPoolTaskExecutor) context.getBean("QueryExecuteLogExecutor");
-
+		// 서비스 실행기 실행
 		serviceExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -468,7 +473,42 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			list.add(
 				new ViewVO(
 					map.get("VIEW_NAME"),
-					map.get("TEXT")));
+					map.get("COMMENTS"),
+					map.get("LAST_UPDATE_TIME"),
+					map.get("STATUS"))
+			);
+		}
+		return list;
+	}
+
+	@Override
+	public List<Map<String,String>> selectViewDetailList(ServerInfo serverInfo){
+		logger.debug(format("{}",""),serverInfo);
+		try {
+			return executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getViewDetailQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+	}
+
+	@Override
+	public List<ViewVO> selectViewVOSourceList(ServerInfo serverInfo) {
+		logger.debug(format("{}",""),serverInfo);
+
+		List<ViewVO> list = new ArrayList<ViewVO>();
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getViewSourceQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(
+				new ViewVO(
+					map.get("VIEW_NAME"),
+					map.get("TEXT"))
+			);
 		}
 		return list;
 	}
@@ -495,13 +535,13 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
-	public List<ProcedureVO> selectProcedureVODetailList(ServerInfo serverInfo,String name) {
+	public List<ProcedureVO> selectProcedureVODetailList(ServerInfo serverInfo) {
 		List<ProcedureVO> list = new ArrayList<ProcedureVO>();
 
 		List<Map<String, String>> resultList = null;
 		try {
-			logger.debug(format("{}","procedureDetail"),serverInfo.getDriver().getProcedureDetailQuery(serverInfo,name));
-			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getProcedureDetailQuery(serverInfo,name));
+			logger.debug(format("{}","procedureDetail"),serverInfo.getDriver().getProcedureDetailQuery(serverInfo));
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getProcedureDetailQuery(serverInfo));
 		} catch (SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
@@ -533,12 +573,12 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
-	public List<FunctionVO> selectFunctionVODetailList(ServerInfo serverInfo,String name) {
+	public List<FunctionVO> selectFunctionVODetailList(ServerInfo serverInfo) {
 		List<FunctionVO> list = new ArrayList<FunctionVO>();
 
 		List<Map<String, String>> resultList = null;
 		try {
-			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getFunctionDetailQuery(serverInfo,name));
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getFunctionDetailQuery(serverInfo));
 		} catch (SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}

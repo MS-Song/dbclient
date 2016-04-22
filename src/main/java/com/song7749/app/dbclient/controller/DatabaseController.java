@@ -199,6 +199,67 @@ public class DatabaseController {
 		model.addAttribute("viewList", viewList);
 	}
 
+	@ApiOperation(value = "데이터베이스 View Detail 정보 조회"
+			,notes = "등록되어 있는 Database 서버의 Detail 정보를 조회 한다."
+			,response=ViewVO.class)
+	@RequestMapping(value="/viewDetailLis",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getViewDetailList(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="name",required=true)
+			@ApiParam 	String  name,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<Map<String,String>> viewDetailList = null;
+		if(null!=list && list.size()>0){
+			viewDetailList = serverInfoManager.findViewDetailList(new FindTableDTO(list.get(0).getServerInfoSeq(), name, useCache));
+		}
+
+		logger.trace("viewDetailList : {}",viewDetailList);
+		model.addAttribute("viewDetailList", viewDetailList);
+	}
+
+	@ApiOperation(value = "데이터베이스 View Source 정보 조회"
+			,notes = "등록되어 있는 Database 서버의 Source 정보를 조회 한다."
+			,response=ViewVO.class)
+	@RequestMapping(value="/viewSourceList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getViewSourceList(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="name",required=true)
+			@ApiParam 	String  name,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<ViewVO> viewSourceList=null;
+		if(null!=list & list.size()>0){
+			viewSourceList=serverInfoManager.findViewVOSourceList(new FindTableDTO(list.get(0).getServerInfoSeq(), name, useCache));
+		}
+
+		logger.trace("viewSourceList : {}",viewSourceList);
+		model.addAttribute("viewSourceList", viewSourceList);
+	}
+
+
 	@ApiOperation(value = "데이터베이스 Procedure 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Procedure 리스트를 조회 한다."
 			,response=ProcedureVO.class)
@@ -250,7 +311,7 @@ public class DatabaseController {
 
 		List<ProcedureVO> procedureList=null;
 		if(null!=list & list.size()>0){
-			procedureList=serverInfoManager.findProcedureVODetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache),name);
+			procedureList=serverInfoManager.findProcedureVODetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
 		}
 
 		logger.trace("procedureList : {}",procedureList);
@@ -308,7 +369,7 @@ public class DatabaseController {
 
 		List<FunctionVO> functionList=null;
 		if(null!=list & list.size()>0){
-			functionList=serverInfoManager.findFunctionVODetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache),name);
+			functionList=serverInfoManager.findFunctionVODetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
 		}
 
 		logger.trace("functionList : {}",functionList);

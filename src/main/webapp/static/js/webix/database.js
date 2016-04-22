@@ -147,7 +147,7 @@ var select_database_popup=function(){
 // database info cell
 var database_info_cell = [
 	{	 
-		header:"Table",		
+		header:"Table",
 		rows:[{
 			view : "datatable",
 			id:"database_info_table_list_view", 	
@@ -329,51 +329,89 @@ var database_info_cell = [
 			]
 		}]
 	},
-	{	view : "datatable", 
-		header:"View",			
-		id:"database_info_view_list_view", 						
-		columns:[
-			{ id:"viewName",	header:["#", {	// 검색창 구현
-					content:"textFilter", placeholder:"view name search",
-					compare:function(value, filter, obj){ // 검색창 필터조건 구현
-							if (equals(obj.viewName, filter)) return true;
-							return false;
-					}, colspan:1}], 
-				adjust:true,	sort:"string"
-			},
-			{ 
-				id:"viewExecute",
-				header:"실행",		
-				width:60,
-				template:function(obj){
-					var htmlHeader 	= '<input type="button" value="실행" style="width:40px;" data="';
-					var html 		= 'select * from '+obj.viewName; 
-					var htmlFooter 	= '" onClick="reUseQuery(this);"/>';
-					
-					switch (serverInfo.driver) {
-					case 'mysql'	: 	html+=' limit 10';										break;
-					case 'oracle'	: 	html='select * from (\r'+html+'\r) where rownum <= 10';	break;
+	{	
+		header:"View",		
+		rows:[{
+			view : "datatable", 
+			id:"database_info_view_list_view", 						
+			columns:[
+				{ id:"viewName",	header:["#", {	// 검색창 구현
+						content:"textFilter", placeholder:"view name search",
+						compare:function(value, filter, obj){ // 검색창 필터조건 구현
+								if (equals(obj.viewName, filter)) return true;
+								return false;
+						}, colspan:1}], 
+					adjust:true,	sort:"string",
+					template:function(obj){
+						var html=obj.viewName;
+						if(serverInfo.driver.indexOf("oracle") >=0){
+							// 사용불가능 일 경우
+							if(obj.status == "INVALID"){
+								html="<del>"+html+"</del>";		
+							}
+						}
+						return html;
 					}
+				},
+				{ 
+					id:"comments",
+					header:"comments",
+					sort:"string",
+					adjust:true
+				},
+				{ 
+					id:"lastUpdateTime",
+					header:"last update",
+					sort:"string",
+					adjust:true
+				}
+			],
+			data:[],
+			tooltip:true,
+			select:"row",
+			resizeColumn:true,
+			on:{	
+	    		onSelectChange:function(){
+	    			var selectedRow = $$("database_info_view_list_view").getSelectedItem();
+	    			var param = copyServerInfo(serverInfo);
+	    			param.name=selectedRow.viewName;
 
-					return  htmlHeader+html+htmlFooter;
-				}
+	    			getDataParseProperty("/database/viewDetailLis",param,"view_info_detail_property");
+	    			getDataParseTextarea("/database/viewSourceList",param,"view_info_source","text");
+	    		},
+	    		onItemDblClick:function(){
+	    			var selectedRow = $$("database_info_view_list_view").getSelectedItem();
+	    			var param = copyServerInfo(serverInfo);
+	    			param.name=selectedRow.viewName;
+
+	    			getDataParseEditor("/database/viewSourceList",param,"text");
+	    			
+	    			
+	    		}
+	    	}
+		},
+		{ view:"resizer"},
+		{
+			view:"tabview",
+			id:"view_info_tab",
+			animate:false,
+			cells: [{
+				header:"View Property",
+				view : "property",
+				id:"view_info_detail_property", 	
+				tooltip:true,
+				scroll:"xy",
+				navigation:true,
+				columns:[],
+				elements:[]
 			},
-			{ 
-				id:"viewModify",
-				header:"수정",		
-				width:60,
-				template:function(obj){
-					var html = '<input type="button" value="수정" style="width:40px;" data="';
-					html+= htmlEntities(obj.text); 
-					html+= '" onClick="reUseQuery(this);"/>';
-					return html;
-				}
-			},				
-		],
-		data:[],
-		tooltip:true,
-		select:"row",
-		resizeColumn:true
+			{	
+				header:"View Source",
+				view : "textarea",
+				id:"view_info_source", 	
+				adjust:true,
+			}]
+		}]
 	},
 	{	view : "datatable", 
 		header:"Procedure",	
@@ -513,7 +551,7 @@ var database_info_procedure_detail_loading = function(obj){
 	if(null!=name){
 		var newServerInfo = copyServerInfo(serverInfo);
 		newServerInfo.name=name;
-		getDateParseEditor("/database/procedureDetailList",newServerInfo,'text');
+		getDataParseEditor("/database/procedureDetailList",newServerInfo,'text');
 	}
 }; 
 
@@ -523,7 +561,7 @@ var database_info_function_detail_loading = function(obj){
 	if(null!=name){
 		var newServerInfo = copyServerInfo(serverInfo);
 		newServerInfo.name=name;
-		getDateParseEditor("/database/functionDetailList",newServerInfo,'text');
+		getDataParseEditor("/database/functionDetailList",newServerInfo,'text');
 	}
 }; 
 

@@ -124,8 +124,9 @@ public class DBclientDataSourceManagerImplTest {
 	@Test
 	public void testSelectProcedureVODetailList() throws Exception {
 		// give
+		serverInfo.setName("sp_serverinfo");
 		// when
-		List<ProcedureVO> list = dbClientDataSourceManager.selectProcedureVODetailList(serverInfo, "sp_serverinfo");
+		List<ProcedureVO> list = dbClientDataSourceManager.selectProcedureVODetailList(serverInfo);
 		// then
 		assertThat(list, notNullValue());
 	}

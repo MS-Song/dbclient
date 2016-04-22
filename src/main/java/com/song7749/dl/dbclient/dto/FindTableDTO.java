@@ -1,19 +1,17 @@
 package com.song7749.dl.dbclient.dto;
 
-import javax.validation.constraints.NotNull;
-
 import com.song7749.dl.base.AbstractDto;
-import com.song7749.util.validate.ValidateGroupSelect;
 
 public class FindTableDTO extends AbstractDto{
 
 	private static final long serialVersionUID = 3720276959059559353L;
 
-	@NotNull(groups={ValidateGroupSelect.class})
 	private Integer serverInfoSeq;
 
-	@NotNull
-	private String tableName;
+	/**
+	 * object name
+	 */
+	private String name;
 
 	public FindTableDTO() {}
 
@@ -21,14 +19,19 @@ public class FindTableDTO extends AbstractDto{
 		super.setUseCache(useCache);
 	}
 
-	public FindTableDTO(Integer serverInfoSeq,boolean useCache) {
+	public FindTableDTO(Integer serverInfoSeq, boolean useCache) {
 		this.serverInfoSeq = serverInfoSeq;
 		super.setUseCache(useCache);
 	}
 
-	public FindTableDTO(Integer serverInfoSeq, String tableName,boolean useCache) {
+	public FindTableDTO(Integer serverInfoSeq, String name) {
 		this.serverInfoSeq = serverInfoSeq;
-		this.tableName = tableName;
+		this.name = name;
+	}
+
+	public FindTableDTO(Integer serverInfoSeq, String name, boolean useCache) {
+		this.serverInfoSeq = serverInfoSeq;
+		this.name = name;
 		super.setUseCache(useCache);
 	}
 
@@ -40,13 +43,11 @@ public class FindTableDTO extends AbstractDto{
 		this.serverInfoSeq = serverInfoSeq;
 	}
 
-	public String getTableName() {
-		return tableName;
+	public String getName() {
+		return name;
 	}
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
+	public void setName(String name) {
+		this.name = name;
 	}
-
-
 }
