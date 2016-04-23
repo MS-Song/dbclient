@@ -309,11 +309,40 @@ public class DatabaseController {
 
 		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
 
-		List<ProcedureVO> procedureList=null;
+		List<Map<String,String>> procedureList=null;
 		if(null!=list & list.size()>0){
-			procedureList=serverInfoManager.findProcedureVODetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
+			procedureList=serverInfoManager.findProcedureDetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
 		}
 
+		logger.trace("procedureList : {}",procedureList);
+		model.addAttribute("procedureList", procedureList);
+	}
+
+	@ApiOperation(value = "데이터베이스 Procedure Source 조회"
+			,notes = "등록되어 있는 Database 서버의 Procedure Source 조회 한다."
+			,response=ProcedureVO.class)
+	@RequestMapping(value="/procedureSourceList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void procedureSource(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="name",required=true)
+			@ApiParam 	String  name,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<ProcedureVO> procedureList=null;
+		if(null!=list & list.size()>0){
+			procedureList=serverInfoManager.findProcedureVOSourceList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
+		}
 		logger.trace("procedureList : {}",procedureList);
 		model.addAttribute("procedureList", procedureList);
 	}
@@ -346,6 +375,7 @@ public class DatabaseController {
 		model.addAttribute("functionList", functionList);
 	}
 
+
 	@ApiOperation(value = "데이터베이스 Function 상세 조회"
 			,notes = "등록되어 있는 Database 서버의 Function 내용을 조회 한다."
 			,response=FunctionVO.class)
@@ -367,9 +397,40 @@ public class DatabaseController {
 
 		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
 
+		List<Map<String,String>> functionList=null;
+		if(null!=list & list.size()>0){
+			functionList=serverInfoManager.findFunctionDetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
+		}
+
+		logger.trace("functionList : {}",functionList);
+		model.addAttribute("functionList", functionList);
+	}
+
+
+	@ApiOperation(value = "데이터베이스 Function Source 조회"
+			,notes = "등록되어 있는 Database 서버의 Function Source 조회 한다."
+			,response=FunctionVO.class)
+	@RequestMapping(value="/functionSourceList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void functionSource(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="name",required=true)
+			@ApiParam 	String  name,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
 		List<FunctionVO> functionList=null;
 		if(null!=list & list.size()>0){
-			functionList=serverInfoManager.findFunctionVODetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
+			functionList=serverInfoManager.findFunctionVOSourceList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
 		}
 
 		logger.trace("functionList : {}",functionList);
@@ -403,6 +464,37 @@ public class DatabaseController {
 		logger.trace("sequenceList : {}",sequenceList);
 		model.addAttribute("sequenceList", sequenceList);
 	}
+
+
+	@ApiOperation(value = "데이터베이스 Sequence 상세내용 조회"
+			,notes = "등록되어 있는 Database 서버의 Sequence 상세내용 조회 한다."
+			,response=SequenceVO.class)
+	@RequestMapping(value="/sequenceDetailList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getSequenceDetail(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="name",required=true)
+			@ApiParam 	String  name,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<Map<String,String>> sequenceList=null;
+		if(null!=list & list.size()>0){
+			sequenceList=serverInfoManager.findSequenceDetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
+		}
+		logger.trace("sequenceList : {}",sequenceList);
+		model.addAttribute("sequenceList", sequenceList);
+	}
+
 
 	@ApiOperation(value = "데이터베이스 테이블  필드 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 의 필드를 조회 한다."

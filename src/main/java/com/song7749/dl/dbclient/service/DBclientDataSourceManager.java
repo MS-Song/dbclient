@@ -59,7 +59,6 @@ public interface DBclientDataSourceManager {
 	/**
 	 * database field information
 	 * @param serverInfo
-	 * @param tableName
 	 * @return List<FieldVO>
 	 */
 	List<FieldVO> selectTableFieldVOList(ServerInfo serverInfo);
@@ -67,7 +66,6 @@ public interface DBclientDataSourceManager {
 	/**
 	 * database index information
 	 * @param serverInfo
-	 * @param tableName
 	 * @return List<IndexVO>
 	 */
 	List<IndexVO> selectTableIndexVOList(ServerInfo serverInfo);
@@ -114,10 +112,16 @@ public interface DBclientDataSourceManager {
 	/**
 	 * database stored procedure Detail search
 	 * @param serverInfo
-	 * @param name
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> selectProcedureDetailList(ServerInfo serverInfo);
+
+	/**
+	 * database stored procedure source search
+	 * @param serverInfo
 	 * @return List<ProcedureVO>
 	 */
-	List<ProcedureVO> selectProcedureVODetailList(ServerInfo serverInfo);
+	List<ProcedureVO> selectProcedureVOSourceList(ServerInfo serverInfo);
 
 	/**
 	 * database function search
@@ -129,17 +133,30 @@ public interface DBclientDataSourceManager {
 	/**
 	 * database function Detail search
 	 * @param serverInfo
-	 * @param name
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> selectFunctionDetailList(ServerInfo serverInfo);
+
+	/**
+	 * database function Detail search
+	 * @param serverInfo
 	 * @return List<FunctionVO>
 	 */
-	List<FunctionVO> selectFunctionVODetailList(ServerInfo serverInfo);
+	List<FunctionVO> selectFunctionVOSourceList(ServerInfo serverInfo);
 
 	/**
 	 * Sequence List search
 	 * @param serverInfo
-	 * @return
+	 * @return List<SequenceVO>
 	 */
 	List<SequenceVO> selectSequenceVOList(ServerInfo serverInfo);
+
+	/**
+	 * database Sequence Detail search
+	 * @param serverInfo
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> selectSequenceDetailList(ServerInfo serverInfo);
 
 	/**
 	 * 유저가 실행한 쿼리를 취소 한다.

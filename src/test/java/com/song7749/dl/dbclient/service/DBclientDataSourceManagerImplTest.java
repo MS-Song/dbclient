@@ -130,7 +130,7 @@ public class DBclientDataSourceManagerImplTest {
 		// give
 		serverInfo.setName("sp_serverinfo");
 		// when
-		List<ProcedureVO> list = dbClientDataSourceManager.selectProcedureVODetailList(serverInfo);
+		List<Map<String,String>> list = dbClientDataSourceManager.selectProcedureDetailList(serverInfo);
 		// then
 		assertThat(list, notNullValue());
 	}

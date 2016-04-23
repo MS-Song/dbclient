@@ -116,14 +116,14 @@ public interface ServerInfoManager {
 
 	/**
 	 * database view detail search
-	 * @param serverInfo
+	 * @param dto
 	 * @return List<Map<String,String>>
 	 */
 	List<Map<String,String>> findViewDetailList(FindTableDTO dto);
 
 	/**
 	 * database view source search
-	 * @param serverInfo
+	 * @param dto
 	 * @return List<ViewVO>
 	 */
 	List<ViewVO> findViewVOSourceList(FindTableDTO dto);
@@ -138,10 +138,16 @@ public interface ServerInfoManager {
 	/**
 	 * Procedure 상세 정보 리스트
 	 * @param dto
-	 * @param name
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> findProcedureDetailList(FindTableDTO dto);
+
+	/**
+	 * database stored procedure source search
+	 * @param dto
 	 * @return List<ProcedureVO>
 	 */
-	List<ProcedureVO> findProcedureVODetailList(FindTableDTO dto);
+	List<ProcedureVO> findProcedureVOSourceList(FindTableDTO dto);
 
 	/**
 	 * Function 정보 리스트
@@ -153,17 +159,32 @@ public interface ServerInfoManager {
 	/**
 	 * Function 상세 정보 리스트
 	 * @param dto
-	 * @param name
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> findFunctionDetailList(FindTableDTO dto);
+
+	/**
+	 * database function Detail search
+	 * @param dto
 	 * @return List<FunctionVO>
 	 */
-	List<FunctionVO> findFunctionVODetailList(FindTableDTO dto);
+	List<FunctionVO> findFunctionVOSourceList(FindTableDTO dto);
+
 
 	/**
 	 * Sequence 리스트 조회
-	 * @param serverInfo
+	 * @param dto
 	 * @return List<SequenceVO>
 	 */
 	List<SequenceVO> findSequenceVOList(FindTableDTO dto);
+
+	/**
+	 * database Sequence Detail search
+	 * @param dto
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> findSequenceDetailList(FindTableDTO dto);
+
 
 	/**
 	 * Query Result Set List

@@ -22,6 +22,7 @@ public class ProcedureVO extends AbstractVo{
 	private static final long serialVersionUID = 2598841737020289017L;
 
 	private String name;
+	private String status;
 	private String lastUpdateDate;
 	private String text;
 
@@ -31,8 +32,9 @@ public class ProcedureVO extends AbstractVo{
 		this.text = text;
 	}
 
-	public ProcedureVO(String name, String lastUpdateDate) {
+	public ProcedureVO(String name, String status, String lastUpdateDate) {
 		this.name = name;
+		this.status = status;
 		this.lastUpdateDate = lastUpdateDate;
 	}
 
@@ -42,6 +44,14 @@ public class ProcedureVO extends AbstractVo{
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getLastUpdateDate() {

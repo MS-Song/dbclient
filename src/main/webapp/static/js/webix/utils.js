@@ -156,6 +156,7 @@ var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
 var getDataParseProperty = function(url,parmeters,viewName){
 	webix.ajax().get(url+".json",parmeters, 
 			function(text,data){
+				console.log(data.json());
 				if(data.json().status ==200 && null!=data.json().result){
 
 					var elementList=[];

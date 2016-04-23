@@ -26,7 +26,7 @@ public class ViewVO extends AbstractVo{
 	private static final long serialVersionUID = 2242799985087441360L;
 
 	@ApiModelProperty
-	private String viewName;
+	private String name;
 
 	@ApiModelProperty
 	private String comments;
@@ -43,28 +43,28 @@ public class ViewVO extends AbstractVo{
 	public ViewVO() {}
 
 
-	public ViewVO(String viewName, String comments, String lastUpdateTime,
+	public ViewVO(String name, String comments, String lastUpdateTime,
 			String status) {
-		this.viewName = viewName;
+		this.name = name;
 		this.comments = comments;
 		this.lastUpdateTime = lastUpdateTime;
 		this.status = status;
 	}
 
-	public ViewVO(String viewName, String text) {
+	public ViewVO(String name, String text) {
 		super();
-		this.viewName = viewName;
+		this.name = name;
 		this.text = text;
 	}
 
 
-	public String getViewName() {
-		return viewName;
+	public String getName() {
+		return name;
 	}
 
 
-	public void setViewName(String viewName) {
-		this.viewName = viewName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 

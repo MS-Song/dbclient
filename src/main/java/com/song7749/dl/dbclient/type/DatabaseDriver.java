@@ -49,7 +49,7 @@ public enum DatabaseDriver {
 			// explain
 			null,
 			// view list
-			"SELECT TABLE_NAME AS VIEW_NAME,VIEW_DEFINITION AS TEXT FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}'",
+			"SELECT TABLE_NAME AS NAME, VIEW_DEFINITION AS TEXT FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}'",
 			// TODO view detail
 			"",
 			// TODO view source
@@ -92,27 +92,27 @@ public enum DatabaseDriver {
 			// explain
 			"SELECT * from table(dbms_xplan.display('plan_table',null,'typical',null))",
 			// view list
-			"SELECT uv.VIEW_NAME, utc.COMMENTS AS COMMENTS, uo.LAST_DDL_TIME AS LAST_UPDATE_TIME, uo.STATUS FROM  USER_VIEWS uv LEFT JOIN USER_TAB_COMMENTS utc ON (uv.VIEW_NAME=utc.TABLE_NAME and utc.TABLE_TYPE='VIEW') JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW')",
-			// TODO view detail
+			"SELECT uv.VIEW_NAME as NAME, utc.COMMENTS AS COMMENTS, uo.LAST_DDL_TIME AS LAST_UPDATE_TIME, uo.STATUS FROM  USER_VIEWS uv LEFT JOIN USER_TAB_COMMENTS utc ON (uv.VIEW_NAME=utc.TABLE_NAME and utc.TABLE_TYPE='VIEW') JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW')",
+			// view detail
 			"SELECT uv.VIEW_NAME, uv.TEXT_LENGTH, uv.TYPE_TEXT_LENGTH, uv.TYPE_TEXT, uv.OID_TEXT_LENGTH, uv.OID_TEXT, uv.VIEW_TYPE_OWNER, uv.VIEW_TYPE, uv.SUPERVIEW_NAME, uv.EDITIONING_VIEW, uv.READ_ONLY, uo.OBJECT_NAME, uo.SUBOBJECT_NAME, uo.OBJECT_ID, uo.DATA_OBJECT_ID, uo.OBJECT_TYPE, uo.CREATED, uo.LAST_DDL_TIME, uo.TIMESTAMP, uo.STATUS, uo.TEMPORARY, uo.GENERATED, uo.SECONDARY, uo.NAMESPACE, uo.EDITION_NAME FROM USER_VIEWS uv JOIN USER_OBJECTS uo on(uv.VIEW_NAME=uo.OBJECT_NAME) WHERE uv.VIEW_NAME=upper('{name}')",
-			// TODO view source
-			"SELECT uv.VIEW_NAME, uv.TEXT FROM USER_VIEWS uv JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW') WHERE  uv.VIEW_NAME=upper('{name}')",
+			// view source
+			"SELECT uv.VIEW_NAME as NAME, uv.TEXT FROM USER_VIEWS uv JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW') WHERE  uv.VIEW_NAME=upper('{name}')",
 			// procedure list
-			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE from user_objects uo where uo.object_type = 'PROCEDURE'",
-			// TODO procedure detail
-			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
+			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'PROCEDURE'",
+			// procedure detail
+			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
 			// procedure source
 			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
 			// function list
-			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE from user_objects uo where uo.object_type = 'FUNCTION'",
-			// TODO function detail
-			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
+			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'FUNCTION'",
+			// function detail
+			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
 			// function source
 			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
-			// TODO sequence list
-			"SELECT SEQUENCE_NAME as NAME,LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from user_sequences",
-			// sequence source
-			"SELECT SEQUENCE_NAME as NAME,LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from user_sequences",
+			//sequence list
+			"SELECT SEQUENCE_NAME as NAME, LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from user_sequences",
+			// sequence detail
+			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
 			// process list
 			"SELECT concat(concat(s.sid , ','), s.serial#) as ID, sql.sql_text as SQL_TEXT from v$session s join v$sql sql on s.sql_id = sql.sql_id where s.program='dbClient'",
 			// kill process
@@ -301,7 +301,11 @@ public enum DatabaseDriver {
 		}
 	}
 
-
+	/**
+	 * procedure list query
+	 * @param serverInfo
+	 * @return String
+	 */
 	public String getProcedureListQuery(ServerInfo serverInfo) {
 		try {
 			return repalceServerInfo(serverInfo, procedureListQuery);
@@ -310,9 +314,27 @@ public enum DatabaseDriver {
 		}
 	}
 
-	public String getProcedureDetailQuery(ServerInfo serverInfo){
+	/**
+	 * procedure detail query
+	 * @param serverInfo
+	 * @return String
+	 */
+	public String getProcedureDetailQuery(ServerInfo serverInfo) {
+		try {
+			return repalceServerInfo(serverInfo, procedureDetailQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
+	/**
+	 * procedure source query
+	 * @param serverInfo
+	 * @return String
+	 */
+	public String getProcedureSourceQuery(ServerInfo serverInfo){
 		try{
-			String replacement = StringUtils.replace(procedureDetailQuery,"$^$","\n");
+			String replacement = StringUtils.replace(procedureSourceQuery,"$^$","\n");
 			return repalceServerInfo(serverInfo, replacement);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
@@ -328,21 +350,38 @@ public enum DatabaseDriver {
 	}
 
 	public String getFunctionDetailQuery(ServerInfo serverInfo){
+		try {
+			return repalceServerInfo(serverInfo, functionDetailQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
+	public String getFunctionSourceQuery(ServerInfo serverInfo){
 		try{
-			String replacement = StringUtils.replace(functionDetailQuery,"$^$","\n");
+			String replacement = StringUtils.replace(functionSourceQuery,"$^$","\n");
 			return repalceServerInfo(serverInfo, replacement);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
 		}
 	}
 
-	public String getSequenceListQueryQuery(ServerInfo serverInfo) {
+	public String getSequenceListQuery(ServerInfo serverInfo) {
 		try {
 			return repalceServerInfo(serverInfo, sequenceListQuery);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
 		}
 	}
+
+	public String getSequenceListDetailQuery(ServerInfo serverInfo) {
+		try {
+			return repalceServerInfo(serverInfo, sequenceDetailQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
 
 	public String getProcessListQuery(){
 		return processListQuery;

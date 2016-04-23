@@ -335,15 +335,16 @@ var database_info_cell = [
 			view : "datatable", 
 			id:"database_info_view_list_view", 						
 			columns:[
-				{ id:"viewName",	header:["#", {	// 검색창 구현
+				{ id:"name",	header:["#", {	// 검색창 구현
 						content:"textFilter", placeholder:"view name search",
 						compare:function(value, filter, obj){ // 검색창 필터조건 구현
-								if (equals(obj.viewName, filter)) return true;
+								if (equals(obj.name, filter)) return true;
 								return false;
 						}, colspan:1}], 
-					adjust:true,	sort:"string",
+					adjust:true,	
+					sort:"string",
 					template:function(obj){
-						var html=obj.viewName;
+						var html=obj.name;
 						if(serverInfo.driver.indexOf("oracle") >=0){
 							// 사용불가능 일 경우
 							if(obj.status == "INVALID"){
@@ -354,14 +355,14 @@ var database_info_cell = [
 					}
 				},
 				{ 
-					id:"comments",
-					header:"comments",
+					id:"lastUpdateTime",
+					header:"last update",
 					sort:"string",
 					adjust:true
 				},
 				{ 
-					id:"lastUpdateTime",
-					header:"last update",
+					id:"comments",
+					header:"comments",
 					sort:"string",
 					adjust:true
 				}
@@ -374,7 +375,7 @@ var database_info_cell = [
 	    		onSelectChange:function(){
 	    			var selectedRow = $$("database_info_view_list_view").getSelectedItem();
 	    			var param = copyServerInfo(serverInfo);
-	    			param.name=selectedRow.viewName;
+	    			param.name=selectedRow.name;
 
 	    			getDataParseProperty("/database/viewDetailLis",param,"view_info_detail_property");
 	    			getDataParseTextarea("/database/viewSourceList",param,"view_info_source","text");
@@ -382,7 +383,7 @@ var database_info_cell = [
 	    		onItemDblClick:function(){
 	    			var selectedRow = $$("database_info_view_list_view").getSelectedItem();
 	    			var param = copyServerInfo(serverInfo);
-	    			param.name=selectedRow.viewName;
+	    			param.name=selectedRow.name;
 	    			getDataParseEditor("/database/viewSourceList",param,"text");
 	    		}
 	    	}
@@ -410,95 +411,239 @@ var database_info_cell = [
 			}]
 		}]
 	},
-	{	view : "datatable", 
-		header:"Procedure",	
-		id:"database_info_procedure_list_view", 
-		columns:[
-			{ id:"name",	header:["#", {	// 검색창 구현
-					content:"textFilter", placeholder:"name search",
-					compare:function(value, filter, obj){ // 검색창 필터조건 구현
-							if (equals(obj.name, filter)) return true;
-							return false;
-					}, colspan:1}], 
-				adjust:true,	sort:"string"
-			},
-			{ 
-				id:"procedureModify",
-				header:"수정",		
-				width:60,
-				template:function(obj){
-					var html = '<input type="button" value="수정" style="width:40px;" data="';
-					html+= htmlEntities(obj.name); 
-					html+= '" onClick="database_info_procedure_detail_loading(this);"/>';
-					return html;
+	{	
+		
+		header:"Procedure",		
+		rows:[{		
+			view : "datatable", 
+			id:"database_info_procedure_list_view", 
+			columns:[
+				{ id:"name",	header:["#", {	// 검색창 구현
+						content:"textFilter", placeholder:"name search",
+						compare:function(value, filter, obj){ // 검색창 필터조건 구현
+								if (equals(obj.name, filter)) return true;
+								return false;
+						}, colspan:1}], 
+					adjust:true,	
+					sort:"string",
+					template:function(obj){
+						var html=obj.name;
+						if(serverInfo.driver.indexOf("oracle") >=0){
+							// 사용불가능 일 경우
+							if(obj.status == "INVALID"){
+								html="<del>"+html+"</del>";		
+							}
+						}
+						return html;
+					}
+				},
+				{ 
+					id:"lastUpdateDate", 
+					adjust:true,	
+					sort:"string" 
 				}
+			],	
+			data:[],
+			tooltip:true,
+			select:"row",
+			resizeColumn:true,
+			on:{	
+	    		onSelectChange:function(){
+	    			var selectedRow = $$("database_info_procedure_list_view").getSelectedItem();
+	    			var param = copyServerInfo(serverInfo);
+	    			param.name=selectedRow.name;
+
+	    			getDataParseProperty("/database/procedureDetailList",param,"procedure_info_detail_property");
+	    			getDataParseTextarea("/database/procedureSourceList",param,"procedure_info_source","text");
+	    		},
+	    		onItemDblClick:function(){
+	    			var selectedRow = $$("database_info_procedure_list_view").getSelectedItem();
+	    			var param = copyServerInfo(serverInfo);
+	    			param.name=selectedRow.name;
+	    			getDataParseEditor("/database/procedureSourceList",param,"text");
+	    		}
+			}
+		},
+		{ view:"resizer"},
+		{
+			view:"tabview",
+			id:"procedure_info_tab",
+			animate:false,
+			cells: [{
+				header:"Procedure Property",
+				view : "property",
+				id:"procedure_info_detail_property", 	
+				tooltip:true,
+				scroll:"xy",
+				navigation:true,
+				columns:[],
+				elements:[]
 			},
-			{ id:"lastUpdateDate", adjust:true,	sort:"string" }
-		],	
-		data:[],
-		tooltip:true,
-		select:"row",
-		resizeColumn:true,
+			{	
+				header:"Procedure Source",
+				view : "textarea",
+				id:"procedure_info_source", 	
+				adjust:true,
+			}]
+		}]
 	},
-	{	view : "datatable", 
+	{	
 		header:"Function",		
-		id:"database_info_function_list_view",				
-		columns:[],	
-		columns:[
-			{ id:"name",	header:["#", {	// 검색창 구현
-					content:"textFilter", placeholder:"name search",
-					compare:function(value, filter, obj){ // 검색창 필터조건 구현
-							if (equals(obj.name, filter)) return true;
-							return false;
-					}, colspan:1}], 
-				adjust:true,	sort:"string"
-			},
-			{ 
-				id:"functionModify",
-				header:"수정",		
-				width:60,
-				template:function(obj){
-					var html = '<input type="button" value="수정" style="width:40px;" data="';
-					html+= htmlEntities(obj.name); 
-					html+= '" onClick="database_info_function_detail_loading(this);"/>';
-					return html;
+		rows:[{		
+			view : "datatable", 
+			id:"database_info_function_list_view",				
+			columns:[
+				{ id:"name",	header:["#", {	// 검색창 구현
+						content:"textFilter", placeholder:"name search",
+						compare:function(value, filter, obj){ // 검색창 필터조건 구현
+								if (equals(obj.name, filter)) return true;
+								return false;
+						}, colspan:1}], 
+					adjust:true,	
+					sort:"string",
+					template:function(obj){
+						var html=obj.name;
+						if(serverInfo.driver.indexOf("oracle") >=0){
+							// 사용불가능 일 경우
+							if(obj.status == "INVALID"){
+								html="<del>"+html+"</del>";		
+							}
+						}
+						return html;
+					}
+				},
+				{ 
+					id:"lastUpdateDate", 
+					adjust:true,	
+					sort:"string" 
 				}
+			],	
+			tooltip:true,
+			select:"row",
+			resizeColumn:true,
+			on:{	
+	    		onSelectChange:function(){
+	    			var selectedRow = $$("database_info_function_list_view").getSelectedItem();
+	    			var param = copyServerInfo(serverInfo);
+	    			param.name=selectedRow.name;
+
+	    			getDataParseProperty("/database/functionDetailList",param,"function_info_detail_property");
+	    			getDataParseTextarea("/database/functionSourceList",param,"function_info_source","text");
+	    		},
+	    		onItemDblClick:function(){
+	    			var selectedRow = $$("database_info_function_list_view").getSelectedItem();
+	    			var param = copyServerInfo(serverInfo);
+	    			param.name=selectedRow.name;
+	    			getDataParseEditor("/database/procedureSourceList",param,"text");
+	    		}
+
+	    	},
+		},
+		{ view:"resizer"},
+		{
+			view:"tabview",
+			id:"function_info_tab",
+			animate:false,
+			cells: [{
+				header:"Function Property",
+				view : "property",
+				id:"function_info_detail_property", 	
+				tooltip:true,
+				scroll:"xy",
+				navigation:true,
+				columns:[],
+				elements:[]
 			},
-			{ id:"lastUpdateDate", adjust:true,	sort:"string" }
-		],	
-		tooltip:true,
-		select:"row",
-		resizeColumn:true,
+			{	
+				header:"Function Source",
+				view : "textarea",
+				id:"function_info_source", 	
+				adjust:true,
+			}]
+		}]
 	},
-	{	view : "datatable", 
-		header:"Sequence",		
-		id:"database_info_sequence_list_view",				
-		columns:[
-			{ id:"name",	header:["#", {	// 검색창 구현
-					content:"textFilter", placeholder:"name search",
-					compare:function(value, filter, obj){ // 검색창 필터조건 구현
-							if (equals(obj.name	, filter)) return true;
-							return false;
-					}, colspan:1}], 
-				adjust:true,	sort:"string"},					         
-			{ id:"lastValue",		header:"lastValue",		sort:"int", 	adjust:true},
-			{ id:"minValue",		header:"minValue",		sort:"int", 	adjust:true},
-			{ id:"maxValue",		header:"maxValue",		sort:"int", 	adjust:true},
-			{ id:"incrementBy",		header:"incrementBy",	sort:"int", 	adjust:true}
-		],	
-		data:[],
-		tooltip:true,
-		select:"row",
-		resizeColumn:true
-	},
-	{	view : "datatable", 
+	{	
 		header:"Trigger",		
-		id:"database_info_Trigger_list_view",				
-		columns:[],	
-		data:[],
-		tooltip:true,
-		select:"row",
-		resizeColumn:true
+		rows:[{			
+			view : "datatable", 
+			id:"database_info_trigger_list_view",				
+			columns:[],	
+			data:[],
+			tooltip:true,
+			select:"row",
+			resizeColumn:true
+		},
+		{ view:"resizer"},
+		{
+			view:"tabview",
+			id:"function_info_tab",
+			animate:false,
+			cells: [{
+				header:"Trigger Property",
+				view : "property",
+				id:"trigger_info_detail_property", 	
+				tooltip:true,
+				scroll:"xy",
+				navigation:true,
+				columns:[],
+				elements:[]
+			},
+			{	
+				header:"Trigger Source",
+				view : "textarea",
+				id:"trigger_info_source", 	
+				adjust:true,
+			}]
+		}]			
+	},
+	{	
+		header:"Sequence",		
+		rows:[{				
+			view : "datatable", 
+			id:"database_info_sequence_list_view",				
+			columns:[
+				{ id:"name",	header:["#", {	// 검색창 구현
+						content:"textFilter", placeholder:"name search",
+						compare:function(value, filter, obj){ // 검색창 필터조건 구현
+								if (equals(obj.name	, filter)) return true;
+								return false;
+						}, colspan:1}], 
+					adjust:true,	sort:"string"},					         
+				{ id:"lastValue",		header:"lastValue",		sort:"int", 	adjust:true},
+				{ id:"minValue",		header:"minValue",		sort:"int", 	adjust:true},
+				{ id:"maxValue",		header:"maxValue",		sort:"int", 	adjust:true},
+				{ id:"incrementBy",		header:"incrementBy",	sort:"int", 	adjust:true}
+			],	
+			data:[],
+			tooltip:true,
+			select:"row",
+			resizeColumn:true,
+			on:{	
+	    		onSelectChange:function(){
+	    			var selectedRow = $$("database_info_sequence_list_view").getSelectedItem();
+	    			var param = copyServerInfo(serverInfo);
+	    			param.name=selectedRow.name;
+
+	    			getDataParseProperty("/database/sequenceDetailList",param,"sequence_info_detail_property");
+	    		}
+			}
+		},
+		{ view:"resizer"},
+		{
+			view:"tabview",
+			id:"sequence_info_tab",
+			animate:false,
+			cells: [{
+				header:"Sequence Property",
+				view : "property",
+				id:"sequence_info_detail_property", 	
+				tooltip:true,
+				scroll:"xy",
+				navigation:true,
+				columns:[],
+				elements:[]
+			}]
+		}]
 	}
 ];
 

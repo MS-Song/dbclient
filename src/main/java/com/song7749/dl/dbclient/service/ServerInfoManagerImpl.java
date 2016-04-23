@@ -217,13 +217,26 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Validate(VG = { ValidateGroupSelect.class })
 	@Transactional(value = "dbClientTransactionManager", readOnly = true)
 	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
-	public List<ProcedureVO> findProcedureVODetailList(FindTableDTO dto){
+	public List<Map<String,String>> findProcedureDetailList(FindTableDTO dto){
 
 		ServerInfo info=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
 		info.setName(dto.getName());
 
-		return dbClientDataSourceManager.selectProcedureVODetailList(info);
+		return dbClientDataSourceManager.selectProcedureDetailList(info);
 	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<ProcedureVO> findProcedureVOSourceList(FindTableDTO dto) {
+
+		ServerInfo info=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
+		info.setName(dto.getName());
+		return dbClientDataSourceManager.selectProcedureVOSourceList(info);
+	}
+
+
 
 	@Override
 	@Validate(VG = { ValidateGroupSelect.class })
@@ -241,12 +254,24 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Validate(VG = { ValidateGroupSelect.class })
 	@Transactional(value = "dbClientTransactionManager", readOnly = true)
 	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
-	public List<FunctionVO> findFunctionVODetailList(FindTableDTO dto){
+	public List<Map<String,String>> findFunctionDetailList(FindTableDTO dto){
 
 		ServerInfo info=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
 		info.setName(dto.getName());
 
-		return dbClientDataSourceManager.selectFunctionVODetailList(info);
+		return dbClientDataSourceManager.selectFunctionDetailList(info);
+	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<FunctionVO> findFunctionVOSourceList(FindTableDTO dto){
+
+		ServerInfo info=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
+		info.setName(dto.getName());
+
+		return dbClientDataSourceManager.selectFunctionVOSourceList(info);
 	}
 
 	@Override
@@ -259,6 +284,18 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 		info.setName(dto.getName());
 
 		return dbClientDataSourceManager.selectSequenceVOList(info);
+	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<Map<String,String>> findSequenceDetailList(FindTableDTO dto){
+
+		ServerInfo info=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
+		info.setName(dto.getName());
+
+		return dbClientDataSourceManager.selectSequenceDetailList(info);
 	}
 
 	@Override
