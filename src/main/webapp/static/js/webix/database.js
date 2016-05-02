@@ -737,7 +737,7 @@ var database_info_cell = [
 var database_info_data_load=function(){
 	// 즐겨 찾는 쿼리 로딩
 	// 로그인 되어 있는 경우에만 호출
-	if(null!=id){
+	if(null!=memberInfo.id){
 		getDataParseView("/database/findFavoritiesQuery",{},"database_query_favorities_view",false,false,false);
 		$$("database_query_favorities_view").sort("favorityQuerySeq", "desc","int");
 	}

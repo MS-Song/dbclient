@@ -457,6 +457,30 @@ var adminModifyMemberPopup = function(id){
     });
 };
 
+// 회원 정보 삭제
+var adminDeleteMember = function(id){
+	webix.confirm({
+		title: "회원정보 삭제",
+		ok:"Yes", cancel:"No",
+		text:"회원정보를 삭제하시겠습니까?",
+		callback:function(result){
+			if(result==true){
+				webix.ajax().del("/member/remove.json?id="+id, function(text,data){
+					// 삭제 결과 확인
+					if(data.json().status ==200){	
+						window.setTimeout(function(){
+							webix.message("회원 삭제가 완료되었습니다.");
+							loadAdminMemberList();
+						}, 100)
+					} else {
+						webix.message(data.json().desc);
+					}
+				});
+			}
+		}
+	});
+}
+
 // TODO 데이터 베이스와 회원간의 연결
 
 // TODO 쿼리 로그 검색 

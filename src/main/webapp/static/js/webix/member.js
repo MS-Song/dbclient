@@ -3,10 +3,12 @@
  */
 
 // 회원정보
-var id=null;
-var authType=null;
-var email=null;
-var passwordQuestion=null;   		
+var memberInfo={
+	id:null,
+	authType:null,
+	email:null,
+	passwordQuestion:null
+}
 
 // 로그인 된 경우 처리 
 webix.ready(function(){
@@ -16,24 +18,26 @@ webix.ready(function(){
 		if(data.json().status ==200 && null!=data.json().result){	
     		$.each(data.json().result,function(){
     			$.each(this,function(){
-    				id=this.id;
-    				authType=this.authType;
-    				email=this.email;
-    		   		passwordQuestion=this.passwordQuestion;
+    				memberInfo.id=this.id;
+    				memberInfo.authType=this.authType;
+    				memberInfo.email=this.email;
+    				memberInfo.passwordQuestion=this.passwordQuestion;
     			});
     		});
+    		console.log(memberInfo);
+    		
     		// 로그인 정보 획득에 성공한 경우에는 메뉴의 로그인 버튼을 변경한다.
     		$$("menu").getBody().data.remove(1);	// TODO ID Search 으로 변경
-    		$$("menu").getBody().data.add({id: 1, value: id+" 님  (수정)", icon: "user", func: "modify_member_popup"},0);
+    		$$("menu").getBody().data.add({id: 1, value: memberInfo.id+" 님  (수정)", icon: "user", func: "modify_member_popup"},0);
     		$$("menu").getBody().data.add({id: 2, value: " 로그아웃 ", icon: "user", func: "log_out"},1);
     		
     		// 권한 할당이 안된 경우 표시
-    		if(authType==null){
+    		if(memberInfo.authType==null){
     			// Database 관련 기능 비 활성화
     			$$("menu").getBody().data.remove(3);
     			$$("toolbar").addView({view: "label", label: "권한이 없습니다. 관리자에게 연락하시기 바랍니다."},3);
     			return false;
-    		} else if(authType=='ADMIN') { // 관리자 권한이 있는 경우 메뉴 활성화
+    		} else if(memberInfo.authType=='ADMIN') { // 관리자 권한이 있는 경우 메뉴 활성화
     			$$("menu").getBody().data.add({id: 5, value: null, 				icon: null, 		func: null},					4);
     			$$("menu").getBody().data.add({id: 6, value: " 관리자 메뉴", 		icon: "cog", 		func: null},					5);
         		$$("menu").getBody().data.add({id: 7, value: " Database 관리", 	icon: "database", 	func: "adminDatabaseListPopup"},6);
@@ -244,10 +248,10 @@ var modify_member_popup = function(){
     
     //$$("modify_member_form").getFormView().getValues();
     $$("modify_member_form").setValues({
-		id:id,
-		authType:authType,
-		email:email,
-   		passwordQuestion:passwordQuestion
+		id:memberInfo.id,
+		authType:memberInfo.authType,
+		email:memberInfo.email,
+   		passwordQuestion:memberInfo.passwordQuestion
     });
 };
 
