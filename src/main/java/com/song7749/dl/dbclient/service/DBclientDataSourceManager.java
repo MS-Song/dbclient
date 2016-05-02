@@ -13,6 +13,7 @@ import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.SequenceVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.TriggerVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 
 /**
@@ -143,6 +144,28 @@ public interface DBclientDataSourceManager {
 	 * @return List<FunctionVO>
 	 */
 	List<FunctionVO> selectFunctionVOSourceList(ServerInfo serverInfo);
+
+	/**
+	 * database trigger search
+	 * @param serverInfo
+	 * @return List<TriggerVO>
+	 */
+	List<TriggerVO> selectTriggerVOList(ServerInfo serverInfo);
+
+	/**
+	 * database trigger Detail search
+	 * @param serverInfo
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> selectTriggerDetailList(ServerInfo serverInfo);
+
+	/**
+	 * database trigger Detail search
+	 * @param serverInfo
+	 * @return List<FunctionVO>
+	 */
+	List<TriggerVO> selectTriggerVOSourceList(ServerInfo serverInfo);
+
 
 	/**
 	 * Sequence List search

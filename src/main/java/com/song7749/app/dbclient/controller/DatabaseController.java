@@ -43,6 +43,7 @@ import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.SequenceVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.TriggerVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 import com.song7749.dl.login.annotations.Login;
 import com.song7749.dl.login.exception.AuthorityUserException;
@@ -378,10 +379,10 @@ public class DatabaseController {
 
 	@ApiOperation(value = "데이터베이스 Function 상세 조회"
 			,notes = "등록되어 있는 Database 서버의 Function 내용을 조회 한다."
-			,response=FunctionVO.class)
+			,response=Map.class)
 	@RequestMapping(value="/functionDetailList",method=RequestMethod.GET)
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
-	public void functionDetail(
+	public void getFunctionDetail(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
 			@RequestParam(value="schema",required=true)
@@ -412,7 +413,7 @@ public class DatabaseController {
 			,response=FunctionVO.class)
 	@RequestMapping(value="/functionSourceList",method=RequestMethod.GET)
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
-	public void functionSource(
+	public void getFunctionSource(
 			@RequestParam(value="server",required=true)
 			@ApiParam	String host,
 			@RequestParam(value="schema",required=true)
@@ -435,6 +436,96 @@ public class DatabaseController {
 
 		logger.trace("functionList : {}",functionList);
 		model.addAttribute("functionList", functionList);
+	}
+
+	@ApiOperation(value = "데이터베이스 Trigger 리스트 조회"
+			,notes = "등록되어 있는 Database 서버의 Trigger 리스트를 조회 한다."
+			,response=TriggerVO.class)
+	@RequestMapping(value="/triggerList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getTrigger(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<TriggerVO> triggerList=null;
+		if(null!=list & list.size()>0){
+			triggerList=serverInfoManager.findTriggerVOList(new FindTableDTO(list.get(0).getServerInfoSeq(),useCache));
+		}
+
+		logger.trace("triggerList : {}",triggerList);
+		model.addAttribute("triggerList", triggerList);
+	}
+
+
+	@ApiOperation(value = "데이터베이스 Trigger 상세 조회"
+			,notes = "등록되어 있는 Database 서버의 Trigger 내용을 조회 한다."
+			,response=Map.class)
+	@RequestMapping(value="/triggerDetailList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getTriggerDetail(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="name",required=true)
+			@ApiParam 	String  name,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<Map<String,String>> triggerList=null;
+		if(null!=list & list.size()>0){
+			triggerList=serverInfoManager.findTriggerDetailList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
+		}
+
+		logger.trace("triggerList : {}",triggerList);
+		model.addAttribute("triggerList", triggerList);
+	}
+
+
+	@ApiOperation(value = "데이터베이스 Trigger Source 조회"
+			,notes = "등록되어 있는 Database 서버의 Trigger Source 조회 한다."
+			,response=TriggerVO.class)
+	@RequestMapping(value="/triggerSourceList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getTriggerSource(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="name",required=true)
+			@ApiParam 	String  name,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<TriggerVO> triggerList=null;
+		if(null!=list & list.size()>0){
+			triggerList=serverInfoManager.findTriggerVOSourceList(new FindTableDTO(list.get(0).getServerInfoSeq(),name,useCache));
+		}
+
+		logger.trace("triggerList : {}",triggerList);
+		model.addAttribute("triggerList", triggerList);
 	}
 
 	@ApiOperation(value = "데이터베이스 Sequence 리스트 조회"

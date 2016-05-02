@@ -31,6 +31,7 @@ import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.SequenceVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.TriggerVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 import com.song7749.util.validate.ValidateGroupSelect;
 import com.song7749.util.validate.annotation.Validate;
@@ -273,6 +274,43 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 
 		return dbClientDataSourceManager.selectFunctionVOSourceList(info);
 	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<TriggerVO> findTriggerVOList(FindTableDTO dto){
+
+		ServerInfo info=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
+		info.setName(dto.getName());
+
+		return dbClientDataSourceManager.selectTriggerVOList(info);
+	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<Map<String,String>> findTriggerDetailList(FindTableDTO dto){
+
+		ServerInfo info=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
+		info.setName(dto.getName());
+
+		return dbClientDataSourceManager.selectTriggerDetailList(info);
+	}
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<TriggerVO> findTriggerVOSourceList(FindTableDTO dto){
+
+		ServerInfo info=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
+		info.setName(dto.getName());
+
+		return dbClientDataSourceManager.selectTriggerVOSourceList(info);
+	}
+
 
 	@Override
 	@Validate(VG = { ValidateGroupSelect.class })

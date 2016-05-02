@@ -1,3 +1,15 @@
+
+/**
+ * html entity 를 decode 한다.
+ */
+String.prototype.unescapeHtml = function () {
+    var temp = document.createElement("div");
+    temp.innerHTML = this;
+    var result = temp.childNodes[0].nodeValue;
+    temp.removeChild(temp.firstChild);
+    return result;
+}
+
 /**
  * 데이터를 조회하여, data view 에 넣는다.
  */
@@ -41,7 +53,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 	} else {
 		webix.ajax().get(url+".json",parmeters, function(text,data){
 			// 데이터가 있는 경우에만 진입
-//			console.log(data.json());
+			console.log(data.json());
 			
 			if(data.json().status ==200 && null!=data.json().result){
 				$.each(data.json().result,function(index, obj){
@@ -121,10 +133,12 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 var getDataParseEditor = function(url,parmeters,returnValueName){
 	webix.ajax().get(url+".json",parmeters, 
 		function(text,data){
+			
+			console.log(data.json());
 			if(data.json().status ==200 && null!=data.json().result){
 				
 				$.each(data.json().result,function(index, obj){
-					$$("database_query_input").setValue(obj[0][returnValueName]);
+					$$("database_query_input").setValue(obj[0][returnValueName].unescapeHtml());
 				});
 				$$("database_query_input").focus(); 
 			} else {
@@ -141,7 +155,7 @@ var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
 			if(data.json().status ==200 && null!=data.json().result){
 				
 				$.each(data.json().result,function(index, obj){
-					$$(viewName).setValue(obj[0][returnValueName]);
+					$$(viewName).setValue(obj[0][returnValueName].unescapeHtml());
 				});
 
 			} else {

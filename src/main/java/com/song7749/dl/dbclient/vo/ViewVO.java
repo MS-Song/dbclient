@@ -26,6 +26,9 @@ public class ViewVO extends AbstractVo{
 	private static final long serialVersionUID = 2242799985087441360L;
 
 	@ApiModelProperty
+	private Integer seq;
+
+	@ApiModelProperty
 	private String name;
 
 	@ApiModelProperty
@@ -40,21 +43,33 @@ public class ViewVO extends AbstractVo{
 	@ApiModelProperty
 	private String text;
 
+	@ApiModelProperty
+	private String editText;
+
 	public ViewVO() {}
 
-
-	public ViewVO(String name, String comments, String lastUpdateTime,
-			String status) {
+	public ViewVO(Integer seq, String name, String comments,
+			String lastUpdateTime, String status) {
+		this.seq = seq;
 		this.name = name;
 		this.comments = comments;
 		this.lastUpdateTime = lastUpdateTime;
 		this.status = status;
 	}
 
-	public ViewVO(String name, String text) {
+	public ViewVO(String text, String editText) {
 		super();
-		this.name = name;
 		this.text = text;
+		this.editText = editText;
+	}
+
+	public Integer getSeq() {
+		return seq;
+	}
+
+
+	public void setSeq(Integer seq) {
+		this.seq = seq;
 	}
 
 
@@ -97,7 +112,6 @@ public class ViewVO extends AbstractVo{
 		this.status = status;
 	}
 
-
 	public String getText() {
 		return text;
 	}
@@ -105,5 +119,21 @@ public class ViewVO extends AbstractVo{
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	/**
+	 * View 를 Edit 할경우 추가되는 SQL 과 VIEW 내용을 더해서 출력 한다.
+	 * @return String
+	 */
+	public String getEditText() {
+		return editText + "\n" +text;
+	}
+
+	/**
+	 * View 를 edit 할경우 추가되는 SQL 을 넣는다.
+	 * @param editText
+	 */
+	public void setEditText(String editText) {
+		this.editText = editText;
 	}
 }

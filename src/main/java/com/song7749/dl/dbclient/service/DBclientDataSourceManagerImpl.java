@@ -38,6 +38,7 @@ import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.SequenceVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.TriggerVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 import com.song7749.log.dto.SaveQueryExecuteLogDTO;
 import com.song7749.log.service.LogManager;
@@ -469,9 +470,11 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
+		int seq=0;
 		for(Map<String,String> map:resultList){
 			list.add(
 				new ViewVO(
+					++seq,
 					map.get("NAME"),
 					map.get("COMMENTS"),
 					map.get("LAST_UPDATE_TIME"),
@@ -502,11 +505,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 
 		for(Map<String,String> map:resultList){
-			list.add(
-				new ViewVO(
-					map.get("NAME"),
-					map.get("TEXT"))
-			);
+			ViewVO vv = new ViewVO(map.get("TEXT"),"CREATE OR REPLACE VIEW "+map.get("NAME"));
+			list.add(vv);
 		}
 		return list;
 	}
@@ -523,9 +523,11 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
+		int seq=0;
 		for(Map<String,String> map:resultList){
 			list.add(
 				new ProcedureVO(
+					++seq,
 					map.get("NAME"),
 					map.get("STATUS"),
 					map.get("LAST_UPDATE_TIME")));
@@ -556,7 +558,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 
 		for(Map<String,String> map:resultList){
-			list.add(new ProcedureVO(map.get("TEXT")));
+			ProcedureVO pv = new ProcedureVO(map.get("TEXT"),"CREATE OR REPLACE ");
+			list.add(pv);
 		}
 		return list;
 	}
@@ -572,9 +575,11 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
+		int seq=0;
 		for(Map<String,String> map:resultList){
 			list.add(
 				new FunctionVO(
+					++seq,
 					map.get("NAME"),
 					map.get("STATUS"),
 					map.get("LAST_UPDATE_TIME")));
@@ -603,10 +608,70 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 
 		for(Map<String,String> map:resultList){
-			list.add(new FunctionVO(map.get("TEXT")));
+			FunctionVO fv = new FunctionVO(map.get("TEXT"),"CREATE OR REPLACE ");
+			list.add(fv);
 		}
 		return list;
 	}
+
+	@Override
+	public List<TriggerVO> selectTriggerVOList(ServerInfo serverInfo) {
+		List<TriggerVO> list = new ArrayList<TriggerVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getTriggerListQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		int seq=0;
+		for(Map<String,String> map:resultList){
+			list.add(
+				new TriggerVO(
+					++seq,
+					map.get("NAME"),
+					map.get("STATUS"),
+					map.get("LAST_UPDATE_TIME")));
+		}
+		return list;
+
+	}
+
+	@Override
+	public List<Map<String,String>> selectTriggerDetailList(ServerInfo serverInfo){
+		try {
+			return executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getTriggerDetailQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+	}
+
+	@Override
+	public List<TriggerVO> selectTriggerVOSourceList(ServerInfo serverInfo){
+		List<TriggerVO> list = new ArrayList<TriggerVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getTriggerSourceQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			String editText = "CREATE OR REPLACE TRIGGER " +map.get("DESCRIPTION");
+			if(!com.song7749.util.StringUtils.isEmpty(map.get("WHEN_CLAUSE"))){
+				editText +="WHEN (" + map.get("WHEN_CLAUSE") + ") \n";
+			} else {
+				editText +="\n";
+			}
+
+			TriggerVO tv = new TriggerVO(map.get("TEXT"),editText);
+			list.add(tv);
+		}
+		return list;
+	}
+
 
 
 	@Override
@@ -620,8 +685,10 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
+		int seq=0;
 		for(Map<String,String> map:resultList){
 			list.add(new SequenceVO(
+					++seq,
 					map.get("NAME"),
 					map.get("LAST_VALUE"),
 					map.get("MIN_VALUE"),

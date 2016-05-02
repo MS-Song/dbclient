@@ -66,6 +66,12 @@ public enum DatabaseDriver {
 			"SELECT SPECIFIC_NAME as NAME, LAST_ALTERED as LAST_UPDATE FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='FUNCTION' AND ROUTINE_SCHEMA='{schemaName}'",
 			// function source
 			"SELECT ROUTINE_DEFINITION as TEXT FROM INFORMATION_SCHEMA.ROUTINES  WHERE ROUTINE_TYPE='FUNCTION' AND ROUTINE_SCHEMA='{schemaName}' AND SPECIFIC_NAME='{name}'",
+			// trigger list
+			"",
+			// trigger detail
+			"",
+			// trigger source
+			"",
 			// sequence list
 			"SELECT concat(c.table_name, '.', c.column_name) as NAME, t.AUTO_INCREMENT as LAST_VALUE, '1' as MIN_VALUE, COLUMN_TYPE as MAX_VALUE, '1' as INCREMENT_BY from information_schema.columns c join information_schema.tables t on(c.table_schema=t.table_schema and c.table_name=t.table_name) where c.table_schema='{schemaName}' and c.extra='auto_increment'",
 			// TODO sequence detail
@@ -84,7 +90,7 @@ public enum DatabaseDriver {
 			// url
 			"jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={host})(PORT={port})))(CONNECT_DATA=(SERVICE_NAME={schemaName})))",
 			// table list
-			"SELECT T1.TABLE_NAME TABLE_NAME,T2.COMMENTS TABLE_COMMENT FROM USER_TABLES T1, USER_TAB_COMMENTS T2 WHERE T2.TABLE_NAME(+) = T1.TABLE_NAME",
+			"SELECT T1.TABLE_NAME TABLE_NAME,T2.COMMENTS TABLE_COMMENT FROM USER_TABLES T1, USER_TAB_COMMENTS T2 WHERE T2.TABLE_NAME(+) = T1.TABLE_NAME order by TABLE_NAME asc",
 			// field list
 			"SELECT a.COLUMN_ID,a.COLUMN_NAME,a.NULLABLE,decode(b.CONSTRAINT_TYPE,null,'NO','YES') COLUMN_KEY,a.DATA_TYPE,a.DATA_LENGTH,'' CHARACTER_SET,a.DATA_SCALE EXTRA,a.DATA_DEFAULT DEFAULT_VALUE,c.COMMENTS COMMENTS FROM USER_TAB_COLUMNS a, ( SELECT a.TABLE_NAME,a.COLUMN_NAME,b.CONSTRAINT_TYPE FROM USER_CONS_COLUMNS a, USER_CONSTRAINTS b WHERE a.TABLE_NAME = b.TABLE_NAME AND a.CONSTRAINT_NAME = b.CONSTRAINT_NAME AND b.CONSTRAINT_TYPE='P') b, USER_COL_COMMENTS c  WHERE a.TABLE_NAME = b.TABLE_NAME (+) AND a.COLUMN_NAME = b.COLUMN_NAME (+) AND a.TABLE_NAME = c.TABLE_NAME (+) AND a.COLUMN_NAME = c.COLUMN_NAME (+) AND a.TABLE_NAME = '{name}' ORDER BY a.COLUMN_ID",
 			// index list
@@ -92,27 +98,33 @@ public enum DatabaseDriver {
 			// explain
 			"SELECT * from table(dbms_xplan.display('plan_table',null,'typical',null))",
 			// view list
-			"SELECT uv.VIEW_NAME as NAME, utc.COMMENTS AS COMMENTS, uo.LAST_DDL_TIME AS LAST_UPDATE_TIME, uo.STATUS FROM  USER_VIEWS uv LEFT JOIN USER_TAB_COMMENTS utc ON (uv.VIEW_NAME=utc.TABLE_NAME and utc.TABLE_TYPE='VIEW') JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW')",
+			"SELECT uv.VIEW_NAME as NAME, utc.COMMENTS AS COMMENTS, uo.LAST_DDL_TIME AS LAST_UPDATE_TIME, uo.STATUS FROM  USER_VIEWS uv LEFT JOIN USER_TAB_COMMENTS utc ON (uv.VIEW_NAME=utc.TABLE_NAME and utc.TABLE_TYPE='VIEW') JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW') order by NAME asc",
 			// view detail
 			"SELECT uv.VIEW_NAME, uv.TEXT_LENGTH, uv.TYPE_TEXT_LENGTH, uv.TYPE_TEXT, uv.OID_TEXT_LENGTH, uv.OID_TEXT, uv.VIEW_TYPE_OWNER, uv.VIEW_TYPE, uv.SUPERVIEW_NAME, uv.EDITIONING_VIEW, uv.READ_ONLY, uo.OBJECT_NAME, uo.SUBOBJECT_NAME, uo.OBJECT_ID, uo.DATA_OBJECT_ID, uo.OBJECT_TYPE, uo.CREATED, uo.LAST_DDL_TIME, uo.TIMESTAMP, uo.STATUS, uo.TEMPORARY, uo.GENERATED, uo.SECONDARY, uo.NAMESPACE, uo.EDITION_NAME FROM USER_VIEWS uv JOIN USER_OBJECTS uo on(uv.VIEW_NAME=uo.OBJECT_NAME) WHERE uv.VIEW_NAME=upper('{name}')",
 			// view source
 			"SELECT uv.VIEW_NAME as NAME, uv.TEXT FROM USER_VIEWS uv JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW') WHERE  uv.VIEW_NAME=upper('{name}')",
 			// procedure list
-			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'PROCEDURE'",
+			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'PROCEDURE' order by NAME asc",
 			// procedure detail
 			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
 			// procedure source
-			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
+			"SELECT us.NAME as NAME, SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 1) as text from user_source us where us.NAME = upper('{name}') GROUP BY us.NAME",
 			// function list
-			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'FUNCTION'",
+			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'FUNCTION' order by NAME asc",
 			// function detail
 			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
 			// function source
-			"SELECT SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 2) as text from user_source us where name = upper('{name}') GROUP BY us.name",
-			//sequence list
-			"SELECT SEQUENCE_NAME as NAME, LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from user_sequences",
-			// sequence detail
+			"SELECT us.NAME as NAME, SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 1) as text from user_source us where us.NAME = upper('{name}') GROUP BY us.NAME",
+			// trigger list
+			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'TRIGGER' order by NAME asc",
+			// trigger detail
 			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
+			// trigger source
+			"SELECT TRIGGER_NAME as NAME, TRIGGER_TYPE, TRIGGERING_EVENT, TABLE_OWNER, BASE_OBJECT_TYPE, TABLE_NAME, COLUMN_NAME, REFERENCING_NAMES, WHEN_CLAUSE, STATUS, DESCRIPTION, ACTION_TYPE, TRIGGER_BODY as TEXT, CROSSEDITION, BEFORE_STATEMENT, BEFORE_ROW, AFTER_ROW,AFTER_STATEMENT, INSTEAD_OF_ROW, FIRE_ONCE, APPLY_SERVER_ONLY from user_triggers where TRIGGER_NAME=upper('{name}')",
+			//sequence list
+			"SELECT SEQUENCE_NAME as NAME, LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from user_sequences order by NAME asc",
+			// sequence detail
+			"SELECT OBJECT_NAMEs, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
 			// process list
 			"SELECT concat(concat(s.sid , ','), s.serial#) as ID, sql.sql_text as SQL_TEXT from v$session s join v$sql sql on s.sql_id = sql.sql_id where s.program='dbClient'",
 			// kill process
@@ -136,6 +148,9 @@ public enum DatabaseDriver {
 	private String functionListQuery;
 	private String functionDetailQuery;
 	private String functionSourceQuery;
+	private String triggerListQuery;
+	private String triggerDetailQuery;
+	private String triggerSourceQuery;
 	private String sequenceListQuery;
 	private String sequenceDetailQuery;
 	private String processListQuery;
@@ -158,6 +173,9 @@ public enum DatabaseDriver {
 		String functionListQuery,
 		String functionDetailQuery,
 		String functionSourceQuery,
+		String triggerListQuery,
+		String triggerDetailQuery,
+		String triggerSourceQuery,
 		String sequenceListQuery,
 		String sequenceDetailQuery,
 		String processListQuery,
@@ -179,6 +197,9 @@ public enum DatabaseDriver {
 		this.functionListQuery		= functionListQuery;
 		this.functionDetailQuery	= functionDetailQuery;
 		this.functionSourceQuery	= functionSourceQuery;
+		this.triggerListQuery		= triggerListQuery;
+		this.triggerDetailQuery		= triggerDetailQuery;
+		this.triggerSourceQuery		= triggerSourceQuery;
 		this.sequenceListQuery		= sequenceListQuery;
 		this.sequenceDetailQuery	= sequenceDetailQuery;
 		this.processListQuery		= processListQuery;
@@ -334,7 +355,7 @@ public enum DatabaseDriver {
 	 */
 	public String getProcedureSourceQuery(ServerInfo serverInfo){
 		try{
-			String replacement = StringUtils.replace(procedureSourceQuery,"$^$","\n");
+			String replacement = StringUtils.replace(procedureSourceQuery,"$^$","");
 			return repalceServerInfo(serverInfo, replacement);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
@@ -359,12 +380,37 @@ public enum DatabaseDriver {
 
 	public String getFunctionSourceQuery(ServerInfo serverInfo){
 		try{
-			String replacement = StringUtils.replace(functionSourceQuery,"$^$","\n");
+			String replacement = StringUtils.replace(functionSourceQuery,"$^$","");
 			return repalceServerInfo(serverInfo, replacement);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
 		}
 	}
+
+	public String getTriggerListQuery(ServerInfo serverInfo) {
+		try {
+			return repalceServerInfo(serverInfo, triggerListQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
+	public String getTriggerDetailQuery(ServerInfo serverInfo){
+		try {
+			return repalceServerInfo(serverInfo, triggerDetailQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
+	public String getTriggerSourceQuery(ServerInfo serverInfo){
+		try{
+			return repalceServerInfo(serverInfo, triggerSourceQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
 
 	public String getSequenceListQuery(ServerInfo serverInfo) {
 		try {

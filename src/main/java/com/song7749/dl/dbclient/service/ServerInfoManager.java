@@ -17,6 +17,7 @@ import com.song7749.dl.dbclient.vo.ProcedureVO;
 import com.song7749.dl.dbclient.vo.SequenceVO;
 import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
+import com.song7749.dl.dbclient.vo.TriggerVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 /**
  * <pre>
@@ -164,12 +165,32 @@ public interface ServerInfoManager {
 	List<Map<String,String>> findFunctionDetailList(FindTableDTO dto);
 
 	/**
-	 * database function Detail search
+	 * Function Source 정보 리스트
 	 * @param dto
 	 * @return List<FunctionVO>
 	 */
 	List<FunctionVO> findFunctionVOSourceList(FindTableDTO dto);
 
+	/**
+	 * Trigger 정보 리스트
+	 * @param dto
+	 * @return List<TriggerVO>
+	 */
+	List<TriggerVO> findTriggerVOList(FindTableDTO dto);
+
+	/**
+	 * Trigger 상세 정보 리스트
+	 * @param dto
+	 * @return List<Map<String,String>>
+	 */
+	List<Map<String,String>> findTriggerDetailList(FindTableDTO dto);
+
+	/**
+	 * Trigger Source 정보 리스트
+	 * @param dto
+	 * @return List<TriggerVO>
+	 */
+	List<TriggerVO> findTriggerVOSourceList(FindTableDTO dto);
 
 	/**
 	 * Sequence 리스트 조회

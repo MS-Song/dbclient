@@ -21,6 +21,7 @@ public class SequenceVO extends AbstractVo {
 
 	private static final long serialVersionUID = -1119797275341824033L;
 
+	private Integer seq;
 	private String name;
 	private String lastValue;
 	private String minValue;
@@ -29,13 +30,22 @@ public class SequenceVO extends AbstractVo {
 
 	public SequenceVO() {}
 
-	public SequenceVO(String name, String lastValue, String minValue,
-			String maxValue, String incrementBy) {
+	public SequenceVO(Integer seq, String name, String lastValue,
+			String minValue, String maxValue, String incrementBy) {
+		this.seq = seq;
 		this.name = name;
 		this.lastValue = lastValue;
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 		this.incrementBy = incrementBy;
+	}
+
+	public Integer getSeq() {
+		return seq;
+	}
+
+	public void setSeq(Integer seq) {
+		this.seq = seq;
 	}
 
 	public String getName() {
@@ -67,7 +77,7 @@ public class SequenceVO extends AbstractVo {
 	}
 
 	public void setMaxValue(String maxValue) {
-		maxValue = maxValue;
+		this.maxValue = maxValue;
 	}
 
 	public String getIncrementBy() {
