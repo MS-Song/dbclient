@@ -124,7 +124,7 @@ public enum DatabaseDriver {
 			//sequence list
 			"SELECT SEQUENCE_NAME as NAME, LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from user_sequences order by NAME asc",
 			// sequence detail
-			"SELECT OBJECT_NAMEs, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
+			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
 			// process list
 			"SELECT concat(concat(s.sid , ','), s.serial#) as ID, sql.sql_text as SQL_TEXT from v$session s join v$sql sql on s.sql_id = sql.sql_id where s.program='dbClient'",
 			// kill process

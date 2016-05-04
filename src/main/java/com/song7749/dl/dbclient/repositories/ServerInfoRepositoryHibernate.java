@@ -6,9 +6,11 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
@@ -72,6 +74,10 @@ public class ServerInfoRepositoryHibernate implements ServerInfoRepository{
 		}
 		if(null!=dto.getAccount()){
 			criteria.add(eq("account",dto.getAccount()));
+		}
+
+		if(CollectionUtils.isNotEmpty(dto.getServerInfoSeqList())){
+			criteria.add(Restrictions.in("serverInfoSeq", dto.getServerInfoSeqList()));
 		}
 
 		// offset 시작점

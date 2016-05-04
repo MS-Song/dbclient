@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dl.member.dto.FindMemberListDTO;
 import com.song7749.dl.member.entities.Member;
+import com.song7749.dl.member.entities.MemberDatabase;
 import com.song7749.dl.member.type.AuthType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -93,6 +95,8 @@ public class MemberRepositoryHibernateTest {
 		Member member = testSave();
 		testFindMemberList(member);
 		testUpdate(member);
+		testUpdateAddMemberDatabase(member);
+		testUpdateRemoveMemberDatabase(member);
 		testDelete(member);
 	}
 
@@ -123,7 +127,34 @@ public class MemberRepositoryHibernateTest {
 		assertThat(member.getPassword(), is(selectedMember.getPassword()));
 	}
 
+	public void testUpdateAddMemberDatabase(Member member) throws Exception {
+		// give
+		member.addMemberDatabaseList(new MemberDatabase(1));
+		// when
+		memberRepository.update(member);
+		// then
+		Member selectedMember = memberRepository.find(member);
+		assertThat(selectedMember.getMemberDatabaseList().get(0).getServerInfoSeq(), is(member.getMemberDatabaseList().get(0).getServerInfoSeq()));
+	}
 
+
+	public void testUpdateRemoveMemberDatabase(Member member) throws Exception {
+		// give
+		Member selectedMember = memberRepository.find(member);
+
+		// 삭제를 위해서는 iterator 를 사용해야 한다.
+		for(Iterator<MemberDatabase> md = selectedMember.getMemberDatabaseList().listIterator() ; md.hasNext();){
+			if(md.next().equals(member.getMemberDatabaseList().get(0))){
+				md.remove();
+			}
+		}
+
+		// when
+		memberRepository.update(member);
+		// then
+		selectedMember = memberRepository.find(member);
+		assertThat(selectedMember.getMemberDatabaseList().size(), is(0));
+	}
 
 	public void testDelete(Member member) throws Exception {
 		// give // when

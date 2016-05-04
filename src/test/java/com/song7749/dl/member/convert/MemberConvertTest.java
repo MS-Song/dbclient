@@ -9,12 +9,16 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.song7749.dl.dbclient.repositories.ServerInfoRepository;
+import com.song7749.dl.dbclient.repositories.ServerInfoRepositoryHibernate;
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.entities.Member;
 import com.song7749.dl.member.type.AuthType;
 import com.song7749.dl.member.vo.MemberVO;
 
 public class MemberConvertTest {
+
+	ServerInfoRepository serverInfoRepository = new ServerInfoRepositoryHibernate();
 
 	@Test
 	public void testConvertAddMemberDTO() throws Exception {
@@ -50,7 +54,7 @@ public class MemberConvertTest {
 		Member member = null;
 
 		// when
-		MemberVO vo = MemberConvert.convert(member);
+		MemberVO vo = MemberConvert.convert(member,serverInfoRepository);
 
 		// then
 		assertThat(vo, nullValue());
@@ -62,7 +66,7 @@ public class MemberConvertTest {
 				, "passwordQuestion"
 				, "passwordAnswer");
 		// when
-		vo = MemberConvert.convert(member);
+		vo = MemberConvert.convert(member,serverInfoRepository);
 
 		// then
 		assertThat(vo.getId(), is(member.getId()));
@@ -75,7 +79,7 @@ public class MemberConvertTest {
 		member.setAuthType(AuthType.ADMIN);
 
 		// when
-		vo = MemberConvert.convert(member);
+		vo = MemberConvert.convert(member,serverInfoRepository);
 
 		// then
 		assertThat(vo.getAuthType(), is(member.getAuthType()));
@@ -88,7 +92,7 @@ public class MemberConvertTest {
 		 List<Member> memberList = null;
 
 		// when
-		List<MemberVO> voList = MemberConvert.convert(memberList);
+		List<MemberVO> voList = MemberConvert.convert(memberList,serverInfoRepository);
 
 		// then
 		assertThat(voList, nullValue());
@@ -98,7 +102,7 @@ public class MemberConvertTest {
 		memberList = new ArrayList<Member>();
 		memberList.add(new Member());
 		// when
-		voList = MemberConvert.convert(memberList);
+		voList = MemberConvert.convert(memberList,serverInfoRepository);
 
 		// then
 		assertThat(1, is(voList.size()));

@@ -2,6 +2,7 @@ package com.song7749.dl.member.service;
 
 import static com.song7749.dl.member.convert.MemberConvert.convert;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -9,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.song7749.dl.dbclient.repositories.ServerInfoRepository;
 import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.dto.FindMemberListDTO;
 import com.song7749.dl.member.dto.ModifyMemberByAdminDTO;
 import com.song7749.dl.member.dto.ModifyMemberDTO;
+import com.song7749.dl.member.dto.ModifyMemberDatabaseDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.entities.Member;
+import com.song7749.dl.member.entities.MemberDatabase;
 import com.song7749.dl.member.exception.MemberNotFoundException;
 import com.song7749.dl.member.repositories.MemberRepository;
 import com.song7749.dl.member.vo.MemberVO;
@@ -41,6 +45,9 @@ public class MemberManagerImpl implements MemberManager{
 
 	@Autowired
 	MemberRepository memberRepository;
+
+	@Autowired
+	ServerInfoRepository serverInfoRepository;
 
 	@Override
 	@Validate
@@ -83,9 +90,10 @@ public class MemberManagerImpl implements MemberManager{
 		if(dto instanceof ModifyMemberByAdminDTO){
 			if(null != ((ModifyMemberByAdminDTO) dto).getAuthType()){
 				member.setAuthType(((ModifyMemberByAdminDTO) dto).getAuthType());
+			} else {
+				member.setAuthType(null);
 			}
 		}
-
 		memberRepository.update(member);
 	}
 
@@ -94,6 +102,26 @@ public class MemberManagerImpl implements MemberManager{
 	@Transactional(value = "dbClientTransactionManager")
 	public void modifyMember(ModifyMemberByAdminDTO dto) {
 		modifyMember((ModifyMemberDTO) dto);
+	}
+
+
+	@Override
+	@Validate
+	@Transactional(value = "dbClientTransactionManager")
+	public void modifyMemberDatabase(ModifyMemberDatabaseDTO dto){
+		Member m = memberRepository.find(new Member(dto.getId()));
+		//입력
+		if(dto.getInput()){
+			m.addMemberDatabaseList(new MemberDatabase(dto.getServerInfoSeq()));
+		} else { // 삭제
+			// 삭제를 위해서는 iterator 를 사용해야 한다.
+			for(Iterator<MemberDatabase> md = m.getMemberDatabaseList().listIterator() ; md.hasNext();){
+				if(md.next().getServerInfoSeq().equals(dto.getServerInfoSeq())){
+					md.remove();
+				}
+			}
+		}
+		memberRepository.update(m);
 	}
 
 	@Override
@@ -107,6 +135,6 @@ public class MemberManagerImpl implements MemberManager{
 	@Validate
 	@Transactional(value = "dbClientTransactionManager",readOnly=true)
 	public List<MemberVO> findMemberList(FindMemberListDTO dto) {
-		return convert(memberRepository.findMemberList(dto));
+		return convert(memberRepository.findMemberList(dto),serverInfoRepository);
 	}
 }

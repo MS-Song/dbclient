@@ -22,6 +22,7 @@ import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.dto.FindMemberListDTO;
 import com.song7749.dl.member.dto.ModifyMemberByAdminDTO;
 import com.song7749.dl.member.dto.ModifyMemberDTO;
+import com.song7749.dl.member.dto.ModifyMemberDatabaseDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.exception.MemberNotIdentificationException;
 import com.song7749.dl.member.service.MemberManager;
@@ -113,6 +114,22 @@ public class MemberController {
 		model.addAttribute("message", "회원 수정이 완료되었습니다.");
 	}
 
+	@ApiOperation(value = "회원과 Database 간의 연결 - 관리자"
+			,notes = "회원과 Database 간의 연결을 처리 한다"
+			,response=ResponseResult.class
+			,position=2)
+	@RequestMapping(value="/modifyMemberDatabaseByAdmin",method=RequestMethod.POST)
+	@Login(type=LoginResponseType.EXCEPTION,value=AuthType.ADMIN)
+	public void modifyMemberDatabaseByAdmin(
+			@Valid @ModelAttribute ModifyMemberDatabaseDTO dto,
+			HttpServletRequest request,
+			ModelMap model){
+
+		memberManager.modifyMemberDatabase(dto);
+
+		model.clear();
+		model.addAttribute("message", "요청한 처리가 완료되었습니다.");
+	}
 
 	@ApiOperation(value = "회원삭제"
 			,notes = "회원 정보를 삭제한다."

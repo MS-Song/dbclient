@@ -55,7 +55,7 @@ var adminDatabaseListPopup = function(){
 	$$("admin_database_list_popup").show();
 
     // side menu 닫기
-    $$("menu").hide();
+	if($$("menu").isVisible()) $$("menu").hide();
 
     
     // 정보를 조회하기 전에 리셋 한다. 
@@ -347,7 +347,7 @@ var adminMemberListPopup = function(){
 	}
 	$$("admin_member_list_popup").show();
     // side menu 닫기
-    $$("menu").hide();
+	if($$("menu").isVisible()) $$("menu").hide();
     
     loadAdminMemberList();
 };
@@ -370,6 +370,16 @@ var loadAdminMemberList = function(){
 				$$("admin_member_list_view").config.columns[loop].id = index;
 				$$("admin_member_list_view").config.columns[loop].header = index;
 				$$("admin_member_list_view").config.columns[loop].adjust = true;
+				if(index=='memberDatabaseVOList'){
+					$$("admin_member_list_view").config.columns[loop].template=function(obj){
+						var temp = [];
+						for(var i in obj.memberDatabaseVOList){
+							temp.push(obj.memberDatabaseVOList[i].serverInfo.hostAlias);
+						}
+						return temp.join(",");
+					}
+				}
+				
 				if(!isNaN(this)){
 					$$("admin_member_list_view").config.columns[loop].sort="int";
 				} else {
@@ -400,7 +410,7 @@ var loadAdminMemberList = function(){
 }
 
 // 회원 수정 Popup
-var adminModifyMemberPopup = function(id){
+var adminModifyMemberPopup = function(member_id){
     webix.ui({
         view:"window",
         id:"admin_modify_member_popup",
@@ -421,6 +431,49 @@ var adminModifyMemberPopup = function(id){
         		{ view:"text", 	label:'비밀번호 질문', 	labelWidth:100, name:"passwordQuestion" },
         		{ view:"text", 	label:'비밀번호 답변', 	labelWidth:100, name:"passwordAnswer" },
         		{ view:"select",label:'회원 권한', 	labelWidth:100, name:"authType",options:authtypeList },
+        		{
+                	id:"select_database_use_member_database_view",
+                	view:"datatable",
+                	columns:[
+                	        { id:"serverInfoSeq",	header:"serverInfoSeq",	width:100, sort:"int"},
+        					{ id:"host",			header:"Host",			width:100, sort:"string"},
+         					{ id:"hostAlias",		header:"HostAlias",		width:100, sort:"string"},
+         					{ id:"schemaName",		header:"SchemaName",	width:100, sort:"string"},
+         					{ id:"account",			header:"Account",		width:100, sort:"string"},
+         					{ id:"port",			header:"Port",			width:60,  sort:"int"},
+         					{ id:"selected",		header:"선택",			width:50}         					
+         			],
+	        		tooltip:true,
+	    			select:"row",
+	    			resizeColumn:true,
+	    			autowidth:true,
+	    			autoheight:true,
+					scroll:"y",
+	    			data:[],
+	    			on:{
+	    	    		onItemClick:function(id){
+	    	    			var clickedRow = $$("select_database_use_member_database_view").getSelectedItem();
+	    	    			var input = clickedRow.selected == "선택" ? false:true;
+
+	    	    			params = {};
+	    	    			params.serverInfoSeq=clickedRow.serverInfoSeq;
+	    	    			params.id=member_id;
+	    	    			params.input = input;
+	    	    			
+	    	    			webix.ajax().post("/member/modifyMemberDatabaseByAdmin.json", params, function(text,data){
+	        					// 업데이트 실패
+	        					if(data.json().status !=200){
+	        						// validate 메세지 
+	        						var message = data.json().desc.split("\n");
+	        						webix.message({ type:"error", text:message[0].replace("="," ") });
+	        					} else { // 업데이트 성공
+	        						webix.message("수정이 완료되었습니다.");
+	        						findMemberDatabse(member_id);
+	        					}
+	        				});
+	    	    		}
+	    			}
+        		},
         		{margin:5, cols:[
         			{ view:"button", value:"수정" , type:"form", click:function(){
         				webix.ajax().post("/member/modifyByAdmin.json", this.getFormView().getValues(), function(text,data){
@@ -444,18 +497,42 @@ var adminModifyMemberPopup = function(id){
         }
     }).show();
     // side menu 닫기
-    $$("menu").hide();
-    
+    if($$("menu").isVisible()) $$("menu").hide();
+    // database 정보 로딩
+    getDataParseView("/database/serverList",serverInfo,"select_database_use_member_database_view",false,false,false);
+    setTimeout(function(){
+    	findMemberDatabse(member_id);	
+    }, 200)
+};
+
+// 회원정보 로딩.
+var findMemberDatabse = function(member_id){
     // 회원정보 로딩
-    webix.ajax().get("/member/list.json", {"id":id}, function(text,data){
+    webix.ajax().get("/member/list.json", {"id":member_id}, function(text,data){
 		if(data.json().status !=200){
 			// validate 메세지 
 			webix.message({ type:"error", text:data.json().desc});
-		} else { // 회원 리스트
+		} else { 
+			// 회원 리스트
 			$$('admin_modify_member_form').setValues(data.json().result.memberList[0]);
+			// 회원의 데이터베이스 처리
+			if(null!=data.json().result.memberList[0]){
+				var memberDatabaseList = data.json().result.memberList[0].memberDatabaseVOList;
+
+    			$$("select_database_use_member_database_view").eachRow(function (id){				
+    				$$("select_database_use_member_database_view").getItem(id).selected = "";
+    				for(var i in memberDatabaseList){
+        				if(memberDatabaseList[i].serverInfo.serverInfoSeq ==$$("select_database_use_member_database_view").getItem(id).serverInfoSeq){
+        					$$("select_database_use_member_database_view").getItem(id).selected = "선택";
+        				}
+					}
+    			});
+				// 입력한 값을 재 로딩 한다.
+    			$$("select_database_use_member_database_view").refresh();
+			}
 		}
     });
-};
+}
 
 // 회원 정보 삭제
 var adminDeleteMember = function(id){
@@ -486,6 +563,5 @@ var adminDeleteMember = function(id){
 // TODO 쿼리 로그 검색 
 
 // TODO 개인정보 필드에 대한 정의
-
 
 // TODO 각종 환경 설정

@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +51,11 @@ import com.song7749.dl.login.annotations.Login;
 import com.song7749.dl.login.exception.AuthorityUserException;
 import com.song7749.dl.login.service.LoginManager;
 import com.song7749.dl.login.type.LoginResponseType;
+import com.song7749.dl.member.dto.FindMemberListDTO;
+import com.song7749.dl.member.service.MemberManager;
 import com.song7749.dl.member.type.AuthType;
+import com.song7749.dl.member.vo.MemberDatabaseVO;
+import com.song7749.dl.member.vo.MemberVO;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -84,6 +90,9 @@ public class DatabaseController {
 	@Autowired
 	LoginManager loginManager;
 
+	@Autowired
+	MemberManager memberManager;
+
 	@Resource(name="genericExcelView")
 	GenericExcelView genericExcelView;
 
@@ -116,8 +125,29 @@ public class DatabaseController {
 			HttpServletRequest request,
 			ModelMap model){
 
+		// 회원이 사용 가능한 서버리스트를 조회하기 위해 로그인 정보를 가져온다.
+		String memberId = loginManager.getLoginID(request);
+		if(null==memberId){
+			throw new AuthorityUserException("로그인 뒤에 사용 가능 합니다.");
+		}
+
+		FindServerInfoListDTO dto=new FindServerInfoListDTO(useCache);
+
+		if(!StringUtils.isBlank(memberId)){
+			List<MemberVO> memberList=memberManager.findMemberList(new FindMemberListDTO(memberId));
+			// 관리자가 아닌 경우에는 선택되어진 Databse 만 사용 가능하다
+			if(!AuthType.ADMIN.equals(memberList.get(0).getAuthType())){
+				if(CollectionUtils.isEmpty(memberList.get(0).getMemberDatabaseVOList())){
+					throw new AuthorityUserException("사용 가능한 Database 가 없습니다.");
+				}
+				for(MemberDatabaseVO mdv : memberList.get(0).getMemberDatabaseVOList()){
+					dto.getServerInfoSeqList().add(mdv.getServerInfo().getServerInfoSeq());
+				}
+			}
+		}
+
 		// 캐시를 사용한다.
-		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(useCache));
+		List<ServerInfoVO> infoList = serverInfoManager.findServerInfoList(dto);
 
 		logger.trace("serverList {}",infoList);
 		model.addAttribute("serverInfo", infoList);

@@ -1,15 +1,22 @@
 package com.song7749.dl.member.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.constraints.Email;
 
 import com.song7749.dl.base.Entities;
@@ -78,6 +85,10 @@ public class Member extends Entities {
 	@Enumerated(EnumType.STRING)
 	private AuthType authType;
 
+	@OneToMany(mappedBy="member",fetch=FetchType.LAZY,cascade=CascadeType.ALL, orphanRemoval=true)
+	@BatchSize(size=10)
+	private List<MemberDatabase> memberDatabaseList = new ArrayList<MemberDatabase>();
+
 	public Member() {}
 
 	public Member(String id) {
@@ -99,7 +110,7 @@ public class Member extends Entities {
 			String passwordQuestion, String passwordAnswer) {
 		super();
 		this.id = id;
-		this.password = password;
+		setPassword(password);
 		this.email = email;
 		this.passwordQuestion = passwordQuestion;
 		this.passwordAnswer = passwordAnswer;
@@ -108,11 +119,25 @@ public class Member extends Entities {
 	public Member(String id, String password, String email,
 			String passwordQuestion, String passwordAnswer, AuthType authType) {
 		this.id = id;
-		this.password = password;
+		setPassword(password);
 		this.email = email;
 		this.passwordQuestion = passwordQuestion;
 		this.passwordAnswer = passwordAnswer;
 		this.authType = authType;
+	}
+
+
+
+	public Member(String id, String password, String email,
+			String passwordQuestion, String passwordAnswer, AuthType authType,
+			List<MemberDatabase> memberDatabaseList) {
+		this.id = id;
+		setPassword(password);
+		this.email = email;
+		this.passwordQuestion = passwordQuestion;
+		this.passwordAnswer = passwordAnswer;
+		this.authType = authType;
+		this.memberDatabaseList = memberDatabaseList;
 	}
 
 	public String getId() {
@@ -161,5 +186,22 @@ public class Member extends Entities {
 
 	public void setAuthType(AuthType authType) {
 		this.authType = authType;
+	}
+
+	public List<MemberDatabase> getMemberDatabaseList() {
+		return memberDatabaseList;
+	}
+
+	public void setMemberDatabaseList(List<MemberDatabase> memberDatabaseList) {
+		this.memberDatabaseList = memberDatabaseList;
+	}
+
+	public void addMemberDatabaseList(MemberDatabase memberDatabase) {
+
+		if(memberDatabase == null){
+			throw new IllegalArgumentException("memberDatabase must be not null");
+		}
+		memberDatabase.setMember(this);
+		this.memberDatabaseList.add(memberDatabase);
 	}
 }

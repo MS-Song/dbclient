@@ -6,6 +6,7 @@ import com.song7749.dl.member.dto.AddMemberDTO;
 import com.song7749.dl.member.dto.FindMemberListDTO;
 import com.song7749.dl.member.dto.ModifyMemberByAdminDTO;
 import com.song7749.dl.member.dto.ModifyMemberDTO;
+import com.song7749.dl.member.dto.ModifyMemberDatabaseDTO;
 import com.song7749.dl.member.dto.RemoveMemberDTO;
 import com.song7749.dl.member.vo.MemberVO;
 
@@ -43,6 +44,12 @@ public interface MemberManager {
 	 * @param dto
 	 */
 	public void modifyMember(ModifyMemberByAdminDTO dto);
+
+	/**
+	 * 회원과 데이터베이스 간의 연결 처리
+	 * @param dto
+	 */
+	public void modifyMemberDatabase(ModifyMemberDatabaseDTO dto);
 
 	/**
 	 * 회원 제거

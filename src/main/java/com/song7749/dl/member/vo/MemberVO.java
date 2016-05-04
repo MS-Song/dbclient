@@ -1,5 +1,8 @@
 package com.song7749.dl.member.vo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
 import com.song7749.dl.base.AbstractVo;
@@ -39,16 +42,18 @@ public class MemberVO extends AbstractVo{
 	private String passwordQuestion;
 	@ApiModelProperty(value="회원권한")
 	private AuthType authType;
+	private List<MemberDatabaseVO> memberDatabaseVOList = new ArrayList<MemberDatabaseVO>();
 
 	public MemberVO() {}
 
-	public MemberVO(String id, String email,
-			String passwordQuestion, AuthType authType) {
+	public MemberVO(String id, String email, String passwordQuestion,
+			AuthType authType, List<MemberDatabaseVO> memberDatabaseVOList) {
 		super();
 		this.id = id;
 		this.email = email;
 		this.passwordQuestion = passwordQuestion;
 		this.authType = authType;
+		this.memberDatabaseVOList = memberDatabaseVOList;
 	}
 
 	public String getId() {
@@ -81,5 +86,13 @@ public class MemberVO extends AbstractVo{
 
 	public void setAuthType(AuthType authType) {
 		this.authType = authType;
+	}
+
+	public List<MemberDatabaseVO> getMemberDatabaseVOList() {
+		return memberDatabaseVOList;
+	}
+
+	public void setMemberDatabaseVOList(List<MemberDatabaseVO> memberDatabaseVOList) {
+		this.memberDatabaseVOList = memberDatabaseVOList;
 	}
 }

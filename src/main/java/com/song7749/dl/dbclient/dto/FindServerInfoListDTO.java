@@ -1,5 +1,8 @@
 package com.song7749.dl.dbclient.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.song7749.dl.base.AbstractDto;
 
 public class FindServerInfoListDTO extends AbstractDto{
@@ -11,6 +14,8 @@ public class FindServerInfoListDTO extends AbstractDto{
 	private String schemaName;
 
 	private String account;
+
+	private List<Integer> serverInfoSeqList = new ArrayList<Integer>();
 
 	public FindServerInfoListDTO() {}
 
@@ -52,5 +57,13 @@ public class FindServerInfoListDTO extends AbstractDto{
 
 	public void setAccount(String account) {
 		this.account = account;
+	}
+
+	public List<Integer> getServerInfoSeqList() {
+		return serverInfoSeqList;
+	}
+
+	public void setServerInfoSeqList(List<Integer> serverInfoSeqList) {
+		this.serverInfoSeqList = serverInfoSeqList;
 	}
 }
