@@ -505,7 +505,15 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 
 		for(Map<String,String> map:resultList){
-			ViewVO vv = new ViewVO(map.get("TEXT"),"CREATE OR REPLACE VIEW "+map.get("NAME"));
+
+			String addSoruce = null;
+			if("oracle".equals(serverInfo.getDriver().getDbms())){
+				addSoruce="CREATE OR REPLACE VIEW "+map.get("NAME");
+			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
+				addSoruce="DROP VIEW IF EXISTS "+map.get("NAME")+";\nCREATE VIEW "+map.get("NAME") + " ";
+			}
+
+			ViewVO vv = new ViewVO(map.get("TEXT"),addSoruce);
 			list.add(vv);
 		}
 		return list;
@@ -558,7 +566,15 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 
 		for(Map<String,String> map:resultList){
-			ProcedureVO pv = new ProcedureVO(map.get("TEXT"),"CREATE OR REPLACE ");
+
+			String addSoruce = null;
+			if("oracle".equals(serverInfo.getDriver().getDbms())){
+				addSoruce="CREATE OR REPLACE ";
+			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
+				addSoruce="DROP PROCEDURE IF EXISTS "+map.get("NAME")+";\nCREATE PROCEDURE "+map.get("NAME") + " ";
+			}
+
+			ProcedureVO pv = new ProcedureVO(map.get("TEXT"),addSoruce);
 			list.add(pv);
 		}
 		return list;
@@ -608,7 +624,15 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 
 		for(Map<String,String> map:resultList){
-			FunctionVO fv = new FunctionVO(map.get("TEXT"),"CREATE OR REPLACE ");
+
+			String addSoruce = null;
+			if("oracle".equals(serverInfo.getDriver().getDbms())){
+				addSoruce="CREATE OR REPLACE ";
+			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
+				addSoruce="DROP FUNCTION IF EXISTS "+map.get("NAME")+"\n;CREATE FUNCTION "+map.get("NAME") + " ";
+			}
+
+			FunctionVO fv = new FunctionVO(map.get("TEXT"),addSoruce);
 			list.add(fv);
 		}
 		return list;
@@ -659,14 +683,20 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 
 		for(Map<String,String> map:resultList){
-			String editText = "CREATE OR REPLACE TRIGGER " +map.get("DESCRIPTION");
-			if(!com.song7749.util.StringUtils.isEmpty(map.get("WHEN_CLAUSE"))){
-				editText +="WHEN (" + map.get("WHEN_CLAUSE") + ") \n";
-			} else {
-				editText +="\n";
+			String addSoruce = null;
+			if("oracle".equals(serverInfo.getDriver().getDbms())){
+				addSoruce = "CREATE OR REPLACE TRIGGER " +map.get("DESCRIPTION");
+				if(!com.song7749.util.StringUtils.isEmpty(map.get("WHEN_CLAUSE"))){
+					addSoruce +="WHEN (" + map.get("WHEN_CLAUSE") + ") \n";
+				} else {
+					addSoruce +="\n";
+				}
+			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
+				addSoruce="DROP TRIGGER  IF EXISTS "+map.get("NAME")+"\nCREATE TRIGGER "+map.get("NAME");
 			}
 
-			TriggerVO tv = new TriggerVO(map.get("TEXT"),editText);
+
+			TriggerVO tv = new TriggerVO(map.get("TEXT"),addSoruce);
 			list.add(tv);
 		}
 		return list;
