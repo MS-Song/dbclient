@@ -693,6 +693,13 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 				}
 			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
 				addSoruce="DROP TRIGGER  IF EXISTS "+map.get("NAME")+"\nCREATE TRIGGER "+map.get("NAME");
+				addSoruce+=" " + map.get("ACTION_TIMING");
+				addSoruce+=" " + map.get("EVENT_MANIPULATION");
+				addSoruce+=" " + map.get("EVENT_OBJECT_TABLE");
+				if(!com.song7749.util.StringUtils.isEmpty(map.get("ACTION_ORIENTATION"))){
+					addSoruce+="\nFOR EACH " + map.get("ACTION_ORIENTATION");
+				}
+				addSoruce+="\n";
 			}
 
 
