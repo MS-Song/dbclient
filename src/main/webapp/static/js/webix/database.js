@@ -1139,20 +1139,6 @@ webix.ready(function(){
 	$$("database_result_context_menu").attachTo($$("database_result_list_view"));
 });
 
-//자동완성 데이터 저장
-var autoCompleteAddTables = function(tableName,fieldList){
-	// 자동완성에 테이블을 입력한다.
-	if(null==$$("database_query_input").config.hintOptions.tables[tableName]){
-		// 테이블을 만든다.
-		$$("database_query_input").config.hintOptions.tables[tableName]={};							
-		// 필드를 만든다.
-		$.each(fieldList,function(index){
-			$$("database_query_input").config.hintOptions.tables[tableName][this.columnName] = null;
-		});							
-		$$("database_query_input").config.hintOptions.tables[tableName];	
-	}
-};
-
 // view
 // function
 // procedure

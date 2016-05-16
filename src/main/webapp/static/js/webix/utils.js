@@ -52,9 +52,6 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 		$$(viewName).hideProgress();
 	} else {
 		webix.ajax().get(url+".json",parmeters, function(text,data){
-			// 데이터가 있는 경우에만 진입
-			console.log(data.json());
-			
 			if(data.json().status ==200 && null!=data.json().result){
 				$.each(data.json().result,function(index, obj){
 					// 배열인 경우에만 처리한다. response 에 배열은 결과 데이터외에 없다.
@@ -91,6 +88,17 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 							// 캐시를 사용한다면 캐시에 넣는다.
 							if(isCache){
 								webix.storage.local.put(JSON.stringify(parmeters, null, 2)+"_"+viewName);
+							}
+
+							// view 가 필드 리스트 인 경우 자동완성 데이터를 생성 한다.
+							if(viewName == "table_info_field_list"){
+								if(null!=serverInfo.tableName){
+									var fieldList={}									
+									$.each(obj,function(index,fieldInfo){
+										fieldList[fieldInfo.columnName]=fieldInfo.comment;
+									});
+									autoCompleteAddTables(serverInfo.tableName, fieldList);
+								}
 							}
 						}
 					}
@@ -198,6 +206,21 @@ var getDataParseProperty = function(url,parmeters,viewName){
  */
 var postDateSend = function(url, parameters){
 	
+};
+
+
+//자동완성 데이터 저장
+var autoCompleteAddTables = function(tableName,fieldList){
+	// 자동완성에 테이블을 입력한다.
+	if(null==$$("database_query_input").config.hintOptions.tables[tableName]){
+		// 테이블을 만든다.
+		$$("database_query_input").config.hintOptions.tables[tableName]={};							
+		// 필드를 만든다.
+		$.each(fieldList,function(columnName,columnComment){
+			$$("database_query_input").config.hintOptions.tables[tableName][columnName] = columnComment;
+		});
+//		console.log($$("database_query_input").config.hintOptions.tables[tableName]);
+	}
 };
 
 // 동등성 비교

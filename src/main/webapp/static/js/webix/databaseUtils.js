@@ -92,7 +92,11 @@ var deleteQuery=function(){
 
 	if(whereList.length>0){
 		html+='\rwhere \r\t' + whereList.join("\r\tand ");
+	} else {
+		webix.alert("delete query 에 where 가 없습니다.<br/>진행하시려면 확인을 눌러주세요");
 	}
+	
+	
 	// database 종류에 따라 한정자를 넣는다.
 	switch (serverInfo.driver) {
 		case 'mysql':html+=' limit 10';break;
@@ -101,7 +105,7 @@ var deleteQuery=function(){
 //	html+= ';'; 		
 	$$("database_query_input").setValue(html);
 	// 에디터 창으로 focus 를 되돌린다.
-	$$("database_query_input").focus(); 
+	$$("database_query_input").focus();
 };
 
 /**
@@ -194,13 +198,22 @@ var getColumns = function (mode){
   	var list= new Array();
   	var listLength = $$("table_info_develop_list").data.order.length;
   	var loop = 0;
+  	console.log($$("table_info_develop_list").data.pull);
+  	
   	$.each($$("table_info_develop_list").data.pull,function(index){
+  		// Template에는 있으나, Data에 없는 객체를 추가로 처리한다
+  		this.field_checkbox 	= (null==this.field_checkbox)	? "1": this.field_checkbox;
+  		this.field_set 			= (null==this.field_set)		? "" : this.field_set;
+  		this.field_where 		= (null==this.field_where)		? "" : this.field_where;
+  		this.field_operation 	= (null==this.field_operation)	? "=": this.field_operation;
+  		
 		switch(mode){
 		case 'columnList':	// 전체 컬럼 조회
 			list.push(this.columnName);
 			break;
 		case 'selectList':	// 체크박스에 선택된 컬럼 조회
-			if(this.field_checkbox == 1){
+			
+			if(this.field_checkbox == undefined || this.field_checkbox == 1){
 				list.push(this.columnName);
 			}
 			break;

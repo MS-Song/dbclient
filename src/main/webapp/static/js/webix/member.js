@@ -24,8 +24,6 @@ webix.ready(function(){
     				memberInfo.passwordQuestion=this.passwordQuestion;
     			});
     		});
-    		console.log(memberInfo);
-    		
     		// 로그인 정보 획득에 성공한 경우에는 메뉴의 로그인 버튼을 변경한다.
     		$$("menu").getBody().data.remove(1);	// TODO ID Search 으로 변경
     		$$("menu").getBody().data.add({id: 1, value: memberInfo.id+" 님  (수정)", icon: "user", func: "modify_member_popup"},0);
