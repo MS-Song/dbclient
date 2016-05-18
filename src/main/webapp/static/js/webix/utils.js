@@ -83,11 +83,27 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 						}
 						// 객체가 있는 경우 리스를 그린다.
 						if(null != obj){
-							// 데이터를 파싱 한다.
-							$$(viewName).parse(obj)
+							// 파싱에 버그가 있는 경우가 있다 직접 파싱 한다.
+							if(viewName=="database_query_favorities_view"){
+								$.each(obj,function(objIndex){
+									$$("database_query_favorities_view").data.add({
+										favorityQuerySeq:this.favorityQuerySeq,
+										memo:this.memo,
+										query:this.query,
+										inputData:this.inputData,
+										reTry:"",
+										favorities:""
+									},objIndex);
+								});
+							}
+							else {
+								// 데이터를 파싱 한다.
+								$$(viewName).parse(obj)								
+							}
+
 							// 캐시를 사용한다면 캐시에 넣는다.
 							if(isCache){
-								webix.storage.local.put(JSON.stringify(parmeters, null, 2)+"_"+viewName);
+								webix.storage.local.put(JSON.stringify(parmeters, null, 2)+"_"+viewName,obj);
 							}
 
 							// view 가 필드 리스트 인 경우 자동완성 데이터를 생성 한다.
@@ -178,7 +194,7 @@ var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
 var getDataParseProperty = function(url,parmeters,viewName){
 	webix.ajax().get(url+".json",parmeters, 
 			function(text,data){
-				console.log(data.json());
+//				console.log(data.json());
 				if(data.json().status ==200 && null!=data.json().result){
 
 					var elementList=[];

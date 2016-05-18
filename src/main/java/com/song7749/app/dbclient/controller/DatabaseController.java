@@ -1003,9 +1003,9 @@ public class DatabaseController {
 	@ApiOperation(value = "즐겨찾는 쿼리 조회"
 			,notes = "자주 사용하는 쿼리 리스트를 조회 한다."
 			,response=FavorityQuery.class)
-	@RequestMapping(value="/findFavoritiesQuery",method=RequestMethod.GET)
+	@RequestMapping(value="/findFavoritiesQueryList",method=RequestMethod.GET)
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
-	public void findFavoritiesQuery(
+	public void findFavoritiesQueryList(
 			@RequestParam(value="limit",required=false)
 			@ApiParam	Long limit,
 			@RequestParam(value="offset",required=false)
@@ -1024,8 +1024,8 @@ public class DatabaseController {
 
 		List<FavorityQueryVO> fqList = favorityQueryManager.findFavorityQueryVOList(dto );
 
-		logger.trace("FavorityQueryVOList {}",fqList);
-		model.addAttribute("favorityQueryList", fqList);
+		logger.trace("findFavoritiesQueryList {}",fqList);
+		model.addAttribute("findFavoritiesQueryList", fqList);
 	}
 
 

@@ -735,12 +735,6 @@ var database_info_cell = [
 
 // 데이터베이스 정보 로드 
 var database_info_data_load=function(){
-	// 즐겨 찾는 쿼리 로딩
-	// 로그인 되어 있는 경우에만 호출
-	if(null!=memberInfo.id){
-		getDataParseView("/database/findFavoritiesQuery",{},"database_query_favorities_view",false,false,false);
-		$$("database_query_favorities_view").sort("favorityQuerySeq", "desc","int");
-	}
 	// 테이블 리스트 조회
 	getDataParseView("/database/tableList",serverInfo,"database_info_table_list_view",false,true,false);
 	// view list 조회
@@ -1149,6 +1143,9 @@ webix.ready(function(){
 /**
  * 쿼리 로그 및 즐겨찾는 쿼리 
  */
+
+
+
 var database_developer_cell = [{
 		id:"database_query_log_view",
 		header:"Query Log",
@@ -1289,7 +1286,6 @@ var addFavorityQueryPopup = function(obj){
  * 즐겨 찾는 쿼리 제거
  */
 var removeFavorityQuery = function(favorityQuerySeq){
-	console.log(favorityQuerySeq);
 	webix.ajax().del("/database/removeFavoritiesQuery.json?favorityQuerySeq="+favorityQuerySeq, 
 	function(text, data){
 		// 실패
@@ -1300,7 +1296,24 @@ var removeFavorityQuery = function(favorityQuerySeq){
 		} else { // 성공
 			webix.message(data.json().result.message);
 			database_query_favorities_view_load();
-			$$("add_favority_query_popup").hide();
 		}
 	});
 };
+
+/**
+ * 즐겨찾는 쿼리 로딩
+ */
+var database_query_favorities_view_load = function(){
+	setTimeout(function(){
+		if(null!=$("database_query_favorities_view")){
+			try {
+				getDataParseView("/database/findFavoritiesQueryList",{},"database_query_favorities_view",false,false,false);
+				$("database_query_favorities_view").sort("favorityQuerySeq","desc");
+			} catch (e) {
+				database_query_favorities_view_load();
+			}
+		}	
+	}, 100);
+
+}; 
+database_query_favorities_view_load();
