@@ -374,7 +374,12 @@ var loadAdminMemberList = function(){
 					$$("admin_member_list_view").config.columns[loop].template=function(obj){
 						var temp = [];
 						for(var i in obj.memberDatabaseVOList){
-							temp.push(obj.memberDatabaseVOList[i].serverInfo.hostAlias);
+							try {
+								temp.push(obj.memberDatabaseVOList[i].serverInfo.hostAlias);	
+							} catch (e) {
+								// 선택된 서버가 없는 경우 넘어간다
+							}
+							
 						}
 						return temp.join(",");
 					}
