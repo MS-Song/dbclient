@@ -1048,7 +1048,9 @@ var database_result_cell = [{
 			tooltip:true,
 			select:"row",
 			resizeColumn:true,
-			scroll:true
+			scroll:true,
+			multiselect:true,
+			clipboard:"selection",
 		}
 	] // end rows
 }];
@@ -1063,11 +1065,8 @@ webix.ui({
           "create update query",
           "create delete query",
           "create select query",
-          "copy selected row",
-          { $template:"Separator" }
-          ,"create All insert query "
-          ,"result excel download"
-          ,"copy all rows "],
+          { $template:"Separator" },
+          "result excel download"],
     on:{
         onItemClick:function(id){
 
@@ -1116,11 +1115,25 @@ webix.ui({
 			case 'create select query':
 				selectAllQuery();
 				break;
-    		case 'create insert query All':
-				break;
 			case 'result excel download':
-				break;
-			case 'copy data':
+				var nowDate = new Date();
+				var nowDateString = "";
+				nowDateString += nowDate.getFullYear();
+				// Month 별도 처리
+				if(nowDate.getMonth()<9){
+					nowDateString += "0"+parseInt(nowDate.getMonth()+1);	
+				} else {
+					nowDateString += parseInt(nowDate.getMonth()+1);
+				}
+				nowDateString += nowDate.getDate();
+				nowDateString += nowDate.getMinutes();
+				nowDateString += nowDate.getMilliseconds();
+				webix.toExcel($$("database_result_list_view"), 
+					{ 
+						header: false,
+						filename: "dbClient"+nowDateString,
+					}
+				);
 				break;
 			}
 
@@ -1132,18 +1145,6 @@ webix.ui({
 webix.ready(function(){
 	$$("database_result_context_menu").attachTo($$("database_result_list_view"));
 });
-
-// view
-// function
-// procedure
-// sequence
-// create 테이블
-
-
-/**
- * 쿼리 로그 및 즐겨찾는 쿼리 
- */
-
 
 
 var database_developer_cell = [{

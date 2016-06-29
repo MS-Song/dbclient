@@ -198,7 +198,6 @@ var getColumns = function (mode){
   	var list= new Array();
   	var listLength = $$("table_info_develop_list").data.order.length;
   	var loop = 0;
-  	console.log($$("table_info_develop_list").data.pull);
   	
   	$.each($$("table_info_develop_list").data.pull,function(index){
   		// Template에는 있으나, Data에 없는 객체를 추가로 처리한다
