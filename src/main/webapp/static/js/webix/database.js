@@ -325,6 +325,12 @@ var database_info_cell = [
 				    },
 	 				resizeColumn:true,
 					navigation:true
+				},
+				{	
+					header:"DDL",
+					view : "textarea",
+					id:"show_create_table_source", 	
+					adjust:true,
 				}
 			]
 		}]
@@ -769,6 +775,9 @@ var database_info_field_data_load = function(){
 	getDataParseView("/database/fieldList",serverInfo,"table_info_develop_list",false,true,false);
 	// 인덱스 리스트
 	getDataParseView("/database/indexList",serverInfo,"table_info_index_list",false,true,false);
+	// create table view
+	getDataParseTextarea("/database/showCreateTable",serverInfo,"show_create_table_source","showCreateTable");
+
 };
 
 

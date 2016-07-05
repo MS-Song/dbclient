@@ -10,6 +10,7 @@ import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
 import com.song7749.dl.dbclient.dto.FindTableDTO;
 import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
 import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
+import com.song7749.dl.dbclient.vo.DatabaseDdlVO;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.FunctionVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
@@ -206,6 +207,13 @@ public interface ServerInfoManager {
 	 */
 	List<Map<String,String>> findSequenceDetailList(FindTableDTO dto);
 
+
+	/**
+	 * database create table search
+	 * @param serverInfo
+	 * @return List<DatabaseDdlVO>
+	 */
+	List<DatabaseDdlVO> findShowCreateTable(FindTableDTO dto);
 
 	/**
 	 * Query Result Set List

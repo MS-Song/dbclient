@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
+import com.song7749.dl.dbclient.vo.DatabaseDdlVO;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.FunctionVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
@@ -180,6 +181,13 @@ public interface DBclientDataSourceManager {
 	 * @return List<Map<String,String>>
 	 */
 	List<Map<String,String>> selectSequenceDetailList(ServerInfo serverInfo);
+
+	/**
+	 * database table DDLquery Search
+	 * @param serverInfo
+	 * @return List<DatabaseDdlVO>
+	 */
+	List<DatabaseDdlVO> selectShowCreateTable(ServerInfo serverInfo);
 
 	/**
 	 * 유저가 실행한 쿼리를 취소 한다.
