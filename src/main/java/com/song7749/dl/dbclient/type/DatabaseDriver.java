@@ -79,7 +79,9 @@ public enum DatabaseDriver {
 			// process list
 			"SELECT ID, info as SQL_TEXT FROM information_schema.processlist",
 			// kill connection
-			"KILL CONNECTION {id}"),
+			"KILL CONNECTION {id}",
+			// create table query
+			"show create table {name}"),
 
 	@ApiModelProperty
 	oracle(
@@ -128,7 +130,9 @@ public enum DatabaseDriver {
 			// process list
 			"SELECT concat(concat(s.sid , ','), s.serial#) as ID, sql.sql_text as SQL_TEXT from v$session s join v$sql sql on s.sql_id = sql.sql_id where s.program='dbClient'",
 			// kill process
-			"alter system kill session '{id}'");
+			"alter system kill session '{id}'",
+			// create table query
+			"select dbms_metadata.get_ddl( 'TABLE', '{name}', '{account}' ) as CREATE_TALBE from dual");
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -155,6 +159,7 @@ public enum DatabaseDriver {
 	private String sequenceDetailQuery;
 	private String processListQuery;
 	private String killProcessQuery;
+	private String showCreateQuery;
 
 	DatabaseDriver(
 		String dbms,
@@ -179,7 +184,8 @@ public enum DatabaseDriver {
 		String sequenceListQuery,
 		String sequenceDetailQuery,
 		String processListQuery,
-		String killProcessQuery) {
+		String killProcessQuery,
+		String showCreateQuery) {
 
 		this.dbms					= dbms;
 		this.driverName				= driverName;
@@ -204,6 +210,7 @@ public enum DatabaseDriver {
 		this.sequenceDetailQuery	= sequenceDetailQuery;
 		this.processListQuery		= processListQuery;
 		this.killProcessQuery		= killProcessQuery;
+		this.showCreateQuery		= showCreateQuery;
 	}
 
 	/**
@@ -439,6 +446,14 @@ public enum DatabaseDriver {
 
 	public String getExplainQuery() {
 		return explainQuery;
+	}
+
+	public String getShowCreateQuery(ServerInfo serverInfo){
+		try {
+			return repalceServerInfo(serverInfo, showCreateQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
 	}
 
 	private String repalceServerInfo(ServerInfo serverInfo, String str)

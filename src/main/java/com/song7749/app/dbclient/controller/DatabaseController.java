@@ -37,6 +37,7 @@ import com.song7749.dl.dbclient.entities.FavorityQuery;
 import com.song7749.dl.dbclient.service.FavorityQueryManager;
 import com.song7749.dl.dbclient.service.ServerInfoManager;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
+import com.song7749.dl.dbclient.vo.DatabaseDdlVO;
 import com.song7749.dl.dbclient.vo.FavorityQueryVO;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.FunctionVO;
@@ -647,6 +648,38 @@ public class DatabaseController {
 		logger.trace("fieldList : {}",fieldList);
 		model.addAttribute("fieldList", fieldList);
 	}
+
+	@ApiOperation(value = "데이터베이스 테이블 DDL 조회"
+			,notes = "등록되어 있는 Database 서버의 Table DDL 문을 조회 한다. EX) Create Table."
+			,response=FieldVO.class)
+	@RequestMapping(value="/showCreateTable",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getShowCreateTable(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam	String account,
+			@RequestParam(value="tableName",required=true)
+			@ApiParam	String tableName,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<DatabaseDdlVO> ddlList=null;
+		if(null!=list & list.size()>0){
+			ddlList=serverInfoManager.findShowCreateTable(new FindTableDTO(list.get(0).getServerInfoSeq(),tableName,useCache));
+		}
+
+		logger.trace("ddlList : {}",ddlList);
+		model.addAttribute("ddlList", ddlList);
+	}
+
 
 
 	@ApiOperation(value = "데이터베이스 테이블 인덱스 리스트 조회"

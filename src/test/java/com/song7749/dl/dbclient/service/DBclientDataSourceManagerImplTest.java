@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
+import com.song7749.dl.dbclient.vo.DatabaseDdlVO;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
 import com.song7749.dl.dbclient.vo.ProcedureVO;
@@ -131,6 +132,16 @@ public class DBclientDataSourceManagerImplTest {
 		serverInfo.setName("sp_serverinfo");
 		// when
 		List<Map<String,String>> list = dbClientDataSourceManager.selectProcedureDetailList(serverInfo);
+		// then
+		assertThat(list, notNullValue());
+	}
+
+	@Test
+	public void testSelectShowCreateTable() throws Exception {
+		// give
+		serverInfo.setName("account");
+		// when
+		List<DatabaseDdlVO> list = dbClientDataSourceManager.selectShowCreateTable(serverInfo);
 		// then
 		assertThat(list, notNullValue());
 	}

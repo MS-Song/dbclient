@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import com.song7749.dl.dbclient.dto.ExecuteResultListDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
+import com.song7749.dl.dbclient.vo.DatabaseDdlVO;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.FunctionVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
@@ -742,6 +743,28 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		} catch (SQLException e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
+	}
+
+	@Override
+	public List<DatabaseDdlVO> selectShowCreateTable(ServerInfo serverInfo){
+		List<DatabaseDdlVO> list = new ArrayList<DatabaseDdlVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getShowCreateQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			if("oracle".equals(serverInfo.getDriver().getDbms())){
+				list.add(new DatabaseDdlVO(map.get("CREATE_TALBE")));
+			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
+				list.add(new DatabaseDdlVO(map.get("Create Table")));
+			}
+		}
+
+		return list;
 	}
 
 	@Override

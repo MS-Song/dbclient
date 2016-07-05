@@ -24,6 +24,7 @@ import com.song7749.dl.dbclient.dto.ModifyServerInfoDTO;
 import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.repositories.ServerInfoRepository;
+import com.song7749.dl.dbclient.vo.DatabaseDdlVO;
 import com.song7749.dl.dbclient.vo.FieldVO;
 import com.song7749.dl.dbclient.vo.FunctionVO;
 import com.song7749.dl.dbclient.vo.IndexVO;
@@ -334,6 +335,18 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 		info.setName(dto.getName());
 
 		return dbClientDataSourceManager.selectSequenceDetailList(info);
+	}
+
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<DatabaseDdlVO> findShowCreateTable(FindTableDTO dto){
+		ServerInfo info=serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
+		info.setName(dto.getName());
+
+		return dbClientDataSourceManager.selectShowCreateTable(info);
 	}
 
 	@Override
