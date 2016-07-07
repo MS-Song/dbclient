@@ -18,6 +18,8 @@
   font-family: monospace;
 
   max-height: 20em;
+  width : 200px;
+  
   overflow-y: auto;
 }
 

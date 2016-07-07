@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -234,7 +235,8 @@ public class BaseExceptionResolver extends SimpleMappingExceptionResolver {
 			responseCode = HttpServletResponse.SC_NOT_FOUND;
 		}
 		// 405
-		else if (ex instanceof HttpRequestMethodNotSupportedException) {
+		else if (ex instanceof HttpRequestMethodNotSupportedException
+				|| ex instanceof LoginException) {
 			responseCode = HttpServletResponse.SC_METHOD_NOT_ALLOWED;
 		}
 		// 406
