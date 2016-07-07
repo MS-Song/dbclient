@@ -252,8 +252,3 @@ var modify_member_popup = function(){
    		passwordQuestion:memberInfo.passwordQuestion
     });
 };
-
-// 로그인 에러 처리
-var login_error = function(){
-	console.log("로그인 에러처리 진입");
-}

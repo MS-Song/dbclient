@@ -105,7 +105,6 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 							if(isCache){
 								webix.storage.local.put(JSON.stringify(parmeters, null, 2)+"_"+viewName,obj);
 							}
-
 							// view 가 필드 리스트 인 경우 자동완성 데이터를 생성 한다.
 							if(viewName == "table_info_field_list"){
 								if(null!=serverInfo.tableName){
@@ -121,8 +120,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 				});
 			} else {
 				// 공용 에러처리
-				var message = data.json().desc.split("\n");
-				webix.message({ type:"error", text:message[0].replace("="," ") });
+				errorControll(data.json());
 			}
 			// view 를 refresh 한다.
 			$$(viewName).refresh();
@@ -157,22 +155,21 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 var getDataParseEditor = function(url,parmeters,returnValueName){
 	webix.ajax().get(url+".json",parmeters, 
 		function(text,data){
-			
-			console.log(data.json());
 			if(data.json().status ==200 && null!=data.json().result){
-				
 				$.each(data.json().result,function(index, obj){
 					$$("database_query_input").setValue(obj[0][returnValueName].unescapeHtml());
 				});
 				$$("database_query_input").focus(); 
 			} else {
-				var message = data.json().desc.split("\n");
-				webix.message({ type:"error", text:message[0].replace("="," ") });
+				errorControll(data.json());
 			}
 		}
 	);
 };
 
+/**
+ * 데이터를 조회하여 TextArea 에 넣는다.
+ */
 var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
 	webix.ajax().get(url+".json",parmeters, 
 		function(text,data){
@@ -183,14 +180,16 @@ var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
 				});
 
 			} else {
-				var message = data.json().desc.split("\n");
-				webix.message({ type:"error", text:message[0].replace("="," ") });
+				errorControll(data.json());
 			}
 		}
 	);
 };
 
 
+/**
+ * 데이터를 조회하여 Property 에 넣는다.
+ */
 var getDataParseProperty = function(url,parmeters,viewName){
 	webix.ajax().get(url+".json",parmeters, 
 			function(text,data){
@@ -211,8 +210,7 @@ var getDataParseProperty = function(url,parmeters,viewName){
 					$$(viewName).setValues(valueList);
 					$$(viewName).refresh();
 				} else {
-					var message = data.json().desc.split("\n");
-					webix.message({ type:"error", text:message[0].replace("="," ") });
+					errorControll(data.json());
 				}
 			}
 		);
@@ -249,3 +247,12 @@ var equals=function (a,b){
 		return false;
 	}
 };
+
+var errorControll = function(response){
+	// 로그인 에러 처리
+	var message = response.desc.split("\n");
+	webix.message({ type:"error", text:message[0].replace("="," ") });
+	if(response.status == 405){
+		login_popup();
+	} 
+}
