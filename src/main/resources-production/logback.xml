@@ -12,11 +12,11 @@
 		<!-- 다중 JVM 일 때 같은 로그 파일을 기록할 때는 prudent를 true 처리 할 것 -->
 	    <!-- <prudent>true</prudent> -->
 	
-		<file>${catalina.home}/logs/marketplace.log</file>
+		<file>${catalina.home}/logs/dbclient.log</file>
 		<append>true</append>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
-			<fileNamePattern>${catalina.home}/logs/marketplace.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>${catalina.home}/logs/dbclient.%d{yyyy-MM-dd}.log</fileNamePattern>
 			
 			<!-- keep 60 days' worth of history -->
 			<maxHistory>60</maxHistory>
