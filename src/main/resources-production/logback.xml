@@ -37,7 +37,7 @@
 	<logger name="org.springframework.web" level="ERROR" />
 	
 	<!-- web Loggers -->
-	<logger name="com.song7749.app" level="INFO" />
+	<logger name="com.song7749.app" level="INFO">
 		<appender-ref ref="webFileAppender" />
 	</logger>
 	
