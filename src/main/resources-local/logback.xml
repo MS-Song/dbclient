@@ -16,7 +16,7 @@
 	<logger name="org.springframework.web" level="INFO" />
 	
 	<!-- web Loggers -->
-	<logger name="com.danawa.app.marketplace" level="DEBUG" />
+	<logger name="com.song7749.app" level="DEBUG" />
 
 	<!-- swagger -->
 	<logger name="com.mangofactory" additivity="false" level="ERROR"/>
