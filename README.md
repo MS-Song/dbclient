@@ -15,4 +15,4 @@ DBClient ?
 
 
 # screenshot
-![Alt text](/dbclient_example.png "dbClient Screenshot")
+![Alt text](/dbclient_example_image.png "dbClient Screenshot")
