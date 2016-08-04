@@ -14,4 +14,4 @@ DBClient ?
 * 초기 비밀번호는 root / 12345678 입니다 .
 
 # screenshot
-![Alt text](/dbclient_example.png "dbClient Screenshot")
+![Alt text](/dbclient_example_image.png "dbClient Screenshot")
