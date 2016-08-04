@@ -13,14 +13,5 @@ DBClient ?
 * 그 뒤에는 위 코드를 제거하고 재시작 하시면 사용 가능 합니다. 
 * 초기 비밀번호는 root / 12345678 입니다 .
 
-# 개발 진행 상황
-* 아직 admin 기능이 완료되지 않아 database 를 직접 입력 할 수 없습니다 .
-* 아래와 같이 database 에 직접 입력 해야 합니다. 
-* /src/main/resources/dbClient.sql
- 
-```sql
-insert into ServerInfo (account, charset, driver, host, hostAlias, password, port, schemaName) values ('dbclient','UTF-8','mysql','127.0.0.1','local_Mysql','1234','3306','dbclient');
-```
-
-* 위와 같이 SQL 문을 입력하면, 초기 기동시에 data 가 입력 됩니다 .
-* 구동 환경의 코드를 수정후에 기동해야 합니다. 
+# screenshot
+![Alt text](/dbclient_example.png "dbClient Screenshot")
