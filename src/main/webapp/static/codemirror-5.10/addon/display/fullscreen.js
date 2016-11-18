@@ -26,6 +26,8 @@
     wrap.style.height = "auto";
     wrap.className += " CodeMirror-fullscreen";
     document.documentElement.style.overflow = "hidden";
+    // full screen 스크롤 처리 변경
+    $(".CodeMirror-scroll").attr("style","");
     cm.refresh();
   }
 
