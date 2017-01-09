@@ -13,7 +13,5 @@ DBClient ?
 * 그 뒤에는 위 코드를 제거하고 재시작 하시면 사용 가능 합니다. 
 * 초기 비밀번호는 root / 12345678 입니다 .
 
-테스트 구동 URL
-
 # screenshot
 ![Alt text](/dbclient_example_image.png "dbClient Screenshot")
