@@ -13,10 +13,6 @@ DBClient ?
 * 그 뒤에는 위 코드를 제거하고 재시작 하시면 사용 가능 합니다. 
 * 초기 비밀번호는 root / 12345678 입니다 .
 
-# 개발 진행 상황
-* 대부분의 기능이 완료 되었습니다.
 
-
-# NEXT
-* Query 입력시 API 자동 생성
-* API Gateway 
+# screenshot
+![Alt text](/dbclient_example.png "dbClient Screenshot")
