@@ -1,7 +1,7 @@
 # DBClient ? 
 ----
-* DBClient 는 SQL IDE Tool 입니다. 
-* 현재는 Mysql 및 Oracle 을 지원하고 추후 여러 DBMS 를 지원할 예정입니다.
+* DBClient 는 SQL IDE Tool 입니다.
+* 현재는 Mysql 및 Oracle 을 지원하고 추후 여러 DBMS 를 지원할 예정입니다. 
 * Tode/Orange 와 유사한 인터페이스를 지원하며, WEB 베이스로 제작되어 있습니다.
 * 사용자 Login 을 지원하며, 별도의 회원관리메뉴, Database 권한 부여 기능이 있습니다.
 * Query 결과에 대한 엑셀 다운로드를 지원 합니다.
