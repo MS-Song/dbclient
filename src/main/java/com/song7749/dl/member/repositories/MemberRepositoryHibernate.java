@@ -105,4 +105,13 @@ public class MemberRepositoryHibernate implements MemberRepository{
 		}
 		return criteria.list();
 	}
+
+	@Override
+	public Integer removeMemberDatabases(Integer serverInfoSeq) {
+		if(null==serverInfoSeq){
+			throw new IllegalArgumentException("serverInfoSeq 는 Null 이면 안됩니다.");
+		}
+		String hql = "delete from MemberDatabase where serverInfoSeq= :serverInfoSeq";
+		return getSesson().createQuery(hql).setInteger("serverInfoSeq", serverInfoSeq).executeUpdate();
+	}
 }

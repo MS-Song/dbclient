@@ -27,6 +27,7 @@ import com.song7749.dl.dbclient.dto.SaveServerInfoDTO;
 import com.song7749.dl.dbclient.entities.ServerInfo;
 import com.song7749.dl.dbclient.repositories.ServerInfoRepository;
 import com.song7749.dl.dbclient.type.DatabaseDriver;
+import com.song7749.dl.member.repositories.MemberRepository;
 import com.song7749.util.ProxyUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -37,6 +38,8 @@ public class ServerInfoManagerImplTest {
 
 	@Mock
 	private ServerInfoRepository serverInfoRepository;
+	@Mock
+	private MemberRepository memberRepository;
 
 	@Autowired
 	private ServerInfoManager serverInfoManager;
@@ -65,6 +68,7 @@ public class ServerInfoManagerImplTest {
 		MockitoAnnotations.initMocks(this);
 		ServerInfoManager o = (ServerInfoManager)ProxyUtils.unwrapProxy(serverInfoManager);
 		ReflectionTestUtils.setField(o, "serverInfoRepository", serverInfoRepository);
+		ReflectionTestUtils.setField(o, "memberRepository", memberRepository);
 	}
 
 	@Test(expected=IllegalArgumentException.class)//then

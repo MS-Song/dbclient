@@ -95,8 +95,9 @@ public class MemberRepositoryHibernateTest {
 		Member member = testSave();
 		testFindMemberList(member);
 		testUpdate(member);
-		testUpdateAddMemberDatabase(member);
-		testUpdateRemoveMemberDatabase(member);
+		testUpdateAddMemberDatabase(member);	// 회원의 권한을 추가
+		testUpdateRemoveMemberDatabase(member);	// 회원의 권한을 삭제
+		testRemoveMemberDatabases(member);		// 해당 서버의 권한을 일괄 삭제
 		testDelete(member);
 	}
 
@@ -176,5 +177,14 @@ public class MemberRepositoryHibernateTest {
 		List<Member> list = memberRepository.findMemberList(dto);
 		// then
 		assertThat(list, notNullValue());
+	}
+
+	public void testRemoveMemberDatabases(Member member) throws Exception {
+		// give
+		member.addMemberDatabaseList(new MemberDatabase(1));
+		// when
+		Integer affectedRows = memberRepository.removeMemberDatabases(1);
+		// then
+		assertThat(affectedRows, is(1));
 	}
 }

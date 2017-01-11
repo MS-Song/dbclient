@@ -34,6 +34,7 @@ import com.song7749.dl.dbclient.vo.ServerInfoVO;
 import com.song7749.dl.dbclient.vo.TableVO;
 import com.song7749.dl.dbclient.vo.TriggerVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
+import com.song7749.dl.member.repositories.MemberRepository;
 import com.song7749.util.validate.ValidateGroupSelect;
 import com.song7749.util.validate.annotation.Validate;
 
@@ -48,6 +49,9 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 
 	@Resource
 	private DBclientDataSourceManager dbClientDataSourceManager;
+
+	@Resource
+	private MemberRepository memberRepository;
 
 	@Override
 	@Validate
@@ -86,7 +90,10 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Transactional(value = "dbClientTransactionManager")
 	@TriggersRemove(cacheName="com.song7749.cache.serverInfo.cache",removeAll=true)
 	public void deleteServerInfo(DeleteServerInfoDTO dto) {
+		// 서버 정보를 삭제
 		serverInfoRepository.delete(new ServerInfo(dto.getServerInfoSeq()));
+		// 회원 정보와 연결되어 있는 Database 접근 권한을 삭제
+		memberRepository.removeMemberDatabases(dto.getServerInfoSeq());
 	}
 
 	@Override
