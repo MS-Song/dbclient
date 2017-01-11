@@ -33,10 +33,37 @@ public class FieldVO extends AbstractVo{
 	@ApiModelProperty
 	private String comment;
 
+	/**
+	 * 기본 생성자
+	 */
 	public FieldVO() {}
 
+	/**
+	 * 테이블 필드 정보 생성자
+	 * @param tableName
+	 * @param columnName
+	 * @param comment
+	 */
+	public FieldVO(String tableName, String columnName, String comment) {
+		this.tableName = tableName;
+		this.columnName = columnName;
+		this.comment = comment;
+	}
 
-
+	/**
+	 * 전체 생성자
+	 * @param tableName
+	 * @param columnId
+	 * @param columnName
+	 * @param nullable
+	 * @param columnKey
+	 * @param dataType
+	 * @param dataLegnth
+	 * @param characterset
+	 * @param extra
+	 * @param defaultValue
+	 * @param comment
+	 */
 	public FieldVO(String tableName, String columnId, String columnName,
 			String nullable, String columnKey, String dataType,
 			String dataLegnth, String characterset, String extra,

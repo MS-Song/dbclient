@@ -81,7 +81,9 @@ public enum DatabaseDriver {
 			// kill connection
 			"KILL CONNECTION {id}",
 			// create table query
-			"show create table {name}"),
+			"show create table {name}",
+			// 자동완성용 테이블/필드 전체 리스트 조회
+			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'"),
 
 	@ApiModelProperty
 	oracle(
@@ -132,7 +134,9 @@ public enum DatabaseDriver {
 			// kill process
 			"alter system kill session '{id}'",
 			// create table query
-			"select dbms_metadata.get_ddl( 'TABLE', '{name}', '{account}' ) as CREATE_TALBE from dual");
+			"select dbms_metadata.get_ddl( 'TABLE', '{name}', '{account}' ) as CREATE_TALBE from dual",
+			// 자동완성용 테이블/필드 전체 리스트 조회
+			"SELECT UTC.TABLE_NAME AS TABLE_NAME, UTC.COLUMN_NAME AS COLUMN_NAME, UCC.COMMENTS AS COLUMN_COMMENT FROM USER_TAB_COLUMNS UTC , USER_COL_COMMENTS UCC WHERE UTC.TABLE_NAME = UCC.TABLE_NAME (+) AND UTC.COLUMN_NAME = UCC.COLUMN_NAME (+)");
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -160,6 +164,7 @@ public enum DatabaseDriver {
 	private String processListQuery;
 	private String killProcessQuery;
 	private String showCreateQuery;
+	private String autoCompleteQuery;
 
 	DatabaseDriver(
 		String dbms,
@@ -185,7 +190,8 @@ public enum DatabaseDriver {
 		String sequenceDetailQuery,
 		String processListQuery,
 		String killProcessQuery,
-		String showCreateQuery) {
+		String showCreateQuery,
+		String autoCompleteQuery) {
 
 		this.dbms					= dbms;
 		this.driverName				= driverName;
@@ -211,6 +217,7 @@ public enum DatabaseDriver {
 		this.processListQuery		= processListQuery;
 		this.killProcessQuery		= killProcessQuery;
 		this.showCreateQuery		= showCreateQuery;
+		this.autoCompleteQuery		= autoCompleteQuery;
 	}
 
 	/**
@@ -451,6 +458,14 @@ public enum DatabaseDriver {
 	public String getShowCreateQuery(ServerInfo serverInfo){
 		try {
 			return repalceServerInfo(serverInfo, showCreateQuery);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getCause());
+		}
+	}
+
+	public String getAutoCompleteQuery(ServerInfo serverInfo){
+		try {
+			return repalceServerInfo(serverInfo, autoCompleteQuery);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
 		}

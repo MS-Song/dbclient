@@ -1138,4 +1138,34 @@ public class DatabaseController {
 		model.clear();
 		model.addAttribute("message", "쿼리가 중지 되었습니다.");
 	}
+
+	@ApiOperation(value = "데이터베이스 전체 필드 리스트 조회"
+			,notes = "데이터베이스의 모든 필드 리스트를 조회 한다."
+			,response=TableVO.class)
+	@RequestMapping(value="/allFieldList",method=RequestMethod.GET)
+	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
+	public void getAllFieldList(
+			@RequestParam(value="server",required=true)
+			@ApiParam	String host,
+			@RequestParam(value="schema",required=true)
+			@ApiParam	String  schemaName,
+			@RequestParam(value="account",required=true)
+			@ApiParam 	String  account,
+			@RequestParam(value="useCache",required=false)
+			@ApiParam 	boolean  useCache,
+			HttpServletRequest request,
+			ModelMap model){
+
+		// 캐시 사용 여부를 결정한다.
+		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, useCache));
+
+		List<FieldVO> fieldList=null;
+		if(null!=list & list.size()>0){
+			fieldList=serverInfoManager.findAllFieldList(new FindServerInfoDTO(list.get(0).getServerInfoSeq(), useCache));
+		}
+
+		logger.trace("fieldList : {}",fieldList);
+		model.addAttribute("fieldList", fieldList);
+	}
+
 }

@@ -223,6 +223,13 @@ public interface ServerInfoManager {
 	List<Map<String,String>> executeResultList(ExecuteResultListDTO dto);
 
 	/**
+	 * 자동완성을 위해 테이블의 모든 필드 리스트와 comment 를 조회 한다.
+	 * @param dto
+	 * @return List<FieldVO>
+	 */
+	List<FieldVO> findAllFieldList(FindServerInfoDTO dto);
+
+	/**
 	 * 실행 중인 쿼리를 중단한다.
 	 * @param dto
 	 */

@@ -753,6 +753,8 @@ var database_info_data_load=function(){
 	getDataParseView("/database/triggerList",serverInfo,"database_info_trigger_list_view",false,true,false);
 	// sequence List 로딩
 	getDataParseView("/database/sequenceList",serverInfo,"database_info_sequence_list_view",false,true,false);
+	// 자동완성용 테이블 데이터 로딩
+	database_query_all_field_load();
 };
 
 // 테이블 정보 로딩
@@ -1327,3 +1329,29 @@ var database_query_favorities_view_load = function(){
 
 }; 
 database_query_favorities_view_load();
+
+/** 
+ * 자동완성 테이블/필드 데이터 로딩
+ * 1 초 이후에 실행 한다. 대량의 데이터가 들어 올 위험이 있다. 
+ */
+var database_query_all_field_load = function(){
+	setTimeout(function(){
+		// 테이블_필드 리스트 조회
+		autoCompleteAddTablesReset();
+		if(null!=serverInfo.serverInfoSeq){
+			webix.ajax().get("/database/allFieldList"+".json",serverInfo, 
+				function(text,data){
+					if(data.json().status ==200 && null!=data.json().result){
+						$.each(data.json().result,function(index, obj){
+							$.each(obj,function(objIndex){
+								autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
+							});
+						});
+					} else {
+						errorControll(data.json());
+					}
+				}
+			);
+		}		
+	},1000);
+};

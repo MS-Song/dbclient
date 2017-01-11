@@ -304,4 +304,29 @@ public class DatabaseControllerTest {
 		assertThat((Integer)responseObject.get("status"),	is(200));
 		assertThat(responseObject.get("result"), 			notNullValue());
 	}
+
+	@Test
+	public void testGetAllFieldList() throws Exception {
+
+		drb = get("/database/allFieldList.json")
+				.param("server",serverInfo.getHost())
+				.param("schema",serverInfo.getSchemaName())
+				.param("account",serverInfo.getAccount())
+				;
+
+		// 로그인 cookie 정보 추가
+		cookie = new Cookie("cipher", CryptoAES.encrypt("root"));
+		drb.cookie(cookie);
+
+		result = mockMvc.perform(drb)
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn()
+			;
+		responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+		assertThat(responseObject.get("status"), 			notNullValue());
+		assertThat((Integer)responseObject.get("status"),	is(200));
+		assertThat(responseObject.get("result"), 			notNullValue());
+	}
 }

@@ -222,8 +222,7 @@ var postDateSend = function(url, parameters){
 	
 };
 
-
-//자동완성 데이터 저장
+//자동완성 데이터 저장 (1개 테이블)
 var autoCompleteAddTables = function(tableName,fieldList){
 	// 자동완성에 테이블을 입력한다.
 	if(null==$$("database_query_input").config.hintOptions.tables[tableName]){
@@ -236,6 +235,21 @@ var autoCompleteAddTables = function(tableName,fieldList){
 //		console.log($$("database_query_input").config.hintOptions.tables[tableName]);
 	}
 };
+
+//자동완성 데이터 저장 (all Table)
+var autoCompleteAddTablesAll = function(tableName,columnName,columnComment){
+	//해당 테이블 존재 확인
+	if(null==$$("database_query_input").config.hintOptions.tables[tableName]){
+		$$("database_query_input").config.hintOptions.tables[tableName]={};							
+	}
+	// 필드 입력
+	$$("database_query_input").config.hintOptions.tables[tableName][columnName] = columnComment;
+};
+
+// 자동완성 데이터 리셋
+var autoCompleteAddTablesReset = function(){
+	$$("database_query_input").config.hintOptions.tables={};
+}
 
 // 동등성 비교
 var equals=function (a,b){

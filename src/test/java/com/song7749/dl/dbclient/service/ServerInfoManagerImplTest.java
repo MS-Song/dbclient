@@ -40,6 +40,8 @@ public class ServerInfoManagerImplTest {
 	private ServerInfoRepository serverInfoRepository;
 	@Mock
 	private MemberRepository memberRepository;
+	@Mock
+	private DBclientDataSourceManager dbClientDataSourceManager;
 
 	@Autowired
 	private ServerInfoManager serverInfoManager;
@@ -69,6 +71,7 @@ public class ServerInfoManagerImplTest {
 		ServerInfoManager o = (ServerInfoManager)ProxyUtils.unwrapProxy(serverInfoManager);
 		ReflectionTestUtils.setField(o, "serverInfoRepository", serverInfoRepository);
 		ReflectionTestUtils.setField(o, "memberRepository", memberRepository);
+		ReflectionTestUtils.setField(o, "dbClientDataSourceManager", dbClientDataSourceManager);
 	}
 
 	@Test(expected=IllegalArgumentException.class)//then
@@ -140,5 +143,15 @@ public class ServerInfoManagerImplTest {
 		serverInfoManager.findServerInfo(dto);
 		// then
 		verify(serverInfoRepository).find(any(ServerInfo.class));
+	}
+
+	@Test
+	public void testFindAllFieldList() throws Exception {
+		// give
+		FindServerInfoDTO dto = new FindServerInfoDTO(1, true);
+		// when
+		serverInfoManager.findAllFieldList(dto);
+		// then
+		verify(dbClientDataSourceManager).selectAllFieldList(any(ServerInfo.class));
 	}
 }

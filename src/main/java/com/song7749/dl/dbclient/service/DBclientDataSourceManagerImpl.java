@@ -768,6 +768,23 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	}
 
 	@Override
+	public List<FieldVO> selectAllFieldList(ServerInfo serverInfo) {
+		List<FieldVO> list = new ArrayList<FieldVO>();
+
+		List<Map<String, String>> resultList = null;
+		try {
+			resultList = executeQueryList(getConnection(serverInfo), serverInfo.getDriver().getAutoCompleteQuery(serverInfo));
+		} catch (SQLException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+
+		for(Map<String,String> map:resultList){
+			list.add(new FieldVO(map.get("TABLE_NAME"),map.get("COLUMN_NAME"),map.get("COLUMN_COMMENT")));
+		}
+		return list;
+	}
+
+	@Override
 	public void killQuery(ServerInfo serverInfo, ExecuteResultListDTO dto) {
 		// 프로세스 리스트를 조회 한다.
 		List<Map<String, String>> list = null;
@@ -821,5 +838,4 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 		super.finalize();
 	}
-
 }

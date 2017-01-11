@@ -190,6 +190,13 @@ public interface DBclientDataSourceManager {
 	List<DatabaseDdlVO> selectShowCreateTable(ServerInfo serverInfo);
 
 	/**
+	 * 자동완성을 위해 테이블의 모든 필드 리스트와 comment 를 조회 한다.
+	 * @param serverInfo
+	 * @return List<FieldVO>
+	 */
+	List<FieldVO> selectAllFieldList(ServerInfo serverInfo);
+
+	/**
 	 * 유저가 실행한 쿼리를 취소 한다.
 	 * @param serverInfo
 	 * @param dto

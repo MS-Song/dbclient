@@ -145,4 +145,14 @@ public class DBclientDataSourceManagerImplTest {
 		// then
 		assertThat(list, notNullValue());
 	}
+
+	@Test
+	public void testSelectAllFieldList() throws Exception {
+		// give
+		serverInfo.setSchemaName("dbclient");
+		// when
+		List<FieldVO> list = dbClientDataSourceManager.selectAllFieldList(serverInfo);
+		// then
+		assertThat(list, notNullValue());
+	}
 }

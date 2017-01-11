@@ -356,6 +356,16 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 		return dbClientDataSourceManager.selectShowCreateTable(info);
 	}
 
+
+	@Override
+	@Validate(VG = { ValidateGroupSelect.class })
+	@Transactional(value = "dbClientTransactionManager", readOnly = true)
+	@Cacheable(cacheName="com.song7749.cache.serverInfo.cache",cacheableInteceptorName="cacheAbleInterceptorImpl")
+	public List<FieldVO> findAllFieldList(FindServerInfoDTO dto) {
+		return dbClientDataSourceManager.selectAllFieldList(serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq())));
+	}
+
+
 	@Override
 	@Validate
 	@Transactional(value = "dbClientTransactionManager")
