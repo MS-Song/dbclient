@@ -1335,23 +1335,34 @@ database_query_favorities_view_load();
  * 1 초 이후에 실행 한다. 대량의 데이터가 들어 올 위험이 있다. 
  */
 var database_query_all_field_load = function(){
-	setTimeout(function(){
-		// 테이블_필드 리스트 조회
+	var	cachedList = webix.storage.local.get(JSON.stringify(serverInfo, null, 2)+"_autoComplete");
+	console.log(cachedList);
+	// cache 에 데이터가 존재하면 캐시의 데이터를 노출한다.
+	if(null != cachedList){
 		autoCompleteAddTablesReset();
-		if(null!=serverInfo.serverInfoSeq){
-			webix.ajax().get("/database/allFieldList"+".json",serverInfo, 
-				function(text,data){
-					if(data.json().status ==200 && null!=data.json().result){
-						$.each(data.json().result,function(index, obj){
-							$.each(obj,function(objIndex){
-								autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
+		$.each(cachedList,function(objIndex){
+			autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
+		});
+	} else {
+		setTimeout(function(){
+			// 테이블_필드 리스트 조회
+			autoCompleteAddTablesReset();
+			if(null!=serverInfo.serverInfoSeq){
+				webix.ajax().get("/database/allFieldList"+".json",serverInfo, 
+					function(text,data){
+						if(data.json().status ==200 && null!=data.json().result){
+							$.each(data.json().result,function(index, obj){
+								$.each(obj,function(objIndex){
+									autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
+								});
+								webix.storage.local.put(JSON.stringify(serverInfo, null, 2)+"_autoComplete",obj);
 							});
-						});
-					} else {
-						errorControll(data.json());
+						} else {
+							errorControll(data.json());
+						}
 					}
-				}
-			);
-		}		
-	},1000);
+				);
+			}		
+		},1000);	
+	}
 };
