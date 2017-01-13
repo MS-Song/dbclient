@@ -53,7 +53,7 @@
     for (var word in wordlist) {
       if (!wordlist.hasOwnProperty(word)) continue;
       if (wordlist.slice) word = wordlist[word];
-
+      
       if (match(search, word)) result.push(formatter(word));
     }
   }
@@ -114,6 +114,7 @@
 
     var alias = false;
     var aliasTable = table;
+//    console.log("sql-hint:117 - "+aliasTable);
     // Check if table is available. If not, find table by Alias
     if (!getItem(tables, table)) {
       var oldTable = table;
@@ -122,18 +123,25 @@
     }
 
     var columns = getItem(tables, table);
+    
     if (columns && columns.columns)
       columns = columns.columns;
 
     if (columns) {
       addMatches(result, string, columns, function(w) {
+//    	  console.log(columns);
+//    	  console.log(w);
         var tableInsert = table;
         if (alias == true) tableInsert = aliasTable;
+        
+        // song7749 -- 컬럼 코멘트 추가
+        var comments = (columns[w] == null || columns[w] == "") ? "" : " ::: " + columns[w];
+        
         if (typeof w == "string") {
-          w = tableInsert + "." + w;
+          w = tableInsert + "." + w + comments ;	// column comment 추가
         } else {
           w = shallowClone(w);
-          w.text = tableInsert + "." + w.text;
+          w.text = tableInsert + "." + w.text + comments ; // column comment 추가
         }
         return useBacktick ? insertBackticks(w) : w;
       });
@@ -197,7 +205,9 @@
 
     for (var i = 0; i < query.length; i++) {
       var lineText = query[i];
+      lineText = lineText.replace;
       eachWord(lineText, function(word) {
+    	  console.log(word);
         var wordUpperCase = word.toUpperCase();
         if (wordUpperCase === aliasUpperCase && getItem(tables, previousWord))
           table = previousWord;
@@ -206,6 +216,7 @@
       });
       if (table) break;
     }
+//    console.log("sql-hint:line:209 - "+ table)
     return table;
   }
 

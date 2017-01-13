@@ -1336,7 +1336,6 @@ database_query_favorities_view_load();
  */
 var database_query_all_field_load = function(){
 	var	cachedList = webix.storage.local.get(JSON.stringify(serverInfo, null, 2)+"_autoComplete");
-	console.log(cachedList);
 	// cache 에 데이터가 존재하면 캐시의 데이터를 노출한다.
 	if(null != cachedList){
 		autoCompleteAddTablesReset();
@@ -1352,6 +1351,10 @@ var database_query_all_field_load = function(){
 					function(text,data){
 						if(data.json().status ==200 && null!=data.json().result){
 							$.each(data.json().result,function(index, obj){
+								// 정렬
+								obj.sort(function(a,b){
+									return(a.tableName < b.tableName) ? -1 : (a.tableName > b.tableName) ? 1 : 0;
+								});
 								$.each(obj,function(objIndex){
 									autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
 								});

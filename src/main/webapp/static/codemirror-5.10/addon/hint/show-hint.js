@@ -82,6 +82,11 @@
 
     pick: function(data, i) {
       var completion = data.list[i];
+      // song7749 - 자동완성의 코멘트를 삭제 처리 한다.
+      if(completion.indexOf(":::") >= 0){
+    	  completion = completion.substring(0,completion.indexOf(":::")-1) + " ";
+      }
+
       if (completion.hint) completion.hint(this.cm, data, completion);
       else this.cm.replaceRange(getText(completion), completion.from || data.from,
                                 completion.to || data.to, "complete");
@@ -322,6 +327,8 @@
     },
 
     pick: function() {
+//    	console.log(this.data);
+//    	console.log(this.selectedHint);
       this.completion.pick(this.data, this.selectedHint);
     },
 

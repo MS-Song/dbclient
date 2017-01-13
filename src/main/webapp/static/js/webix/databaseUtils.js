@@ -426,7 +426,9 @@ var prepareStyleConverter = function(dataType,columnName){
  * 테이블 명칭을 java 모델에 맞게 변경한다.
  */
 var tableStyleConverter=function(table){
-  	var className="";
+	if(null==table) return "";
+	
+	var className="";
   	// 컬럼 명칭을 변경하기 위한 처리
   	if(table.indexOf('_')>=0){
   		var names = table.split('_');

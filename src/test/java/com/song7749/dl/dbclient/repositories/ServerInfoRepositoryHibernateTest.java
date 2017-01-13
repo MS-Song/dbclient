@@ -86,11 +86,14 @@ public class ServerInfoRepositoryHibernateTest {
 		assertTrue(true);
 	}
 
+
 	public ServerInfo testFind(ServerInfo serverInfo) throws Exception {
 		// give // when
 		ServerInfo returnInfo = serverInfoRepository.find(serverInfo);
 		// then
 		assertThat(serverInfo.getServerInfoSeq(), is(returnInfo.getServerInfoSeq()));
+//		assertThat(serverInfo.getServerInfoSeq(), is(new Integer(10)));
+
 		return returnInfo;
 	}
 
