@@ -153,9 +153,16 @@
   function eachWord(lineText, f) {
     if (!lineText) return;
     var excepted = /[,;]/g;
+    // 탭이 있으면, 공백으로 치환한다.
+    lineText=lineText.replace(/\t/gi, " ");
+    // 공백문자로 단어를 분리한다.
     var words = lineText.split(" ");
     for (var i = 0; i < words.length; i++) {
-      f(words[i]?words[i].replace(excepted, '') : '');
+        // word의 빈 배열을 삭제한다.
+    	if(null!=words[i] && "" !=words[i]){
+        	console.log(words);
+        	f(words[i]?words[i].replace(excepted, '') : '');
+    	}
     }
   }
 
@@ -205,9 +212,7 @@
 
     for (var i = 0; i < query.length; i++) {
       var lineText = query[i];
-      lineText = lineText.replace;
       eachWord(lineText, function(word) {
-    	  console.log(word);
         var wordUpperCase = word.toUpperCase();
         if (wordUpperCase === aliasUpperCase && getItem(tables, previousWord))
           table = previousWord;
