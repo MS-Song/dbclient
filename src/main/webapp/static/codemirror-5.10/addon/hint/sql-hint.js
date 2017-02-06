@@ -78,7 +78,7 @@
   }
 
   function nameCompletion(cur, token, result, editor) {
-    // Try to complete table, colunm names and return start position of completion
+	// Try to complete table, colunm names and return start position of completion
     var useBacktick = false;
     var nameParts = [];
     var start = token.start;
@@ -96,7 +96,12 @@
         token = editor.getTokenAt(Pos(cur.line, token.start));
       }
     }
-
+//	console.log("sql-hint.js : 104");
+//	console.log(cur);
+//	console.log(token);
+//	console.log(result);
+//	console.log(editor);
+    
     // Try to complete table names
     var string = nameParts.join(".");
     addMatches(result, string, tables, function(w) {
@@ -160,7 +165,7 @@
     for (var i = 0; i < words.length; i++) {
         // word의 빈 배열을 삭제한다.
     	if(null!=words[i] && "" !=words[i]){
-        	console.log(words);
+//        	console.log(words);
         	f(words[i]?words[i].replace(excepted, '') : '');
     	}
     }
@@ -231,7 +236,7 @@
     var disableKeywords = options && options.disableKeywords;
     defaultTable = defaultTableName && getItem(tables, defaultTableName);
     keywords = keywords || getKeywords(editor);
-
+    
     if (defaultTableName && !defaultTable)
       defaultTable = findTableByAlias(defaultTableName, editor);
 
@@ -243,11 +248,17 @@
     var cur = editor.getCursor();
     var result = [];
     var token = editor.getTokenAt(cur), start, end, search;
+//    console.log("sql-hint.js:251")
+//    console.log(editor);
+//    console.log(cur)
+//    console.log(token)
+    
+    
     if (token.end > cur.ch) {
       token.end = cur.ch;
       token.string = token.string.slice(0, cur.ch - token.start);
     }
-
+    
     if (token.string.match(/^[.`\w@]\w*$/)) {
       search = token.string;
       start = token.start;
@@ -256,9 +267,21 @@
       start = end = cur.ch;
       search = "";
     }
+
+//    console.log("sql-hint.js:264");
+//    console.log(token);
+//    console.log(search);
+//    console.log(start);
+//    console.log(end);
+    
     if (search.charAt(0) == "." || search.charAt(0) == "`") {
-      start = nameCompletion(cur, token, result, editor);
-    } else {
+    	start = nameCompletion(cur, token, result, editor);
+//	    console.log("sql-hint.js:278");
+//	    console.log(tables);
+//	    console.log(defaultTable);
+//	    console.log(token);
+    } 
+    else {
       addMatches(result, search, tables, function(w) {return w;});
       addMatches(result, search, defaultTable, function(w) {return w;});
       if (!disableKeywords)
