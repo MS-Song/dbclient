@@ -271,7 +271,6 @@
     var isColumnSearch = editor.getTokenAt(Pos(cur.line, token.start)).string == ".";
     isColumnSearch = isColumnSearch || search.charAt(0) == ".";
     isColumnSearch = isColumnSearch || search.charAt(0) == "`";
-    console.log(isColumnSearch);
 
     if (isColumnSearch) {
       start = nameCompletion(cur, token, result, editor);

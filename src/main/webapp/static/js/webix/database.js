@@ -755,6 +755,8 @@ var database_info_data_load=function(){
 	getDataParseView("/database/sequenceList",serverInfo,"database_info_sequence_list_view",false,true,false);
 	// 자동완성용 테이블 데이터 로딩
 	database_query_all_field_load();
+	// 자동완성 이벤트 호출
+	autoCompleteEvent();
 };
 
 // 테이블 정보 로딩

@@ -8,7 +8,7 @@ webix.protoUI({
 		lineNumbers: true,
 		autofocus: true,
 		extraKeys: {
-			"Ctrl-Space": "autocomplete", 
+			"Ctrl-Space": "autocomplete",
 			"Ctrl-Enter":function(){
 				// 컨트롤 엔터 입력시 쿼리 실행
 				event.preventDefault();
@@ -38,7 +38,7 @@ webix.protoUI({
 		    "Ctrl-6":function(cm){mybatisInsert();},
 		    "Ctrl-7":function(cm){mybatisUpdate();},
 		    "Ctrl-8":function(cm){mybatisDelete();},
-		    "Ctrl-9":function(cm){mybatisResultMap();},
+		    "Ctrl-9":function(cm){mybatisResultMap();}
 		},
 		hintOptions: {tables: {}}		
 	},
