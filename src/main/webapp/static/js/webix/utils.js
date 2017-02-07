@@ -243,7 +243,11 @@ var autoCompleteAddTablesAll = function(tableName,columnName,columnComment){
 		$$("database_query_input").config.hintOptions.tables[tableName]={};							
 	}
 	// 필드 입력
-	$$("database_query_input").config.hintOptions.tables[tableName][columnName] = columnComment;
+	if(null==$$("database_query_input").config.hintOptions.tables[tableName][columnName]){
+		$$("database_query_input").config.hintOptions.tables[tableName][columnName]={};							
+	}
+	$$("database_query_input").config.hintOptions.tables[tableName][columnName]['text'] = columnName;
+	$$("database_query_input").config.hintOptions.tables[tableName][columnName]['comment'] = columnComment;
 };
 
 // 자동완성 데이터 리셋

@@ -18,7 +18,9 @@
     QUERY_DIV: ";",
     ALIAS_KEYWORD: "AS"
   };
-  var Pos = CodeMirror.Pos;
+  var Pos = CodeMirror.Pos, cmpPos = CodeMirror.cmpPos;
+
+  function isArray(val) { return Object.prototype.toString.call(val) == "[object Array]" }
 
   function getKeywords(editor) {
     var mode = editor.doc.modeOption;
@@ -30,10 +32,28 @@
     return typeof item == "string" ? item : item.text;
   }
 
-  function getItem(list, item) {
-    if (!list.slice) return list[item];
-    for (var i = list.length - 1; i >= 0; i--) if (getText(list[i]) == item)
-      return list[i];
+  function wrapTable(name, value) {
+    if (isArray(value)) value = {columns: value}
+    if (!value.text) value.text = name
+    return value
+  }
+
+  function parseTables(input) {
+    var result = {}
+    if (isArray(input)) {
+      for (var i = input.length - 1; i >= 0; i--) {
+        var item = input[i]
+        result[getText(item).toUpperCase()] = wrapTable(getText(item), item)
+      }
+    } else if (input) {
+      for (var name in input)
+        result[name.toUpperCase()] = wrapTable(name, input[name])
+    }
+    return result
+  }
+
+  function getTable(name) {
+    return tables[name.toUpperCase()]
   }
 
   function shallowClone(object) {
@@ -50,11 +70,20 @@
   }
 
   function addMatches(result, search, wordlist, formatter) {
-    for (var word in wordlist) {
-      if (!wordlist.hasOwnProperty(word)) continue;
-      if (wordlist.slice) word = wordlist[word];
-      
-      if (match(search, word)) result.push(formatter(word));
+    if (isArray(wordlist)) {
+    	for (var i = 0; i < wordlist.length; i++)
+        if (match(search, wordlist[i])) result.push(formatter(wordlist[i]))
+    } else {
+      for (var word in wordlist) if (wordlist.hasOwnProperty(word)) {
+        var val = wordlist[word];
+        if (!val || val === true)
+          val = word
+        else
+          val = val.comment ==null || val.comment == "" ? val.text : val.text + " ::: " + val.comment;
+        try{
+          if (match(search, val)) result.push(formatter(val))
+        } catch(e){}
+      }
     }
   }
 
@@ -78,7 +107,7 @@
   }
 
   function nameCompletion(cur, token, result, editor) {
-	// Try to complete table, colunm names and return start position of completion
+    // Try to complete table, column names and return start position of completion
     var useBacktick = false;
     var nameParts = [];
     var start = token.start;
@@ -96,12 +125,7 @@
         token = editor.getTokenAt(Pos(cur.line, token.start));
       }
     }
-//	console.log("sql-hint.js : 104");
-//	console.log(cur);
-//	console.log(token);
-//	console.log(result);
-//	console.log(editor);
-    
+
     // Try to complete table names
     var string = nameParts.join(".");
     addMatches(result, string, tables, function(w) {
@@ -119,34 +143,26 @@
 
     var alias = false;
     var aliasTable = table;
-//    console.log("sql-hint:117 - "+aliasTable);
     // Check if table is available. If not, find table by Alias
-    if (!getItem(tables, table)) {
+    if (!getTable(table)) {
       var oldTable = table;
       table = findTableByAlias(table, editor);
       if (table !== oldTable) alias = true;
     }
 
-    var columns = getItem(tables, table);
-    
+    var columns = getTable(table);
     if (columns && columns.columns)
       columns = columns.columns;
 
     if (columns) {
       addMatches(result, string, columns, function(w) {
-//    	  console.log(columns);
-//    	  console.log(w);
         var tableInsert = table;
         if (alias == true) tableInsert = aliasTable;
-        
-        // song7749 -- 컬럼 코멘트 추가
-        var comments = (columns[w] == null || columns[w] == "") ? "" : " ::: " + columns[w];
-        
         if (typeof w == "string") {
-          w = tableInsert + "." + w + comments ;	// column comment 추가
+          w = tableInsert + "." + w;
         } else {
           w = shallowClone(w);
-          w.text = tableInsert + "." + w.text + comments ; // column comment 추가
+          w.text = tableInsert + "." + w.text;
         }
         return useBacktick ? insertBackticks(w) : w;
       });
@@ -156,28 +172,18 @@
   }
 
   function eachWord(lineText, f) {
-    if (!lineText) return;
-    var excepted = /[,;]/g;
-    // 탭이 있으면, 공백으로 치환한다.
-    lineText=lineText.replace(/\t/gi, " ");
-    // 공백문자로 단어를 분리한다.
-    var words = lineText.split(" ");
-    for (var i = 0; i < words.length; i++) {
-        // word의 빈 배열을 삭제한다.
-    	if(null!=words[i] && "" !=words[i]){
-//        	console.log(words);
-        	f(words[i]?words[i].replace(excepted, '') : '');
-    	}
-    }
-  }
-
-  function convertCurToNumber(cur) {
-    // max characters of a line is 999,999.
-    return cur.line + cur.ch / Math.pow(10, 6);
-  }
-
-  function convertNumberToCur(num) {
-    return Pos(Math.floor(num), +num.toString().split('.').pop());
+	    if (!lineText) return;
+	    var excepted = /[,;]/g;
+	    // 탭이 있으면, 공백으로 치환한다.
+	    lineText=lineText.replace(/\t/gi, " ");
+	    // 공백문자로 단어를 분리한다.
+	    var words = lineText.split(" ");
+	    for (var i = 0; i < words.length; i++) {
+	        // word의 빈 배열을 삭제한다.
+	    	if(null!=words[i] && "" !=words[i]){
+	        	f(words[i]?words[i].replace(excepted, '') : '');
+	    	}
+	    }
   }
 
   function findTableByAlias(alias, editor) {
@@ -202,15 +208,14 @@
     separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
 
     //find valid range
-    var prevItem = 0;
-    var current = convertCurToNumber(editor.getCursor());
-    for (var i=0; i< separator.length; i++) {
-      var _v = convertCurToNumber(separator[i]);
-      if (current > prevItem && current <= _v) {
-        validRange = { start: convertNumberToCur(prevItem), end: convertNumberToCur(_v) };
+    var prevItem = null;
+    var current = editor.getCursor()
+    for (var i = 0; i < separator.length; i++) {
+      if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
+        validRange = {start: prevItem, end: separator[i]};
         break;
       }
-      prevItem = _v;
+      prevItem = separator[i];
     }
 
     var query = doc.getRange(validRange.start, validRange.end, false);
@@ -219,24 +224,23 @@
       var lineText = query[i];
       eachWord(lineText, function(word) {
         var wordUpperCase = word.toUpperCase();
-        if (wordUpperCase === aliasUpperCase && getItem(tables, previousWord))
+        if (wordUpperCase === aliasUpperCase && getTable(previousWord))
           table = previousWord;
         if (wordUpperCase !== CONS.ALIAS_KEYWORD)
           previousWord = word;
       });
       if (table) break;
     }
-//    console.log("sql-hint:line:209 - "+ table)
     return table;
   }
 
   CodeMirror.registerHelper("hint", "sql", function(editor, options) {
-    tables = (options && options.tables) || {};
+    tables = parseTables(options && options.tables)
     var defaultTableName = options && options.defaultTable;
     var disableKeywords = options && options.disableKeywords;
-    defaultTable = defaultTableName && getItem(tables, defaultTableName);
-    keywords = keywords || getKeywords(editor);
-    
+    defaultTable = defaultTableName && getTable(defaultTableName);
+    keywords = getKeywords(editor);
+
     if (defaultTableName && !defaultTable)
       defaultTable = findTableByAlias(defaultTableName, editor);
 
@@ -248,17 +252,12 @@
     var cur = editor.getCursor();
     var result = [];
     var token = editor.getTokenAt(cur), start, end, search;
-//    console.log("sql-hint.js:251")
-//    console.log(editor);
-//    console.log(cur)
-//    console.log(token)
-    
     
     if (token.end > cur.ch) {
       token.end = cur.ch;
       token.string = token.string.slice(0, cur.ch - token.start);
     }
-    
+
     if (token.string.match(/^[.`\w@]\w*$/)) {
       search = token.string;
       start = token.start;
@@ -267,21 +266,16 @@
       start = end = cur.ch;
       search = "";
     }
-
-//    console.log("sql-hint.js:264");
-//    console.log(token);
-//    console.log(search);
-//    console.log(start);
-//    console.log(end);
     
-    if (search.charAt(0) == "." || search.charAt(0) == "`") {
-    	start = nameCompletion(cur, token, result, editor);
-//	    console.log("sql-hint.js:278");
-//	    console.log(tables);
-//	    console.log(defaultTable);
-//	    console.log(token);
-    } 
-    else {
+    // song7749 column 검색 방법 추가
+    var isColumnSearch = editor.getTokenAt(Pos(cur.line, token.start)).string == ".";
+    isColumnSearch = isColumnSearch || search.charAt(0) == ".";
+    isColumnSearch = isColumnSearch || search.charAt(0) == "`";
+    console.log(isColumnSearch);
+
+    if (isColumnSearch) {
+      start = nameCompletion(cur, token, result, editor);
+    } else {
       addMatches(result, search, tables, function(w) {return w;});
       addMatches(result, search, defaultTable, function(w) {return w;});
       if (!disableKeywords)
