@@ -258,15 +258,15 @@ var autoCompleteAddTablesReset = function(){
 // 자동완성 이벤트 추가 -- 온오프 기능이 필요하다.
 var autoCompleteEvent_Const=0;
 var autoCompleteEvent = function(){
-//	// 중복 호출 방지
-//	if(autoCompleteEvent_Const==0){
-//		$$("database_query_input").getEditor().on("keyup", function(cm, e) {
-//		  if (e.keyCode >= 65 && e.keyCode <=90) {
-//			  $$("database_query_input").getEditor().execCommand("autocomplete")
-//		  }
-//		})
-//	}
-//	autoCompleteEvent_Const++;
+	// 중복 호출 방지
+	if(autoCompleteEvent_Const==0){
+		$$("database_query_input").getEditor().on("keyup", function(cm, e) {
+		  if (e.keyCode == 190) {
+			  $$("database_query_input").getEditor().execCommand("autocomplete")
+		  }
+		})
+	}
+	autoCompleteEvent_Const++;
 }
 
 // 동등성 비교

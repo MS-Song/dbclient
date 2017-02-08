@@ -38,6 +38,18 @@ http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 		<filter-name>xssFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	<filter-mapping>
+		<filter-name>httpMethodFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>CacheControlFilter</filter-name>
+		<filter-class>com.song7749.util.filter.CacheControlFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CacheControlFilter</filter-name>
+		<url-pattern>/static/*</url-pattern>
+	</filter-mapping>	
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>

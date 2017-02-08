@@ -25,7 +25,6 @@
 		<bean class="com.song7749.app.interceptor.LogInInterceptor"/>
    	 	<!-- html 을 제외한 호출에서 wrapper 를 생성한다. -->
    	 	<bean class="com.song7749.app.interceptor.ModelInterceptorHandle"/>
-   	 	<!-- 판매자 API 인증 및 사용량 기록을 위한 인터셉터	-->
     </mvc:interceptors>
 
 	<!-- 컨텐츠 네고시에이팅 뷰 리졸버 설정 -->
