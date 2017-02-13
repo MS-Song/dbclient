@@ -39,6 +39,7 @@
 	                            <map>
 									<entry key="html" value="text/html" />
 									<entry key="json" value="application/json" />
+									<entry key="jsonp" value="application/json" />
 									<entry key="xml" value="application/xml" />
 	                            </map>
 	                        </constructor-arg>
@@ -68,10 +69,14 @@
 		</property>				
 	</bean>	
 	
-	<!-- json View 빈 -->
-	<bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" >
+	<!-- 
+		custom json view support jsonp
+		json 과 jsonp 둘다 지원	
+	-->
+	<bean id="jsonView" class="com.song7749.util.jsonp.MappingJacksonJsonpView" >
 		<property name="extractValueFromSingleKeyModel" value="true"/>
 	</bean>
+	
 	
 	<!-- xml View 빈 -->
 	<bean id="xmlView" class="org.springframework.web.servlet.view.xml.MarshallingView">
