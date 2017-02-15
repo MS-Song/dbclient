@@ -898,22 +898,16 @@ public class DatabaseController {
 	@RequestMapping(value="/executeQuery",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void executeQuery(
-			@RequestParam(value="server",required=true)
-			@ApiParam	String host,
-			@RequestParam(value="schema",required=true)
-			@ApiParam	String  schemaName,
-			@RequestParam(value="account",required=true)
-			@ApiParam	String  account,
-			@RequestParam(value="autoCommit",required=true)
-			@ApiParam("commit 가능 여부")	boolean  autoCommit,
-			@RequestParam(value="query",required=true)
-			@ApiParam("Database Query SQL")	String  query,
-			@RequestParam(value="htmlAllow",required=true)
-			@ApiParam("결과물에 HTML 테그를 허용할 것인가 여부")	boolean  htmlAllow,
+			@RequestParam(value="server",required=true)				@ApiParam									String  host,
+			@RequestParam(value="schema",required=true)				@ApiParam									String  schemaName,
+			@RequestParam(value="account",required=true)			@ApiParam									String  account,
+			@RequestParam(value="autoCommit",required=true)			@ApiParam("commit 가능 여부")					boolean autoCommit,
+			@RequestParam(value="query",required=true)				@ApiParam("Database Query SQL")				String  query,
+			@RequestParam(value="htmlAllow",required=true)			@ApiParam("결과물에 HTML 테그를 허용할 것인가 여부")	boolean htmlAllow,
+			@RequestParam(value="limit",required=false)				@ApiParam									Long 	limit,
+			@RequestParam(value="offset",required=false)			@ApiParam									Long 	offset,
 			HttpServletRequest request,
 			ModelMap model){
-
-
 
 		if(null==host || host.trim().length()<1){
 			throw new IllegalArgumentException("선택된 서버가 없습니다. Database 선택메뉴에서 서버를 선택하세요");
@@ -954,6 +948,9 @@ public class DatabaseController {
 					htmlAllow,
 					loginManager.getLoginID(request),
 					request.getRemoteAddr());
+
+			dto.setLimit((null == limit) ?  dto.getLimit() : limit);
+			dto.setOffset((null == offset) ?  dto.getOffset() : offset);
 			resultList=serverInfoManager.executeResultList(dto);
 		}
 

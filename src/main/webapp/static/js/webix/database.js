@@ -28,7 +28,6 @@ var copyServerInfo = function(serverInfoObject){
 	return obj;
 }
 
-
 // 데이터베이스 드라이버 정보
 var drivers=null;
 // database driver 리스트 조회
@@ -40,6 +39,10 @@ webix.ajax().get("/database/getDatabaseDriver.json",function(text,data){
 		drivers=data.json().result.databaseDriverList;
 	}
 });
+
+// 데이터 리미트 - TODO 환경설정으로 저장 하도록 변경
+var dataOffset = 0;
+var dataLimit = 100;
 
 // Database 관리
 // 서버 & DB 선택
@@ -1020,34 +1023,62 @@ var database_query_cell = [{
 ] // end rows
 }];
 
-// 데이터 베이스 쿼리 실행
-var executeQuery = function (){
-	// 객체 복사
+
+/**
+ * 에디터에 존재하는 실행 하려고하는 쿼리 
+ * TODO 커셔가 있는 쿼리 혹은 드레그 되어 있는 쿼리로 추후 변경
+ */
+var getQueryString = function(){
+	return encodeURIComponent($$("database_query_input").getValue());
+}
+
+/**
+ * 데이터 베이스 쿼리 실행
+ * 결과창의 datarow 가 설정된 값 이상이고, 스크롤을 아래로 더 내리고자 하면, Next Data 를 로딩 한다.
+ * 결과 창에 대한 마지막 실행 쿼리를 보유하고 있어야 한다.
+ * 결과 창에 대한 limit 와 offset 을 가고 있어야 한다.
+ */
+var executeQuery = function (isNextData){
+	// 접속되어 있는 서버 정보 객체 복사
 	var newServerInfo = copyServerInfo(serverInfo);
-	// 쿼리 정보 입력
-	newServerInfo.query=encodeURIComponent($$("database_query_input").getValue());
+	// result view 호출
+	var resultView = $$("database_result_list_view").config;
 	
-	getDataParseView("/database/executeQuery",newServerInfo,"database_result_list_view",true,false,true);
+	// 다음페이지 조회
+	if(isNextData==true){
+		webix.message("추가 데이터 로딩을 시작합니다<br/> start : " +resultView.dataOffset + ", end :" +dataLimit*resultView.dataPage);
+		
+		resultView.isDataLoading=true;
+		// 기존에 저장되어 있던 쿼리 재 실행
+		newServerInfo.query=resultView.executedQuery;
+		// limit 설정
+		newServerInfo.limit=resultView.dataLimit;
+		// offset 에다가 limit 를 더해서 다음 페이지를 호출하게 처리 한다.
+		newServerInfo.offset=resultView.dataOffset=dataLimit*resultView.dataPage;
+		// 데이터를 가져온다.
+		try {
+			addDataParseView("/database/executeQuery",newServerInfo,"database_result_list_view");
+			resultView.dataPage++;
+			resultView.isDataLoading=false;
+		} catch (e) {
+			webix.message({ type:"error", text:"추가 데이터 로딩에 실패 했습니다." });
+		}
+		
+	} else { // 첫 실행
+		// 실행 쿼리 파라메터 설정
+		newServerInfo.query=getQueryString();
+		newServerInfo.limit=dataLimit;
+		newServerInfo.offset=dataOffset;
+		// 데이터를 조회하여 넣는다.
+		getDataParseView("/database/executeQuery",newServerInfo,"database_result_list_view",true,false,true);
+		
+		// 현재 실행 환경 저장
+		resultView.executedQuery=getQueryString();
+		resultView.dataLimit = dataLimit;
+		resultView.dataOffset = dataOffset;
+		resultView.dataPage=1;
+	}
 }
-
-// 실행중인 쿼리 중단
-var killExecuteQuery = function (){
-	webix.ajax().post("/database/killExecuteQuery.json",{
-		server:serverInfo.server,
-		schema:serverInfo.schema,
-		account:serverInfo.account,
-		query:encodeURIComponent($$("database_query_input").getValue())}, 
-		function(text,data){
-			if(data.json().status ==200){
-				webix.message("쿼리가 실행 중지 되었습니다. ");
-			} else { // 실패
-				var message = data.json().desc.split("\n");
-				webix.message({ type:"error", text:message[0].replace("="," ") });		
-			}
-	});
-	$$("database_result_list_view").hideProgress();
-}
-
 
 // 결과 창
 var database_result_cell = [{
@@ -1064,6 +1095,33 @@ var database_result_cell = [{
 			scroll:true,
 			multiselect:true,
 			clipboard:"selection",
+			dataLimit:"",
+			dataOffset:"",
+			dataPage:1,
+			executedQuery:"",
+			executedTime:0,
+			isDataLoading:false,
+	    	on:{
+	    		onAfterScroll:function(){
+	    			// result 화면의 크기를 가져온다.
+	    			var height=$("[view_id='database_result_list_view']").find(".webix_vscroll_y").find(".webix_vscroll_body").height();
+	    			// 현재 위치를 확인한다. 
+	    			var pos = this.getScrollState();
+	    			// 추가 데이터 로딩처리
+	    			// 현재 카운트가 Limit*페이지 값보다 클 경우에 실행
+	    			var isAddData = this.count() >= this.config.dataLimit*this.config.dataPage;
+	    			// limit 값을 나눈 몫이 0인 경우에 Next가 있을 수 있다.
+	    			isAddData = isAddData && this.count()%this.config.dataLimit == 0;
+	    			// 스크롤의 길가 현재 위치보다 
+	    			isAddData = isAddData && pos.y > height-this.$height;
+	    			// 데이터가 이미 로딩중이 아니라면..
+	    			isAddData = isAddData && !this.config.isDataLoading;
+	    			if(isAddData){
+	    				// 추가 데이터 쿼리 실행
+	    				executeQuery(true);
+	    			}
+	    		}
+	    	}
 		}
 	] // end rows
 }];
@@ -1159,6 +1217,23 @@ webix.ready(function(){
 	$$("database_result_context_menu").attachTo($$("database_result_list_view"));
 });
 
+//실행중인 쿼리 중단
+var killExecuteQuery = function (){
+	webix.ajax().post("/database/killExecuteQuery.json",{
+		server:serverInfo.server,
+		schema:serverInfo.schema,
+		account:serverInfo.account,
+		query:encodeURIComponent($$("database_query_input").getValue())}, 
+		function(text,data){
+			if(data.json().status ==200){
+				webix.message("쿼리가 실행 중지 되었습니다. ");
+			} else { // 실패
+				var message = data.json().desc.split("\n");
+				webix.message({ type:"error", text:message[0].replace("="," ") });		
+			}
+	});
+	$$("database_result_list_view").hideProgress();
+}
 
 var database_developer_cell = [{
 		id:"database_query_log_view",

@@ -27,10 +27,10 @@ public abstract class AbstractDto extends BaseObject implements Dto , Cacheable{
 
 	/**
 	 * Limit. <br/>
-	 * 개발자의 실수를 방지하기 위해서 최대 값을 1000으로 제한한다.<br/>
+	 * 개발자의 실수를 방지하기 위해서 최대 값을 100으로 제한한다.<br/>
 	 */
 	@ApiModelProperty("최대 조회 개수")
-	private Long limit = 1000L;
+	private Long limit = 100L;
 	/**
 	 * offset.<br/>
 	 */

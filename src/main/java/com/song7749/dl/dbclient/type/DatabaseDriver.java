@@ -83,7 +83,8 @@ public enum DatabaseDriver {
 			// create table query
 			"show create table {name}",
 			// 자동완성용 테이블/필드 전체 리스트 조회
-			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'"),
+			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
+			"{sqlBody} Limit {end}, {start}"),
 
 	@ApiModelProperty
 	oracle(
@@ -136,7 +137,8 @@ public enum DatabaseDriver {
 			// create table query
 			"select dbms_metadata.get_ddl( 'TABLE', '{name}', '{account}' ) as CREATE_TALBE from dual",
 			// 자동완성용 테이블/필드 전체 리스트 조회
-			"SELECT UTC.TABLE_NAME AS TABLE_NAME, UTC.COLUMN_NAME AS COLUMN_NAME, UCC.COMMENTS AS COLUMN_COMMENT FROM USER_TAB_COLUMNS UTC , USER_COL_COMMENTS UCC WHERE UTC.TABLE_NAME = UCC.TABLE_NAME (+) AND UTC.COLUMN_NAME = UCC.COLUMN_NAME (+)");
+			"SELECT UTC.TABLE_NAME AS TABLE_NAME, UTC.COLUMN_NAME AS COLUMN_NAME, UCC.COMMENTS AS COLUMN_COMMENT FROM USER_TAB_COLUMNS UTC , USER_COL_COMMENTS UCC WHERE UTC.TABLE_NAME = UCC.TABLE_NAME (+) AND UTC.COLUMN_NAME = UCC.COLUMN_NAME (+)",
+			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM (  {sqlBody} ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}");
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -165,6 +167,7 @@ public enum DatabaseDriver {
 	private String killProcessQuery;
 	private String showCreateQuery;
 	private String autoCompleteQuery;
+	private String addRangeOperator;
 
 	DatabaseDriver(
 		String dbms,
@@ -191,7 +194,8 @@ public enum DatabaseDriver {
 		String processListQuery,
 		String killProcessQuery,
 		String showCreateQuery,
-		String autoCompleteQuery) {
+		String autoCompleteQuery,
+		String addRangeOperator) {
 
 		this.dbms					= dbms;
 		this.driverName				= driverName;
@@ -218,6 +222,7 @@ public enum DatabaseDriver {
 		this.killProcessQuery		= killProcessQuery;
 		this.showCreateQuery		= showCreateQuery;
 		this.autoCompleteQuery		= autoCompleteQuery;
+		this.addRangeOperator		= addRangeOperator;
 	}
 
 	/**
@@ -469,6 +474,27 @@ public enum DatabaseDriver {
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getCause());
 		}
+	}
+
+	public String getAddRangeOperator(String sqlBody, Long start, Long end){
+		String rStr = null;
+		boolean isExecuteAble = true;
+
+		if(this.dbms.equals("mysql")){
+			// mysql의 경우 start=offset, limit=end 인 경우 100,100 이면, 100부터 100개 이다.
+			if(sqlBody.indexOf("limit") >=0){
+				isExecuteAble = false;
+			}
+		} else if(this.dbms.equals("oracle")){
+			// oracle 의 경우 offset 과 limit 의 관계가 시작과 끝의 관계임으로 100,200 으로 표시해야 한다.
+			end = start+end;
+		}
+		if(isExecuteAble){
+			rStr=StringUtils.replacePatten("\\{sqlBody\\}",sqlBody, addRangeOperator);
+			rStr=StringUtils.replacePatten("\\{start\\}",start.toString(), rStr);
+			rStr=StringUtils.replacePatten("\\{end\\}",end.toString(), rStr);
+		}
+		return rStr;
 	}
 
 	private String repalceServerInfo(ServerInfo serverInfo, String str)

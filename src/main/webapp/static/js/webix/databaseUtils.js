@@ -64,15 +64,6 @@ var selectQuery=function(mode){
 		html+='\rwhere \r\t' + whereList.join("\r\tand ");
 	}
 	
-	// database 종류에 따라 한정자를 넣는다. (count 가 아닌 경우에만)
-	if(mode!='count'){
-		switch (serverInfo.driver) {
-		case 'mysql'	: 	html+=' limit 10';										break;
-		case 'oracle'	: 	html='select * from (\r'+html+'\r) where rownum <= 10';	break;
-		}
-	}
-	
-//	html+= ';'; 		
 	$$("database_query_input").setValue(html);
 	// 에디터 창으로 focus 를 되돌린다.
 	$$("database_query_input").focus();
@@ -94,12 +85,6 @@ var deleteQuery=function(){
 		html+='\rwhere \r\t' + whereList.join("\r\tand ");
 	} else {
 		webix.alert("delete query 에 where 가 없습니다.<br/>진행하시려면 확인을 눌러주세요");
-	}
-	
-	
-	// database 종류에 따라 한정자를 넣는다.
-	switch (serverInfo.driver) {
-		case 'mysql':html+=' limit 10';break;
 	}
 	
 //	html+= ';'; 		
@@ -177,10 +162,6 @@ var updateSetQuery=function(){
 		webix.alert("update query 에 where 가 없습니다.<br/>진행하시려면 확인을 눌러주세요");
 	}
 	
-	// database 종류에 따라 한정자를 넣는다.
-	switch (serverInfo.driver) {
-		case 'mysql':html+=' limit 10';break;
-	}
 	$$("database_query_input").setValue(html);
 	// 에디터 창으로 focus 를 되돌린다.
 	$$("database_query_input").focus(); 

@@ -12,7 +12,6 @@
 	<!-- webix -->
 	<link rel="stylesheet" href="./static/codebase/skins/web.css" type="text/css" media="screen">	
 	<script src="./static/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
-	<script src="./static/js/indentHelper.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/webix/utils.js" type="text/javascript" charset="utf-8"></script>
 	<!-- codemirror 	-->	
 	<script src="./static/js/webix/codemirror.js" type="text/javascript"></script>

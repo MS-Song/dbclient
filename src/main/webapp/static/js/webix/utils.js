@@ -81,7 +81,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 								webix.message({ type:"error", text:"데이터가 없습니다."});
 							}
 						}
-						// 객체가 있는 경우 리스를 그린다.
+						// 객체가 있는 경우 리스트를 그린다.
 						if(null != obj){
 							// 파싱에 버그가 있는 경우가 있다 직접 파싱 한다.
 							if(viewName=="database_query_favorities_view"){
@@ -105,16 +105,6 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 							if(isCache){
 								webix.storage.local.put(JSON.stringify(parmeters, null, 2)+"_"+viewName,obj);
 							}
-							// view 가 필드 리스트 인 경우 자동완성 데이터를 생성 한다.
-							if(viewName == "table_info_field_list"){
-								if(null!=serverInfo.tableName){
-									var fieldList={}									
-									$.each(obj,function(index,fieldInfo){
-										fieldList[fieldInfo.columnName]=fieldInfo.comment;
-									});
-									autoCompleteAddTables(serverInfo.tableName, fieldList);
-								}
-							}
 						}
 					}
 				});
@@ -130,7 +120,12 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
     		// 실행 로그 기록
     		if(isWriteLog){
     			// 실행이 종료되면 결과를 보여준다
-    			$$("database_query_execute_info").define("label",'Rows: '+data.json().result.rowCount + ', Time: '+data.json().result.processTime + ' ms');
+    			try {
+    				$$(viewName).config.executedTime=parseInt(data.json().result.processTime);
+    				$$("database_query_execute_info").define("label",'Rows: '+data.json().result.rowCount + ', Time: '+data.json().result.processTime + ' ms');	
+				} catch (e) {
+					$$("database_query_execute_info").define("label",'Error :'+data.json().desc.replace("="," ").replace("\n"," "));
+				}
     			$$("database_query_execute_info").refresh();
     			
     			//쿼리 로그 기록
@@ -147,6 +142,40 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
     		}
 		});
 	}
+};
+
+
+/**
+ * 기존 데이터에 데이터를 추가한다.
+ * 
+ */
+var addDataParseView = function(url,parmeters,viewName){
+	webix.ajax().sync().get(url+".json",parmeters, function(text,data){
+		if(data.json().status ==200 && null!=data.json().result){
+			$.each(data.json().result,function(index, obj){
+				// 배열인 경우에만 처리한다. response 에 배열은 결과 데이터외에 없다.
+				if(Array.isArray(obj)){
+					// 객체가 있는 경우 리스트를 그린다.
+					$$(viewName).parse(obj)								
+				}
+			});
+		} else {
+			// 공용 에러처리
+			errorControll(data.json());
+		}
+		// view 를 refresh 한다.
+		$$(viewName).refresh();
+
+		// 실행이 종료되면 결과를 보여준다
+		try {
+			$$(viewName).config.executedTime=$$(viewName).config.executedTime+parseInt(data.json().result.processTime);
+			$$("database_query_execute_info").define("label",'Rows: '+ $$(viewName).count() + ', Time: '+$$(viewName).config.executedTime + ' ms');	
+		} catch (e) {
+			$$("database_query_execute_info").define("label",'Error :'+data.json().desc.replace("="," ").replace("\n"," "));
+		}
+		$$("database_query_execute_info").refresh();
+	
+	});
 };
 
 /**
@@ -220,20 +249,6 @@ var getDataParseProperty = function(url,parmeters,viewName){
  */
 var postDateSend = function(url, parameters){
 	
-};
-
-//자동완성 데이터 저장 (1개 테이블)
-var autoCompleteAddTables = function(tableName,fieldList){
-	// 자동완성에 테이블을 입력한다.
-	if(null==$$("database_query_input").config.hintOptions.tables[tableName]){
-		// 테이블을 만든다.
-		$$("database_query_input").config.hintOptions.tables[tableName]={};							
-		// 필드를 만든다.
-		$.each(fieldList,function(columnName,columnComment){
-			$$("database_query_input").config.hintOptions.tables[tableName][columnName] = columnComment;
-		});
-//		console.log($$("database_query_input").config.hintOptions.tables[tableName]);
-	}
 };
 
 //자동완성 데이터 저장 (all Table)
