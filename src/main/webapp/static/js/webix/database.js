@@ -906,7 +906,10 @@ var database_query_cell = [{
 						view:"button",
 						value:"실행",
 						tooltip:"입력된 쿼리를 실행한다. 단축키: Ctrl+Enter ",
-						on:{"onItemClick":"executeQuery"}
+						on:{"onItemClick":function(){
+								executeQuery(false,null);
+							}
+						}
 					}
 				]
 			},
@@ -1018,6 +1021,19 @@ var database_query_cell = [{
 			align:"right",
 			adjust:true,
 			tooltip : "true : 실행한 내용이 바로 DB에 반영됩니다. false : 실행한 내역이 DB에 반영되지 않습니다." 
+		},
+		{
+			// next data image
+			id:"database_query_next_data_image",
+			view:"button", 
+			type:"image",
+			align:"right",
+			adjust:true,
+			width : 24,
+			image:"/static/images/next_data_arrow.png",
+			click:function(){
+				executeQuery(true,null);
+			}
 		}]
 	}	
 ] // end rows
@@ -1026,10 +1042,54 @@ var database_query_cell = [{
 
 /**
  * 에디터에 존재하는 실행 하려고하는 쿼리 
- * TODO 커셔가 있는 쿼리 혹은 드레그 되어 있는 쿼리로 추후 변경
+ * TODO - 에디터를 동적으로 가져오는 방법에 대한 연구가 필요하다.
  */
 var getQueryString = function(){
-	return encodeURIComponent($$("database_query_input").getValue());
+	var editor 	= $$("database_query_input").getEditor();
+	var doc 	= editor.doc;
+	var Pos		= CodeMirror.Pos;
+	var cmpPos 	= CodeMirror.cmpPos;
+	var retQuery= editor.getValue();
+	
+	// drag 되어 있는 쿼리가 있으면, 해당 부분만 가져온다.
+	if(""!=doc.getSelection()){
+		retQuery=doc.getSelection();
+	} else { // 쿼리의 포인터를 찾아 해당 위치에서 실행 한다. 
+		// 쿼리를 분해해서 복수인가 검증한다.
+		var divQuery = null!=retQuery ? retQuery.split(";") : "";
+		// 쿼리가 복수인 경우에는 포인트를 찾아 해당 라인의 쿼리를 실행 한다.
+		if(divQuery.length>1){ 
+		    var separator = [];
+		    var validRange = {
+		      start: Pos(0, 0),
+		      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
+		    };
+
+		    var indexOfSeparator = retQuery.indexOf(";");
+		    while(indexOfSeparator != -1) {
+		    	separator.push(doc.posFromIndex(indexOfSeparator));
+		    	indexOfSeparator = retQuery.indexOf(";", indexOfSeparator+1);
+		    }
+		    
+		    separator.unshift(Pos(0, 0));
+		    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
+		
+		    //find valid range
+		    var prevItem = null;
+		    var current = editor.getCursor()
+		    for (var i = 0; i < separator.length; i++) {
+		    	if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
+		    		validRange = {start: prevItem, end: separator[i]};
+		    		break;
+		    	}
+		    	prevItem = separator[i];
+		    }
+		
+		    var query = doc.getRange(validRange.start, validRange.end, false);
+		    retQuery=query.join(" ").replace(";","")
+		}
+	}
+	return encodeURIComponent(retQuery);
 }
 
 /**
@@ -1038,45 +1098,61 @@ var getQueryString = function(){
  * 결과 창에 대한 마지막 실행 쿼리를 보유하고 있어야 한다.
  * 결과 창에 대한 limit 와 offset 을 가고 있어야 한다.
  */
-var executeQuery = function (isNextData){
+var executeQuery = function (isNextData,resultView){
 	// 접속되어 있는 서버 정보 객체 복사
 	var newServerInfo = copyServerInfo(serverInfo);
-	// result view 호출
-	var resultView = $$("database_result_list_view").config;
-	
+
+	// view 가 정의되지 않을 경우 view 찾아낸다. 
+	if(resultView==undefined || resultView==null){
+		// TODO multi view 가 되면, 데이터를 카운트해서 이미 쓴 경우에 +1 해서 새로 만든다.
+		resultView = $$("database_result_list_view");
+	} 
+		
 	// 다음페이지 조회
-	if(isNextData==true){
-		webix.message("추가 데이터 로딩을 시작합니다<br/> start : " +resultView.dataOffset + ", end :" +dataLimit*resultView.dataPage);
+	if(isNextData==true){ 
+		// 조건에 부합할 경우 추가데이터 로딩을 시작 한다.
+		// 현재 카운트가 Limit*페이지 값보다 클 경우에 실행
+		var isAddData = resultView.count() >= resultView.config.dataLimit*resultView.config.dataPage;
+		// limit 값을 나눈 몫이 0인 경우에 Next가 있을 수 있다.
+		isAddData = isAddData && resultView.count()%resultView.config.dataLimit == 0;
+		// 데이터가 이미 로딩중이 아니라면..
+		isAddData = isAddData && !resultView.config.isDataLoading;
 		
-		resultView.isDataLoading=true;
-		// 기존에 저장되어 있던 쿼리 재 실행
-		newServerInfo.query=resultView.executedQuery;
-		// limit 설정
-		newServerInfo.limit=resultView.dataLimit;
-		// offset 에다가 limit 를 더해서 다음 페이지를 호출하게 처리 한다.
-		newServerInfo.offset=resultView.dataOffset=dataLimit*resultView.dataPage;
-		// 데이터를 가져온다.
-		try {
-			addDataParseView("/database/executeQuery",newServerInfo,"database_result_list_view");
-			resultView.dataPage++;
-			resultView.isDataLoading=false;
-		} catch (e) {
-			webix.message({ type:"error", text:"추가 데이터 로딩에 실패 했습니다." });
+		if(isAddData){
+			resultView.config.isDataLoading=true;
+			// 기존에 저장되어 있던 쿼리 재 실행
+			newServerInfo.query=resultView.config.executedQuery;
+			// limit 설정
+			newServerInfo.limit=resultView.config.dataLimit;
+			// offset 에다가 limit 를 더해서 다음 페이지를 호출하게 처리 한다.
+			newServerInfo.offset=resultView.config.dataOffset=(dataLimit*resultView.config.dataPage);
+			// 데이터를 가져온다.
+			try {
+				webix.message("추가 데이터 로딩을 시작합니다<br/> start : " +newServerInfo.offset + ", end :" + parseInt(newServerInfo.offset+newServerInfo.limit));
+				addDataParseView("/database/executeQuery",newServerInfo,resultView.config.id);
+				resultView.config.dataPage++;
+			} catch (e) {
+				webix.message({ type:"error", text:"추가 데이터 로딩에 실패 했습니다." });
+			}
+			resultView.config.isDataLoading=false;
+		} else {
+			webix.message("추가 데이터가 더 이상 없습니다.");
 		}
-		
+
 	} else { // 첫 실행
 		// 실행 쿼리 파라메터 설정
 		newServerInfo.query=getQueryString();
 		newServerInfo.limit=dataLimit;
 		newServerInfo.offset=dataOffset;
 		// 데이터를 조회하여 넣는다.
-		getDataParseView("/database/executeQuery",newServerInfo,"database_result_list_view",true,false,true);
+		getDataParseView("/database/executeQuery",newServerInfo,resultView.config.id,true,false,true);
 		
 		// 현재 실행 환경 저장
-		resultView.executedQuery=getQueryString();
-		resultView.dataLimit = dataLimit;
-		resultView.dataOffset = dataOffset;
-		resultView.dataPage=1;
+		resultView.config.executedQuery=newServerInfo.query
+		resultView.config.dataLimit = dataLimit;
+		resultView.config.dataOffset = dataOffset;
+		resultView.config.dataPage=1;
+		resultView.config.isDataLoading=false;
 	}
 }
 
@@ -1104,21 +1180,13 @@ var database_result_cell = [{
 	    	on:{
 	    		onAfterScroll:function(){
 	    			// result 화면의 크기를 가져온다.
-	    			var height=$("[view_id='database_result_list_view']").find(".webix_vscroll_y").find(".webix_vscroll_body").height();
+	    			var height=$("[view_id='"+this.config.id+"']").find(".webix_vscroll_y").find(".webix_vscroll_body").height();
 	    			// 현재 위치를 확인한다. 
 	    			var pos = this.getScrollState();
-	    			// 추가 데이터 로딩처리
-	    			// 현재 카운트가 Limit*페이지 값보다 클 경우에 실행
-	    			var isAddData = this.count() >= this.config.dataLimit*this.config.dataPage;
-	    			// limit 값을 나눈 몫이 0인 경우에 Next가 있을 수 있다.
-	    			isAddData = isAddData && this.count()%this.config.dataLimit == 0;
-	    			// 스크롤의 길가 현재 위치보다 
-	    			isAddData = isAddData && pos.y > height-this.$height;
-	    			// 데이터가 이미 로딩중이 아니라면..
-	    			isAddData = isAddData && !this.config.isDataLoading;
-	    			if(isAddData){
+	    			// 스크롤의 길이 만큼 현재 스크롤 크기가 클 경우 실행 한다. 
+	    			if(pos.y > height-this.$height){
 	    				// 추가 데이터 쿼리 실행
-	    				executeQuery(true);
+	    				executeQuery(true,this);
 	    			}
 	    		}
 	    	}

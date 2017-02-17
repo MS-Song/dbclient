@@ -114,10 +114,9 @@ webix.ready(function(){
 			type:{ height: 30 },
 			click:function(id,e){
 				// 사이드 메뉴 액션
-				console.log(this.getItem(id).func);
 				try {
 					// 기능이 정의 되어 있는 경우에만 실행
-					if(null!=this.getItem(id).func && ""!=null!=this.getItem(id).func){
+					if(null!=this.getItem(id).func){
 						eval(this.getItem(id).func+"()");
 					}
 				} catch (e) {

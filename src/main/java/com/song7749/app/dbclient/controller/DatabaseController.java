@@ -931,6 +931,8 @@ public class DatabaseController {
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException("query 데이터의 디코딩 실패. 쿼리 내용에 디코딩이 안되는 문자열이 존재합니다");
 		}
+		// query 내의 문자열 ; 를 제거 한다.
+		decodedQuery=decodedQuery.replace(";", "");
 
 		Long startTime = System.currentTimeMillis();
 

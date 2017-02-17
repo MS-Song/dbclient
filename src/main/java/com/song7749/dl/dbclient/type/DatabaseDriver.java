@@ -1,5 +1,7 @@
 package com.song7749.dl.dbclient.type;
 
+import static com.song7749.util.LogMessageFormatter.format;
+
 import java.lang.reflect.Field;
 
 import org.slf4j.Logger;
@@ -84,7 +86,7 @@ public enum DatabaseDriver {
 			"show create table {name}",
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
-			"{sqlBody} Limit {end}, {start}"),
+			"{sqlBody} Limit {start},{end}"),
 
 	@ApiModelProperty
 	oracle(
@@ -477,24 +479,34 @@ public enum DatabaseDriver {
 	}
 
 	public String getAddRangeOperator(String sqlBody, Long start, Long end){
-		String rStr = null;
+
 		boolean isExecuteAble = true;
 
-		if(this.dbms.equals("mysql")){
-			// mysql의 경우 start=offset, limit=end 인 경우 100,100 이면, 100부터 100개 이다.
-			if(sqlBody.indexOf("limit") >=0){
-				isExecuteAble = false;
-			}
-		} else if(this.dbms.equals("oracle")){
-			// oracle 의 경우 offset 과 limit 의 관계가 시작과 끝의 관계임으로 100,200 으로 표시해야 한다.
-			end = start+end;
+		if(sqlBody.toLowerCase().indexOf("insert")>=0
+				|| sqlBody.toLowerCase().indexOf("update")>=0
+				|| sqlBody.toLowerCase().indexOf("delete")>=0){
+			isExecuteAble = false;
 		}
+
 		if(isExecuteAble){
-			rStr=StringUtils.replacePatten("\\{sqlBody\\}",sqlBody, addRangeOperator);
-			rStr=StringUtils.replacePatten("\\{start\\}",start.toString(), rStr);
-			rStr=StringUtils.replacePatten("\\{end\\}",end.toString(), rStr);
+			if(this.dbms.toLowerCase().equals("mysql")){
+				// mysql의 경우 start=offset, limit=end 인 경우 100,100 이면, 100부터 100개 이다.
+				if(sqlBody.toLowerCase().indexOf("limit") >=0){
+					isExecuteAble = false;
+				}
+			} else if(this.dbms.toLowerCase().equals("oracle")){
+				// oracle 의 경우 offset 과 limit 의 관계가 시작과 끝의 관계임으로 100,200 으로 표시해야 한다.
+				end = start+end;
+			}
 		}
-		return rStr;
+
+		if(isExecuteAble){
+			sqlBody=StringUtils.replacePatten("\\{sqlBody\\}",sqlBody, addRangeOperator);
+			sqlBody=StringUtils.replacePatten("\\{start\\}",start.toString(), sqlBody);
+			sqlBody=StringUtils.replacePatten("\\{end\\}",end.toString(), sqlBody);
+			logger.trace(format("{}","Query add limit complete"),"쿼리에 한정자를 포함하였습니다.");
+		}
+		return sqlBody;
 	}
 
 	private String repalceServerInfo(ServerInfo serverInfo, String str)
