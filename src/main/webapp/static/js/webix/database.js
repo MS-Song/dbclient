@@ -1078,39 +1078,56 @@ var getQueryString = function(){
 	if(""!=doc.getSelection()){
 		retQuery=doc.getSelection();
 	} else { // 쿼리의 포인터를 찾아 해당 위치에서 실행 한다. 
-		// 쿼리를 분해해서 복수인가 검증한다.
-		var divQuery = null!=retQuery ? retQuery.split(";") : "";
-		// 쿼리가 복수인 경우에는 포인트를 찾아 해당 라인의 쿼리를 실행 한다.
-		if(divQuery.length>1){ 
-		    var separator = [];
-		    var validRange = {
-		      start: Pos(0, 0),
-		      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
-		    };
+	    var separator = [];
+	    var validRange = {
+	      start: Pos(0, 0),
+	      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
+	    };
+	    var commentSeperator = ["#",'--'];
 
-		    var indexOfSeparator = retQuery.indexOf(";");
-		    while(indexOfSeparator != -1) {
-		    	separator.push(doc.posFromIndex(indexOfSeparator));
-		    	indexOfSeparator = retQuery.indexOf(";", indexOfSeparator+1);
-		    }
-		    
-		    separator.unshift(Pos(0, 0));
-		    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
-		
-		    //find valid range
-		    var prevItem = null;
-		    var current = editor.getCursor()
-		    for (var i = 0; i < separator.length; i++) {
-		    	if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
-		    		validRange = {start: prevItem, end: separator[i]};
-		    		break;
-		    	}
-		    	prevItem = separator[i];
-		    }
-		
-		    var query = doc.getRange(validRange.start, validRange.end, false);
-		    retQuery=query.join(" ").replace(";","")
-		}
+	    var indexOfSeparator = retQuery.indexOf(";");
+	    while(indexOfSeparator != -1) {
+	    	separator.push(doc.posFromIndex(indexOfSeparator));
+	    	indexOfSeparator = retQuery.indexOf(";", indexOfSeparator+1);
+	    }
+	    
+	    separator.unshift(Pos(0, 0));
+	    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
+	
+	    //find valid range
+	    var prevItem = null;
+	    var current = editor.getCursor();
+	    
+	    // line 과 ch 가 둘다 0인 경우에 오류가 발생하여 정정한다.
+	    if(current.line == 0 && current.ch==0){
+	    	current.ch++;
+	    }
+
+	    for (var i = 0; i < separator.length; i++) {
+	    	if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
+	    		validRange = {start: prevItem, end: separator[i]};
+	    		break;
+	    	}
+	    	prevItem = separator[i];
+	    }
+	    
+	    var queries = doc.getRange(validRange.start, validRange.end, false);
+        doc.setSelection(validRange.start, validRange.end);
+	    
+	    var startLine = validRange.start.line;
+    	for(qkey in queries){
+    	    for(ckey in commentSeperator){	    		
+	    		if(queries[qkey].indexOf(commentSeperator[ckey]) >= 0){
+	    			queries[qkey]=queries[qkey].substring(0,queries[qkey].indexOf(commentSeperator[ckey]));
+	    			queries[qkey]=queries[qkey].replace(/ /g,"");
+	    		}
+	    	}
+			queries[qkey]=queries[qkey].replace(/;/g,"");
+    	    if(queries[qkey]==""){
+    	    	startLine++;
+    	    }
+	    }
+	    retQuery=queries.join(" ");
 	}
 	return encodeURIComponent(retQuery);
 }
