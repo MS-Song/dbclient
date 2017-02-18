@@ -115,7 +115,7 @@ var select_database_popup=function(){
 	    			$$("toolbar").removeView("toolbar_cache_remove");
 	    			$$("toolbar").addView({id:"toolbar_cache_remove",
 	    				view:"button", 
-	    				value:"캐시삭제" , 
+	    				value:"Remove Cache" , 
 	    				type:"form",
 	    				width:100,
 	    				on:{"onItemClick":function(){// 캐시 삭제 실행
@@ -162,11 +162,11 @@ var database_info_cell = [
 								if (equals(obj.tableComment, filter)) return true;
 								return false;
 						}, colspan:3}], 
-					adjust:true,	sort:"int",
+					sort:"int",
 					template:"#tableSeq#"
 				},					         
-				{ id:"tableName",	header:"Name",		sort:"string", adjust:true},
-				{ id:"tableComment",header:"Comment",	sort:"string", adjust:true},
+				{ id:"tableName",	header:"Name",		sort:"string"},
+				{ id:"tableComment",header:"Comment",	sort:"string"},
 			],
 			data:[],
 			tooltip:true,
@@ -176,7 +176,12 @@ var database_info_cell = [
 	    	on:{	// 테이블 아이템 클릭시에 동작
 	    		onItemClick:function(id){
     				database_info_field_data_load();
-	    		}
+	    		},
+	    		onAfterLoad:function(){
+					this.adjustColumn("seq");
+					this.adjustColumn("tableName");
+					this.adjustColumn("tableComment");
+				}
 	    	}
 		},
 		{ view:"resizer"},
@@ -197,23 +202,38 @@ var database_info_cell = [
 										if (equals(obj.comment, filter)) return true;
 										return false;
 								}, colspan:10}], 
-							adjust:true,	sort:"int"},					         
-	   					{ id:"columnName",		header:"name",		sort:"string", 	adjust:true},
-						{ id:"nullable",		header:"null able",	sort:"string", 	adjust:true},
-						{ id:"columnKey",		header:"key",		sort:"string", 	adjust:true},
-						{ id:"dataType",		header:"type",		sort:"string", 	adjust:true},
-						{ id:"dataLegnth",		header:"length",	sort:"int", 	adjust:true},
-						{ id:"comment",			header:"comment",	sort:"string", 	adjust:true},
-						{ id:"defaultValue",	header:"defualt",	sort:"string", 	adjust:true},
-						{ id:"characterset",	header:"charset",	sort:"string", 	adjust:true},
-						{ id:"extra",			header:"extra",		sort:"string", 	adjust:true}
+							sort:"int"
+						},					         
+	   					{ id:"columnName",		header:"name",		sort:"string"},
+						{ id:"nullable",		header:"null able",	sort:"string"},
+						{ id:"columnKey",		header:"key",		sort:"string"},
+						{ id:"dataType",		header:"type",		sort:"string"},
+						{ id:"dataLegnth",		header:"length",	sort:"int"	 },
+						{ id:"comment",			header:"comment",	sort:"string"},
+						{ id:"defaultValue",	header:"defualt",	sort:"string"},
+						{ id:"characterset",	header:"charset",	sort:"string"},
+						{ id:"extra",			header:"extra",		sort:"string"}
 
 					],
 					data:[],
 					tooltip:true,
 	 				resizeColumn:true,
 					select:"row",
-					navigation:true
+					navigation:true,
+			    	on:{
+			    		onAfterLoad:function(){
+							this.adjustColumn("columnId");
+							this.adjustColumn("columnName");
+							this.adjustColumn("nullable");
+							this.adjustColumn("columnKey");
+							this.adjustColumn("dataType");
+							this.adjustColumn("dataLegnth");
+							this.adjustColumn("comment");
+							this.adjustColumn("defaultValue");
+							this.adjustColumn("characterset");
+							this.adjustColumn("extra");
+						}
+			    	}
 				}, 
 				{
 					header:"Index",
@@ -248,8 +268,10 @@ var database_info_cell = [
 										if (equals(obj.comment, filter)) return true;
 										return false;
 								}, colspan:3}], 
-							width:40,	sort:"int"},					         
-	   					{ id:"columnName",		header:"name",		sort:"string", 	adjust:true},
+							width:40,	
+							sort:"int"
+						},					         
+	   					{ id:"columnName",		header:"name",		sort:"string"},
 						{ id:"comment",			header:"comment",	sort:"string", 	width:100},
 						{ 
 							id:"field_checkbox",		
@@ -327,7 +349,12 @@ var database_info_cell = [
 						}
 				    },
 	 				resizeColumn:true,
-					navigation:true
+					navigation:true,
+			    	on:{
+			    		onAfterLoad:function(){
+							this.adjustColumn("columnName");
+						}
+			    	}
 				},
 				{	
 					header:"DDL",
@@ -350,13 +377,11 @@ var database_info_cell = [
 							if (equals(obj.name, filter)) return true;
 							return false;
 					}, colspan:4}], 
-					adjust:true,	
 					sort:"int",
 					template:"#seq#"
 				},					         
 				{ 	
 					id:"name",
-					adjust:true,	
 					sort:"string",
 					template:function(obj){
 						var html=obj.name;
@@ -373,13 +398,11 @@ var database_info_cell = [
 					id:"lastUpdateTime",
 					header:"last update",
 					sort:"string",
-					adjust:true
 				},
 				{ 
 					id:"comments",
 					header:"comments",
 					sort:"string",
-					adjust:true
 				}
 			],
 			data:[],
@@ -400,7 +423,13 @@ var database_info_cell = [
 	    			var param = copyServerInfo(serverInfo);
 	    			param.name=selectedRow.name;
 	    			getDataParseEditor("/database/viewSourceList",param,"editText");
-	    		}
+	    		},
+	    		onAfterLoad:function(){
+					this.adjustColumn("seq");
+					this.adjustColumn("name");
+					this.adjustColumn("lastUpdateTime");
+					this.adjustColumn("comments");
+				}
 	    	}
 		},
 		{ view:"resizer"},
@@ -439,14 +468,12 @@ var database_info_cell = [
 							if (equals(obj.name, filter)) return true;
 							return false;
 					}, colspan:3}], 
-					adjust:true,	
 					sort:"int",
 					template:"#seq#"
 				},					         
 			         
 				{ 	
 					id:"name",
-					adjust:true,	
 					sort:"string",
 					template:function(obj){
 						var html=obj.name;
@@ -461,7 +488,6 @@ var database_info_cell = [
 				},
 				{ 
 					id:"lastUpdateDate", 
-					adjust:true,	
 					sort:"string" 
 				}
 			],	
@@ -483,7 +509,12 @@ var database_info_cell = [
 	    			var param = copyServerInfo(serverInfo);
 	    			param.name=selectedRow.name;
 	    			getDataParseEditor("/database/procedureSourceList",param,"editText");
-	    		}
+	    		},
+	    		onAfterLoad:function(){
+					this.adjustColumn("seq");
+					this.adjustColumn("name");
+					this.adjustColumn("lastUpdateDate");
+				}
 			}
 		},
 		{ view:"resizer"},
@@ -521,14 +552,12 @@ var database_info_cell = [
 							if (equals(obj.name, filter)) return true;
 							return false;
 					}, colspan:3}], 
-					adjust:true,	
 					sort:"int",
 					template:"#seq#"
 				},					         
 			         
 				{ 	
 					id:"name",
-					adjust:true,	
 					sort:"string",
 					template:function(obj){
 						var html=obj.name;
@@ -543,7 +572,6 @@ var database_info_cell = [
 				},
 				{ 
 					id:"lastUpdateDate", 
-					adjust:true,	
 					sort:"string" 
 				}
 			],	
@@ -564,9 +592,13 @@ var database_info_cell = [
 	    			var param = copyServerInfo(serverInfo);
 	    			param.name=selectedRow.name;
 	    			getDataParseEditor("/database/functionSourceList",param,"editText");
-	    		}
-
-	    	},
+	    		},
+	    		onAfterLoad:function(){
+					this.adjustColumn("seq");
+					this.adjustColumn("name");
+					this.adjustColumn("lastUpdateDate");
+				}
+	    	}
 		},
 		{ view:"resizer"},
 		{
@@ -603,14 +635,12 @@ var database_info_cell = [
 							if (equals(obj.name, filter)) return true;
 							return false;
 					}, colspan:3}], 
-					adjust:true,	
 					sort:"int",
 					template:"#seq#"
 				},					         
 			         
 				{ 	
 					id:"name",
-					adjust:true,	
 					sort:"string",
 					template:function(obj){
 						var html=obj.name;
@@ -625,7 +655,6 @@ var database_info_cell = [
 				},
 				{ 
 					id:"lastUpdateDate", 
-					adjust:true,	
 					sort:"string" 
 				}
 			],	
@@ -647,7 +676,12 @@ var database_info_cell = [
 	    			var param = copyServerInfo(serverInfo);
 	    			param.name=selectedRow.name;
 	    			getDataParseEditor("/database/triggerSourceList",param,"editText");
-	    		}
+	    		},
+	    		onAfterLoad:function(){
+					this.adjustColumn("seq");
+					this.adjustColumn("name");
+					this.adjustColumn("lastUpdateDate");
+				}
 	    	},
 		},
 		{ view:"resizer"},
@@ -685,13 +719,11 @@ var database_info_cell = [
 							if (equals(obj.name, filter)) return true;
 							return false;
 					}, colspan:6}], 
-					adjust:true,	
 					sort:"int",
 					template:"#seq#"
 				},					         
 				{ 	
 					id:"name",
-					adjust:true,	
 					sort:"string",
 					template:function(obj){
 						var html=obj.name;
@@ -704,10 +736,10 @@ var database_info_cell = [
 						return html;
 					}
 				},			         
-				{ id:"lastValue",		header:"lastValue",		sort:"int", 	adjust:true},
-				{ id:"minValue",		header:"minValue",		sort:"int", 	adjust:true},
-				{ id:"maxValue",		header:"maxValue",		sort:"int", 	adjust:true},
-				{ id:"incrementBy",		header:"incrementBy",	sort:"int", 	adjust:true}
+				{ id:"lastValue",		header:"lastValue",		sort:"int"},
+				{ id:"minValue",		header:"minValue",		sort:"int"},
+				{ id:"maxValue",		header:"maxValue",		sort:"int"},
+				{ id:"incrementBy",		header:"incrementBy",	sort:"int"}
 			],	
 			data:[],
 			tooltip:true,
@@ -720,7 +752,15 @@ var database_info_cell = [
 	    			param.name=selectedRow.name;
 
 	    			getDataParseProperty("/database/sequenceDetailList",param,"sequence_info_detail_property");
-	    		}
+	    		},
+	    		onAfterLoad:function(){
+					this.adjustColumn("seq");
+					this.adjustColumn("name");
+					this.adjustColumn("lastValue");
+					this.adjustColumn("minValue");
+					this.adjustColumn("maxValue");
+					this.adjustColumn("incrementBy");
+				}
 			}
 		},
 		{ view:"resizer"},
@@ -1329,7 +1369,7 @@ var database_developer_cell = [{
 		],
 		data:[],
 		tooltip:true,
-		resizeColumn:true,
+		resizeColumn:true
 	},
 	{
 		id:"database_query_favorities_view",
