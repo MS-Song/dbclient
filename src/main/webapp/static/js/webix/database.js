@@ -848,237 +848,220 @@ var develop_field_clear=function(mode,obj){
 
 // 쿼리 입력창
 var database_query_cell = [{
-	header:"sql1",
-	rows:[
-	{
-		id:"database_query_form",
-		view : "form", 
-		scroll:false,
-		elements:[{	
-			rows:[{
-				cols:[ // 상단 기능 버튼 
-				    {
-						id:"database_query_button_select_count_pk",
-						view:"button",
-						value:"select count",
-						tooltip:"select count(pk) from 쿼리를 생성한다. 단축키: Alt+1 ",
-						click:"selectCountQuery"
-				    }, 
-				    {
-						id:"database_query_button_select_all_field",
-						view:"button",
-						value:"select *",
-						tooltip:"select * from 쿼리를 생성한다. 단축키: Alt+2",
-						click:"selectAllQuery"
-				    }, 
-				    {
-						id:"database_query_button_select_name_field",
-						view:"button",
-						value:"select field",
-						tooltip:"select 필드명 from 쿼리를 생성한다. 단축키: Alt+3",
-						click:"selectNameQuery"
-				    }, 
-				    {
-						id:"database_query_button_insert_into",
-						view:"button",
-						value:"insert into",
-						tooltip:"INSERT INTO 쿼리를 생성한다. 단축키: Alt+4",
-						click:"insertIntoQuery"
-				    }, 
-				    {
-						id:"database_query_button_insert_set",
-						view:"button",
-						value:"insert set",
-						tooltip:"INSERT SET 쿼리를 생성한다. 단축키: Alt+5",
-						click:"insertSetQuery"
-				    }, 
-				    {
-						id:"database_query_button_update_set",
-						view:"button",
-						value:"update set",
-						tooltip:"Update SET 쿼리를 생성한다. 단축키: Alt+6",
-						click:"updateSetQuery"
-				    }, 
-				    {
-						id:"database_query_button_delete",
-						view:"button",
-						value:"delete",
-						tooltip:"DELETE 쿼리를 생성한다. 단축키: Alt+7",
-						click:"deleteQuery"
-				    }, 
-					{
-						id:"database_query_button_allow_html",
-						view:"button",
-						value:"allow HTML",
-						tooltip:"결과에 HTML 을 허용-비허용. 단축키: Alt+8",
-						on:{"onItemClick":function(){
-							if(serverInfo.htmlAllow) 	serverInfo.htmlAllow=false;
-							else 						serverInfo.htmlAllow=true;
-
-							$$("database_query_html_allow_info").define("label","HTML-Allow : "+serverInfo.htmlAllow);
-							$$("database_query_html_allow_info").refresh();
-							webix.message({ type:"error", text:"HTML Allow : " + serverInfo.htmlAllow +" 상태로 변경"});
-						}}
-					},
-				    {
-						id:"database_query_button_auto_commit",
-						view:"button",
-						value:"auto commit",
-						tooltip:"Auto Commit 활성-비활성., 단축키:Alt+9",
-						on:{"onItemClick":function(){
-							if(serverInfo.autoCommit) 	serverInfo.autoCommit=false;
-							else 						serverInfo.autoCommit=true;
-
-							$$("database_query_auto_commit_info").define("label","Auto-Commit : "+serverInfo.autoCommit);
-							$$("database_query_auto_commit_info").refresh();
-							webix.message({ type:"error", text:"Auto-Commit : " + serverInfo.autoCommit +" 상태로 변경"});
-						}}
-					},
-				    {
-						id:"database_query_button_kill_execute",
-						view:"button",
-						value:"중단",
-						tooltip:"실행중인 쿼리를 중단한다. 단축키: Alt+0 ",
-						on:{"onItemClick":"killExecuteQuery"}
-					},					
-				    {
-						id:"database_query_button_execute",
-						view:"button",
-						value:"실행",
-						tooltip:"입력된 쿼리를 실행한다. 단축키: Ctrl+Enter ",
-						on:{"onItemClick":function(){
-								executeQuery(false,null);
+		header:"SQL DEVELOP",
+		rows:[
+		{
+			id:"database_query_form",
+			view : "form", 
+			scroll:false,
+			elements:[{	
+				rows:[{
+					cols:[ // 상단 기능 버튼 
+						{
+							id:"database_developer_combo_prepare_style",
+							view:"combo",
+							value:"#{field}",
+							options:["?", ":field", "#{field}","${field}"],
+							tooltip:"prepare 스타일을 정의 한다.<br/>?,:field,#{field},${field} 정의 가능"
+						}, 
+						{
+							id:"database_query_button_select_count_pk",
+							view:"button",
+							value:"select count",
+							tooltip:"select count(pk) from 쿼리를 생성한다. 단축키: Ctrl+1 ",
+							click:"selectCountQuery"
+					    }, 
+					    {
+							id:"database_query_button_select_all_field",
+							view:"button",
+							value:"select *",
+							tooltip:"select * from 쿼리를 생성한다. 단축키: Ctrl+2",
+							click:"selectAllQuery"
+					    }, 
+					    {
+							id:"database_query_button_select_name_field",
+							view:"button",
+							value:"select field",
+							tooltip:"select 필드명 from 쿼리를 생성한다. 단축키: Ctrl+3",
+							click:"selectNameQuery"
+					    }, 
+					    {
+							id:"database_query_button_insert_into",
+							view:"button",
+							value:"insert into",
+							tooltip:"INSERT INTO 쿼리를 생성한다. 단축키: Ctrl+4",
+							click:"insertIntoQuery(false)"
+					    }, 
+					    {
+							id:"database_query_button_update_set",
+							view:"button",
+							value:"update set",
+							tooltip:"Update SET 쿼리를 생성한다. 단축키: Ctrl+5",
+							click:"updateSetQuery(false)"
+					    }, 
+					    {
+							id:"database_query_button_delete",
+							view:"button",
+							value:"delete",
+							tooltip:"DELETE 쿼리를 생성한다. 단축키: Ctrl+6",
+							click:"deleteQuery(false)"
+					    }, 
+					    {
+							id:"database_query_button_auto_commit",
+							view:"button",
+							value:"auto commit",
+							tooltip:"Auto Commit 활성-비활성., 단축키:Ctrl+9",
+							on:{"onItemClick":function(){
+								if(serverInfo.autoCommit) 	serverInfo.autoCommit=false;
+								else 						serverInfo.autoCommit=true;
+	
+								$$("database_query_auto_commit_info").define("label","Auto-Commit : "+serverInfo.autoCommit);
+								$$("database_query_auto_commit_info").refresh();
+								webix.message({ type:"error", text:"Auto-Commit : " + serverInfo.autoCommit +" 상태로 변경"});
+							}}
+						},
+					    {
+							id:"database_query_button_kill_execute",
+							view:"button",
+							value:"중단",
+							tooltip:"실행중인 쿼리를 중단한다. 단축키: Ctrl+0 ",
+							on:{"onItemClick":"killExecuteQuery"}
+						},					
+					    {
+							id:"database_query_button_execute",
+							view:"button",
+							value:"실행",
+							tooltip:"입력된 쿼리를 실행한다. 단축키: Ctrl+Enter ",
+							on:{"onItemClick":function(){
+									executeQuery(false,null);
+								}
 							}
 						}
-					}
-				]
+					]
+				},
+				{
+					// 에디터 창
+					id:"database_query_input",	
+					view : "codemirror-editor-sql",
+				}] // end rows
+			}]
+		},	
+		{
+			cols:[{
+				// 쿼리 결과 info 창
+				id:"database_query_execute_info",
+				view:"label", 
+				label:"", 
+				align:"left",
+				adjust:true
 			},
 			{
-				// 에디터 창
-				id:"database_query_input",	
-				view : "codemirror-editor",
+				// auto-commit 상태 확인
+				id:"database_query_auto_commit_info",
+				view:"label", 
+				label:"Auto-Commit : "+serverInfo.autoCommit, 
+				align:"right",
+				width : 200,
+				tooltip : "true : 실행한 내용이 바로 DB에 반영됩니다. false : 실행한 내역이 DB에 반영되지 않습니다." 
 			},
-			{	// 하단 기능 버튼
-				cols:[
-				    {
-						id:"database_developer_combo_prepare_style",
-						view:"combo",
-						value:"#{field}",
-						options:["?", ":field", "#{field}","${field}"],
-						tooltip:"prepare 스타일을 정의 한다.<br/>?,:field,#{field},${field} 정의 가능"
-				    }, 
-				    {
-						id:"database_developer_button_java_model",
-						view:"button",
-						value:"java model",
-						tooltip:"java model 을 생성한다. 단축키 : Ctrl+1",
-						click:"javaModel"
-				    }, 
-				    {
-						id:"database_developer_button_java_hibernate_model",
-						view:"button",
-						value:"java H-model",
-						tooltip:"java hibernate model 을 생성한다. 단축키 :  Ctrl+2",
-						click:"javaHibernateModel"
-				    }, 
-				    {
-						id:"database_developer_button_java_model_set",
-						view:"button",
-						value:"java setter",
-						tooltip:"java model 의 setter 를 생성한다. 단축키 :  Ctrl+3",
-						click:"javaModelSet"
-				    }, 
-				    {
-						id:"database_developer_button_java_model_get",
-						view:"button",
-						value:"java getter",
-						tooltip:"java model 의 getter 를 생성한다. 단축키 :  Ctrl+4",
-						click:"javaModelGet"
-				    },				      
-				    {
-						id:"database_developer_button_mybatis_select",
-						view:"button",
-						value:"mybatis select",
-						tooltip:"mybatis select 구문을 생성한다. 단축키 :  Ctrl+5",
-						click:"mybatisSelect"
-						
-				    }, 
-				    {
-						id:"database_developer_button_mybatis_insert",
-						view:"button",
-						value:"mybatis insert",
-						tooltip:"mybatis insert 구문을 생성한다. 단축키 :  Ctrl+6",
-						click:"mybatisInsert"						
-				    }, 
-				    {
-						id:"database_developer_button_mybatis_update",
-						view:"button",
-						value:"mybatis update",
-						tooltip:"mybatis update 구문을 생성한다. 단축키 :  Ctrl+7",
-						click:"mybatisUpdate"
-				    }, 
-				    {
-						id:"database_developer_button_mybatis_delete",
-						view:"button",
-						value:"mybatis delete",
-						tooltip:"mybatis delete 구문을 생성한다. 단축키 :  Ctrl+8",
-						click:"mybatisDelete"
-				    }, 
-				    {
-						id:"database_developer_button_mybatis_result",
-						view:"button",
-						value:"mybatis result",
-						tooltip:"mybatis result 를 생성한다. 단축키 :  Ctrl+9",
-						click:"mybatisResultMap"						
-				    }
-				] // end cols	
-			}] // end rows
+			{
+				// next data image
+				id:"database_query_next_data_image",
+				view:"button", 
+				type:"image",
+				align:"right",
+				adjust:true,
+				width : 24,
+				image:"/static/images/next_data_arrow.png",
+				click:function(){
+					executeQuery(true,null);
+				}
+			}]
+		}] // end rows
+	},{
+		header:"JAVA DEVELOP",
+		rows:[
+		{
+			id:"database_java_form",
+			view : "form", 
+			scroll:false,
+			elements:[{	
+				rows:[{	// 상단 기능 버튼
+					cols:[{
+							id:"database_developer_button_java_model",
+							view:"button",
+							value:"java model",
+							tooltip:"java model 을 생성한다. 단축키 : ALT+1",
+							click:"javaModel"
+					    }, 
+					    {
+							id:"database_developer_button_java_hibernate_model",
+							view:"button",
+							value:"java H-model",
+							tooltip:"java hibernate model 을 생성한다. 단축키 :  ALT+2",
+							click:"javaHibernateModel"
+					    }, 
+					    {
+							id:"database_developer_button_java_model_set",
+							view:"button",
+							value:"java setter",
+							tooltip:"java model 의 setter 를 생성한다. 단축키 :  ALT+3",
+							click:"javaModelSet"
+					    }, 
+					    {
+							id:"database_developer_button_java_model_get",
+							view:"button",
+							value:"java getter",
+							tooltip:"java model 의 getter 를 생성한다. 단축키 :  ALT+4",
+							click:"javaModelGet"
+					    },				      
+					    {
+							id:"database_developer_button_mybatis_select",
+							view:"button",
+							value:"mybatis select",
+							tooltip:"mybatis select 구문을 생성한다. 단축키 :  ALT+5",
+							click:"mybatisSelect"
+							
+					    }, 
+					    {
+							id:"database_developer_button_mybatis_insert",
+							view:"button",
+							value:"mybatis insert",
+							tooltip:"mybatis insert 구문을 생성한다. 단축키 :  ALT+6",
+							click:"mybatisInsert"						
+					    }, 
+					    {
+							id:"database_developer_button_mybatis_update",
+							view:"button",
+							value:"mybatis update",
+							tooltip:"mybatis update 구문을 생성한다. 단축키 :  ALT+7",
+							click:"mybatisUpdate"
+					    }, 
+					    {
+							id:"database_developer_button_mybatis_delete",
+							view:"button",
+							value:"mybatis delete",
+							tooltip:"mybatis delete 구문을 생성한다. 단축키 :  ALT+8",
+							click:"mybatisDelete"
+					    }, 
+					    {
+							id:"database_developer_button_mybatis_result",
+							view:"button",
+							value:"mybatis result",
+							tooltip:"mybatis result 를 생성한다. 단축키 :  ALT+9",
+							click:"mybatisResultMap"						
+					    }
+					] // end cols	
+				},				      
+				{
+					// 에디터 창
+					id:"database_java_input",	
+					view : "codemirror-editor-java",
+				}] // end rows
+			}]		
 		}]
-	},	
-	{
-		cols:[{
-			// 쿼리 결과 info 창
-			id:"database_query_execute_info",
-			view:"label", 
-			label:"", 
-			align:"left",
-			adjust:true
-		},
-		{
-			// HTML Allow 상태 확인
-			id:"database_query_html_allow_info",
-			view:"label", 
-			label:"HTML-Allow : "+serverInfo.htmlAllow, 
-			align:"right",
-			adjust:true,
-			tooltip : "true : result 에 HTML 이 실행됨. false : result 에 HTML 이 TEXT 형태로 표시됨." 
-		},
-		{
-			// auto-commit 상태 확인
-			id:"database_query_auto_commit_info",
-			view:"label", 
-			label:"Auto-Commit : "+serverInfo.autoCommit, 
-			align:"right",
-			adjust:true,
-			tooltip : "true : 실행한 내용이 바로 DB에 반영됩니다. false : 실행한 내역이 DB에 반영되지 않습니다." 
-		},
-		{
-			// next data image
-			id:"database_query_next_data_image",
-			view:"button", 
-			type:"image",
-			align:"right",
-			adjust:true,
-			width : 24,
-			image:"/static/images/next_data_arrow.png",
-			click:function(){
-				executeQuery(true,null);
-			}
-		}]
-	}	
-] // end rows
-}];
-
+	}
+];
 
 /**
  * 에디터에 존재하는 실행 하려고하는 쿼리 

@@ -1,6 +1,6 @@
 webix.codebase = "./static/codemirror-5.10/";
 webix.protoUI({
-	name:"codemirror-editor",
+	name:"codemirror-editor-sql",
 	defaults:{
 		lineNumbers: true,
 		indentWithTabs: true,
@@ -20,25 +20,14 @@ webix.protoUI({
 		    "Esc": function(cm) {
 		    	if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
 		    },
-		    "Alt-1":function(cm){selectCountQuery();},
-		    "Alt-2":function(cm){selectAllQuery();},
-		    "Alt-3":function(cm){selectNameQuery();},
-		    "Alt-4":function(cm){insertIntoQuery();},
-		    "Alt-5":function(cm){insertSetQuery();},
-		    "Alt-6":function(cm){updateSetQuery();},
-		    "Alt-7":function(cm){deleteQuery();},
-		    "Alt-8":function(cm){$$("database_query_button_allow_html").callEvent("onItemClick");},
-		    "Alt-9":function(cm){$$("database_query_button_auto_commit").callEvent("onItemClick");},
-		    "Alt-0":function(cm){killExecuteQuery();},
-		    "Ctrl-1":function(cm){javaModel();},
-		    "Ctrl-2":function(cm){javaHibernateModel();},
-		    "Ctrl-3":function(cm){javaModelSet();},
-		    "Ctrl-4":function(cm){javaModelGet();},
-		    "Ctrl-5":function(cm){mybatisSelect();},
-		    "Ctrl-6":function(cm){mybatisInsert();},
-		    "Ctrl-7":function(cm){mybatisUpdate();},
-		    "Ctrl-8":function(cm){mybatisDelete();},
-		    "Ctrl-9":function(cm){mybatisResultMap();}
+		    "Ctrl-1":function(cm){selectCountQuery();},
+		    "Ctrl-2":function(cm){selectAllQuery();},
+		    "Ctrl-3":function(cm){selectNameQuery();},
+		    "Ctrl-4":function(cm){insertIntoQuery();},
+		    "Ctrl-5":function(cm){updateSetQuery();},
+		    "Ctrl-6":function(cm){deleteQuery();},
+		    "Ctrl-9":function(cm){$$("database_query_button_auto_commit").callEvent("onItemClick");},
+		    "Ctrl-0":function(cm){killExecuteQuery();},
 		},
 		hintOptions: {tables: {}}		
 	},
@@ -51,6 +40,7 @@ webix.protoUI({
 		    "lib/codemirror.css",
 		    "addon/hint/show-hint.css",
 		    "addon/display/fullscreen.css",
+		    "theme/eclipse.css",
 			"lib/codemirror.js",
 			"mode/sql/sql.js",
 			"addon/hint/show-hint.js",
@@ -68,6 +58,7 @@ webix.protoUI({
 			lineNumbers		:this.config.lineNumbers,
 			autofocus		:this.config.autofocus,
 			extraKeys		:this.config.extraKeys,
+			mode			:'text/x-sql',
 			hintOptions		:this.config.hintOptions
 		});
 

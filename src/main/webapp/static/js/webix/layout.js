@@ -38,7 +38,7 @@ webix.ready(function(){
 						rows:[
 							{ 
 								id:"database_query_view",	
-								header:"Query", 	
+								header:"Develop", 	
 								body:{
 									view:"tabview",
 									id:"database_query_tab",
