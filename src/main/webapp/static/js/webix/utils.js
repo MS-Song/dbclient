@@ -14,6 +14,8 @@ String.prototype.unescapeHtml = function () {
  * 데이터를 조회하여, data view 에 넣는다.
  */
 var views = [];
+var timeInterval=null;
+var startTime=null;
 var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,isWriteLog){
 	// 기존에 등록되어 있는 뷰 인가 검증한다.
 	var isAlreadyInputView = false;
@@ -36,6 +38,19 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 		webix.extend($$(viewName), webix.ProgressBar);
 		$$(viewName).showProgress();
 	}
+	
+	// 로그를 기록할 경우 시간 측정을 시작 한다.
+	startTime = new Date().getTime();
+	if(isWriteLog){
+		timeInterval = setInterval(function(){
+			var nowTime = new Date().getTime();
+			var waitTime = new Date().getTime() - startTime;
+
+			$$("database_query_execute_info").define("label",'wait time : ' + comma(waitTime) + 'ms');
+			$$("database_query_execute_info").refresh();
+		}, 200); 
+	}
+	
 	// view 에 있는 내용을 모두 지운다.
 	$$(viewName).clearAll();
 	// 캐시 객체를 생성한다.
@@ -121,8 +136,10 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
     		if(isWriteLog){
     			// 실행이 종료되면 결과를 보여준다
     			try {
+    				// 시간 객체 제거
+    				clearInterval(timeInterval);
     				$$(viewName).config.executedTime=parseInt(data.json().result.processTime);
-    				$$("database_query_execute_info").define("label",'Rows: '+data.json().result.rowCount + ', Time: '+data.json().result.processTime + ' ms');	
+    				$$("database_query_execute_info").define("label",'Rows: '+ comma(data.json().result.rowCount) + ', Time: '+comma(data.json().result.processTime) + ' ms');	
 				} catch (e) {
 					$$("database_query_execute_info").define("label",'Error :'+data.json().desc.replace("="," ").replace("\n"," "));
 				}
@@ -302,4 +319,18 @@ var errorControll = function(response){
 	if(response.status == 405){
 		login_popup();
 	} 
+};
+
+//콤마찍기
+var comma=function(str) {
+    str = String(str);
+    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+};
+
+//콤마풀기
+var uncomma=function(str) {
+    str = String(str);
+    return str.replace(/[^\d]+/g, '');
 }
+
+

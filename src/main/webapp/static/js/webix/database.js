@@ -1543,7 +1543,12 @@ var database_query_all_field_load = function(){
 								$.each(obj,function(objIndex){
 									autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
 								});
-								webix.storage.local.put(JSON.stringify(serverInfo, null, 2)+"_autoComplete",obj);
+								try {
+									webix.storage.local.put(JSON.stringify(serverInfo, null, 2)+"_autoComplete",obj);	
+								} catch (e) {
+									// 캐시에 저장 실패
+								}
+								
 							});
 						} else {
 							errorControll(data.json());
