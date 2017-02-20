@@ -989,14 +989,14 @@ var database_query_cell = [{
 					    {
 							id:"database_query_button_kill_execute",
 							view:"button",
-							value:"중단",
+							value:"Stop",
 							tooltip:"실행중인 쿼리를 중단한다. 단축키: Ctrl+0 ",
 							on:{"onItemClick":"killExecuteQuery"}
 						},					
 					    {
 							id:"database_query_button_execute",
 							view:"button",
-							value:"실행",
+							value:"Execute",
 							tooltip:"입력된 쿼리를 실행한다. 단축키: Ctrl+Enter ",
 							on:{"onItemClick":function(){
 									executeQuery(false,null);
@@ -1232,8 +1232,6 @@ var getQueryString = function(){
 		    separator.unshift(Pos(0, 0));
 		    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
 		
-		    console.log(separator);
-		    
 		    //find valid range
 		    var prevItem = null;
 		    var current = editor.getCursor();
@@ -1275,11 +1273,14 @@ var getQueryString = function(){
 var executeQuery = function (isNextData,resultView){
 	// 접속되어 있는 서버 정보 객체 복사
 	var newServerInfo = copyServerInfo(serverInfo);
-
+	// 스크롤 한 경우에 추가 데이터가 없음을 표시하지 않는다.
+	var isScrolledMessage=true;
 	// view 가 정의되지 않을 경우 view 찾아낸다. 
 	if(resultView==undefined || resultView==null){
 		// TODO multi view 가 되면, 데이터를 카운트해서 이미 쓴 경우에 +1 해서 새로 만든다.
 		resultView = $$("database_result_list_view");
+	} else {
+		isScrolledMessage=false;
 	} 
 		
 	// 다음페이지 조회
@@ -1310,7 +1311,7 @@ var executeQuery = function (isNextData,resultView){
 			}
 			resultView.config.isDataLoading=false;
 		} else {
-			webix.message("추가 데이터가 더 이상 없습니다.");
+			if(isScrolledMessage) webix.message("추가 데이터가 더 이상 없습니다.");
 		}
 
 	} else { // 첫 실행
@@ -1432,7 +1433,7 @@ var killExecuteQuery = function (){
 		server:serverInfo.server,
 		schema:serverInfo.schema,
 		account:serverInfo.account,
-		query:encodeURIComponent($$("database_query_input").getValue())}, 
+		query:getQueryString()}, 
 		function(text,data){
 			if(data.json().status ==200){
 				webix.message("쿼리가 실행 중지 되었습니다. ");
@@ -1442,6 +1443,7 @@ var killExecuteQuery = function (){
 			}
 	});
 	$$("database_result_list_view").hideProgress();
+	null!=timeInterval ? clearInterval(timeInterval) : timeInterval=null;
 }
 
 

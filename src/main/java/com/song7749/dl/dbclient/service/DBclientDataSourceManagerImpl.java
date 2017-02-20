@@ -810,7 +810,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 								stopQuery);
 
 				// 방금 사용한 쿼리가 맞을 경우
-				if(runQuery.indexOf(stopQuery) >= 0){
+				if(stopQuery.indexOf(runQuery) >= 0){
 					// 쿼리 실행 중단
 					logger.debug(format("{}","SQL쿼리 중단 실행"),runQuery);
 					try {
@@ -819,6 +819,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 					} catch (SQLException e) {
 						logger.debug(format("{}","prorcess kill 실패"),e.getMessage());
+						throw new IllegalArgumentException(e.getMessage());
 					}
 					break; // 해당하는 쿼리를 찾은 경우에는 중단 시킨다.
 				}

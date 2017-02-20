@@ -36,7 +36,8 @@ public class QueryExecuteLogConvert {
 				dto.getHostAlias(),
 				dto.getSchemaName(),
 				dto.getAccount(),
-				dto.getQuery(),
+				// 실행 쿼리의 사이즈가 4k 이하로 되게 처리 한다.
+				dto.getQuery().substring(0, dto.getQuery().length() > 4000 ? 4000 : dto.getQuery().length() ),
 				dto.getExecuteDate());
 	}
 

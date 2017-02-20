@@ -387,6 +387,13 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Override
 	@Transactional(value = "dbClientTransactionManager")
 	public void killExecutedQuery(ExecuteResultListDTO dto) {
-		dbClientDataSourceManager.killQuery(serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq())), dto);
+		ServerInfo si =serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
+		// query 에 한정자를 추가한다.
+		if(null!=si){
+			dto.setQuery(
+				si.getDriver().getAddRangeOperator(dto.getQuery(), dto.getOffset(), dto.getLimit())
+			);
+		}
+		dbClientDataSourceManager.killQuery(si, dto);
 	}
 }

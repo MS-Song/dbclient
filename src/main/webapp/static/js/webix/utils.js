@@ -197,6 +197,7 @@ var addDataParseView = function(url,parmeters,viewName){
 
 /**
  * 데이터를 조회하여, editor 에 넣는다.
+ * TODO-캐시처리
  */
 var getDataParseEditor = function(url,parmeters,returnValueName){
 	webix.ajax().post(url+".json",parmeters, 
@@ -215,6 +216,7 @@ var getDataParseEditor = function(url,parmeters,returnValueName){
 
 /**
  * 데이터를 조회하여 TextArea 에 넣는다.
+ * TODO-캐시처리
  */
 var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
 	webix.ajax().post(url+".json",parmeters, 
@@ -235,6 +237,7 @@ var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
 
 /**
  * 데이터를 조회하여 Property 에 넣는다.
+ * TODO-캐시처리
  */
 var getDataParseProperty = function(url,parmeters,viewName){
 	webix.ajax().post(url+".json",parmeters, 
