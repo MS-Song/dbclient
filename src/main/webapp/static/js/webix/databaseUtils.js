@@ -386,7 +386,7 @@ var addEditorValue = function (editor,addValue){
 	if(null==retval || ""==retval){
 		retval=addValue;
 	} else {
-		retval=retval+";"+"\n\n"+addValue;
+		retval=retval+"\n\n"+addValue;
 	}
 	editor.setValue(retval);
 	editor.focus();

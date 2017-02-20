@@ -1,7 +1,5 @@
 package com.song7749.app.dbclient.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -100,7 +98,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터 베이스 서버 조회"
 			,notes = "serverInfoSeq 를 이용해서 1개의 정보만 조회 한다."
 			,response=ServerInfoVO.class)
-	@RequestMapping(value="/server",method=RequestMethod.GET)
+	@RequestMapping(value="/server",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getServer(
 			@RequestParam(value="serverInfoSeq",required=true)
@@ -118,7 +116,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터 베이스 서버 리스트 조회"
 					,notes = "등록되어 있는 Database 서버 리스트를 조회 한다."
 					,response=ServerInfoVO.class)
-	@RequestMapping(value="/serverList",method=RequestMethod.GET)
+	@RequestMapping(value="/serverList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getServerList(
 			@RequestParam(value="useCache",required=false)
@@ -157,7 +155,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터 베이스 스키마, SID 조회"
 			,notes = "등록되어 있는 Database 서버 의 스키마(Mysql), SID(Oracle) 을 조회 한다."
 			,response=ServerInfoVO.class)
-	@RequestMapping(value="/schemaList",method=RequestMethod.GET)
+	@RequestMapping(value="/schemaList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getSchemaList(
 			@RequestParam(value="server",required=true)
@@ -176,7 +174,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 테이블 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 을 조회 한다."
 			,response=TableVO.class)
-	@RequestMapping(value="/tableList",method=RequestMethod.GET)
+	@RequestMapping(value="/tableList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getTableList(
 			@RequestParam(value="server",required=true)
@@ -206,7 +204,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 View 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 View 리스트를 조회 한다."
 			,response=ViewVO.class)
-	@RequestMapping(value="/viewList",method=RequestMethod.GET)
+	@RequestMapping(value="/viewList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getViewList(
 			@RequestParam(value="server",required=true)
@@ -234,7 +232,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 View Detail 정보 조회"
 			,notes = "등록되어 있는 Database 서버의 Detail 정보를 조회 한다."
 			,response=ViewVO.class)
-	@RequestMapping(value="/viewDetailLis",method=RequestMethod.GET)
+	@RequestMapping(value="/viewDetailLis",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getViewDetailList(
 			@RequestParam(value="server",required=true)
@@ -264,7 +262,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 View Source 정보 조회"
 			,notes = "등록되어 있는 Database 서버의 Source 정보를 조회 한다."
 			,response=ViewVO.class)
-	@RequestMapping(value="/viewSourceList",method=RequestMethod.GET)
+	@RequestMapping(value="/viewSourceList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getViewSourceList(
 			@RequestParam(value="server",required=true)
@@ -295,7 +293,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Procedure 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Procedure 리스트를 조회 한다."
 			,response=ProcedureVO.class)
-	@RequestMapping(value="/procedureList",method=RequestMethod.GET)
+	@RequestMapping(value="/procedureList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getProcedure(
 			@RequestParam(value="server",required=true)
@@ -323,7 +321,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Procedure 상세 조회"
 			,notes = "등록되어 있는 Database 서버의 Procedure 내용을 조회 한다."
 			,response=ProcedureVO.class)
-	@RequestMapping(value="/procedureDetailList",method=RequestMethod.GET)
+	@RequestMapping(value="/procedureDetailList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void procedureDetail(
 			@RequestParam(value="server",required=true)
@@ -353,7 +351,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Procedure Source 조회"
 			,notes = "등록되어 있는 Database 서버의 Procedure Source 조회 한다."
 			,response=ProcedureVO.class)
-	@RequestMapping(value="/procedureSourceList",method=RequestMethod.GET)
+	@RequestMapping(value="/procedureSourceList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void procedureSource(
 			@RequestParam(value="server",required=true)
@@ -382,7 +380,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Function 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 function 리스트를 조회 한다."
 			,response=FunctionVO.class)
-	@RequestMapping(value="/functionList",method=RequestMethod.GET)
+	@RequestMapping(value="/functionList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getFunction(
 			@RequestParam(value="server",required=true)
@@ -411,7 +409,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Function 상세 조회"
 			,notes = "등록되어 있는 Database 서버의 Function 내용을 조회 한다."
 			,response=Map.class)
-	@RequestMapping(value="/functionDetailList",method=RequestMethod.GET)
+	@RequestMapping(value="/functionDetailList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getFunctionDetail(
 			@RequestParam(value="server",required=true)
@@ -442,7 +440,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Function Source 조회"
 			,notes = "등록되어 있는 Database 서버의 Function Source 조회 한다."
 			,response=FunctionVO.class)
-	@RequestMapping(value="/functionSourceList",method=RequestMethod.GET)
+	@RequestMapping(value="/functionSourceList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getFunctionSource(
 			@RequestParam(value="server",required=true)
@@ -472,7 +470,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Trigger 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Trigger 리스트를 조회 한다."
 			,response=TriggerVO.class)
-	@RequestMapping(value="/triggerList",method=RequestMethod.GET)
+	@RequestMapping(value="/triggerList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getTrigger(
 			@RequestParam(value="server",required=true)
@@ -501,7 +499,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Trigger 상세 조회"
 			,notes = "등록되어 있는 Database 서버의 Trigger 내용을 조회 한다."
 			,response=Map.class)
-	@RequestMapping(value="/triggerDetailList",method=RequestMethod.GET)
+	@RequestMapping(value="/triggerDetailList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getTriggerDetail(
 			@RequestParam(value="server",required=true)
@@ -532,7 +530,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Trigger Source 조회"
 			,notes = "등록되어 있는 Database 서버의 Trigger Source 조회 한다."
 			,response=TriggerVO.class)
-	@RequestMapping(value="/triggerSourceList",method=RequestMethod.GET)
+	@RequestMapping(value="/triggerSourceList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getTriggerSource(
 			@RequestParam(value="server",required=true)
@@ -562,7 +560,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Sequence 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Sequence 리스트를 조회 한다."
 			,response=SequenceVO.class)
-	@RequestMapping(value="/sequenceList",method=RequestMethod.GET)
+	@RequestMapping(value="/sequenceList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getSequence(
 			@RequestParam(value="server",required=true)
@@ -591,7 +589,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 Sequence 상세내용 조회"
 			,notes = "등록되어 있는 Database 서버의 Sequence 상세내용 조회 한다."
 			,response=SequenceVO.class)
-	@RequestMapping(value="/sequenceDetailList",method=RequestMethod.GET)
+	@RequestMapping(value="/sequenceDetailList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getSequenceDetail(
 			@RequestParam(value="server",required=true)
@@ -621,7 +619,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 테이블  필드 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 의 필드를 조회 한다."
 			,response=FieldVO.class)
-	@RequestMapping(value="/fieldList",method=RequestMethod.GET)
+	@RequestMapping(value="/fieldList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getFieldList(
 			@RequestParam(value="server",required=true)
@@ -652,7 +650,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 테이블 DDL 조회"
 			,notes = "등록되어 있는 Database 서버의 Table DDL 문을 조회 한다. EX) Create Table."
 			,response=FieldVO.class)
-	@RequestMapping(value="/showCreateTable",method=RequestMethod.GET)
+	@RequestMapping(value="/showCreateTable",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getShowCreateTable(
 			@RequestParam(value="server",required=true)
@@ -685,7 +683,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 테이블 인덱스 리스트 조회"
 			,notes = "등록되어 있는 Database 서버의 Table 의 인덱스 리스트 조회."
 			,response=IndexVO.class)
-	@RequestMapping(value="/indexList",method=RequestMethod.GET)
+	@RequestMapping(value="/indexList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getIndexList(
 			@RequestParam(value="server",required=true)
@@ -925,17 +923,7 @@ public class DatabaseController {
 			throw new IllegalArgumentException("입력된 쿼리가 없습니다. 쿼리 입력후에 실행하시기 바랍니다.");
 		}
 
-		String decodedQuery=null;
-		try {
-			decodedQuery=URLDecoder.decode(query, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException("query 데이터의 디코딩 실패. 쿼리 내용에 디코딩이 안되는 문자열이 존재합니다");
-		}
-		// query 내의 문자열 ; 를 제거 한다.
-		decodedQuery=decodedQuery.replace(";", "");
-
 		Long startTime = System.currentTimeMillis();
-
 		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, true));
 
 		// reference 를 이용해서 실행시간, query 시간을 측정한다.
@@ -946,7 +934,7 @@ public class DatabaseController {
 					schemaName,
 					account,
 					autoCommit,
-					decodedQuery,
+					query,
 					htmlAllow,
 					loginManager.getLoginID(request),
 					request.getRemoteAddr());
@@ -973,7 +961,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터 베이스 드라이버 조회"
 			,notes = "데이터 베이스 드라이버를 조회한다."
 			,response=DatabaseDriver.class)
-	@RequestMapping(value="/getDatabaseDriver",method=RequestMethod.GET)
+	@RequestMapping(value="/getDatabaseDriver",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getDatabaseDriver(
 			ModelMap model){
@@ -1035,7 +1023,7 @@ public class DatabaseController {
 	@ApiOperation(value = "즐겨찾는 쿼리 조회"
 			,notes = "자주 사용하는 쿼리 리스트를 조회 한다."
 			,response=FavorityQuery.class)
-	@RequestMapping(value="/findFavoritiesQueryList",method=RequestMethod.GET)
+	@RequestMapping(value="/findFavoritiesQueryList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void findFavoritiesQueryList(
 			@RequestParam(value="limit",required=false)
@@ -1064,7 +1052,7 @@ public class DatabaseController {
 	@ApiOperation(value = "캐시 데이터 삭제"
 			,notes = "database 정보 캐시 데이터를 삭제한다."
 			,response=ResponseResult.class)
-	@RequestMapping(value="/deleteCache",method=RequestMethod.GET)
+	@RequestMapping(value="/deleteCache",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void deleteCache(
 			HttpServletRequest request,
@@ -1111,13 +1099,6 @@ public class DatabaseController {
 			throw new IllegalArgumentException("입력된 쿼리가 없습니다. 쿼리 입력후에 실행하시기 바랍니다.");
 		}
 
-		String decodedQuery=null;
-		try {
-			decodedQuery=URLDecoder.decode(query, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException("query 데이터의 디코딩 실패. 쿼리 내용에 디코딩이 안되는 문자열이 존재합니다");
-		}
-
 		List<ServerInfoVO> list = serverInfoManager.findServerInfoList(new FindServerInfoListDTO(host, schemaName, account, true));
 
 		// reference 를 이용해서 실행시간, query 시간을 측정한다.
@@ -1129,7 +1110,7 @@ public class DatabaseController {
 					schemaName,
 					account,
 					true,
-					decodedQuery,
+					query,
 					false,
 					loginManager.getLoginID(request),
 					request.getRemoteAddr()));
@@ -1141,7 +1122,7 @@ public class DatabaseController {
 	@ApiOperation(value = "데이터베이스 전체 필드 리스트 조회"
 			,notes = "데이터베이스의 모든 필드 리스트를 조회 한다."
 			,response=TableVO.class)
-	@RequestMapping(value="/allFieldList",method=RequestMethod.GET)
+	@RequestMapping(value="/allFieldList",method={RequestMethod.GET,RequestMethod.POST})
 	@Login(type=LoginResponseType.EXCEPTION,value={AuthType.NORMAL,AuthType.ADMIN})
 	public void getAllFieldList(
 			@RequestParam(value="server",required=true)

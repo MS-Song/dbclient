@@ -354,6 +354,10 @@ var mybatisSelect = function(){
 };
 
 var mybatisInsert = function(){
+	if(null==serverInfo.tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
   	var columnHtml ='<insert parameterType="'+tableStyleConverter(serverInfo.tableName)+'" id="insert'+tableStyleConverter(serverInfo.tableName)+'" statementType="PREPARED">\n';
   	columnHtml+='\n/* insert'+tableStyleConverter(serverInfo.tableName)+' */\n';
   	columnHtml+=insertIntoQuery(true);
@@ -364,6 +368,10 @@ var mybatisInsert = function(){
 };
 
 var mybatisUpdate = function(){
+	if(null==serverInfo.tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
   	var columnHtml ='<update parameterType="'+tableStyleConverter(serverInfo.tableName)+'" id="update'+tableStyleConverter(serverInfo.tableName)+'" statementType="PREPARED">\n';
   	columnHtml+='\n/* update'+tableStyleConverter(serverInfo.tableName)+' */\n';
   	columnHtml+=updateSetQuery(true)
@@ -374,7 +382,10 @@ var mybatisUpdate = function(){
 };
 
 var mybatisDelete = function(){
-  	
+	if(null==serverInfo.tableName){
+		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
+		return;
+	}
   	var columnHtml ='<delete parameterType="'+tableStyleConverter(serverInfo.tableName)+'" id="delete'+tableStyleConverter(serverInfo.tableName)+'" statementType="PREPARED">\n';
   	columnHtml+='\n/* delete'+tableStyleConverter(serverInfo.tableName)+' */\n';
   	columnHtml+=deleteQuery(true);

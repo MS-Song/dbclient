@@ -86,7 +86,7 @@ public enum DatabaseDriver {
 			"show create table {name}",
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
-			"{sqlBody} Limit {start},{end}"),
+			"{sqlBody} \n Limit {start},{end}"),
 
 	@ApiModelProperty
 	oracle(
@@ -140,7 +140,7 @@ public enum DatabaseDriver {
 			"select dbms_metadata.get_ddl( 'TABLE', '{name}', '{account}' ) as CREATE_TALBE from dual",
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT UTC.TABLE_NAME AS TABLE_NAME, UTC.COLUMN_NAME AS COLUMN_NAME, UCC.COMMENTS AS COLUMN_COMMENT FROM USER_TAB_COLUMNS UTC , USER_COL_COMMENTS UCC WHERE UTC.TABLE_NAME = UCC.TABLE_NAME (+) AND UTC.COLUMN_NAME = UCC.COLUMN_NAME (+)",
-			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM (  {sqlBody} ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}");
+			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM ( \n {sqlBody} \n ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}");
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 

@@ -66,7 +66,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 		$$(viewName).refresh();
 		$$(viewName).hideProgress();
 	} else {
-		webix.ajax().get(url+".json",parmeters, function(text,data){
+		webix.ajax().post(url+".json",parmeters, function(text,data){
 			if(data.json().status ==200 && null!=data.json().result){
 				$.each(data.json().result,function(index, obj){
 					// 배열인 경우에만 처리한다. response 에 배열은 결과 데이터외에 없다.
@@ -167,7 +167,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
  * 
  */
 var addDataParseView = function(url,parmeters,viewName){
-	webix.ajax().sync().get(url+".json",parmeters, function(text,data){
+	webix.ajax().sync().post(url+".json",parmeters, function(text,data){
 		if(data.json().status ==200 && null!=data.json().result){
 			$.each(data.json().result,function(index, obj){
 				// 배열인 경우에만 처리한다. response 에 배열은 결과 데이터외에 없다.
@@ -199,7 +199,7 @@ var addDataParseView = function(url,parmeters,viewName){
  * 데이터를 조회하여, editor 에 넣는다.
  */
 var getDataParseEditor = function(url,parmeters,returnValueName){
-	webix.ajax().get(url+".json",parmeters, 
+	webix.ajax().post(url+".json",parmeters, 
 		function(text,data){
 			if(data.json().status ==200 && null!=data.json().result){
 				$.each(data.json().result,function(index, obj){
@@ -217,7 +217,7 @@ var getDataParseEditor = function(url,parmeters,returnValueName){
  * 데이터를 조회하여 TextArea 에 넣는다.
  */
 var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
-	webix.ajax().get(url+".json",parmeters, 
+	webix.ajax().post(url+".json",parmeters, 
 		function(text,data){
 			if(data.json().status ==200 && null!=data.json().result){
 				
@@ -237,7 +237,7 @@ var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
  * 데이터를 조회하여 Property 에 넣는다.
  */
 var getDataParseProperty = function(url,parmeters,viewName){
-	webix.ajax().get(url+".json",parmeters, 
+	webix.ajax().post(url+".json",parmeters, 
 			function(text,data){
 //				console.log(data.json());
 				if(data.json().status ==200 && null!=data.json().result){

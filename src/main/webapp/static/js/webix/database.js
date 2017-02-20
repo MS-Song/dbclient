@@ -779,6 +779,70 @@ var database_info_cell = [
 				elements:[]
 			}]
 		}]
+	},
+	// TODO -- 추가되는 데이터 베이스의 기능은 여기 사이에 넣는다.
+	{
+		id:"database_query_log_view",
+		header:"Query Log",
+		view : "datatable", 
+    	columns:[
+			{ 	id:"seq",	header:["Seq", {	// 검색창 구현
+				content:"textFilter", placeholder:"sql search",
+				compare:function(value, filter, obj){ // 검색창 필터조건 구현
+						if (equals(obj.query	, filter)) return true;
+						return false;
+				}, colspan:5}]
+				,width:40
+			},
+			{ id:"date",		header:"DateTime",	width:95},
+			{ id:"query",		header:"Query",		width:150},
+			{ 
+				id:"reTry",		header:"재사용",		width:60,
+				template:'<input type="button" value="사용" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
+			},
+			{ 
+				id:"favorities",	header:"즐겨찾기",		width:70,
+				template:'<input type="button" value="저장" style="width:40px;" data="#query#" onClick="addFavorityQueryPopup(this);"/>',
+			}
+		],
+		data:[],
+		tooltip:true,
+		resizeColumn:true
+	},
+	{
+		id:"database_query_favorities_view",
+		header:"Favorites Query",
+		view : "datatable", 
+    	columns:[
+			{ 	id:"favorityQuerySeq",	header:["Seq", {	// 검색창 구현
+				content:"textFilter", placeholder:"memo and sql search",
+				compare:function(value, filter, obj){ // 검색창 필터조건 구현
+						if (equals(obj.memo	, filter)) return true;
+						if (equals(obj.query, filter)) return true;
+						return false;
+				}, colspan:5}]
+				,width:40
+			},
+			{ id:"memo",			header:"Memo",		width:100},
+			{ id:"query",			header:"Query",		width:150,
+				template:function(obj){
+					obj.query=decodeURIComponent(obj.query)
+					return obj.query;
+				}
+			},
+			{ 
+				id:"reTry",			header:"사용",		width:60,
+				template:'<input type="button" value="사용" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
+			},
+			{ 
+				id:"favorities",	header:"삭제",	width:60,
+				template:'<input type="button" value="삭제" style="width:40px;" data="#query#" onClick="removeFavorityQuery(#favorityQuerySeq#);"/>',
+			}
+		],
+		data:[],
+		tooltip:true,
+		select:"row",
+		resizeColumn:true,
 	}
 ];
 
@@ -853,6 +917,8 @@ var database_query_cell = [{
 		{
 			id:"database_query_form",
 			view : "form", 
+			borderless:true,
+			margin:0,
 			scroll:false,
 			elements:[{	
 				rows:[{
@@ -939,44 +1005,82 @@ var database_query_cell = [{
 						}
 					]
 				},
-				{
-					// 에디터 창
+				{// 에디터 창
 					id:"database_query_input",	
 					view : "codemirror-editor-sql",
+				},{ // 쿼리 정보 창
+					cols:[{
+						// 쿼리 결과 info 창
+						id:"database_query_execute_info",
+						view:"label", 
+						label:"", 
+						align:"left",
+						adjust:true,
+						height:25
+					},
+					{
+						// auto-commit 상태 확인
+						id:"database_query_auto_commit_info",
+						view:"label", 
+						label:"Auto-Commit : "+serverInfo.autoCommit, 
+						align:"right",
+						width : 170,
+						height: 25,
+						tooltip : "true : 실행한 내용이 바로 DB에 반영됩니다. false : 실행한 내역이 DB에 반영되지 않습니다." 
+					},
+					{
+						// next data image
+						id:"database_query_next_data_image",
+						view:"button", 
+						type:"image",
+						align:"right",
+						width : 24,
+						height: 25,
+						image:"/static/images/next_data_arrow.png",
+						click:function(){
+							executeQuery(true,null);
+						}
+					}]
 				}] // end rows
-			}]
+			}] // end elements
 		},	
+		{ view:"resizer", id:"screen_heighter"},
 		{
-			cols:[{
-				// 쿼리 결과 info 창
-				id:"database_query_execute_info",
-				view:"label", 
-				label:"", 
-				align:"left",
-				adjust:true
-			},
-			{
-				// auto-commit 상태 확인
-				id:"database_query_auto_commit_info",
-				view:"label", 
-				label:"Auto-Commit : "+serverInfo.autoCommit, 
-				align:"right",
-				width : 200,
-				tooltip : "true : 실행한 내용이 바로 DB에 반영됩니다. false : 실행한 내역이 DB에 반영되지 않습니다." 
-			},
-			{
-				// next data image
-				id:"database_query_next_data_image",
-				view:"button", 
-				type:"image",
-				align:"right",
-				adjust:true,
-				width : 24,
-				image:"/static/images/next_data_arrow.png",
-				click:function(){
-					executeQuery(true,null);
-				}
-			}]
+			view:"tabview",
+			id:"database_result_list_tab",
+			animate:false,
+			cells: [{	
+				header:"result1",
+				view : "datatable", 
+				id:"database_result_list_view", 						
+				columns:[],	
+				data:[],
+				tooltip:true,
+				select:"row",
+				resizeColumn:true,
+				scroll:true,
+				multiselect:true,
+				clipboard:"selection",
+				dataLimit:"",
+				dataOffset:"",
+				dataPage:1,
+				executedQuery:"",
+				executedTime:0,
+				isDataLoading:false,
+		    	on:{
+		    		onScrollY:function(){
+		    			// result 화면의 크기를 가져온다.
+		    			var height=$("[view_id='"+this.config.id+"']").find(".webix_vscroll_y").find(".webix_vscroll_body").height();
+		    			// 현재 위치를 확인한다. 
+		    			var pos = this.getScrollState();
+		    			// 스크롤의 길이 만큼 현재 스크롤 크기가 클 경우 실행 한다. 
+		    			if(pos.y > height-this.$height){
+		    				// 추가 데이터 쿼리 실행
+		    				executeQuery(true,this);
+		    			}
+		    		}
+		    	}
+			}] // end cells			
 		}] // end rows
 	},{
 		header:"JAVA DEVELOP",
@@ -985,6 +1089,7 @@ var database_query_cell = [{
 			id:"database_java_form",
 			view : "form", 
 			scroll:false,
+			borderless:true,
 			elements:[{	
 				rows:[{	// 상단 기능 버튼
 					cols:[{
@@ -1077,59 +1182,88 @@ var getQueryString = function(){
 	// drag 되어 있는 쿼리가 있으면, 해당 부분만 가져온다.
 	if(""!=doc.getSelection()){
 		retQuery=doc.getSelection();
-	} else { // 쿼리의 포인터를 찾아 해당 위치에서 실행 한다. 
-	    var separator = [];
-	    var validRange = {
-	      start: Pos(0, 0),
-	      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
-	    };
-	    var commentSeperator = ["#",'--'];
+	} else {  
+		// DDL 문인가 확인 한다.
+		var isDDL=false;
+		// DDL 검증
+		var validate = {
+			validateDDL:['CREATE','REPLACE','PROCEDURE','VIEW','FUNCTION','TRIGGER'],
+			isDDL:function(query){
+				var beforeWord=null;
+				var afterWord=null;
+				var nowWords=[];
+				for(var key in this.validateDDL){
+					var pos = query.toUpperCase().indexOf(this.validateDDL[key]);
+					if(pos>=0){
+						// 앞단어 추출
+						beforeWord=query.toUpperCase().substring(pos-1, pos);
+						// 뒤 단어 추출
+						afterWord=query.toUpperCase().substring(pos+this.validateDDL[key].length, pos+this.validateDDL[key].length+1);
+						if((""==beforeWord || " "==beforeWord) && (afterWord==" " || afterWord=="")){
+							nowWords.push(this.validateDDL[key]);
+						} 
+					}
+				}
+				// 최소 2개의 단어가 포함되어 있어야 한다
+				return nowWords.length>1 ? true:false;	
+			}
+		}
+		
+		if(validate.isDDL(retQuery)){
+			if(confirm(validate.validateDDL.join(",")+" 단어가 포함되어 있습니다. DDL 구문의 실행이 맞습니까?")){
+				return retQuery;
+			} else {
+				return "";
+			}
+		} else {
+			// 쿼리의 포인터를 찾아 해당 위치에서 실행 한다.
+		    var separator = [];
+		    var validRange = {
+		      start: Pos(0, 0),
+		      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
+		    };
 
-	    var indexOfSeparator = retQuery.indexOf(";");
-	    while(indexOfSeparator != -1) {
-	    	separator.push(doc.posFromIndex(indexOfSeparator));
-	    	indexOfSeparator = retQuery.indexOf(";", indexOfSeparator+1);
-	    }
-	    
-	    separator.unshift(Pos(0, 0));
-	    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
-	
-	    //find valid range
-	    var prevItem = null;
-	    var current = editor.getCursor();
-	    
-	    // line 과 ch 가 둘다 0인 경우에 오류가 발생하여 정정한다.
-	    if(current.line == 0 && current.ch==0){
-	    	current.ch++;
-	    }
+		    var indexOfSeparator = retQuery.indexOf(";");
+		    while(indexOfSeparator != -1) {
+		    	separator.push(doc.posFromIndex(indexOfSeparator+1));
+		    	indexOfSeparator = retQuery.indexOf(";", indexOfSeparator+1);
+		    }
+		    
+		    separator.unshift(Pos(0, 0));
+		    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
+		
+		    console.log(separator);
+		    
+		    //find valid range
+		    var prevItem = null;
+		    var current = editor.getCursor();
+		    
+		    // line 과 ch 가 둘다 0인 경우에 오류가 발생하여 정정한다.
+		    if(current.line == 0 && current.ch==0){
+		    	current.ch++;
+		    }
 
-	    for (var i = 0; i < separator.length; i++) {
-	    	if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
-	    		validRange = {start: prevItem, end: separator[i]};
-	    		break;
-	    	}
-	    	prevItem = separator[i];
-	    }
-	    
-	    var queries = doc.getRange(validRange.start, validRange.end, false);
-        doc.setSelection(validRange.start, validRange.end);
-	    
-	    var startLine = validRange.start.line;
-    	for(qkey in queries){
-    	    for(ckey in commentSeperator){	    		
-	    		if(queries[qkey].indexOf(commentSeperator[ckey]) >= 0){
-	    			queries[qkey]=queries[qkey].substring(0,queries[qkey].indexOf(commentSeperator[ckey]));
-	    			queries[qkey]=queries[qkey].replace(/ /g,"");
-	    		}
-	    	}
-			queries[qkey]=queries[qkey].replace(/;/g,"");
-    	    if(queries[qkey]==""){
-    	    	startLine++;
-    	    }
-	    }
-	    retQuery=queries.join(" ");
+		    for (var i = 0; i < separator.length; i++) {
+		    	if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
+		    		validRange = {start: prevItem, end: separator[i]};
+		    		break;
+		    	}
+		    	prevItem = separator[i];
+		    }
+
+		    var queries = doc.getRange(validRange.start, validRange.end, false);
+	        doc.setSelection(validRange.start, validRange.end);
+
+	        // 쿼리의 시작이 ; 로 시작할 경우
+	        if(null!=queries && queries.length>0){
+	        	if(queries[0].indexOf(";")>=0){
+	        		queries[0].substring(parseInt(queries[0].indexOf(";")+1),queries[0].length);	
+	        	}
+	        }
+	        retQuery=queries.join("\n").replace(/;/g,"");
+		}
 	}
-	return encodeURIComponent(retQuery);
+	return retQuery;
 }
 
 /**
@@ -1198,40 +1332,7 @@ var executeQuery = function (isNextData,resultView){
 
 // 결과 창
 var database_result_cell = [{
-	header:"result1",
-	rows:[
-		{	
-			view : "datatable", 
-			id:"database_result_list_view", 						
-			columns:[],	
-			data:[],
-			tooltip:true,
-			select:"row",
-			resizeColumn:true,
-			scroll:true,
-			multiselect:true,
-			clipboard:"selection",
-			dataLimit:"",
-			dataOffset:"",
-			dataPage:1,
-			executedQuery:"",
-			executedTime:0,
-			isDataLoading:false,
-	    	on:{
-	    		onAfterScroll:function(){
-	    			// result 화면의 크기를 가져온다.
-	    			var height=$("[view_id='"+this.config.id+"']").find(".webix_vscroll_y").find(".webix_vscroll_body").height();
-	    			// 현재 위치를 확인한다. 
-	    			var pos = this.getScrollState();
-	    			// 스크롤의 길이 만큼 현재 스크롤 크기가 클 경우 실행 한다. 
-	    			if(pos.y > height-this.$height){
-	    				// 추가 데이터 쿼리 실행
-	    				executeQuery(true,this);
-	    			}
-	    		}
-	    	}
-		}
-	] // end rows
+
 }];
 
 // 결과창 Context 메뉴
@@ -1343,70 +1444,6 @@ var killExecuteQuery = function (){
 	$$("database_result_list_view").hideProgress();
 }
 
-var database_developer_cell = [{
-		id:"database_query_log_view",
-		header:"Query Log",
-		view : "datatable", 
-    	columns:[
-			{ 	id:"seq",	header:["Seq", {	// 검색창 구현
-				content:"textFilter", placeholder:"sql search",
-				compare:function(value, filter, obj){ // 검색창 필터조건 구현
-						if (equals(obj.query	, filter)) return true;
-						return false;
-				}, colspan:5}]
-				,width:40
-			},
-			{ id:"date",		header:"DateTime",	width:95},
-			{ id:"query",		header:"Query",		width:150},
-			{ 
-				id:"reTry",		header:"재사용",		width:60,
-				template:'<input type="button" value="사용" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
-			},
-			{ 
-				id:"favorities",	header:"즐겨찾기",		width:70,
-				template:'<input type="button" value="저장" style="width:40px;" data="#query#" onClick="addFavorityQueryPopup(this);"/>',
-			}
-		],
-		data:[],
-		tooltip:true,
-		resizeColumn:true
-	},
-	{
-		id:"database_query_favorities_view",
-		header:"Favorites Query",
-		view : "datatable", 
-    	columns:[
-			{ 	id:"favorityQuerySeq",	header:["Seq", {	// 검색창 구현
-				content:"textFilter", placeholder:"memo and sql search",
-				compare:function(value, filter, obj){ // 검색창 필터조건 구현
-						if (equals(obj.memo	, filter)) return true;
-						if (equals(obj.query, filter)) return true;
-						return false;
-				}, colspan:5}]
-				,width:40
-			},
-			{ id:"memo",			header:"Memo",		width:100},
-			{ id:"query",			header:"Query",		width:150,
-				template:function(obj){
-					obj.query=decodeURIComponent(obj.query)
-					return obj.query;
-				}
-			},
-			{ 
-				id:"reTry",			header:"사용",		width:60,
-				template:'<input type="button" value="사용" style="width:40px;" data="#query#" onClick="reUseQuery(this);"/>',
-			},
-			{ 
-				id:"favorities",	header:"삭제",	width:60,
-				template:'<input type="button" value="삭제" style="width:40px;" data="#query#" onClick="removeFavorityQuery(#favorityQuerySeq#);"/>',
-			}
-		],
-		data:[],
-		tooltip:true,
-		select:"row",
-		resizeColumn:true,
-	}
-];
 
 // 쿼리 재사용
 var reUseQuery=function(obj){

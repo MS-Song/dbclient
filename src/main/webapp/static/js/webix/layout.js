@@ -25,7 +25,7 @@ webix.ready(function(){
 					{ 
 						id:"database_info_view",	
 						header:"Database", 
-						width:350, 
+						width:450, 
 						body:{
 							view:"tabview",
 							id:"database_info_tab",
@@ -35,38 +35,14 @@ webix.ready(function(){
 					},
 					{ view:"resizer", id:"screen_heighter"},
 					{
-						rows:[
-							{ 
-								id:"database_query_view",	
-								header:"Develop", 	
-								body:{
-									view:"tabview",
-									id:"database_query_tab",
-									animate:false,
-									cells: database_query_cell
-								}	
-							},
-							{ view:"resizer",height:3},
-							{ 
-								view:"tabview",
-								id:"database_result_tab",
-								animate:false,
-								cells: database_result_cell
-							}
-						]
-					},
-					{ view:"resizer"},
-					{
-						id:"database_developer_view",	
-						header:"Query Log & favorities", 
-						width:435, 
-						collapsed:false,
+						id:"database_query_view",	
+						margin:0,
 						body:{
 							view:"tabview",
-							id:"database_developer_tab",
+							id:"database_query_tab",
 							animate:false,
-							cells: database_developer_cell							
-						}
+							cells: database_query_cell
+						}	
 					}
 				]
 			},
