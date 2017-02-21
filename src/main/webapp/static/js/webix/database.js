@@ -1181,7 +1181,7 @@ var getQueryString = function(){
 	
 	// drag 되어 있는 쿼리가 있으면, 해당 부분만 가져온다.
 	if(""!=doc.getSelection()){
-		retQuery=doc.getSelection();
+		retQuery=doc.getSelection().replace(/;/g,"");
 	} else {  
 		// DDL 문인가 확인 한다.
 		var isDDL=false;
@@ -1466,15 +1466,17 @@ var add_favority_query_form = {
 				if(key==13) $$("favority_query_button").callEvent("onItemClick");
 			}
 		}},
-		{ id:"favority_query", 	view:"text", label:'query', name:"query", value:""},
+		{ id:"favority_query", 	view:"textarea", label:'query', name:"query", value:"", height:150 },
 		{margin:5, cols:[
 			{ 
 				id:"favority_query_button",view:"button", value:"추가" , type:"form", 
 				on:{"onItemClick":function(){// 로그인 실행
+					console.log($$("favority_query").getValue());
+					
 					webix.ajax().post("/database/saveFavoritiesQuery.json", 
 						{
 							memo:$$("favority_memo").getValue(),
-							query:encodeURIComponent($$("favority_query").getValue())
+							query:$$("favority_query").getValue(),
 						}, 
 						function(text,data){
 							// 저장 실패
@@ -1503,9 +1505,6 @@ var add_favority_query_form = {
 
 //즐겨찾는 쿼리 추가 창
 var addFavorityQueryPopup = function(obj){
-	// 쿼리 value 입력
-	add_favority_query_form.elements[1].value=obj.getAttribute("data");
-
 	webix.ui({
         view:"window",
         id:"add_favority_query_popup",
@@ -1515,7 +1514,10 @@ var addFavorityQueryPopup = function(obj){
         head:"즐겨 찾는 쿼리 추가",
         body:webix.copy(add_favority_query_form)
     }).show();
-    $$("favority_memo").focus();
+	
+	// 쿼리 value 입력
+	$$("favority_query").setValue(obj.getAttribute("data"));
+	$$("favority_memo").focus();
 };
 
 /**
@@ -1546,7 +1548,7 @@ var database_query_favorities_view_load = function(){
 				getDataParseView("/database/findFavoritiesQueryList",{},"database_query_favorities_view",false,false,false);
 				$("database_query_favorities_view").sort("favorityQuerySeq","desc");
 			} catch (e) {
-				database_query_favorities_view_load();
+				webix.message(e.message);
 			}
 		}	
 	}, 100);

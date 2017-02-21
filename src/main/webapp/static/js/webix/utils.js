@@ -150,7 +150,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
     			$$("database_query_log_view").data.add({
     				seq:$$("database_query_log_view").data.order.length+1,
     				date:time.getHours()+'시 '+time.getMinutes()+'분 '+time.getSeconds()+'초 <br/>'+time.getFullYear()+'년 '+(time.getMonth()+1)+'월 '+time.getDate()+'일',
-    				query:decodeURIComponent($$(viewName).config.executedQuery),
+    				query:$$(viewName).config.executedQuery,
     				reTry:"",
     				favorities:""
     			},$$("database_query_log_view").data.order.length+1);
