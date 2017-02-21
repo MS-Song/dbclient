@@ -811,7 +811,7 @@ var database_info_cell = [
 	},
 	{
 		id:"database_query_favorities_view",
-		header:"Favorites Query",
+		header:"Favorites",
 		view : "datatable", 
     	columns:[
 			{ 	id:"favorityQuerySeq",	header:["Seq", {	// 검색창 구현
