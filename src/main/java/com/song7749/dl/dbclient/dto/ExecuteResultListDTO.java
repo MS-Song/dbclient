@@ -24,6 +24,8 @@ public class ExecuteResultListDTO extends AbstractDto{
 	@NotNull
 	private boolean htmlAllow;
 	@NotNull
+	private boolean usePLSQL;
+	@NotNull
 	private String id;
 	@NotNull
 	private String ip;
@@ -41,7 +43,8 @@ public class ExecuteResultListDTO extends AbstractDto{
 
 	public ExecuteResultListDTO(Integer serverInfoSeq, String host,
 			String schemaName, String account, boolean autoCommit,
-			String query, boolean htmlAllow, String id, String ip) {
+			String query, boolean htmlAllow, boolean usePLSQL, String id,
+			String ip) {
 		this.serverInfoSeq = serverInfoSeq;
 		this.host = host;
 		this.schemaName = schemaName;
@@ -49,6 +52,7 @@ public class ExecuteResultListDTO extends AbstractDto{
 		this.autoCommit = autoCommit;
 		this.query = query;
 		this.htmlAllow = htmlAllow;
+		this.usePLSQL = usePLSQL;
 		this.id = id;
 		this.ip = ip;
 	}
@@ -107,6 +111,14 @@ public class ExecuteResultListDTO extends AbstractDto{
 
 	public void setHtmlAllow(boolean htmlAllow) {
 		this.htmlAllow = htmlAllow;
+	}
+
+	public boolean isUsePLSQL() {
+		return usePLSQL;
+	}
+
+	public void setUsePLSQL(boolean usePLSQL) {
+		this.usePLSQL = usePLSQL;
 	}
 
 	public String getId() {

@@ -1,15 +1,3 @@
-
-/**
- * html entity 를 decode 한다.
- */
-String.prototype.unescapeHtml = function () {
-    var temp = document.createElement("div");
-    temp.innerHTML = this;
-    var result = temp.childNodes[0].nodeValue;
-    temp.removeChild(temp.firstChild);
-    return result;
-}
-
 /**
  * 데이터를 조회하여, data view 에 넣는다.
  */
@@ -159,6 +147,8 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
     		}
 		});
 	}
+	// 시간 객체 제거 -- 오류가 나도 제거한다.
+	clearInterval(timeInterval);
 };
 
 
@@ -199,14 +189,14 @@ var addDataParseView = function(url,parmeters,viewName){
  * 데이터를 조회하여, editor 에 넣는다.
  * TODO-캐시처리
  */
-var getDataParseEditor = function(url,parmeters,returnValueName){
+var getDataParseEditor = function(url,parmeters,viewName,returnValueName){
 	webix.ajax().post(url+".json",parmeters, 
 		function(text,data){
 			if(data.json().status ==200 && null!=data.json().result){
 				$.each(data.json().result,function(index, obj){
-					$$("database_query_input").setValue(obj[0][returnValueName].unescapeHtml());
+					$$(viewName).setValue(obj[0][returnValueName].unescapeHtml());
 				});
-				$$("database_query_input").focus(); 
+				$$(viewName).focus(); 
 			} else {
 				errorControll(data.json());
 			}
@@ -336,4 +326,13 @@ var uncomma=function(str) {
     return str.replace(/[^\d]+/g, '');
 }
 
-
+/**
+ * html entity 를 decode 한다.
+ */
+String.prototype.unescapeHtml = function () {
+    var temp = document.createElement("div");
+    temp.innerHTML = this;
+    var result = temp.childNodes[0].nodeValue;
+    temp.removeChild(temp.firstChild);
+    return result;
+}

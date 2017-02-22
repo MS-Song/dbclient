@@ -64,7 +64,7 @@ var selectQuery=function(mode){
 		html+='\rwhere \r\t' + whereList.join("\r\tand ");
 	}
 
-	addEditorValue($$("database_query_input"),html);
+	addEditorValue(html);
 	
 };
 
@@ -88,7 +88,7 @@ var deleteQuery=function(ret){
 	if(ret){
 		return html;
 	} else {
-		addEditorValue($$("database_query_input"),html);	
+		addEditorValue(html);	
 	}
 };
 
@@ -114,31 +114,9 @@ var insertIntoQuery=function(ret){
 	if(ret){
 		return html;
 	} else {
-		addEditorValue($$("database_query_input"),html);	
+		addEditorValue(html);	
 	}
 	
-};
-
-/**
- * insert set query
- */
-var insertSetQuery=function(){
-	if(null==serverInfo.tableName){
-		webix.message({ type:"error", text:"테이블을 먼저 선택해주세요"});
-		return;
-	}
-
-	// database 종류에 따라 지원하지 않는다.
-	if(serverInfo.driver == 'oracle'){
-		insertIntoQuery();
-	} else {
-		var setList=getColumns('selectSetList');
-		var html='INSERT INTO '+serverInfo.tableName;
-		html+='\rSET\r\t';
-		html+=setList.join("\r\t,");
-
-		addEditorValue($$("database_query_input"),html);
-	}
 };
 
 /**
@@ -165,7 +143,7 @@ var updateSetQuery=function(ret){
 	if(ret){
 		return html;
 	} else {
-		addEditorValue($$("database_query_input"),html);	
+		addEditorValue(html);	
 	}
 	
 }
@@ -378,9 +356,10 @@ var aliasTable=function(table){
 /**
  * 에디터 창에 추가 값을 넣는다.
  */
-var addEditorValue = function (editor,addValue){
-	var doc		=editor.getEditor().doc;
-	var retval = editor.getEditor().getValue();
+var addEditorValue = function (addValue){
+	var editor	= $$("database_query_input").getEditor();
+	var doc		= $$("database_query_input").getEditor().doc;
+	var retval	= $$("database_query_input").getEditor().getValue();
 
 	// 기존 에디터 창의 내용 아래에 더한다.
 	if(null==retval || ""==retval){

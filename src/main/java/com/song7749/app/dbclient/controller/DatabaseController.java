@@ -902,6 +902,7 @@ public class DatabaseController {
 			@RequestParam(value="autoCommit",required=true)			@ApiParam("commit 가능 여부")					boolean autoCommit,
 			@RequestParam(value="query",required=true)				@ApiParam("Database Query SQL")				String  query,
 			@RequestParam(value="htmlAllow",required=true)			@ApiParam("결과물에 HTML 테그를 허용할 것인가 여부")	boolean htmlAllow,
+			@RequestParam(value="usePLSQL",required=true)			@ApiParam("PLSQL 실행 여부")					boolean usePLSQL,
 			@RequestParam(value="limit",required=false)				@ApiParam									Long 	limit,
 			@RequestParam(value="offset",required=false)			@ApiParam									Long 	offset,
 			HttpServletRequest request,
@@ -936,6 +937,7 @@ public class DatabaseController {
 					autoCommit,
 					query,
 					htmlAllow,
+					usePLSQL,
 					loginManager.getLoginID(request),
 					request.getRemoteAddr());
 
@@ -1078,6 +1080,8 @@ public class DatabaseController {
 			@ApiParam	String  account,
 			@RequestParam(value="query",required=true)
 			@ApiParam("Database Query SQL")	String  query,
+			@RequestParam(value="usePLSQL",required=true)
+			@ApiParam("PLSQL 실행 여부") boolean usePLSQL,
 			HttpServletRequest request,
 			ModelMap model){
 
@@ -1112,6 +1116,7 @@ public class DatabaseController {
 					true,
 					query,
 					false,
+					usePLSQL,
 					loginManager.getLoginID(request),
 					request.getRemoteAddr()));
 		}

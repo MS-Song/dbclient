@@ -1,5 +1,6 @@
 package com.song7749.dl.dbclient.service;
 
+import static com.song7749.util.LogMessageFormatter.format;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -97,7 +97,6 @@ public class DBclientDataSourceManagerImplTest {
 		assertThat(list, notNullValue());
 	}
 
-	@Ignore
 	@Test
 	public void testExecuteQueryListServerInfoStringBoolean() throws Exception {
 		List<Map<String,String>> list=null;
@@ -112,28 +111,12 @@ public class DBclientDataSourceManagerImplTest {
 			list =dbClientDataSourceManager.executeQueryList(serverInfo,
 					new ExecuteResultListDTO(
 							serverInfo.getServerInfoSeq(), serverInfo.getHost(),
-							serverInfo.getSchemaName(), serverInfo.getAccount(), false, query, false, "song7749", "127.0.0.1"));
+							serverInfo.getSchemaName(), serverInfo.getAccount(), false, query, false, false,"song7749", "127.0.0.1"));
+			logger.debug(format("{}",""),list);
 			assertTrue(true);
 		}
-	}
-
-	@Test
-	public void testSelectProcedureVOList() throws Exception {
-		// give
-		// when
-		List<ProcedureVO> list = dbClientDataSourceManager.selectProcedureVOList(serverInfo);
-		// then
-		assertThat(list, notNullValue());
-	}
-
-	@Test
-	public void testSelectProcedureVODetailList() throws Exception {
-		// give
-		serverInfo.setName("sp_serverinfo");
-		// when
-		List<Map<String,String>> list = dbClientDataSourceManager.selectProcedureDetailList(serverInfo);
-		// then
-		assertThat(list, notNullValue());
+		// 로그 기록 시간을 번다
+		Thread.sleep(2000);
 	}
 
 	@Test
@@ -155,4 +138,35 @@ public class DBclientDataSourceManagerImplTest {
 		// then
 		assertThat(list, notNullValue());
 	}
+
+	@Test
+	public void testSelectProcedureVOList() throws Exception {
+		// give
+		// when
+		List<ProcedureVO> list = dbClientDataSourceManager.selectProcedureVOList(serverInfo);
+		// then
+		assertThat(list, notNullValue());
+	}
+
+	@Test
+	public void testSelectProcedureVODetailList() throws Exception {
+		// give
+		serverInfo.setName("string_print");
+		// when
+		List<Map<String,String>> list = dbClientDataSourceManager.selectProcedureDetailList(serverInfo);
+
+		assertThat(list, notNullValue());
+	}
+
+	@Test
+	public void testSelectProcedureVOSourceList() throws Exception {
+		// give
+		serverInfo.setName("string_print");
+		// when
+		List<ProcedureVO> list = dbClientDataSourceManager.selectProcedureVOSourceList(serverInfo);
+		logger.trace(format("{}",""),list);
+		assertThat(list, notNullValue());
+	}
+
+
 }

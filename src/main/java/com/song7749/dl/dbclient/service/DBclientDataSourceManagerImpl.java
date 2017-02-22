@@ -66,6 +66,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	// ConcurrentHashMap 중복 생성을 방지하고자 함.
 	private final Map<ServerInfo, DataSource> dataSourceMap = new ConcurrentHashMap<ServerInfo, DataSource>();
 
+	// DML 문에 대한 정의
+	private final String[] affectedQuery={"insert","update","delete","create","drop","truncate","alter"};
 
 	@Autowired
 	ApplicationContext context;
@@ -296,33 +298,6 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	/**
 	 * Query를 실행한다.
-	 * 리턴 값이 없고, 실행만 할 경우에 사용한다.
-	 * @param conn
-	 * @param executeQuery
-	 * @param isAutoCommit
-	 * @return int affected rows
-	 * @throws SQLException
-	 */
-	private void executeQuery(Connection conn,String executeQuery) throws SQLException{
-		logger.debug(format("excute Query : {} ","databaseInfo"),executeQuery);
-		try {
-			conn.prepareStatement(executeQuery).execute();
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			try {
-				closeAll(conn, null, null);
-			} catch (SQLException e) {
-				logger.info(format("{}","executeQuery Error"),e.getMessage());
-			} finally {
-				nullAll(conn, null, null);
-			}
-		}
-	}
-
-
-	/**
-	 * Query를 실행한다.
 	 * @param conn
 	 * @param executeQuery
 	 * @param isAutoCommit
@@ -387,16 +362,13 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	@Override
 	public List<Map<String, String>> executeQueryList(ServerInfo serverInfo,ExecuteResultListDTO dto) {
+
 		List<Map<String, String>> list = null;
 
-		// 실행 전에 Thread ID 를 Query 내에 추가 한다. 맨 뒤에 주석으로 추가 한다.
-//		long threadId = Thread.currentThread().getId();
-//		dto.setQuery(dto.getQuery() + " /* dbclient_thred_id["+ String.valueOf(threadId) +"] */");
-
-		if(dto.getQuery().toLowerCase().startsWith("explain")){
+		if(dto.getQuery().toLowerCase().indexOf("explain") >= 0){
 			// 별도의 explain 쿼리가 존재하지 않으면..
-			if(null!=serverInfo.getDriver().getExplainQuery()
-					&& serverInfo.getDriver().getExplainQuery().equals("")){
+			if(null==serverInfo.getDriver().getExplainQuery()
+					|| serverInfo.getDriver().getExplainQuery().equals("")){
 				try{
 					list = executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
 				} catch (SQLException e) {
@@ -412,26 +384,52 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 					throw new IllegalArgumentException(e.getMessage());
 				}
 			}
-		} else if(dto.getQuery().toLowerCase().startsWith("select")
-				|| dto.getQuery().toLowerCase().startsWith("show")){
+		}  else if("mysql".equals(serverInfo.getDriver().getDbms())
+				&& dto.getQuery().toLowerCase().indexOf("show")>=0){
+			// mysql 이고, show 묹자열이 있으면
 			try{
 				list=executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
 			} catch (SQLException e) {
 				throw new IllegalArgumentException(e.getMessage());
 			}
-		} else {
-			try{
-				int affectRows = executeQuery(getConnection(serverInfo), dto.getQuery(), dto.isAutoCommit());
 
-				Map<String, String> affectedRowMap = new HashMap<String, String>();
-				affectedRowMap.put("affectedRows", new Integer(affectRows).toString());
+		} else{
+			// row 에 update 가 일어나는 구문과 그 외로 분기한다.
+			boolean isAffected=false;
+			for(String s : affectedQuery){
+				if(dto.getQuery().toLowerCase().indexOf(s)>=0){
+					isAffected=true;
+					break;
+				}
+			}
+			// DML 이나 PLSQL 인 경우에는 AffectedRow 가 발생한다.
+			isAffected = isAffected || dto.isUsePLSQL();
 
-				list = new ArrayList<Map<String,String>>();
-				list.add(affectedRowMap);
-			} catch (SQLException e) {
-				throw new IllegalArgumentException(e.getMessage());
+			// row 에 영향이 있는 쿼리
+			if(isAffected){
+				try{
+					int affectRows = executeQuery(getConnection(serverInfo), dto.getQuery(), dto.isAutoCommit());
+
+					Map<String, String> affectedRowMap = new HashMap<String, String>();
+					affectedRowMap.put("affectedRows", new Integer(affectRows).toString());
+
+					list = new ArrayList<Map<String,String>>();
+					list.add(affectedRowMap);
+				} catch (SQLException e) {
+					throw new IllegalArgumentException(e.getMessage());
+				}
+			} else { // 그 외 조회성 쿼리
+				try{
+					// 한정자 추가
+					dto.setQuery(serverInfo.getDriver().getAddRangeOperator(dto.getQuery(), dto.getOffset(), dto.getLimit()));
+					list=executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
+				} catch (SQLException e) {
+					throw new IllegalArgumentException(e.getMessage());
+				}
 			}
 		}
+
+
 
 		// 쿼리 실행 로그 기록
 		final SaveQueryExecuteLogDTO executeLogdto = new SaveQueryExecuteLogDTO(
@@ -508,13 +506,16 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		for(Map<String,String> map:resultList){
 
 			String addSoruce = null;
+			String text = null;
 			if("oracle".equals(serverInfo.getDriver().getDbms())){
 				addSoruce="CREATE OR REPLACE VIEW "+map.get("NAME");
+				text=map.get("TEXT");
 			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
-				addSoruce="DROP VIEW IF EXISTS "+map.get("NAME")+";\nCREATE VIEW "+map.get("NAME") + " ";
+				addSoruce="";
+				text=map.get("Create View");
 			}
 
-			ViewVO vv = new ViewVO(map.get("TEXT"),addSoruce);
+			ViewVO vv = new ViewVO(text,addSoruce);
 			list.add(vv);
 		}
 		return list;
@@ -567,15 +568,18 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		}
 
 		for(Map<String,String> map:resultList){
-
+			String text = null;
 			String addSoruce = null;
+
 			if("oracle".equals(serverInfo.getDriver().getDbms())){
-				addSoruce="CREATE OR REPLACE ";
+				addSoruce="CREATE OR REPLACE ";//Create Procedure
+				text = map.get("TEXT");
 			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
-				addSoruce="DROP PROCEDURE IF EXISTS "+map.get("NAME")+";\nCREATE PROCEDURE "+map.get("NAME") + " ";
+				addSoruce="";
+				text = map.get("Create Procedure");
 			}
 
-			ProcedureVO pv = new ProcedureVO(map.get("TEXT"),addSoruce);
+			ProcedureVO pv = new ProcedureVO(text,addSoruce);
 			list.add(pv);
 		}
 		return list;
@@ -627,13 +631,16 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		for(Map<String,String> map:resultList){
 
 			String addSoruce = null;
+			String text = null;
 			if("oracle".equals(serverInfo.getDriver().getDbms())){
 				addSoruce="CREATE OR REPLACE ";
+				text=map.get("TEXT");
 			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
-				addSoruce="DROP FUNCTION IF EXISTS "+map.get("NAME")+"\n;CREATE FUNCTION "+map.get("NAME") + " ";
+				addSoruce="";
+				text=map.get("Create Function");
 			}
 
-			FunctionVO fv = new FunctionVO(map.get("TEXT"),addSoruce);
+			FunctionVO fv = new FunctionVO(text,addSoruce);
 			list.add(fv);
 		}
 		return list;
@@ -685,7 +692,9 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 		for(Map<String,String> map:resultList){
 			String addSoruce = null;
+			String text=null;
 			if("oracle".equals(serverInfo.getDriver().getDbms())){
+				text=map.get("TEXT");
 				addSoruce = "CREATE OR REPLACE TRIGGER " +map.get("DESCRIPTION");
 				if(!com.song7749.util.StringUtils.isEmpty(map.get("WHEN_CLAUSE"))){
 					addSoruce +="WHEN (" + map.get("WHEN_CLAUSE") + ") \n";
@@ -693,18 +702,11 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 					addSoruce +="\n";
 				}
 			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
-				addSoruce="DROP TRIGGER  IF EXISTS "+map.get("NAME")+"\nCREATE TRIGGER "+map.get("NAME");
-				addSoruce+=" " + map.get("ACTION_TIMING");
-				addSoruce+=" " + map.get("EVENT_MANIPULATION");
-				addSoruce+=" " + map.get("EVENT_OBJECT_TABLE");
-				if(!com.song7749.util.StringUtils.isEmpty(map.get("ACTION_ORIENTATION"))){
-					addSoruce+="\nFOR EACH " + map.get("ACTION_ORIENTATION");
-				}
-				addSoruce+="\n";
+				text=map.get("SQL Original Statement");
+				addSoruce="";
 			}
 
-
-			TriggerVO tv = new TriggerVO(map.get("TEXT"),addSoruce);
+			TriggerVO tv = new TriggerVO(text,addSoruce);
 			list.add(tv);
 		}
 		return list;
@@ -801,6 +803,8 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 				String runQuery = porcess.get("SQL_TEXT").replace("\n", "").replace("\t", "").replace(" ", "");
 				// 중지 대상 쿼리
 				String stopQuery = dto.getQuery().replace("\n", "").replace("\t", "").replace(" ", "");
+				// rownum 을 추가한 쿼리로 한번 더 검사한다.
+				String stopQueryWithLimit = serverInfo.getDriver().getAddRangeOperator(dto.getQuery(), dto.getOffset(), dto.getLimit()).replace("\n", "").replace("\t", "").replace(" ", "");
 
 				logger.debug(
 						format(
@@ -810,7 +814,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 								stopQuery);
 
 				// 방금 사용한 쿼리가 맞을 경우
-				if(stopQuery.indexOf(runQuery) >= 0){
+				if(stopQuery.indexOf(runQuery) >= 0 || stopQueryWithLimit.indexOf(runQuery) >= 0){
 					// 쿼리 실행 중단
 					logger.debug(format("{}","SQL쿼리 중단 실행"),runQuery);
 					try {

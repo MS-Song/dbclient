@@ -10,6 +10,7 @@ var serverInfo = {
 		autoCommit:false,
 		htmlAllow:false,
 		useCache:true,
+		usePLSQL:false
 }
 /**
  * serverInfo 객체에 파라메터를 변조하기 위해 복제 한다.
@@ -25,6 +26,7 @@ var copyServerInfo = function(serverInfoObject){
 	obj.autoCommit		=  serverInfoObject.autoCommit;		
 	obj.htmlAllow		=  serverInfoObject.htmlAllow;		
 	obj.useCache		=  serverInfoObject.useCache;		
+	obj.usePLSQL		=  serverInfoObject.usePLSQL;
 	return obj;
 }
 
@@ -110,7 +112,17 @@ var select_database_popup=function(){
 	    			// 선택된 서버 정보를 보여준다.
 	    			$$("toolbar").removeView("toolbar_notices");
 	    			$$("toolbar").addView({id:"toolbar_notices",view: "label", label: selectedRow.hostAlias+" ["+serverInfo.server+"] 선택"},3);
-	    			
+
+    				// SQL Bind Style 정의한다.
+	    			$$("toolbar").removeView("database_developer_combo_prepare_style");
+	    			$$("toolbar").addView({
+	    				id:"database_developer_combo_prepare_style",
+						view:"combo",
+						width:100,
+						value:"#{field}",
+						options:["?", ":field", "#{field}","${field}"],
+						tooltip:"prepare 스타일을 정의 한다.<br/>?,:field,#{field},${field} 정의 가능"
+					});
 	    			// 캐시 삭제 버튼을 노출 한다.
 	    			$$("toolbar").removeView("toolbar_cache_remove");
 	    			$$("toolbar").addView({id:"toolbar_cache_remove",
@@ -134,8 +146,8 @@ var select_database_popup=function(){
 	    							webix.message({ type:"error", text:message[0].replace("="," ") });
 	    						}
 	    					});
-	    				}
-	    			}});
+	    				}}
+	    			});
 	    			// 선택된 데이터베이스의 정보를 읽는다.
 	    			database_info_data_load();
 	            }}
@@ -422,7 +434,8 @@ var database_info_cell = [
 	    			var selectedRow = $$("database_info_view_list_view").getSelectedItem();
 	    			var param = copyServerInfo(serverInfo);
 	    			param.name=selectedRow.name;
-	    			getDataParseEditor("/database/viewSourceList",param,"editText");
+	    			$$("database_query_develop_mode").setValue("PLSQL");
+	    			getDataParseEditor("/database/viewSourceList",param,"database_query_input","editText");
 	    		},
 	    		onAfterLoad:function(){
 					this.adjustColumn("seq");
@@ -508,7 +521,8 @@ var database_info_cell = [
 	    			var selectedRow = $$("database_info_procedure_list_view").getSelectedItem();
 	    			var param = copyServerInfo(serverInfo);
 	    			param.name=selectedRow.name;
-	    			getDataParseEditor("/database/procedureSourceList",param,"editText");
+	    			$$("database_query_develop_mode").setValue("PLSQL");
+	    			getDataParseEditor("/database/procedureSourceList",param,"database_query_input","editText");
 	    		},
 	    		onAfterLoad:function(){
 					this.adjustColumn("seq");
@@ -591,7 +605,8 @@ var database_info_cell = [
 	    			var selectedRow = $$("database_info_function_list_view").getSelectedItem();
 	    			var param = copyServerInfo(serverInfo);
 	    			param.name=selectedRow.name;
-	    			getDataParseEditor("/database/functionSourceList",param,"editText");
+	    			$$("database_query_develop_mode").setValue("PLSQL");
+	    			getDataParseEditor("/database/functionSourceList",param,"database_query_input","editText");
 	    		},
 	    		onAfterLoad:function(){
 					this.adjustColumn("seq");
@@ -675,7 +690,8 @@ var database_info_cell = [
 	    			var selectedRow = $$("database_info_trigger_list_view").getSelectedItem();
 	    			var param = copyServerInfo(serverInfo);
 	    			param.name=selectedRow.name;
-	    			getDataParseEditor("/database/triggerSourceList",param,"editText");
+	    			$$("database_query_develop_mode").setValue("PLSQL");
+	    			getDataParseEditor("/database/triggerSourceList",param,"database_query_input","editText");
 	    		},
 	    		onAfterLoad:function(){
 					this.adjustColumn("seq");
@@ -850,6 +866,8 @@ var database_info_cell = [
 var database_info_data_load=function(){
 	// 테이블 리스트 조회
 	getDataParseView("/database/tableList",serverInfo,"database_info_table_list_view",false,true,false);
+	// 테이블 정보 초기화
+	database_info_field_data_load();
 	// view list 조회
 	getDataParseView("/database/viewList",serverInfo,"database_info_view_list_view",false,true,false);	
 	// procedure list 조회
@@ -880,15 +898,23 @@ var database_info_field_data_load = function(){
 		$$("database_info_table_list_view").hideProgress();
 	}
 	
-	// 필드 리스트
-	getDataParseView("/database/fieldList",serverInfo,"table_info_field_list",false,true,false);
-	// 개발자 도구 리스트
-	getDataParseView("/database/fieldList",serverInfo,"table_info_develop_list",false,true,false);
-	// 인덱스 리스트
-	getDataParseView("/database/indexList",serverInfo,"table_info_index_list",false,true,false);
-	// create table view
-	getDataParseTextarea("/database/showCreateTable",serverInfo,"show_create_table_source","showCreateTable");
-
+	if(null==selectedRow || undefined==selectedRow){
+		try {
+			var clearViewArray=['table_info_field_list','table_info_develop_list','table_info_index_list','show_create_table_source'];
+			for(var key in clearViewArray){
+				clearViewArray[key] == "show_create_table_source" ? $$(clearViewArray[key]).setValue(""):$$(clearViewArray[key]).clearAll();	
+			}
+		} catch (e) {}
+	} else {
+		// 필드 리스트
+		getDataParseView("/database/fieldList",serverInfo,"table_info_field_list",false,true,false);
+		// 개발자 도구 리스트
+		getDataParseView("/database/fieldList",serverInfo,"table_info_develop_list",false,true,false);
+		// 인덱스 리스트
+		getDataParseView("/database/indexList",serverInfo,"table_info_index_list",false,true,false);
+		// create table view
+		getDataParseTextarea("/database/showCreateTable",serverInfo,"show_create_table_source","showCreateTable");
+	}
 };
 
 
@@ -923,54 +949,67 @@ var database_query_cell = [{
 			elements:[{	
 				rows:[{
 					cols:[ // 상단 기능 버튼 
-						{
-							id:"database_developer_combo_prepare_style",
+				       {
+		    				id:"database_query_develop_mode",
 							view:"combo",
-							value:"#{field}",
-							options:["?", ":field", "#{field}","${field}"],
-							tooltip:"prepare 스타일을 정의 한다.<br/>?,:field,#{field},${field} 정의 가능"
-						}, 
-						{
+							width:100,
+							value:"SQL",
+							options:["SQL", "PLSQL"],
+							tooltip:"에디터 모드를 변경한다.[SQL:일반SQL모드][PLSQL:PLSQL개발모드]"
+						},   
+					    {
 							id:"database_query_button_select_count_pk",
 							view:"button",
 							value:"select count",
 							tooltip:"select count(pk) from 쿼리를 생성한다. 단축키: Ctrl+1 ",
-							click:"selectCountQuery"
+							on:{"onItemClick":function(){
+								selectCountQuery();
+							}}
 					    }, 
 					    {
 							id:"database_query_button_select_all_field",
 							view:"button",
 							value:"select *",
 							tooltip:"select * from 쿼리를 생성한다. 단축키: Ctrl+2",
-							click:"selectAllQuery"
+							on:{"onItemClick":function(){
+								selectAllQuery();
+							}}
 					    }, 
 					    {
 							id:"database_query_button_select_name_field",
 							view:"button",
 							value:"select field",
 							tooltip:"select 필드명 from 쿼리를 생성한다. 단축키: Ctrl+3",
-							click:"selectNameQuery"
+							on:{"onItemClick":function(){
+								selectNameQuery();
+							}}
 					    }, 
 					    {
 							id:"database_query_button_insert_into",
 							view:"button",
 							value:"insert into",
 							tooltip:"INSERT INTO 쿼리를 생성한다. 단축키: Ctrl+4",
-							click:"insertIntoQuery(false)"
+							on:{"onItemClick":function(){
+								insertIntoQuery(false);
+							}}
 					    }, 
 					    {
 							id:"database_query_button_update_set",
 							view:"button",
 							value:"update set",
 							tooltip:"Update SET 쿼리를 생성한다. 단축키: Ctrl+5",
-							click:"updateSetQuery(false)"
+							on:{"onItemClick":function(){
+								updateSetQuery(false);
+							}}
 					    }, 
 					    {
 							id:"database_query_button_delete",
 							view:"button",
 							value:"delete",
 							tooltip:"DELETE 쿼리를 생성한다. 단축키: Ctrl+6",
-							click:"deleteQuery(false)"
+							on:{"onItemClick":function(){
+								deleteQuery(false);
+							}}
 					    }, 
 					    {
 							id:"database_query_button_auto_commit",
@@ -991,7 +1030,9 @@ var database_query_cell = [{
 							view:"button",
 							value:"Stop",
 							tooltip:"실행중인 쿼리를 중단한다. 단축키: Ctrl+0 ",
-							on:{"onItemClick":"killExecuteQuery"}
+							on:{"onItemClick":function(){
+								killExecuteQuery(false);
+							}}
 						},					
 					    {
 							id:"database_query_button_execute",
@@ -1173,93 +1214,59 @@ var database_query_cell = [{
  * TODO - 에디터를 동적으로 가져오는 방법에 대한 연구가 필요하다.
  */
 var getQueryString = function(){
-	var editor 	= $$("database_query_input").getEditor();
+	var editor	= $$("database_query_input").getEditor();
 	var doc 	= editor.doc;
 	var Pos		= CodeMirror.Pos;
 	var cmpPos 	= CodeMirror.cmpPos;
 	var retQuery= editor.getValue();
-	
-	// drag 되어 있는 쿼리가 있으면, 해당 부분만 가져온다.
-	if(""!=doc.getSelection()){
+	if(serverInfo.usePLSQL){
+		// PLSQL인 경우 별도 가공을 하지 않고 PLSQL 모드로 변경 한다.
+	}
+	else if(""!=doc.getSelection()){ // drag 되어 있는 쿼리가 있으면, 해당 부분만 가져온다.
 		retQuery=doc.getSelection().replace(/;/g,"");
-	} else {  
-		// DDL 문인가 확인 한다.
-		var isDDL=false;
-		// DDL 검증
-		var validate = {
-			validateDDL:['CREATE','REPLACE','PROCEDURE','VIEW','FUNCTION','TRIGGER'],
-			isDDL:function(query){
-				var beforeWord=null;
-				var afterWord=null;
-				var nowWords=[];
-				for(var key in this.validateDDL){
-					var pos = query.toUpperCase().indexOf(this.validateDDL[key]);
-					if(pos>=0){
-						// 앞단어 추출
-						beforeWord=query.toUpperCase().substring(pos-1, pos);
-						// 뒤 단어 추출
-						afterWord=query.toUpperCase().substring(pos+this.validateDDL[key].length, pos+this.validateDDL[key].length+1);
-						if((""==beforeWord || " "==beforeWord) && (afterWord==" " || afterWord=="")){
-							nowWords.push(this.validateDDL[key]);
-						} 
-					}
-				}
-				// 최소 2개의 단어가 포함되어 있어야 한다
-				return nowWords.length>1 ? true:false;	
-			}
-		}
-		
-		if(validate.isDDL(retQuery)){
-			if(confirm(validate.validateDDL.join(",")+" 단어가 포함되어 있습니다. DDL 구문의 실행이 맞습니까?")){
-				return retQuery;
-			} else {
-				return "";
-			}
-		} else {
-			// 쿼리의 포인터를 찾아 해당 위치에서 실행 한다.
-		    var separator = [];
-		    var validRange = {
-		      start: Pos(0, 0),
-		      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
-		    };
+	} else { // 쿼리의 포인터를 찾아 해당 위치에서 실행 한다.  
+	    var separator = [];
+	    var validRange = {
+	      start: Pos(0, 0),
+	      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
+	    };
 
-		    var indexOfSeparator = retQuery.indexOf(";");
-		    while(indexOfSeparator != -1) {
-		    	separator.push(doc.posFromIndex(indexOfSeparator+1));
-		    	indexOfSeparator = retQuery.indexOf(";", indexOfSeparator+1);
-		    }
-		    
-		    separator.unshift(Pos(0, 0));
-		    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
-		
-		    //find valid range
-		    var prevItem = null;
-		    var current = editor.getCursor();
-		    
-		    // line 과 ch 가 둘다 0인 경우에 오류가 발생하여 정정한다.
-		    if(current.line == 0 && current.ch==0){
-		    	current.ch++;
-		    }
+	    var indexOfSeparator = retQuery.indexOf(";");
+	    while(indexOfSeparator != -1) {
+	    	separator.push(doc.posFromIndex(indexOfSeparator+1));
+	    	indexOfSeparator = retQuery.indexOf(";", indexOfSeparator+1);
+	    }
+	    
+	    separator.unshift(Pos(0, 0));
+	    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
+	
+	    //find valid range
+	    var prevItem = null;
+	    var current = editor.getCursor();
+	    
+	    // line 과 ch 가 둘다 0인 경우에 오류가 발생하여 정정한다.
+	    if(current.line == 0 && current.ch==0){
+	    	current.ch++;
+	    }
 
-		    for (var i = 0; i < separator.length; i++) {
-		    	if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
-		    		validRange = {start: prevItem, end: separator[i]};
-		    		break;
-		    	}
-		    	prevItem = separator[i];
-		    }
+	    for (var i = 0; i < separator.length; i++) {
+	    	if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
+	    		validRange = {start: prevItem, end: separator[i]};
+	    		break;
+	    	}
+	    	prevItem = separator[i];
+	    }
 
-		    var queries = doc.getRange(validRange.start, validRange.end, false);
-	        doc.setSelection(validRange.start, validRange.end);
+	    var queries = doc.getRange(validRange.start, validRange.end, false);
+        doc.setSelection(validRange.start, validRange.end);
 
-	        // 쿼리의 시작이 ; 로 시작할 경우
-	        if(null!=queries && queries.length>0){
-	        	if(queries[0].indexOf(";")>=0){
-	        		queries[0].substring(parseInt(queries[0].indexOf(";")+1),queries[0].length);	
-	        	}
-	        }
-	        retQuery=queries.join("\n").replace(/;/g,"");
-		}
+        // 쿼리의 시작이 ; 로 시작할 경우
+        if(null!=queries && queries.length>0){
+        	if(queries[0].indexOf(";")>=0){
+        		queries[0].substring(parseInt(queries[0].indexOf(";")+1),queries[0].length);	
+        	}
+        }
+        retQuery=queries.join("\n").replace(/;/g,"");
 	}
 	return retQuery;
 }
@@ -1271,6 +1278,8 @@ var getQueryString = function(){
  * 결과 창에 대한 limit 와 offset 을 가고 있어야 한다.
  */
 var executeQuery = function (isNextData,resultView){
+	// PLSQL 인가 확인한다.
+	serverInfo.usePLSQL=$$("database_query_develop_mode").getValue()=="PLSQL" ? true : false;
 	// 접속되어 있는 서버 정보 객체 복사
 	var newServerInfo = copyServerInfo(serverInfo);
 	// 스크롤 한 경우에 추가 데이터가 없음을 표시하지 않는다.
@@ -1433,7 +1442,8 @@ var killExecuteQuery = function (){
 		server:serverInfo.server,
 		schema:serverInfo.schema,
 		account:serverInfo.account,
-		query:getQueryString()}, 
+		query:getQueryString(),
+		usePLSQL:serverInfo.usePLSQL}, 
 		function(text,data){
 			if(data.json().status ==200){
 				webix.message("쿼리가 실행 중지 되었습니다. ");

@@ -370,14 +370,7 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Validate
 	@Transactional(value = "dbClientTransactionManager")
 	public List<Map<String, String>> executeResultList(ExecuteResultListDTO dto) {
-		ServerInfo si =serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
-		// query 에 한정자를 추가한다.
-		if(null!=si){
-			dto.setQuery(
-				si.getDriver().getAddRangeOperator(dto.getQuery(), dto.getOffset(), dto.getLimit())
-			);
-		}
-		return dbClientDataSourceManager.executeQueryList(si, dto);
+		return dbClientDataSourceManager.executeQueryList(serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq())), dto);
 	}
 
 	@Override
@@ -387,13 +380,6 @@ public class ServerInfoManagerImpl implements ServerInfoManager {
 	@Override
 	@Transactional(value = "dbClientTransactionManager")
 	public void killExecutedQuery(ExecuteResultListDTO dto) {
-		ServerInfo si =serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq()));
-		// query 에 한정자를 추가한다.
-		if(null!=si){
-			dto.setQuery(
-				si.getDriver().getAddRangeOperator(dto.getQuery(), dto.getOffset(), dto.getLimit())
-			);
-		}
-		dbClientDataSourceManager.killQuery(si, dto);
+		dbClientDataSourceManager.killQuery(serverInfoRepository.find(new ServerInfo(dto.getServerInfoSeq())), dto);
 	}
 }
