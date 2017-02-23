@@ -336,3 +336,11 @@ String.prototype.unescapeHtml = function () {
     temp.removeChild(temp.firstChild);
     return result;
 }
+
+
+var editorPositionWrite = function (cm){
+	$$("editorLine").define("label",cm.getCursor().line+1);
+	$$("editorLine").refresh();
+	$$("editorCol").define("label",cm.getCursor().ch);
+	$$("editorCol").refresh();	
+};

@@ -46,10 +46,49 @@ webix.ready(function(){
 					}
 				]
 			},
-			{	// footer 구성
-				id:"footer",
-				height:30,
-				template: "Copyrightⓒ Song7749 Co., Ltd. All Rights Reserved.",
+			{
+				// footer 구성
+				cols:[
+				    {
+				    	id:"footer",
+				    	view: "label",
+						label: "Copyrightⓒ Song7749 Co., Ltd. All Rights Reserved.",
+						height:25,
+						adjust:true
+				    },     
+					{
+						view: "label",
+						align:"right",
+						label:"LINE :",
+						width:50
+					},
+					{
+						id:"editorLine",
+						view: "label",
+						align:"right",
+						label:"0",
+						width:30
+					},
+					{
+						view: "label",
+						align:"right",
+						label:"| COL :",
+						width:50
+					},				
+					{
+						id:"editorCol",					
+						view: "label",
+						align:"right",
+						label:"0",
+						width:30
+					},
+					{
+						view: "label",
+						align:"right",
+						label:"",
+						width:10
+					}
+				]				
 			}
 		]
 	});

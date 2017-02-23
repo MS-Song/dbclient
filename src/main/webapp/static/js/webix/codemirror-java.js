@@ -36,7 +36,7 @@ webix.protoUI({
 		    "theme/eclipse.css",
 			"lib/codemirror.js",
 			"addon/display/fullscreen.js",
-			"mode/sql/sql.js"
+			"addon/selection/active-line.js"
 		];
 		webix.require(deps, this._render_when_ready, this);
 	},
@@ -50,12 +50,21 @@ webix.protoUI({
 			autofocus		:this.config.autofocus,
 			extraKeys		:this.config.extraKeys,
 			mode			:"text/x-java",
+			styleActiveLine : true,
 			hintOptions		:this.config.hintOptions
 		});
 
 		this.setValue(this.config.value);
-		if (this._focus_await)
-			this.focus();
+		if (this._focus_await){
+			this.focus();			
+		}
+		// 이동 경로 이벤트 추가
+		this.editor.on("keyup",function(cm){
+			editorPositionWrite(cm);
+		});
+		this.editor.on("mousedown",function(cm){
+			editorPositionWrite(cm);
+		});
 	},
 
 	_set_inner_size:function(){

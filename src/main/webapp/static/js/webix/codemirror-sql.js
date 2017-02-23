@@ -45,7 +45,8 @@ webix.protoUI({
 			"mode/sql/sql.js",
 			"addon/hint/show-hint.js",
 			"addon/hint/sql-hint.js",
-			"addon/display/fullscreen.js"
+			"addon/display/fullscreen.js",
+			"addon/selection/active-line.js"
 		];
 		webix.require(deps, this._render_when_ready, this);
 	},
@@ -59,12 +60,24 @@ webix.protoUI({
 			autofocus		:this.config.autofocus,
 			extraKeys		:this.config.extraKeys,
 			mode			:'text/x-sql',
+			styleActiveLine : true,
 			hintOptions		:this.config.hintOptions
 		});
 
 		this.setValue(this.config.value);
-		if (this._focus_await)
+		
+		if (this._focus_await){
 			this.focus();
+		}
+		
+		// 이동 경로 이벤트 추가
+		this.editor.on("keyup",function(cm){
+			editorPositionWrite(cm);
+		});
+		this.editor.on("mousedown",function(cm){
+			editorPositionWrite(cm);
+		});
+		
 	},
 
 	_set_inner_size:function(){

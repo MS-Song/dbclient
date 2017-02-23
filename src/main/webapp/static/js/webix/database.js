@@ -1048,7 +1048,7 @@ var database_query_cell = [{
 				},
 				{// 에디터 창
 					id:"database_query_input",	
-					view : "codemirror-editor-sql",
+					view : "codemirror-editor-sql"
 				},{ // 쿼리 정보 창
 					cols:[{
 						// 쿼리 결과 info 창

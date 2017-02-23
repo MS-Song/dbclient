@@ -43,6 +43,7 @@ import com.song7749.dl.dbclient.vo.TriggerVO;
 import com.song7749.dl.dbclient.vo.ViewVO;
 import com.song7749.log.dto.SaveQueryExecuteLogDTO;
 import com.song7749.log.service.LogManager;
+
 /**
  * <pre>
  * Class Name : DBclientDataSourceManagerImpl.java
@@ -77,8 +78,6 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	@Override
 	public Connection getConnection(ServerInfo serverInfo) throws SQLException {
-
-		logger.debug(format("{}","database server info"),serverInfo);
 
 		/**
 		 * serverInfo 안에 포함된 테이블 정보를 삭제하기 위해 객체를 새로 만든다.
@@ -386,7 +385,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			}
 		}  else if("mysql".equals(serverInfo.getDriver().getDbms())
 				&& dto.getQuery().toLowerCase().indexOf("show")>=0){
-			// mysql 이고, show 묹자열이 있으면
+			// mysql 이고, show 문자열이 있으면
 			try{
 				list=executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
 			} catch (SQLException e) {
@@ -396,11 +395,23 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 		} else{
 			// row 에 update 가 일어나는 구문과 그 외로 분기한다.
 			boolean isAffected=false;
+			String query = dto.getQuery().toLowerCase();
 			for(String s : affectedQuery){
-				if(dto.getQuery().toLowerCase().indexOf(s)>=0){
-					isAffected=true;
-					break;
+				Integer index = dto.getQuery().toLowerCase().indexOf(s);
+				// 단어가 정확히 일치하는 경우에만...
+				while(index >=0){
+					logger.debug(format("{},{}","DML validate"),s,index);
+					String before = query.substring(index==0 ? 0 : index-1, index);
+					String after = query.substring(index, query.length() == index ? index : index+1);
+
+					if(("".equals(before) || " ".equals(before)) && ("".equals(after) || " ".equals(after))){
+						isAffected=true;
+						break;
+					}
+					// 다음 index 부터 검색
+					index = query.indexOf(s, index+1);
 				}
+				if(isAffected) break;
 			}
 			// DML 이나 PLSQL 인 경우에는 AffectedRow 가 발생한다.
 			isAffected = isAffected || dto.isUsePLSQL();
