@@ -59,12 +59,10 @@ webix.protoUI({
 			this.focus();			
 		}
 		// 이동 경로 이벤트 추가
-		this.editor.on("keyup",function(cm){
+		this.editor.on("cursorActivity",function(cm){
 			editorPositionWrite(cm);
 		});
-		this.editor.on("mousedown",function(cm){
-			editorPositionWrite(cm);
-		});
+
 	},
 
 	_set_inner_size:function(){

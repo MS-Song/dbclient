@@ -57,30 +57,27 @@ webix.ready(function(){
 						adjust:true
 				    },     
 					{
+						id:"editerSelectedStartLine",
 						view: "label",
 						align:"right",
-						label:"LINE :",
-						width:50
-					},
-					{
-						id:"editorLine",
-						view: "label",
-						align:"right",
-						label:"0",
-						width:30
+						label:"",
+						minWidth:50,
+						maxWidth:120,
+						width:90
 					},
 					{
 						view: "label",
-						align:"right",
-						label:"| COL :",
-						width:50
+						label:"|",
+						width:10
 					},				
 					{
-						id:"editorCol",					
+						id:"editorCurrentLine",					
 						view: "label",
 						align:"right",
-						label:"0",
-						width:30
+						label:"1:0",
+						minWidth:30,
+						maxWidth:100,
+						width:70
 					},
 					{
 						view: "label",

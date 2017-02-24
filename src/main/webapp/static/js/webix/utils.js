@@ -339,8 +339,24 @@ String.prototype.unescapeHtml = function () {
 
 
 var editorPositionWrite = function (cm){
-	$$("editorLine").define("label",cm.getCursor().line+1);
-	$$("editorLine").refresh();
-	$$("editorCol").define("label",cm.getCursor().ch);
-	$$("editorCol").refresh();	
+	var position = parseInt(cm.getCursor().line+1) + ":"+cm.getCursor().ch;
+	$$("editorCurrentLine").define("label",position);
+	$$("editorCurrentLine").refresh();
+	
+	// 선택된 내역이 있으면..
+	if(""!=cm.getSelection()){
+		console.log(cm.listSelections());
+		var first = cm.listSelections()[0];
+		var position = parseInt(first.anchor.line+1) + ":" +  first.anchor.ch + "-" + parseInt(first.head.line+1) + ":" + first.head.ch;
+		var last = null;
+		if(cm.listSelections().length>1){
+			last = cm.listSelections()[cm.listSelections().length-1];
+			position+= "|" + parseInt(last.anchor.line+1) + ":" +  last.anchor.ch + "-" + parseInt(last.head.line+1) + ":" + last.head.ch;
+		}
+		$$("editerSelectedStartLine").define("label",position);
+		
+	} else {
+		$$("editerSelectedStartLine").define("label","");
+	}
+	$$("editerSelectedStartLine").refresh();
 };
