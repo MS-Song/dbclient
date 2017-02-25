@@ -345,7 +345,6 @@ var editorPositionWrite = function (cm){
 	
 	// 선택된 내역이 있으면..
 	if(""!=cm.getSelection()){
-		console.log(cm.listSelections());
 		var first = cm.listSelections()[0];
 		var position = parseInt(first.anchor.line+1) + ":" +  first.anchor.ch + "-" + parseInt(first.head.line+1) + ":" + first.head.ch;
 		var last = null;

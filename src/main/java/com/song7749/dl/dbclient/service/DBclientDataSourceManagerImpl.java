@@ -266,7 +266,6 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			ps = conn.prepareStatement(executeQuery);
 			rs = ps.executeQuery();
 			rs.setFetchSize(100);
-			logger.debug(format("{}","fetch size"),rs.getFetchSize());
 			while (rs.next()) {
 				Map<String, String> map=new LinkedHashMap<String, String>();
 				for(int i=1;i<=rs.getMetaData().getColumnCount();i++){
@@ -435,6 +434,9 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 					dto.setQuery(serverInfo.getDriver().getAddRangeOperator(dto.getQuery(), dto.getOffset(), dto.getLimit()));
 					list=executeQueryList(getConnection(serverInfo), dto.getQuery(),dto.isHtmlAllow());
 				} catch (SQLException e) {
+					logger.debug(format("{}","SQL ERROR "),e.getSQLState());
+					logger.debug(format("{}","SQL ERROR "),e.getMessage());
+					logger.debug(format("{}","SQL ERROR "),e.getErrorCode());
 					throw new IllegalArgumentException(e.getMessage());
 				}
 			}

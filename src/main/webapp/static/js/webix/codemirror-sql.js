@@ -38,6 +38,7 @@ webix.protoUI({
 	_render_cm_editor:function(){
 		var deps = [
 		    "lib/codemirror.css",
+		    "doc/docs.css",
 		    "addon/hint/show-hint.css",
 		    "addon/display/fullscreen.css",
 		    "theme/eclipse.css",
@@ -46,7 +47,13 @@ webix.protoUI({
 			"addon/hint/show-hint.js",
 			"addon/hint/sql-hint.js",
 			"addon/display/fullscreen.js",
-			"addon/selection/active-line.js"
+			"addon/selection/active-line.js",
+			"addon/edit/closebrackets.js",
+			"addon/scroll/annotatescrollbar.js",
+			"addon/search/matchesonscrollbar.js",
+			"addon/search/searchcursor.js",
+			"addon/search/match-highlighter.js"
+			
 		];
 		webix.require(deps, this._render_when_ready, this);
 	},
@@ -61,6 +68,8 @@ webix.protoUI({
 			extraKeys		:this.config.extraKeys,
 			mode			:'text/x-sql',
 			styleActiveLine : true,
+			autoCloseBrackets: true,
+			highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
 			hintOptions		:this.config.hintOptions
 		});
 
