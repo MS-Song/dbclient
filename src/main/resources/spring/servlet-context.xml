@@ -115,7 +115,7 @@
 	<bean class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 	
 	<!-- Exception Resolver-->
-	<bean class="com.song7749.dl.base.BaseExceptionResolver" >
+	<bean class="com.song7749.dl.base.BaseExceptionResolver">
 		<property name="order" value="1" />	
 	</bean>
 	

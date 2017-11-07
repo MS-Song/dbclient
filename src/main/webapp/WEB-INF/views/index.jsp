@@ -28,6 +28,8 @@
 	<script src="./static/js/webix/codemirror-java.js" type="text/javascript"></script>
 </head>
 <body>
+
+	<script src="./static/js/webix/agentChecker.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/webix/layout.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/webix/member.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./static/js/webix/database.js" type="text/javascript" charset="utf-8"></script>

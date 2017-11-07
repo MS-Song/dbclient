@@ -156,7 +156,7 @@ var select_database_popup=function(){
 	// 사이드 메뉴가 열려 있을 경우에만 닫는다.
 	if($$("menu").isVisible()) $$("menu").hide();
 	// 데이터베이스 정보를 조회한다.
-	getDataParseView("/database/serverList",serverInfo,"select_database_loader",false,true,false);
+	getDataParseView("/database/serverList",serverInfo,"select_database_loader",false,false,false);
 }
 
 // database info cell

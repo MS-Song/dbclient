@@ -543,11 +543,12 @@ public enum DatabaseDriver {
 
 		boolean isExecuteAble = true;
 
-		if(sqlBody.toLowerCase().indexOf("insert")>=0
-				|| sqlBody.toLowerCase().indexOf("update")>=0
-				|| sqlBody.toLowerCase().indexOf("delete")>=0){
-			isExecuteAble = false;
-		}
+//		이미  CUD 에 대한 처리는 완료가 되어 있어 추가 검증이 불필요 하다.
+//		if(sqlBody.toLowerCase().indexOf("insert")>=0
+//				|| sqlBody.toLowerCase().indexOf("update")>=0
+//				|| sqlBody.toLowerCase().indexOf("delete")>=0){
+//			isExecuteAble = false;
+//		}
 
 		if(isExecuteAble){
 			if(this.dbms.toLowerCase().equals("mysql")){
