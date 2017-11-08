@@ -67,7 +67,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 	// ConcurrentHashMap 중복 생성을 방지하고자 함.
 	private final Map<ServerInfo, DataSource> dataSourceMap = new ConcurrentHashMap<ServerInfo, DataSource>();
 
-	// DML 문에 대한 정의
+	// CUD+DML 문에 대한 정의
 	private final String[] affectedQuery={"insert","update","delete","create","drop","truncate","alter"};
 
 	@Autowired
@@ -397,20 +397,16 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			// row 에 update 가 일어나는 구문과 그 외로 분기한다.
 			boolean isAffected=false;
 			String query = dto.getQuery().toLowerCase();
+			// Query 를 공백을 이용해서 자른다.
+			String[] queries = query.split(" ");
 			for(String s : affectedQuery){
-				Integer index = dto.getQuery().toLowerCase().indexOf(s);
-				// 단어가 정확히 일치하는 경우에만...
-				while(index >=0){
-					logger.debug(format("{},{}","DML validate"),s,index);
-					String before = query.substring(index==0 ? 0 : index-1, index);
-					String after = query.substring(index, query.length() == index ? index : index+1);
-
-					if(("".equals(before) || " ".equals(before)) && ("".equals(after) || " ".equals(after))){
+				for(String queryPart : queries){
+					// 구문과 일치하는 부분이 있으면..
+					if(s.equals(queryPart)){
+						logger.debug(format("{} == {}","AfftedQuery Detected"),s,queryPart);
 						isAffected=true;
 						break;
 					}
-					// 다음 index 부터 검색
-					index = query.indexOf(s, index+1);
 				}
 				if(isAffected) break;
 			}

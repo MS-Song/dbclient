@@ -113,8 +113,8 @@ public class DBclientDataSourceManagerImplTest {
 							serverInfo.getServerInfoSeq(), serverInfo.getHost(),
 							serverInfo.getSchemaName(), serverInfo.getAccount(), false, query, false, false,"song7749", "127.0.0.1"));
 			logger.debug(format("{}",""),list);
-			assertTrue(true);
 		}
+		assertTrue(true);
 		// 로그 기록 시간을 번다
 		Thread.sleep(2000);
 	}
