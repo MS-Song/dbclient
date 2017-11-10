@@ -2,6 +2,10 @@ package com.song7749.util.crypto;
 
 import static com.song7749.util.LogMessageFormatter.format;
 
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -9,24 +13,22 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
 /**
  * <pre>
  * Class Name : CryptoAES.java
  * Description : AES 암호화 복호화 모듈
-*
-*  Modification Information
-*  Modify Date 		Modifier	Comment
-*  -----------------------------------------------
-*  2015. 5. 12.		song7749	신규작성
-*
-* </pre>
-*
-* @author song7749
-* @since 2015. 5. 12.
-*/
+ *
+ *  Modification Information
+ *  Modify Date 		Modifier	Comment
+ *  -----------------------------------------------
+ *  2015. 5. 12.		song7749	신규작성
+ *  2017. 11. 10 	song7749	java.util 의 Base64로 변경
+ *
+ * </pre>
+ *
+ * @author song7749
+ * @since 2015. 5. 12.
+ */
 public class CryptoAES {
 
 	static Logger logger = LoggerFactory.getLogger(CryptoAES.class);
@@ -68,8 +70,8 @@ public class CryptoAES {
 		IvParameterSpec ivSpec = new IvParameterSpec(keyBytes);
 		cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
 
-		BASE64Decoder decoder = new BASE64Decoder();
-		byte[] results = cipher.doFinal(decoder.decodeBuffer(text));
+		Decoder d = Base64.getDecoder();
+		byte[] results = cipher.doFinal(d.decode(text));
 		return new String(results, "UTF-8");
 	}
 
@@ -108,7 +110,7 @@ public class CryptoAES {
 		cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
 
 		byte[] results = cipher.doFinal(text.getBytes("UTF-8"));
-		BASE64Encoder encoder = new BASE64Encoder();
-		return encoder.encode(results);
+		Encoder en = Base64.getEncoder();
+		return en.encodeToString(results);
 	}
 }
