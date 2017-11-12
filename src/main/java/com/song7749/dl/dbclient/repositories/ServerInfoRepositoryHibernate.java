@@ -4,13 +4,12 @@ import static org.hibernate.criterion.Restrictions.eq;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
@@ -24,7 +23,7 @@ import com.song7749.util.validate.annotation.Validate;
 @Repository("serverInfoRepository")
 public class ServerInfoRepositoryHibernate implements ServerInfoRepository{
 
-	@Resource
+	@Autowired
 	protected SessionFactory dbClientSessionFactory;
 
 	@Override

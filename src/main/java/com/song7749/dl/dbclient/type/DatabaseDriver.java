@@ -87,7 +87,9 @@ public enum DatabaseDriver {
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
 			// 한정자 추가
-			"{sqlBody} \n Limit {start},{end}"),
+			"{sqlBody} \n Limit {start},{end}",
+			// Affected Row 를 발생시키는 명령어
+			"insert,update,delete,create,drop,truncate,alter"),
 
 	@ApiModelProperty
 	oracle(
@@ -142,7 +144,9 @@ public enum DatabaseDriver {
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT UTC.TABLE_NAME AS TABLE_NAME, UTC.COLUMN_NAME AS COLUMN_NAME, UCC.COMMENTS AS COLUMN_COMMENT FROM USER_TAB_COLUMNS UTC , USER_COL_COMMENTS UCC WHERE UTC.TABLE_NAME = UCC.TABLE_NAME (+) AND UTC.COLUMN_NAME = UCC.COLUMN_NAME (+)",
 			// 한정자 추가
-			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM ( \n {sqlBody} \n ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}");
+			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM ( \n {sqlBody} \n ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}",
+			// Affected Row 를 발생시키는 명령어 -- comment on 의 경우 다른 방법이 필요할 듯.
+			"insert,update,delete,create,drop,truncate,alter,comment on,grant");
 
 	/*
 	@ApiModelProperty
@@ -198,7 +202,10 @@ public enum DatabaseDriver {
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
 			// 한정자
-			"{sqlBody} \n Limit {start},{end}");
+			"{sqlBody} \n Limit {start},{end}"
+			// Affected Row 를 발생시키는 명령어
+			"insert,update,delete,create,drop,truncate,alter");
+
 	*/
 
 
@@ -231,6 +238,7 @@ public enum DatabaseDriver {
 	private String showCreateQuery;
 	private String autoCompleteQuery;
 	private String addRangeOperator;
+	private String affectedRowCommands;
 
 	DatabaseDriver(
 		String dbms,
@@ -258,7 +266,8 @@ public enum DatabaseDriver {
 		String killProcessQuery,
 		String showCreateQuery,
 		String autoCompleteQuery,
-		String addRangeOperator) {
+		String addRangeOperator,
+		String affectedRowCommands) {
 
 		this.dbms					= dbms;
 		this.driverName				= driverName;
@@ -286,6 +295,7 @@ public enum DatabaseDriver {
 		this.showCreateQuery		= showCreateQuery;
 		this.autoCompleteQuery		= autoCompleteQuery;
 		this.addRangeOperator		= addRangeOperator;
+		this.affectedRowCommands	= affectedRowCommands;
 	}
 
 	/**
@@ -569,6 +579,30 @@ public enum DatabaseDriver {
 			logger.trace(format("{}","Query add limit complete"),"쿼리에 한정자를 포함하였습니다.");
 		}
 		return sqlBody;
+	}
+
+	/**
+	 * Affected Row 를 발생하는 명령어를 리턴한다.
+	 * @return String[]
+	 */
+	public String[] getAffectedRowCommands() {
+		return this.affectedRowCommands.split(",");
+	}
+
+	/**
+	 * Query 내에 AffectedRow 를 유발 시키는 내용 (CUD 또는 DML 구문이 들어 있는지 검출 한다.
+	 * @param Query
+	 * @return boolean
+	 */
+	public boolean isAffectedRowCommand(String query) {
+		for(String keyword : getAffectedRowCommands()) {
+			logger.trace(format("{}", "키워드"), keyword);
+			logger.trace(format("{}", "쿼리"), query);
+			if(query.toLowerCase().contains(keyword.toLowerCase())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private String repalceServerInfo(ServerInfo serverInfo, String str)

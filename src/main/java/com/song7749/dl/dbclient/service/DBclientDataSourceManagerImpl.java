@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -66,9 +65,6 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 
 	// ConcurrentHashMap 중복 생성을 방지하고자 함.
 	private final Map<ServerInfo, DataSource> dataSourceMap = new ConcurrentHashMap<ServerInfo, DataSource>();
-
-	// CUD+DML 문에 대한 정의
-	private final String[] affectedQuery={"insert","update","delete","create","drop","truncate","alter"};
 
 	@Autowired
 	ApplicationContext context;
@@ -389,24 +385,9 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			} catch (SQLException e) {
 				throw new IllegalArgumentException(e.getMessage());
 			}
-
 		} else{
 			// row 에 update 가 일어나는 구문과 그 외로 분기한다.
-			boolean isAffected=false;
-			String query = dto.getQuery().toLowerCase();
-			// Query 를 공백을 이용해서 자른다.
-			String[] queries = query.split(" ");
-			for(String s : affectedQuery){
-				for(String queryPart : queries){
-					// 구문과 일치하는 부분이 있으면..
-					if(s.equals(queryPart)){
-						logger.debug(format("{} == {}","AfftedQuery Detected"),s,queryPart);
-						isAffected=true;
-						break;
-					}
-				}
-				if(isAffected) break;
-			}
+			boolean isAffected=serverInfo.getDriver().isAffectedRowCommand(dto.getQuery());
 			// DML 이나 PLSQL 인 경우에는 AffectedRow 가 발생한다.
 			isAffected = isAffected || dto.isUsePLSQL();
 
@@ -837,18 +818,5 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 				}
 			}
 		}
-	}
-
-	@Override
-	@PreDestroy
-	protected void finalize() throws Throwable {
-		for(ServerInfo ServerInfo : dataSourceMap.keySet()){
-			try {
-				((BasicDataSource)dataSourceMap.get(ServerInfo)).close();
-			} catch (SQLException e) {
-				throw new IllegalArgumentException(e.getMessage());
-			}
-		}
-		super.finalize();
 	}
 }

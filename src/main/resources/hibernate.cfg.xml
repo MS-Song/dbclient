@@ -9,7 +9,8 @@
 		<!-- 스프링에서 트랜잭션 관리를 하고 싶다면 비활성화 한다.
 			<property name="hibernate.current_session_context_class">thread</property>
 		-->
-		<!-- 
+		<!--
+			최초 기동시에는 진행 
 			<property name="hibernate.hbm2ddl.auto">create</property>
 			<property name="hibernate.hbm2ddl.import_files">./dbClient.sql,./dbClientSampleDatabase.sql</property>
 		-->
