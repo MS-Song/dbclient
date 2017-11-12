@@ -87,7 +87,9 @@ public enum DatabaseDriver {
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
 			// 한정자 추가
-			"{sqlBody} \n Limit {start},{end}"),
+			"{sqlBody} \n Limit {start},{end}",
+			// Affected Row 를 발생시키는 명령어
+			"insert,update,delete,create,drop,truncate,alter"),
 
 	@ApiModelProperty
 	oracle(
@@ -142,7 +144,9 @@ public enum DatabaseDriver {
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT UTC.TABLE_NAME AS TABLE_NAME, UTC.COLUMN_NAME AS COLUMN_NAME, UCC.COMMENTS AS COLUMN_COMMENT FROM USER_TAB_COLUMNS UTC , USER_COL_COMMENTS UCC WHERE UTC.TABLE_NAME = UCC.TABLE_NAME (+) AND UTC.COLUMN_NAME = UCC.COLUMN_NAME (+)",
 			// 한정자 추가
-			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM ( \n {sqlBody} \n ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}");
+			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM ( \n {sqlBody} \n ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}",
+			// Affected Row 를 발생시키는 명령어
+			"insert,update,delete,create,drop,truncate,alter");
 
 	/*
 	@ApiModelProperty
@@ -198,7 +202,10 @@ public enum DatabaseDriver {
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
 			// 한정자
-			"{sqlBody} \n Limit {start},{end}");
+			"{sqlBody} \n Limit {start},{end}"			
+			// Affected Row 를 발생시키는 명령어
+			"insert,update,delete,create,drop,truncate,alter");
+
 	*/
 
 
@@ -231,7 +238,8 @@ public enum DatabaseDriver {
 	private String showCreateQuery;
 	private String autoCompleteQuery;
 	private String addRangeOperator;
-
+	private String affectedRowCommands;
+	
 	DatabaseDriver(
 		String dbms,
 		String driverName,
@@ -258,7 +266,8 @@ public enum DatabaseDriver {
 		String killProcessQuery,
 		String showCreateQuery,
 		String autoCompleteQuery,
-		String addRangeOperator) {
+		String addRangeOperator,
+		String affectedRowCommands) {
 
 		this.dbms					= dbms;
 		this.driverName				= driverName;
@@ -286,6 +295,7 @@ public enum DatabaseDriver {
 		this.showCreateQuery		= showCreateQuery;
 		this.autoCompleteQuery		= autoCompleteQuery;
 		this.addRangeOperator		= addRangeOperator;
+		this.affectedRowCommands	= affectedRowCommands;
 	}
 
 	/**
@@ -571,6 +581,14 @@ public enum DatabaseDriver {
 		return sqlBody;
 	}
 
+	/**
+	 * Affected Row 를 발생하는 명령어를 리턴한다.
+	 * @return String[]
+	 */
+	public String[] getAffectedRowCommands() {
+		return this.affectedRowCommands.split(",");
+	}
+	
 	private String repalceServerInfo(ServerInfo serverInfo, String str)
 			throws IllegalArgumentException, IllegalAccessException {
 
