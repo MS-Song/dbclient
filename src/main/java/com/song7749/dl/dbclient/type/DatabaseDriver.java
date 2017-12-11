@@ -201,11 +201,7 @@ public enum DatabaseDriver {
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
 			// 한정자
-<<<<<<< HEAD
 			"{sqlBody} \n Limit {start},{end}"
-=======
-			"{sqlBody} \n Limit {start},{end}"
->>>>>>> branch 'master' of https://github.com/MS-Song/dbclient.git
 			// Affected Row 를 발생시키는 명령어
 			"insert,update,delete,create,drop,truncate,alter");
 
