@@ -147,7 +147,6 @@ public enum DatabaseDriver {
 			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM ( \n {sqlBody} \n ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}",
 			// Affected Row 를 발생시키는 명령어 -- comment on 의 경우 다른 방법이 필요할 듯.
 			"insert,update,delete,create,drop,truncate,alter,comment on,grant");
-
 	/*
 	@ApiModelProperty
 	sqlite(
@@ -202,7 +201,11 @@ public enum DatabaseDriver {
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
 			// 한정자
+<<<<<<< HEAD
 			"{sqlBody} \n Limit {start},{end}"
+=======
+			"{sqlBody} \n Limit {start},{end}"
+>>>>>>> branch 'master' of https://github.com/MS-Song/dbclient.git
 			// Affected Row 를 발생시키는 명령어
 			"insert,update,delete,create,drop,truncate,alter");
 
