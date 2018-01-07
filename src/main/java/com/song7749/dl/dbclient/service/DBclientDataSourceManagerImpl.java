@@ -105,7 +105,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			}
 			bds.setUsername(serverInfo.getAccount());
 			bds.setPassword(serverInfo.getPassword());
-			bds.setValidationQuery("SELECT 1 FROM DUAL");
+			bds.setValidationQuery(serverInfo.getDriver().getValidateQuery());
 			bds.setValidationQueryTimeout(60);
 			bds.setDefaultAutoCommit(false);
 			bds.setMaxActive(20);
@@ -394,10 +394,10 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			// row 에 영향이 있는 쿼리
 			if(isAffected){
 				try{
-					int affectRows = executeQuery(getConnection(serverInfo), dto.getQuery(), dto.isAutoCommit());
+					Integer affectRows = executeQuery(getConnection(serverInfo), dto.getQuery(), dto.isAutoCommit());
 
 					Map<String, String> affectedRowMap = new HashMap<String, String>();
-					affectedRowMap.put("affectedRows", new Integer(affectRows).toString());
+					affectedRowMap.put("affectedRows", affectRows.toString());
 
 					list = new ArrayList<Map<String,String>>();
 					list.add(affectedRowMap);

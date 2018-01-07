@@ -138,6 +138,13 @@
 			<version>5.1.13</version>
 		</dependency>
 
+		<!-- mssql -->
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>6.1.0.jre7</version>
+		</dependency>
+
 		<!-- oracle -->
 		<dependency>
 			<groupId>com.oracle</groupId>
@@ -145,6 +152,13 @@
 			<version>12.1.0.2</version>
 		</dependency>
 
+		<!-- postgres sql -->
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901.jdbc4</version>
+		</dependency>
+		
 		<!-- sqlite -->
 		<dependency>
 			<groupId>org.xerial</groupId>
