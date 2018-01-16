@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -13,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -92,7 +92,8 @@ public class DatabaseController {
 	@Autowired
 	MemberManager memberManager;
 
-	@Resource(name="genericExcelView")
+	@Autowired
+	@Qualifier("genericExcelView")
 	GenericExcelView genericExcelView;
 
 	@ApiOperation(value = "데이터 베이스 서버 조회"
@@ -107,6 +108,7 @@ public class DatabaseController {
 			@ApiParam 	boolean  useCache,
 			HttpServletRequest request,
 			ModelMap model){
+
 
 		ServerInfoVO infoList = serverInfoManager.findServerInfo(new FindServerInfoDTO(serverInfoSeq,useCache));
 
