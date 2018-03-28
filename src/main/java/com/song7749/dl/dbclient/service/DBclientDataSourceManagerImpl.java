@@ -497,7 +497,7 @@ public class DBclientDataSourceManagerImpl implements DBclientDataSourceManager 
 			String addSoruce = null;
 			String text = null;
 			if("oracle".equals(serverInfo.getDriver().getDbms())){
-				addSoruce="CREATE OR REPLACE VIEW "+map.get("NAME");
+				addSoruce="CREATE OR REPLACE VIEW "+map.get("NAME") + " AS ";
 				text=map.get("TEXT");
 			} else if("mysql".equals(serverInfo.getDriver().getDbms())){
 				addSoruce="";
