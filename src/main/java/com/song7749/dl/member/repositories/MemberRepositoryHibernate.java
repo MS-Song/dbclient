@@ -2,8 +2,6 @@ package com.song7749.dl.member.repositories;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -11,6 +9,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.song7749.dl.member.dto.FindMemberListDTO;
@@ -41,7 +41,8 @@ public class MemberRepositoryHibernate implements MemberRepository{
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Resource
+	@Autowired
+	@Qualifier("dbClientSessionFactory")
 	protected SessionFactory dbClientSessionFactory;
 
 	@Override

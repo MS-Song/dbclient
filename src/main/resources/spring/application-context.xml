@@ -46,5 +46,6 @@
 		</property>
 		<property name="expression" value="@annotation(com.song7749.util.validate.annotation.Validate))"/>
 	</bean>
-
+	
+	<bean id="InitConfigBean" class="com.song7749.dl.config.InitConfigBean" init-method="init" />
 </beans>

@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.song7749.dl.dbclient.dto.FindServerInfoListDTO;
@@ -24,6 +25,7 @@ import com.song7749.util.validate.annotation.Validate;
 public class ServerInfoRepositoryHibernate implements ServerInfoRepository{
 
 	@Autowired
+	@Qualifier("dbClientSessionFactory")
 	protected SessionFactory dbClientSessionFactory;
 
 	@Override

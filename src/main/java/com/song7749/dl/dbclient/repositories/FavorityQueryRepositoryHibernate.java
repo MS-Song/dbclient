@@ -4,11 +4,11 @@ import static org.hibernate.criterion.Restrictions.eq;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.song7749.dl.dbclient.dto.FindFavorityQueryListDTO;
@@ -23,7 +23,8 @@ import com.song7749.util.validate.annotation.Validate;
 @Repository("favorityQueryRepository")
 public class FavorityQueryRepositoryHibernate implements FavorityQueryRepository {
 
-	@Resource
+	@Autowired
+	@Qualifier("dbClientSessionFactory")
 	protected SessionFactory dbClientSessionFactory;
 
 	@Override
