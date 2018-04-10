@@ -7,14 +7,13 @@
 * Query 결과에 대한 엑셀 다운로드를 지원 합니다.
 
 # 구동 환경 
-* 소스를 다운로드 받은 후에 1회 아래 파일을 수정한 후 WAS 를 기동 합니다.
-* /src/main/resources/hibernate.cfg.xml
-```xml
-			<property name="hibernate.hbm2ddl.auto">create</property>
-			<property name="hibernate.hbm2ddl.import_files">./dbClient.sql</property>
-```
-* 그 뒤에는 위 코드를 제거하고 재시작 하시면 사용 가능 합니다. 
-* 초기 비밀번호는 root / 12345678 입니다 
+* JRE 6 이상, Tomcat 7 이상에서 구동 가능합니다.
+* Maven을 통한 빌드를 해야 하며, Maven Profile 을 통한 환경 변수 관리가 필요 합니다.
+* profile 환경 변수로는 local, development, production 등이 있으며 로그 레벨 및 DB 파일 위치등을 정의 합니다. 
+* 관리자 계정 및 비밀번호는 root / 12345678 입니다 
+
+# 향후 계획
+* SpringBoot 2.0 으로 재 개발 중이며, 완료 후에는 jar 파일 형태로 제공할 계획 입니다. 
 
 # screenshot
 ![DBClient Execute Image](https://raw.githubusercontent.com/MS-Song/dbclient/master/dbclient_example_image.png "dbClient Screenshot")
