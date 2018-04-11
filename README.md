@@ -7,10 +7,13 @@
 * Query 결과에 대한 엑셀 다운로드를 지원 합니다.
 
 # 구동 환경 
-* JRE 6 이상, Tomcat 7 이상에서 구동 가능합니다.
+* SpringBoot 2.0 으로 기동되며 java8 이상에서 작동 합니다.  
 * Maven을 통한 빌드를 해야 하며, Maven Profile 을 통한 환경 변수 관리가 필요 합니다.
 * profile 환경 변수로는 local, development, production 등이 있으며 로그 레벨 및 DB 파일 위치등을 정의 합니다. 
 * 관리자 계정 및 비밀번호는 root / 12345678 입니다 
+{code}
+java -jar dbclient-1.0-SNAPSHOT.jar
+{code}
 
 # 향후 계획
 * SpringBoot 2.0 으로 재 개발 중이며, 완료 후에는 jar 파일 형태로 제공할 계획 입니다. 

@@ -1,0 +1,70 @@
+buildscript {
+	ext {
+		springBootVersion = '2.0.1.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.song7749'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+	maven { url "https://repo.spring.io/milestone" }
+	maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://code.lds.org/nexus/content/groups/main-repo" }
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-aop')
+	compile('org.springframework.boot:spring-boot-starter-cache')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.springframework.boot:spring-boot-starter-mail')
+	compile('org.springframework.boot:spring-boot-starter-validation')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.apache.commons:commons-lang3')
+	compile('org.codehaus.castor:castor:1.2'){ 
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+    compile('io.springfox:springfox-swagger2:2.8.0')
+    compile('io.springfox:springfox-swagger-ui:2.8.0')
+    compile('org.modelmapper:modelmapper:1.1.2')
+    compile ('mysql:mysql-connector-java')
+	compile ('com.oracle:ojdbc6:11.2.0.3')
+	compile('javax.xml.bind:jaxb-api:2.2.11')
+	compile("org.springframework.boot:spring-boot-devtools")
+	compile("com.nimbusds:nimbus-jose-jwt:5.9")
+	runtime('com.h2database:h2')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
+}
+
+// Server Profile - local / dev / production
+final String DEFAULT_PROFILE = 'local'
+allprojects {
+	if (!project.hasProperty('profile') || !profile) {
+		ext.profile = DEFAULT_PROFILE
+	}
+
+	sourceSets {
+		main {
+			resources {
+				srcDir "src/main/resources-${profile}"
+			}
+		}
+	}
+}
