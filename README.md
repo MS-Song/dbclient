@@ -36,9 +36,6 @@
 * java -jar dbclient-1.0-SNAPSHOT.jar
 
 ### 파일로그와 함께 실행 방법
-* java -Dlogging.file=/home/mkyong/app/logs/app.log -jar dbclient-1.0-SNAPSHOT.jar
-
-### 파일로그와 함께 실행 방법
 * java -Dlogging.file=/home/song7749/log/dbclient.log -jar dbclient-1.0-SNAPSHOT.jar
 
 ### 로그 레벨 변경 방법
