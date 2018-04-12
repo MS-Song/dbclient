@@ -13,6 +13,7 @@ var executeQueryParams = {
 	autoCommit:false,
 	htmlAllow:false,
 	usePLSQL:false,
+	useLimit:true,
 	offset:0,
 	limit:100
 }; 	
@@ -1002,7 +1003,7 @@ var database_query_cell = [{
 							id:"database_query_button_auto_commit",
 							view:"button",
 							value:"auto commit",
-							tooltip:"Auto Commit 활성-비활성., 단축키:Ctrl+9",
+							tooltip:"Auto Commit 활성-비활성., 단축키:Ctrl+7",
 							on:{"onItemClick":function(){
 								if(executeQueryParams.autoCommit){
 									executeQueryParams.autoCommit=false;
@@ -1012,6 +1013,22 @@ var database_query_cell = [{
 								$$("database_query_auto_commit_info").define("label","Auto-Commit : "+executeQueryParams.autoCommit);
 								$$("database_query_auto_commit_info").refresh();
 								webix.message({ type:"error", text:"Auto-Commit : " + executeQueryParams.autoCommit +" 상태로 변경"});
+							}}
+						},
+					    {
+							id:"database_query_button_use_limit",
+							view:"button",
+							value:"use limit",
+							tooltip:"Limit 사용 활성-비활성., 단축키:Ctrl+8",
+							on:{"onItemClick":function(){
+								if(executeQueryParams.useLimit){
+									executeQueryParams.useLimit=false;
+								} else{
+									executeQueryParams.useLimit=true;
+								} 
+								$$("database_query_use_limit_info").define("label","Use Limit : "+executeQueryParams.useLimit);
+								$$("database_query_use_limit_info").refresh();
+								webix.message({ type:"error", text:"Use Limit  : " + executeQueryParams.useLimit +" 상태로 변경"});
 							}}
 						},
 					    {
@@ -1050,14 +1067,34 @@ var database_query_cell = [{
 						tooltip:true
 					},
 					{
+						view: "label",
+						label:"|",
+						width:10
+					},	
+					{
 						// auto-commit 상태 확인
 						id:"database_query_auto_commit_info",
 						view:"label", 
 						label:"Auto-Commit : "+executeQueryParams.autoCommit, 
 						align:"right",
-						width : 170,
+						width : 120,
 						height: 25,
 						tooltip : "true : 실행한 내용이 바로 DB에 반영됩니다. false : 실행한 내역이 DB에 반영되지 않습니다." 
+					},
+					{
+						view: "label",
+						label:"|",
+						width:10
+					},	
+					{
+						// auto-commit 상태 확인
+						id:"database_query_use_limit_info",
+						view:"label", 
+						label:"Use Limit : "+executeQueryParams.useLimit, 
+						align:"right",
+						width : 90,
+						height: 25,
+						tooltip : "true : 데터를 limit 개수 100개 만큼씩 가져 옵니다. false : 전체 데이터를 조회 합니다." 
 					},
 					{
 						// next data image

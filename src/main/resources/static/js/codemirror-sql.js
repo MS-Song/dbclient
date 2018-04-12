@@ -25,7 +25,8 @@ webix.protoUI({
 		    "Ctrl-4":function(cm){insertIntoQuery();},
 		    "Ctrl-5":function(cm){updateSetQuery();},
 		    "Ctrl-6":function(cm){deleteQuery();},
-		    "Ctrl-9":function(cm){$$("database_query_button_auto_commit").callEvent("onItemClick");},
+		    "Ctrl-7":function(cm){$$("database_query_button_auto_commit").callEvent("onItemClick");},
+		    "Ctrl-8":function(cm){$$("database_query_button_use_limit").callEvent("onItemClick");},
 		    "Ctrl-0":function(cm){killExecuteQuery();},
 		},
 		hintOptions: {tables: {}}		
