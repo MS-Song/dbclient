@@ -8,8 +8,8 @@
 
 # 구동 환경 
 * SpringBoot 2.0 으로 기동되며 java8 이상에서 작동 합니다.  
-* Maven을 통한 빌드를 해야 하며, Maven Profile 을 통한 환경 변수 관리가 필요 합니다.
-* profile 환경 변수로는 local, development, production 등이 있으며 로그 레벨 및 DB 파일 위치등을 정의 합니다. 
+* gradle 을 통한 빌드를 해야 하며, gradle Profile 을 통한 환경 변수 관리가 필요 합니다.
+* profile 환경 변수로는 local, dev, production 등이 있으며 로그 레벨 및 DB 파일 위치등을 정의 합니다. 
 * 관리자 계정 및 비밀번호는 root@test.com / 12345678 입니다 
 
 ----
