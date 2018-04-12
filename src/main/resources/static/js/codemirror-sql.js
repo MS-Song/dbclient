@@ -5,7 +5,6 @@ webix.protoUI({
 		lineNumbers: true,
 		indentWithTabs: true,
 		smartIndent: true,
-		lineNumbers: true,
 		autofocus: true,
 		extraKeys: {
 			"Ctrl-Space": "autocomplete",

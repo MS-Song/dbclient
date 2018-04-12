@@ -120,7 +120,16 @@ var adminAddDatabasePopup=function(){
 				{ id:"port", 		view:"text", 	label:'port', 			name:"port" 		},
 				{
 					cols:[
-		    			{ id:"resist", 	view:"button", label:'등록', click:function(){
+						{ id:"test", 	view:"button", label:'테스트', click:function(){
+		    				webix.ajax().post("/database/test", this.getFormView().getValues(), function(text,data){
+		    					if(data.json().httpStatus ==200){
+		    						webix.message("데이터베이스 연결테스트 완료");
+		    					} else { 
+	    							webix.message({ type:"error", text:data.json().message});
+		    					}
+		    				});
+		    			}},
+						{ id:"resist", 	view:"button", label:'등록', click:function(){
 		    				webix.ajax().post("/database/add", this.getFormView().getValues(), function(text,data){
 		    					if(data.json().httpStatus ==200){
 		    						webix.message("데이터베이스 등록 완료");
@@ -130,7 +139,7 @@ var adminAddDatabasePopup=function(){
 		    						}, 300)										
 
 		    					} else { 
-	    							webix.message({ type:"error", text:data.json().desc});
+	    							webix.message({ type:"error", text:data.json().message});
 		    					}
 		    				});
 		    			}},
@@ -173,6 +182,15 @@ var adminModifyDatabasePopup = function(id){
 				{ id:"port", 		view:"text", 	label:'port', 			name:"port" 		},
 				{
 					cols:[
+						{ id:"test", 	view:"button", label:'테스트', click:function(){
+		    				webix.ajax().post("/database/test", this.getFormView().getValues(), function(text,data){
+		    					if(data.json().httpStatus ==200){
+		    						webix.message("데이터베이스 연결테스트 완료");
+		    					} else { 
+	    							webix.message({ type:"error", text:data.json().message});
+		    					}
+		    				});
+		    			}},
 		    			{ id:"resist", 	view:"button", label:'수정', click:function(){
 		    				webix.ajax().put("/database/modify", this.getFormView().getValues(), function(text,data){
 		    					// 가입 실패
@@ -235,7 +253,7 @@ var adminDeleteDatabase = function(databaseId){
 							adminDatabaseListPopup();
 						}, 100)
 					} else {
-						webix.message(data.json().desc);
+						webix.message(data.json().message);
 					}
 				}); 					
 			}
@@ -544,7 +562,7 @@ var adminDeleteMember = function(id){
 							loadAdminMemberList();
 						}, 100)
 					} else {
-						webix.message(data.json().desc);
+						webix.message(data.json().message);
 					}
 				});
 			}

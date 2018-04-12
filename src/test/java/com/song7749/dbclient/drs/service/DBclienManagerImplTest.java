@@ -11,6 +11,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,10 @@ import com.song7749.dbclient.drs.domain.Database;
 import com.song7749.dbclient.drs.domain.Member;
 import com.song7749.dbclient.drs.repository.DatabaseRepository;
 import com.song7749.dbclient.drs.repository.MemberRepository;
-import com.song7749.dbclient.drs.service.DBclienManager;
 import com.song7749.dbclient.drs.type.AuthType;
 import com.song7749.dbclient.drs.type.Charset;
 import com.song7749.dbclient.drs.type.DatabaseDriver;
+import com.song7749.dbclient.drs.value.DatabaseAddDto;
 import com.song7749.dbclient.drs.value.dbclient.ExecuteQueryDto;
 import com.song7749.dbclient.drs.value.dbclient.FieldVo;
 import com.song7749.dbclient.drs.value.dbclient.IndexVo;
@@ -35,7 +36,7 @@ import com.song7749.dbclient.drs.value.dbclient.ViewVo;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.incident.drs"})
+@ComponentScan({"com.song7749.dbclient.drs"})
 public class DBclienManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -49,6 +50,9 @@ public class DBclienManagerImplTest {
 	@Autowired
 	MemberRepository memberRepository;
 
+	@Autowired
+	ModelMapper mapper;
+
 	/**
 	 * Fixture
 	 */
@@ -57,7 +61,7 @@ public class DBclienManagerImplTest {
 			, "mysql-local"
 			, "dbBilling"
 			, "song7749"
-			, "94426dscd"
+			, "12345678"
 			, DatabaseDriver.MYSQL
 			, Charset.UTF8
 			, "3306"
@@ -68,7 +72,7 @@ public class DBclienManagerImplTest {
 			, "oracle-local"
 			, "XE"
 			, "SONG7749"
-			, "94426dscd"
+			, "12345678"
 			, DatabaseDriver.ORACLE
 			, Charset.UTF8
 			, "1521"
@@ -99,6 +103,7 @@ public class DBclienManagerImplTest {
 		dto.setLoginId(member.getLoginId());
 		dto.setQuery(mysql.getDriver().getValidateQuery());
 		dto.setIp(InetAddress.getLocalHost().getHostAddress());
+		dto.setUseLimit(false);
 		// when
 		MessageVo vo = dbclienManager.executeQuery(dto);
 		// then
@@ -236,5 +241,22 @@ public class DBclienManagerImplTest {
 		flist = dbclienManager.selectViewVoSourceList(dto);
 		// then
 		assertTrue(flist.size() > 0);
+	}
+
+	@Test
+	public void testTestConnection() throws Exception {
+		// give
+		DatabaseAddDto mysqlDto = mapper.map(mysql, DatabaseAddDto.class) ;
+		//when
+		MessageVo vo = dbclienManager.testConnection(mysqlDto);
+		//then
+		assertThat(vo.getHttpStatus(), equalTo(200));
+
+		// give
+		DatabaseAddDto oracleDto = mapper.map(oracle, DatabaseAddDto.class);
+		//when
+		vo = dbclienManager.testConnection(oracleDto);
+		//then
+		assertThat(vo.getHttpStatus(), equalTo(200));
 	}
 }

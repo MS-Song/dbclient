@@ -2,6 +2,8 @@ package com.song7749.dbclient.web;
 
 import static com.song7749.util.LogMessageFormatter.format;
 
+import java.sql.SQLException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -106,6 +108,15 @@ public class DatabaseController {
 		} else {
 			return databaseManager.findDatabaseList(dto, page);
 		}
+	}
+
+	@PostMapping("/test")
+	@ApiOperation(value = "데이터베이스 연결 테스트", response = DatabaseVo.class)
+	@Login({ AuthType.ADMIN })
+	public MessageVo testDatabase(HttpServletRequest request, HttpServletResponse response,
+			@Valid @ModelAttribute DatabaseAddDto dto) throws SQLException {
+		logger.trace(format("{}", "addDatabase"),dto);
+		return dbclientManager.testConnection(dto);
 	}
 
 	@GetMapping("/getDatabaseDriver")

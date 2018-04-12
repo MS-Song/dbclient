@@ -70,6 +70,9 @@ public class DatabaseAddDto  extends AbstractDto {
 				,required=true)
 	private String port;
 
+	public DatabaseAddDto() {}
+
+
 	/**
 	 * @param host
 	 * @param hostAlias

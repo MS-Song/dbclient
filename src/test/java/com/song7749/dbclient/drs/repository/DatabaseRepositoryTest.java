@@ -16,13 +16,12 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.song7749.dbclient.drs.domain.Database;
-import com.song7749.dbclient.drs.repository.DatabaseRepository;
 import com.song7749.dbclient.drs.type.Charset;
 import com.song7749.dbclient.drs.type.DatabaseDriver;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.incident.drs"})
+@ComponentScan({"com.song7749.dbclient.drs"})
 public class DatabaseRepositoryTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());

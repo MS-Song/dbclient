@@ -20,6 +20,7 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'com.song7749'
 version = '1.0-SNAPSHOT'
+mainClassName = 'com.song7749.dbclient.DBclientApplication'
 sourceCompatibility = 1.8
 
 repositories {

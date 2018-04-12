@@ -45,7 +45,7 @@ public enum DatabaseDriver {
 			// connect url
 			"jdbc:mysql://{host}:{port}/{schemaName}?autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding={charset}&useSSL=false",
 			// validate query
-			"select 1 from",
+			"select 1 ",
 			// table list
 			"SELECT TABLE_NAME, TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA='{schemaName}' AND TABLE_TYPE='BASE TABLE'",
 			// field list

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.song7749.base.MessageVo;
 import com.song7749.dbclient.drs.domain.Database;
+import com.song7749.dbclient.drs.value.DatabaseAddDto;
 import com.song7749.dbclient.drs.value.dbclient.DatabaseDdlVo;
 import com.song7749.dbclient.drs.value.dbclient.ExecuteQueryDto;
 import com.song7749.dbclient.drs.value.dbclient.FieldVo;
@@ -52,6 +53,15 @@ public interface DBclienManager {
 	 * @throws SQLException
 	 */
 	boolean closeConnection(Database database) throws SQLException;
+
+	/**
+	 * Database Test Connection.
+	 * UI connection test click. database server connect test. will be sucess.
+	 * @param dto
+	 * @return
+	 * @throws SQLException
+	 */
+	MessageVo testConnection(DatabaseAddDto dto)  throws SQLException;
 
 	/**
 	 * dto table information

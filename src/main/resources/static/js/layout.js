@@ -43,10 +43,11 @@ webix.ready(function(){
 							cells: database_query_cell
 						}	
 					},
+					{ view:"resizer", id:"screen_heighter"},
 					{ 
 						id:"database_log_view",	
 						header:"database log", 
-						collapsed:false,
+						collapsed:true,
 						width:450, 
 						body:{
 							view:"tabview",

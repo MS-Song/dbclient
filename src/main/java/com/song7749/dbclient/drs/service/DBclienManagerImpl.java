@@ -30,6 +30,7 @@ import com.song7749.dbclient.drs.domain.Database;
 import com.song7749.dbclient.drs.repository.DatabaseRepository;
 import com.song7749.dbclient.drs.session.LoginSession;
 import com.song7749.dbclient.drs.type.DatabaseDriver;
+import com.song7749.dbclient.drs.value.DatabaseAddDto;
 import com.song7749.dbclient.drs.value.LogQueryAddDto;
 import com.song7749.dbclient.drs.value.dbclient.DatabaseDdlVo;
 import com.song7749.dbclient.drs.value.dbclient.ExecuteQueryDto;
@@ -146,6 +147,32 @@ public class DBclienManagerImpl implements DBclienManager {
 		}
 		return true;
 	}
+
+	@Override
+	public MessageVo testConnection(DatabaseAddDto dto)  throws SQLException {
+		logger.trace(format("{}", "Test Connection Start"),dto);
+
+		Database database = mapper.map(dto, Database.class);
+		// data source 생성
+		HikariDataSource hDataSource = new HikariDataSource();
+		hDataSource.setJdbcUrl(database.getDriver().getUrl(database));
+		hDataSource.setUsername(database.getAccount());
+		hDataSource.setPassword(database.getPassword());
+		hDataSource.setAutoCommit(false);
+		hDataSource.setMaximumPoolSize(1);
+		hDataSource.setMinimumIdle(1);
+		hDataSource.setIdleTimeout(60000);
+		hDataSource.setMaxLifetime(90000);
+		hDataSource.setLoginTimeout(3);
+		hDataSource.setConnectionTimeout(3000);
+		hDataSource.setValidationTimeout(2000);
+		hDataSource.getConnection();
+		hDataSource.getConnectionTestQuery();
+		hDataSource.close();
+
+		return new MessageVo(HttpStatus.OK.value(), "Database Connect Test Complete");
+	}
+
 
 	@Override
 	public List<TableVo> selectTableVoList(ExecuteQueryDto dto) {
