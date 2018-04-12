@@ -5,7 +5,6 @@
 * Tode/Orange 와 유사한 인터페이스를 지원하며, WEB 베이스로 제작되어 있습니다.
 * 버그가 있으면 issue 똔느 request 에 올려주세요
 * jar 다운로드 링크 :  https://github.com/MS-Song/InsidentAlert/raw/incidentAlertV1/incidentAlert/dbclient-1.0-SNAPSHOT.jar 
-
 # 기능 요약
 * 데이터베이스 등록 기능 
 * 사용자 관리 및 로그인, 로그인 로그 기록
@@ -28,6 +27,9 @@
 * gradle 을 통한 빌드를 해야 하며, gradle Profile 을 통한 환경 변수 관리가 필요 합니다.
 * profile 환경 변수로는 local, dev, production 등이 있으며 로그 레벨 및 DB 파일 위치등을 정의 합니다. 
 * 관리자 계정 및 비밀번호는 root@test.com / 12345678 입니다 
+* 기본 서비스 포트는 9009 포트이며, 아래 방법으로 실행하시면 됩니다.
+	* 크롬 브라우저를 여시고  127.0.0.1:9009 입력 후 실행 (IP 는 설치되어 있는 서버마다 다름
+	
 
 ----
 
@@ -41,6 +43,10 @@
 ### 로그 레벨 변경 방법
 * java -Dlogging.level.org.springframework=TRAC -jar dbclient-1.0-SNAPSHOT.jar
 * java -jar dbclient-1.0-SNAPSHOT.jar --debug
+
+### 서비스 포트 변경 방법
+* java -jar -Dserver.port=8080 dbclient-1.0-SNAPSHOT.jar
+
 
 # 향후 계획
 * MS SQL 지원 계획
