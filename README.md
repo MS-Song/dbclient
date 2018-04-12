@@ -6,6 +6,11 @@
 * 사용자 Login 을 지원하며, 별도의 회원관리메뉴, Database 권한 부여 기능이 있습니다.
 * Query 결과에 대한 엑셀 다운로드를 지원 합니다.
 
+[dbclient][dbclient_download_link]
+[dbclient_download_link]: https://github.com/MS-Song/InsidentAlert/raw/incidentAlertV1/incidentAlert/dbclient-1.0-SNAPSHOT.jar "다운로드 dbclient.jar"
+
+
+
 # 구동 환경 
 * SpringBoot 2.0 으로 기동되며 java8 이상에서 작동 합니다.  
 * gradle 을 통한 빌드를 해야 하며, gradle Profile 을 통한 환경 변수 관리가 필요 합니다.
