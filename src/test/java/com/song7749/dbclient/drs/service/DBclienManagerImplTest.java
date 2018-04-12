@@ -5,10 +5,14 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
@@ -96,6 +100,38 @@ public class DBclienManagerImplTest {
 		memberRepository.saveAndFlush(member);
 	}
 
+	@Ignore
+	@Test
+	public void testInsert() throws SQLException {
+
+		Connection conn = dbclienManager.getConnection(mysql);
+
+
+		PreparedStatement ps = null;
+		try {
+			conn.setAutoCommit(true);
+			ps = conn.prepareStatement("INSERT INTO tBank (sPublicBankCode,sBankName) VALUES(?,?)");
+			for(int i=0;i<99;i++) {
+				ps.setString(1, "9"+i);
+				ps.setString(2, "은행"+i);
+				ps.executeUpdate();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+				ps.close();
+				} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				conn=null;
+				ps=null;
+			}
+		}
+	}
+
 	@Test
 	public void testExecuteQuery() throws Exception {
 		// give
@@ -115,7 +151,6 @@ public class DBclienManagerImplTest {
 		dto.setQuery(oracle.getDriver().getValidateQuery());
 		// when
 		vo = dbclienManager.executeQuery(dto);
-		// then
 		// then
 		assertThat(vo.getHttpStatus(),equalTo(200));
 

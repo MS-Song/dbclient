@@ -1285,25 +1285,25 @@ var executeQuery = function (isNextData,resultView){
 	if(isNextData==true){ 
 		// 조건에 부합할 경우 추가데이터 로딩을 시작 한다.
 		// 현재 카운트가 Limit*페이지 값보다 클 경우에 실행
-		var isAddData = resultView.count() >= resultView.config.dataLimit*resultView.config.dataPage;
+		var isAddData = resultView.count() >= resultView.config.limit*resultView.config.page;
 		// limit 값을 나눈 몫이 0인 경우에 Next가 있을 수 있다.
-		isAddData = isAddData && resultView.count()%resultView.config.dataLimit == 0;
+		isAddData = isAddData && resultView.count()%resultView.config.limit == 0;
 		// 데이터가 이미 로딩중이 아니라면..
 		isAddData = isAddData && !resultView.config.isDataLoading;
 		
 		if(isAddData){
 			resultView.config.isDataLoading=true;
 			// 기존에 저장되어 있던 쿼리 재 실행
-			executeQueryParams.query=resultView.config.executedQuery;
+			executeQueryParams.query=resultView.config.query;
 			// limit 설정
-			executeQueryParams.limit=resultView.config.dataLimit;
+			executeQueryParams.limit=resultView.config.limit;
 			// offset 에다가 limit 를 더해서 다음 페이지를 호출하게 처리 한다.
-			executeQueryParams.offset=resultView.config.dataOffset=(dataLimit*resultView.config.dataPage);
+			executeQueryParams.offset=resultView.config.offset=(resultView.config.limit*resultView.config.page);
 			// 데이터를 가져온다.
 			try {
 				webix.message("추가 데이터 로딩을 시작합니다<br/> start : " +executeQueryParams.offset + ", end :" + parseInt(executeQueryParams.offset+executeQueryParams.limit));
 				addDataParseView("/database/executeQuery", executeQueryParams, resultView.config.id);
-				resultView.config.dataPage++;
+				resultView.config.page++;
 			} catch (e) {
 				webix.message({ type:"error", text:"추가 데이터 로딩에 실패 했습니다." });
 			}
@@ -1311,7 +1311,11 @@ var executeQuery = function (isNextData,resultView){
 		} else {
 			if(isScrolledMessage) webix.message("추가 데이터가 더 이상 없습니다.");
 		}
-
+		
+		// 모든 실행이 종료되면 limit 와 offset 을 초기화 한다.
+		executeQueryParams.limit = 100;
+		executeQueryParams.offset = 0;
+		executeQueryParams.query="";
 	} else { // 첫 실행
 		// 실행 쿼리 파라메터 설정
 		executeQueryParams.query=getQueryString();
@@ -1319,10 +1323,10 @@ var executeQuery = function (isNextData,resultView){
 		getDataParseView("/database/executeQuery", executeQueryParams, resultView.config.id,true,false,true);
 		
 		// 현재 실행 환경 저장
-		resultView.config.executedQuery=executeQueryParams.query
-		resultView.config.dataLimit = executeQueryParams.limit;
-		resultView.config.dataOffset = executeQueryParams.offset;
-		resultView.config.dataPage=1;
+		resultView.config.query		=	executeQueryParams.query
+		resultView.config.limit 	= 	executeQueryParams.limit;
+		resultView.config.offset 	= 	executeQueryParams.offset;
+		resultView.config.page		=	1;
 		resultView.config.isDataLoading=false;
 	}
 }
