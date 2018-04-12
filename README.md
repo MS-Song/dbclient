@@ -19,6 +19,8 @@
 * 쿼리 저장 기능 및 재사용 기능 지원
 * Table 기반의 Java Model, Hibernate Model 자동 완성 기능
 * Table 기반의 Mybatis Insert/Update/Select/Result 자동 매팽 기능
+* Query 결과 엑셀 다운로드 지원
+* autocommit on/off 기능
 
 # 구동 환경 
 * SpringBoot 2.0 으로 기동되며 java8 이상에서 작동 합니다.  
@@ -43,7 +45,9 @@
 * java -jar dbclient-1.0-SNAPSHOT.jar --debug
 
 # 향후 계획
-* SpringBoot 2.0 으로 재 개발 중이며, 완료 후에는 jar 파일 형태로 제공할 계획 입니다. 
+* MS SQL 지원 계획
+* 모든 데이터베이스 및 NoSQL 지원
+* websock 을 이용한 transaction 기능 지원 
 
 # screenshot
 ![DBClient Execute Image](https://raw.githubusercontent.com/MS-Song/dbclient/master/dbclient_example_image.png "dbClient Screenshot")
