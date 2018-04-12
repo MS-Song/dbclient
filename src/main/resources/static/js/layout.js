@@ -42,7 +42,19 @@ webix.ready(function(){
 							animate:false,
 							cells: database_query_cell
 						}	
-					}
+					},
+					{ 
+						id:"database_log_view",	
+						header:"database log", 
+						collapsed:false,
+						width:450, 
+						body:{
+							view:"tabview",
+							id:"database_log_tab",
+							animate:false,
+							cells: database_log_cell
+						}
+					},
 				]
 			},
 			{

@@ -762,8 +762,11 @@ var database_info_cell = [{
 				elements:[]
 			}]
 		}]
-	},
-	// TODO -- 추가되는 데이터 베이스의 기능은 여기 사이에 넣는다.
+	}
+];
+
+//database log cell
+var database_log_cell = [	 
 	{
 		id:"database_query_log_view",
 		header:"Query Log",
@@ -789,7 +792,15 @@ var database_info_cell = [{
 			}
 		],
 		data:[],
-		tooltip:true,
+		tooltip:function(obj, common){
+			if(common.column.id=="date"
+				|| common.column.id=="query"
+			){
+				return obj[common.column.id];
+			} else {
+				return "";
+			}
+	    },
 		resizeColumn:true
 	},
 	{
@@ -823,7 +834,15 @@ var database_info_cell = [{
 			}
 		],
 		data:[],
-		tooltip:true,
+		tooltip:function(obj, common){
+			if(common.column.id=="memo"
+				|| common.column.id=="query"
+			){
+				return obj[common.column.id];
+			} else {
+				return "";
+			}
+	    },
 		select:"row",
 		resizeColumn:true,
 	}
