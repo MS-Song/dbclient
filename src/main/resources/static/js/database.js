@@ -1328,7 +1328,6 @@ var executeQuery = function (isNextData,resultView){
 		isAddData = isAddData && !resultView.config.isDataLoading;
 		
 		if(isAddData){
-			resultView.config.isDataLoading=true;
 			// 기존에 저장되어 있던 쿼리 재 실행
 			executeQueryParams.query=resultView.config.query;
 			// limit 설정
@@ -1343,7 +1342,6 @@ var executeQuery = function (isNextData,resultView){
 			} catch (e) {
 				webix.message({ type:"error", text:"추가 데이터 로딩에 실패 했습니다." });
 			}
-			resultView.config.isDataLoading=false;
 		} else {
 			if(isScrolledMessage) webix.message("추가 데이터가 더 이상 없습니다.");
 		}

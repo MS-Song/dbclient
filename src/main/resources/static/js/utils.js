@@ -166,44 +166,50 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
  * 
  */
 var addDataParseView = function(url,parmeters,viewName){
-	webix.ajax().get(url,parmeters, function(text,data){
-		if(data.json().httpStatus ==200 && null!=data.json().contents){
-			// 배열인 경우에만 처리한다. response 에 배열은 결과 데이터외에 없다.
-			var obj = null;
-			if(undefined!=data.json().contents.content){ //page 구조
-				obj=data.json().contents.content;
-			} else { //일반
-				obj=data.json().contents;
+	if($$(viewName).config.isDataLoading){
+		webix.message("이전 페이지 요청이 진행 중입니다.");
+	} else {
+		// 데이터 요청을 시작 한다.
+		$$(viewName).config.isDataLoading=true;
+		// 데이터를 조회 한다.
+		webix.ajax().get(url,parmeters, function(text,data){
+			if(data.json().httpStatus ==200 && null!=data.json().contents){
+				// 배열인 경우에만 처리한다. response 에 배열은 결과 데이터외에 없다.
+				var obj = null;
+				if(undefined!=data.json().contents.content){ //page 구조
+					obj=data.json().contents.content;
+				} else { //일반
+					obj=data.json().contents;
+				}
+				if(Array.isArray(obj)){
+					// 객체가 있는 경우 리스트를 그린다.
+					$$(viewName).parse(obj)								
+				}
+			} else {
+				// 공용 에러처리
+				errorControll(data.json());
 			}
-			if(Array.isArray(obj)){
-				// 객체가 있는 경우 리스트를 그린다.
-				$$(viewName).parse(obj)								
-			}
-		} else {
-			// 공용 에러처리
-			errorControll(data.json());
-		}
-		// view 를 refresh 한다.
-		$$(viewName).refresh();
+			// view 를 refresh 한다.
+			$$(viewName).refresh();
 
-		// 실행이 종료되면 결과를 보여준다
-		if(data.json().httpStatus==200){
-			try {
-				// 시간 객체 제거
-				clearInterval(timeInterval);
-				$$(viewName).config.executedTime=parseInt(data.json().processTime);
-				$$("database_query_execute_info").define("label",'Rows: '+ comma(data.json().rowCount) + ', Time: '+comma(data.json().processTime) + ' ms');	
-			} catch (e) {
+			// 실행이 종료되면 결과를 보여준다
+			if(data.json().httpStatus==200){
+				try {
+					$$(viewName).config.executedTime=parseInt(data.json().processTime);
+					$$("database_query_execute_info").define("label",'Rows: '+ comma(data.json().rowCount) + ', Time: '+comma(data.json().processTime) + ' ms');	
+				} catch (e) {
+					$$("database_query_execute_info").define("label",'Error :'+data.json().message);
+					$$("database_query_execute_info").define("tooltip",'Error :'+data.json().message);    					
+				}
+			} else {
 				$$("database_query_execute_info").define("label",'Error :'+data.json().message);
-				$$("database_query_execute_info").define("tooltip",'Error :'+data.json().message);    					
+				$$("database_query_execute_info").define("tooltip",'Error :'+data.json().message);
 			}
-		} else {
-			$$("database_query_execute_info").define("label",'Error :'+data.json().message);
-			$$("database_query_execute_info").define("tooltip",'Error :'+data.json().message);
-		}
-		$$("database_query_execute_info").refresh();
-	
-	});
+			$$("database_query_execute_info").refresh();
+		
+		});		
+	}
+	$$(viewName).config.isDataLoading=false;
 };
 
 /**
