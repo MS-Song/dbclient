@@ -652,6 +652,7 @@ public class DBclienManagerImpl implements DBclienManager {
 		if(isAffected){
 			try{
 				vo.setRowCount(executeWriteQuery(getConnection(database),dto));
+				vo.setMessage("실행이 완료되었습니다");
 			} catch (SQLException e) {
 				throw new IllegalArgumentException(e.getMessage());
 			}

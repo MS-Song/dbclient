@@ -305,4 +305,14 @@ public class DatabaseSchemaController {
 		dbclientManager.killQuery(dto);
 		return new MessageVo(HttpStatus.OK.value(), "쿼리가 중지되었습니다.");
 	}
+
+	@ApiOperation(value = "데이터 베이스 캐시 삭제 - 미구현"
+			,notes = "저장되어 있는 캐시를 일괄 삭제 한다"
+			,response=MessageVo.class)
+	@GetMapping(value="/deleteCache")
+	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	public MessageVo deleteCache(
+			HttpServletRequest request, HttpServletResponse response){
+		return new MessageVo(HttpStatus.OK.value(), "캐시가 갱신되었습니다.");
+	}
 }

@@ -119,11 +119,6 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 				// 공용 에러처리
 				errorControll(data.json());
 			}
-			// view 를 refresh 한다.
-			$$(viewName).refresh();
-			// progress 를 닫는다.
-    		$$(viewName).hideProgress();
-
     		// 실행 로그 기록
     		if(isWriteLog){
     			// 실행이 종료되면 결과를 보여준다
@@ -142,7 +137,6 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
     				$$("database_query_execute_info").define("tooltip",'Error :'+data.json().message);
     			}
     			$$("database_query_execute_info").refresh();
-    			
     			//쿼리 로그 기록
     			var time = new Date();
     			$$("database_query_log_view").data.add({
@@ -155,6 +149,11 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
     			$$("database_query_log_view").sort("seq", "desc","int");
     			$$("database_query_log_view").refresh();
     		}
+    		
+			// view 를 refresh 한다.
+			$$(viewName).refresh();
+			// progress 를 닫는다.
+    		$$(viewName).hideProgress();
 		});
 	}
 	// 시간 객체 제거 -- 오류가 나도 제거한다.

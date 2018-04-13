@@ -113,18 +113,16 @@ var select_database_popup=function(){
 	    			$$("toolbar").removeView("toolbar_cache_remove");
 	    			$$("toolbar").addView({id:"toolbar_cache_remove",
 	    				view:"button", 
-	    				value:"Remove Cache" , 
+	    				value:"Refresh Schema" , 
 	    				type:"form",
 	    				width:100,
-	    				on:{"onItemClick":function(){// 캐시 삭제 실행 - FIXME
+	    				on:{"onItemClick":function(){// 캐시 삭제 실행 
 							// local storage 의 캐시먼저 
 							webix.storage.local.clear();
 							webix.message("캐시 삭제가 완료 되었습니다.");
-	    					webix.ajax().get("/database/deleteCache", function(text,data){
-	    						if(data.json().httpStatus ==200){
-	    							reload();
-	    						} else { // 캐시 삭제 실패
-	    							// validate 메세지 
+							database_info_data_load();
+							webix.ajax().get("/database/deleteCache", function(text,data){
+	    						if(data.json().httpStatus !=200){
 	    							webix.message({ type:"error", text:data.json().message});
 	    						}
 	    					});
@@ -1246,54 +1244,55 @@ var getQueryString = function(){
 	var Pos		= CodeMirror.Pos;
 	var cmpPos 	= CodeMirror.cmpPos;
 	var retQuery= editor.getValue();
-	if(database.usePLSQL){
+	if(executeQueryParams.usePLSQL){
 		// PLSQL인 경우 별도 가공을 하지 않고 PLSQL 모드로 변경 한다.
-	}
-	else if(""!=doc.getSelection()){ // drag 되어 있는 쿼리가 있으면, 해당 부분만 가져온다.
-		retQuery=doc.getSelection().replace(/;/g,"");
-	} else { // 쿼리의 포인터를 찾아 해당 위치에서 실행 한다.  
-	    var separator = [];
-	    var validRange = {
-	      start: Pos(0, 0),
-	      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
-	    };
+	} else {
+		if(""!=doc.getSelection()){ // drag 되어 있는 쿼리가 있으면, 해당 부분만 가져온다.
+			retQuery=doc.getSelection();
+		} else { // 쿼리의 포인터를 찾아 해당 위치에서 실행 한다.  
+		    var separator = [];
+		    var validRange = {
+		      start: Pos(0, 0),
+		      end: Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).length)
+		    };
 
-	    var indexOfSeparator = retQuery.indexOf(";");
-	    while(indexOfSeparator != -1) {
-	    	separator.push(doc.posFromIndex(indexOfSeparator+1));
-	    	indexOfSeparator = retQuery.indexOf(";", indexOfSeparator+1);
-	    }
-	    
-	    separator.unshift(Pos(0, 0));
-	    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
-	
-	    //find valid range
-	    var prevItem = null;
-	    var current = editor.getCursor();
-	    
-	    // line 과 ch 가 둘다 0인 경우에 오류가 발생하여 정정한다.
-	    if(current.line == 0 && current.ch==0){
-	    	current.ch++;
-	    }
+		    var indexOfSeparator = retQuery.indexOf(";");
+		    while(indexOfSeparator != -1) {
+		    	separator.push(doc.posFromIndex(indexOfSeparator+1));
+		    	indexOfSeparator = retQuery.indexOf(";", indexOfSeparator+1);
+		    }
+		    
+		    separator.unshift(Pos(0, 0));
+		    separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
+		
+		    //find valid range
+		    var prevItem = null;
+		    var current = editor.getCursor();
+		    
+		    // line 과 ch 가 둘다 0인 경우에 오류가 발생하여 정정한다.
+		    if(current.line == 0 && current.ch==0){
+		    	current.ch++;
+		    }
 
-	    for (var i = 0; i < separator.length; i++) {
-	    	if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
-	    		validRange = {start: prevItem, end: separator[i]};
-	    		break;
-	    	}
-	    	prevItem = separator[i];
-	    }
+		    for (var i = 0; i < separator.length; i++) {
+		    	if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
+		    		validRange = {start: prevItem, end: separator[i]};
+		    		break;
+		    	}
+		    	prevItem = separator[i];
+		    }
 
-	    var queries = doc.getRange(validRange.start, validRange.end, false);
-        doc.setSelection(validRange.start, validRange.end);
+		    var queries = doc.getRange(validRange.start, validRange.end, false);
+	        doc.setSelection(validRange.start, validRange.end);
 
-        // 쿼리의 시작이 ; 로 시작할 경우
-        if(null!=queries && queries.length>0){
-        	if(queries[0].indexOf(";")>=0){
-        		queries[0].substring(parseInt(queries[0].indexOf(";")+1),queries[0].length);	
-        	}
-        }
-        retQuery=queries.join("\n").replace(/;/g,"");
+	        // 쿼리의 시작이 ; 로 시작할 경우
+	        if(null!=queries && queries.length>0){
+	        	if(queries[0].indexOf(";")>=0){
+	        		queries[0].substring(parseInt(queries[0].indexOf(";")+1),queries[0].length);	
+	        	}
+	        }
+	        retQuery=queries.join("\n").replace(/;/g,"");
+		}		
 	}
 	return retQuery;
 }
