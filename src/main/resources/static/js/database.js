@@ -1508,7 +1508,6 @@ var add_favority_query_form = {
 					params.memberId = member.id;
 					webix.ajax().post("/member/addMemberSaveQuery", params, function(text,data){
 							if(data.json().httpStatus ==200){
-								console.log(data.json());
 								webix.message(data.json().message);
 								database_query_favorities_view_load();
 								$$("add_favority_query_popup").hide();
