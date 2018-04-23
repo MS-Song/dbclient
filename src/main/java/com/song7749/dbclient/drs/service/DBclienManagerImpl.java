@@ -6,9 +6,9 @@ import static com.song7749.util.StringUtils.htmlentities;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,6 +80,10 @@ public class DBclienManagerImpl implements DBclienManager {
 
 	// ConcurrentHashMap 중복 생성을 방지하고자 함.
 	private final Map<Database, DataSource> dataSourceMap = new ConcurrentHashMap<Database, DataSource>();
+
+	public Map<Database, DataSource> getDataSourceMap(){
+		return dataSourceMap;
+	}
 
 	@Override
 	public Connection getConnection(Database database) throws SQLException {
@@ -324,7 +328,11 @@ public class DBclienManagerImpl implements DBclienManager {
 			} else if("mysql".equals(database.getDriver().getDbms())){
 				addSoruce="";
 				text=map.get("Create View");
+			} else if("h2".equals(database.getDriver().getDbms())) {
+				addSoruce="";
+				text=map.get("VIEW_DEFINITION");
 			}
+
 			ViewVo vv = new ViewVo(text,addSoruce);
 			logger.trace(format("{}", "Log Message"),vv);
 			list.add(vv);
@@ -396,8 +404,10 @@ public class DBclienManagerImpl implements DBclienManager {
 			} else if("mysql".equals(database.getDriver().getDbms())){
 				addSoruce="";
 				text = map.get("Create Procedure");
+			} else if("h2".equals(database.getDriver().getDbms())) {
+				addSoruce="CREATE ALIAS " + map.get("NAME") + " AS $$";
+				text=map.get("TEXT") + " $$;";
 			}
-
 			ProcedureVo pv = new ProcedureVo(text,addSoruce);
 			list.add(pv);
 		}
@@ -466,6 +476,9 @@ public class DBclienManagerImpl implements DBclienManager {
 			} else if("mysql".equals(database.getDriver().getDbms())){
 				addSoruce="";
 				text=map.get("Create Function");
+			} else if("h2".equals(database.getDriver().getDbms())) {
+				addSoruce="CREATE ALIAS " + map.get("NAME") + " AS $$";
+				text=map.get("TEXT") + " $$;";
 			}
 
 			FunctionVo fv = new FunctionVo(text,addSoruce);
@@ -543,6 +556,9 @@ public class DBclienManagerImpl implements DBclienManager {
 			} else if("mysql".equals(database.getDriver().getDbms())){
 				text=map.get("SQL Original Statement");
 				addSoruce="";
+			}  else if("h2".equals(database.getDriver().getDbms())) {
+				addSoruce="";
+				text=map.get("TEXT");
 			}
 
 			TriggerVo tv = new TriggerVo(text,addSoruce);
@@ -606,8 +622,11 @@ public class DBclienManagerImpl implements DBclienManager {
 		}
 
 		for(Map<String,String> map:resultList){
-			if("oracle".equals(database.getDriver().getDbms())){
+
+			if("oracle".equals(database.getDriver().getDbms())
+					|| "h2".equals(database.getDriver().getDbms())){
 				list.add(new DatabaseDdlVo(map.get("CREATE_TALBE")));
+
 			} else if("mysql".equals(database.getDriver().getDbms())){
 				list.add(new DatabaseDdlVo(map.get("Create Table")));
 			}
@@ -756,13 +775,13 @@ public class DBclienManagerImpl implements DBclienManager {
 	private List<Map<String,String>> executeReadQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
 		logger.debug(format("{}","Try Read Excute Query"),dto.getQuery());
 
-		PreparedStatement ps = null;
+		Statement st = null;
 		ResultSet rs = null;
 		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 
 		try {
-			ps = conn.prepareStatement(dto.getQuery());
-			rs = ps.executeQuery();
+			st = conn.createStatement();
+			rs = st.executeQuery(dto.getQuery());
 			rs.setFetchSize(100);
 			while (rs.next()) {
 				Map<String, String> map=new LinkedHashMap<String, String>();
@@ -782,11 +801,11 @@ public class DBclienManagerImpl implements DBclienManager {
 			throw e;
 		} finally {
 			try {
-				closeAll(conn, ps, rs);
+				closeAll(conn, st, rs);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
-				nullAll(conn, ps, rs);
+				nullAll(conn, st, rs);
 			}
 		}
 		return list;
@@ -801,22 +820,22 @@ public class DBclienManagerImpl implements DBclienManager {
 	private int executeWriteQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
 		logger.debug(format("{} ","Try Write Excute Query"),dto.getQuery());
 
-		PreparedStatement ps = null;
+		Statement st = null;
 		int affectedRows=0;
 
 		try {
 			conn.setAutoCommit(dto.isAutoCommit());
-			ps = conn.prepareStatement(dto.getQuery());
-			affectedRows = ps.executeUpdate();
+			st = conn.createStatement();
+			affectedRows = st.executeUpdate(dto.getQuery());
 		} catch (SQLException e) {
 			throw e;
 		} finally {
 			try {
-				closeAll(conn, ps, null);
+				closeAll(conn, st, null);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
-				nullAll(conn, ps, null);
+				nullAll(conn, st, null);
 			}
 		}
 		return affectedRows;
@@ -827,17 +846,17 @@ public class DBclienManagerImpl implements DBclienManager {
 	 * 연결 모두 닫기
 	 *
 	 * @param conn
-	 * @param ps
+	 * @param st
 	 * @param rs
 	 * @throws SQLException
 	 */
-	private void closeAll(Connection conn, PreparedStatement ps, ResultSet rs)
+	private void closeAll(Connection conn, Statement st, ResultSet rs)
 			throws SQLException {
 		if (null != conn) {
 			conn.close();
 		}
-		if (null != ps) {
-			ps.close();
+		if (null != st) {
+			st.close();
 		}
 		if (null != rs) {
 			rs.close();
@@ -847,12 +866,12 @@ public class DBclienManagerImpl implements DBclienManager {
 	/**
 	 * null 로 변경하여 GC 가 일어나도록 유도
 	 * @param conn
-	 * @param ps
+	 * @param st
 	 * @param rs
 	 */
-	private void nullAll(Connection conn, PreparedStatement ps, ResultSet rs){
+	private void nullAll(Connection conn, Statement st, ResultSet rs){
 		conn=null;
-		ps=null;
+		st=null;
 		rs=null;
 	}
 

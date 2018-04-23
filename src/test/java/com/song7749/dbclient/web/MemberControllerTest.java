@@ -91,7 +91,7 @@ public class MemberControllerTest extends ControllerTest {
 		//관리자만 변경 가능함으로 관라지로 업데이트 처리
 		MemberModifyDto mmbaDto = new MemberModifyByAdminDto(
 				vo.getId(),
-				AuthType.NORMAL);
+				AuthType.ADMIN);
 		memberManager.modifyMember(mmbaDto);
 
 		// give - 로그인 실행
@@ -217,12 +217,6 @@ public class MemberControllerTest extends ControllerTest {
 
 	@Test
 	public void testAddOrModifyMemberDatabaseByAdmin() throws Exception {
-		//관리자만 변경 가능함으로 관라지로 업데이트 처리
-		MemberModifyDto mmbaDto = new MemberModifyByAdminDto(
-				vo.getId(),
-				AuthType.ADMIN);
-		memberManager.modifyMember(mmbaDto);
-
 		drb=post("/member/addOrModifyMemberDatabaseByAdmin").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
 				.param("id", "")
 				.param("memberId", vo.getId().toString())

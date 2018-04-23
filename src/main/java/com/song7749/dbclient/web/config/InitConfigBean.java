@@ -4,12 +4,16 @@ import static com.song7749.util.LogMessageFormatter.format;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +22,13 @@ import com.song7749.dbclient.drs.domain.Member;
 import com.song7749.dbclient.drs.repository.DatabaseRepository;
 import com.song7749.dbclient.drs.repository.MemberRepository;
 import com.song7749.dbclient.drs.service.DBclienManager;
+import com.song7749.dbclient.drs.service.DBclienManagerImpl;
 import com.song7749.dbclient.drs.service.MemberManager;
 import com.song7749.dbclient.drs.type.AuthType;
+import com.song7749.dbclient.drs.type.Charset;
+import com.song7749.dbclient.drs.type.DatabaseDriver;
 import com.song7749.dbclient.drs.value.MemberVo;
+import com.song7749.dbclient.drs.value.dbclient.ExecuteQueryDto;
 
 /**
  * <pre>
@@ -60,10 +68,12 @@ public class InitConfigBean {
 	@Autowired
 	DBclienManager dbClientManager;
 
+	@Autowired
+	DataSource hikariH2;
+
 	@Transactional
 	@PostConstruct
     public void init(){
-
 
 		// root 회원에 대한 입력
 		Member member = new Member(
@@ -81,6 +91,53 @@ public class InitConfigBean {
 			logger.trace(format("{}", "first Start Application with root user create"),memberVo);
 		} else {
 			logger.trace(format("{}", "root user info"),aleadyMember);
+		}
+
+
+		// h2 dbconnection add
+		logger.trace(format("{}", "H2 Database Datasource"),hikariH2);
+		if(null!=hikariH2) {
+			Database db = new Database(
+					"jdbc:h2:file:~/dbclient",
+					"DB Client Local H2 Database",
+					"PUBLIC",
+					"sa",
+					"",
+					DatabaseDriver.H2,
+					Charset.UTF8,
+					"");
+
+			Example<Database> example = Example.of(db);
+			Optional<Database> oDB = databaseRepository.findOne(example);
+			// 이미 입력된 내용이 없을 경우에만 입력한다.
+			if(!oDB.isPresent()){
+				databaseRepository.saveAndFlush(db);
+			}
+
+			// db 를 pool map 객체에 넣는다.
+			Map<Database, DataSource> map = ((DBclienManagerImpl)dbClientManager).getDataSourceMap();
+			map.put(db, hikariH2);
+			logger.trace(format("{}", "H2 Database Add Complete"),map);
+
+			// comment 입력
+			String[] comments = {
+					 "COMMENT ON TABLE DATABASE IS 'Database 연결 정보'"
+					,"COMMENT ON TABLE LOG IS '로그 마스터 정보'"
+					,"COMMENT ON TABLE LOG_LOGIN IS '로그인 로그 정보'"
+					,"COMMENT ON TABLE MEMBER_DATABASE IS '회원과 데이터베이스 간의 연결'"
+					,"COMMENT ON TABLE LOG_QUERY IS '쿼리 실행 로그'"
+					,"COMMENT ON TABLE MEMBER_SAVE_QUERY IS '회원의 저장된 쿼리'"
+					,"COMMENT ON TABLE MEMBER IS '회원'"
+			};
+			ExecuteQueryDto dto = new ExecuteQueryDto();
+			dto.setId(db.getId());
+			dto.setIp("10.10.10.10");
+			dto.setAutoCommit(true);
+			dto.setLoginId(member.getLoginId());
+			for(String query : comments) {
+				dto.setQuery(query);
+				dbClientManager.executeQuery(dto);
+			}
 		}
 
 		// Database connection 을 미리 생성 한다.

@@ -8,13 +8,24 @@ webix.ready(function(){
 	webix.ui({
 		rows:[{	// 상단 타이틀 구성 및 sidemenu 제어
 				view: "toolbar", id:"toolbar", elements:[
-				{ view: "icon", icon: "bars", click: function(){
-					if( $$("menu").config.hidden) 
-						$$("menu").show();
-					else 
-						$$("menu").hide();
-				}},
-				{ view: "label", label: "DB CLient"}
+				{ id:"menu_left_icon", view: "icon", icon: "bars", click: function(){
+						if( $$("menu").config.hidden) 
+							$$("menu").show();
+						else 
+							$$("menu").hide();
+					}
+				},
+				{ id:"logo", view: "label", label: "DB CLient"},
+				{ id:"toolbar_notices"},
+				{ id:"database_developer_combo_prepare_style"},
+				{ id:"toolbar_cache_remove"},
+				{ id:"menu_right_icon", view: "icon", icon: "bars", click: function(){
+						if( $$("menu_right").config.hidden) 
+							$$("menu_right").show();
+						else 
+							$$("menu_right").hide();
+					}
+				}
 			]},
 			{	// 메인 화면 구성
 				id:"main_body",
@@ -102,7 +113,7 @@ webix.ready(function(){
 		]
 	});
 	
-	// 사이드 메뉴
+	// 사이드 메뉴 LEFT
 	webix.ui({
 		view: "sidemenu",
 		id: "menu",
@@ -149,6 +160,55 @@ webix.ready(function(){
 			}
 		}
 	});
+
+	// 사이드 메뉴 RIGHT
+	webix.ui({
+		view: "sidemenu",
+		id: "menu_right",
+		width: 200,
+		position: "right",
+		state:function(state){
+			var toolbarHeight = $$("toolbar").$height;
+			state.top = toolbarHeight;
+			state.height -= toolbarHeight;
+		},
+		css: "my_menu",
+		body:{
+			view:"list",
+			borderless:true,
+			scroll: false,
+			template:function(obj){
+				var html='<span';
+				if(null!=obj.icon){
+					html+=' class="webix_icon fa-' + obj.icon +'"';
+				}
+				html+='></span>';
+				if(null!=obj.value){
+					html+=' '+obj.value;
+				}
+				return html;
+			},
+			data:[
+				{id: 1, value: "DBClient", 				icon: "bookmark", 		func: "mvSite('index.html')"},
+				{id: 3, value: "IncidentAlert", 		icon: "bookmark", 		func: "mvSite('/static/incident.html')"},
+				{id: 4, value: "API Development", 		icon: "bookmark", 		func: "mvSite('/static/api.html')"}
+			],
+			select:true,
+			type:{ height: 30 },
+			click:function(id,e){
+				// 사이드 메뉴 액션
+				try {
+					// 기능이 정의 되어 있는 경우에만 실행
+					if(null!=this.getItem(id).func){
+						eval(this.getItem(id).func+"()");
+					}
+				} catch (e) {
+					console.log("기능 호출에 실패 했습니다: "+e);
+				}
+			}
+		}
+	});
+
 	
 	// layout 화면 사이즈를 재 계산한다.
 	setTimeout(function(){

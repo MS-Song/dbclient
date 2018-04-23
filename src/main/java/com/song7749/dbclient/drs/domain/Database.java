@@ -69,7 +69,6 @@ public class Database extends Entities {
 
 	@Column(nullable = false)
 	@Length(max = 120)
-	@NotBlank
 	private String schemaName;
 
 	@Column(nullable = false)
@@ -78,8 +77,6 @@ public class Database extends Entities {
 	private String account;
 
 	@Column(nullable = false)
-	@Length(min = 4, max = 255)
-	@NotBlank
 	@Convert(converter=CryptoTwoWayConverter.class)
 	private String password;
 
@@ -94,8 +91,6 @@ public class Database extends Entities {
 	private Charset charset;
 
 	@Column(nullable = false)
-	@Length(max = 5)
-	@NotBlank
 	private String port;
 
 	@Column(nullable = false, updatable = false)
@@ -120,6 +115,29 @@ public class Database extends Entities {
 		this.id = id;
 	}
 
+	/**
+	 * @param host
+	 * @param hostAlias
+	 * @param schemaName
+	 * @param account
+	 * @param password
+	 * @param driver
+	 * @param charset
+	 * @param port
+	 */
+	public Database(@Length(max = 120) @NotBlank String host, @Length(max = 120) @NotBlank String hostAlias,
+			@Length(max = 120) @NotBlank String schemaName, @Length(max = 60) @NotBlank String account,
+			@Length(min = 4, max = 255) @NotBlank String password, @NotNull DatabaseDriver driver,
+			@NotNull Charset charset, @Length(max = 5) @NotBlank String port) {
+		this.host = host;
+		this.hostAlias = hostAlias;
+		this.schemaName = schemaName;
+		this.account = account;
+		this.password = password;
+		this.driver = driver;
+		this.charset = charset;
+		this.port = port;
+	}
 
 	/**
 	 * @param host

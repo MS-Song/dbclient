@@ -1,5 +1,6 @@
 package com.song7749.dbclient.web;
 
+import static com.song7749.util.LogMessageFormatter.format;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -123,13 +124,14 @@ public class DatabaseControllerTest extends ControllerTest{
 
 		// when
 		result = mvc.perform(drb)
-				.andExpect(status().isMethodNotAllowed())
+				.andExpect(status().isOk())
 				.andDo(print())
 				.andReturn();
 
 		 responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(),HashMap.class);
 
 		 // then
+		 logger.trace(format("{}", "response log"),responseObject);
 		 assertThat(responseObject.get("httpStatus"), equalTo(405));
 		 assertThat(responseObject.get("message"), equalTo("로그인이 필요한 서비스입니다. 로그인 해주시기 바랍니다."));
 	}
@@ -262,6 +264,6 @@ public class DatabaseControllerTest extends ControllerTest{
 		 // then
 		 assertThat(responseObject.get("httpStatus"), equalTo(200));
 		 assertThat(responseObject.get("contents"), notNullValue());
-		 assertThat(responseObject.get("rowCount"), equalTo(3));
+		 assertThat(responseObject.get("rowCount"), equalTo(4));
 	}
 }

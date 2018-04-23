@@ -30,7 +30,7 @@ public class LogRepositoryTest{
 		// give
 		LogLogin ll = new LogLogin();
 		ll.setIp("111.111.111.111");
-		ll.setLoginId("song7749");
+		ll.setLoginId("song7749@test.com");
 		ll.setCipher("12314142341231");
 
 		// when

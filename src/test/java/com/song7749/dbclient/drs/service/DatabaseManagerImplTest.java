@@ -127,6 +127,7 @@ public class DatabaseManagerImplTest {
 
 
 		DatabaseFindDto dto = new DatabaseFindDto();
+		dto.setHost(databaseAddDto.getHost());
 		Pageable page = PageRequest.of(0, 10);//,Direction.DESC,"id");;
 		// when
 		Page<DatabaseVo> list = databaseManager.findDatabaseList(dto, page);

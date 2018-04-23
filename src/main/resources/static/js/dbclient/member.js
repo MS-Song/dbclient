@@ -51,7 +51,9 @@ webix.ready(function(){
     		// 로그인이 된 경우 회원 권한 정보를 로딩 한다.
     		if(authtypeList==null){
     			getMemberAuthTypes();
-    		}
+    		} 
+    		// 회원의 저장되어 있는 에디터 내용을 불러 온다.
+    		findEditorContents();
     		
 		} else { // 로그인 되어 있지 않으면
 			// 메뉴 삭제

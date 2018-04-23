@@ -74,10 +74,10 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 		registry.addResourceHandler("index.html")
 	      	.addResourceLocations("classpath:/static/");
 
-		registry.addResourceHandler("/static/**")
-	      	.addResourceLocations("classpath:/static/");
+		registry.addResourceHandler("favicon.ico")
+      	.addResourceLocations("classpath:/static/");
 
-	    registry.addResourceHandler("favicon.ico")
+		registry.addResourceHandler("/static/**")
 	      	.addResourceLocations("classpath:/static/");
 
 	    /**

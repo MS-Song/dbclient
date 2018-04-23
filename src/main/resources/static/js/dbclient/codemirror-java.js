@@ -1,4 +1,4 @@
-webix.codebase = "./static/js/codemirror-5.10/";
+webix.codebase = "/static/js/codemirror-5.10/";
 webix.protoUI({
 	name : "codemirror-editor-java",
 	defaults : {

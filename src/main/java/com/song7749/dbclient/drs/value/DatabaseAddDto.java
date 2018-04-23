@@ -22,7 +22,7 @@ public class DatabaseAddDto  extends AbstractDto {
 	@Length(max=120)
 	@NotBlank
 	@ApiParam(value="Database Host Name (IP Adress OR Domain)"
-				,example="127.0.0.1 or db.song7749.com"
+				,example="127.0.0.1 or db.song7749.com, if embaded database (EX h2, sqlite) is file-path"
 				,required=true)
 	private String host;
 
@@ -34,40 +34,31 @@ public class DatabaseAddDto  extends AbstractDto {
 	private String hostAlias;
 
 	@Length(max=120)
-	@NotBlank
-	@ApiParam(value="Database Schema(Mysql), SID(Oracle)... "
-				,required=true)
+	@ApiParam(value="Database Schema(Mysql), SID(Oracle)..., if embaded database is skip.")
 	private String schemaName;
 
 	@Length(max=60)
 	@NotBlank
-	@ApiParam(value="Database Account"
-				,required=true)
+	@ApiParam(value="Database Account" ,required=true)
 	private String account;
 
-	@Length(min=4,max=20)
-	@NotBlank
 	@ApiParam(value="Database Password"
-				,required=true
-				,format="password")
+			,example="if database password not set, it input valuse is null or empty."
+			,format="password")
 	private String password;
 
 	@Enumerated(EnumType.STRING)
 	@NotNull
-	@ApiParam(value="Database Driver Selection"
-				,required=true)
+	@ApiParam(value="Database Driver Selection",required=true)
 	private DatabaseDriver driver;
 
 	@Enumerated(EnumType.STRING)
 	@NotNull
-	@ApiParam(value="Database Connnect Charicter Set"
-				,required=true)
+	@ApiParam(value="Database Connnect Charicter Set",required=true)
 	private Charset charset;
 
-	@Length(max=5)
-	@NotBlank
 	@ApiParam(value="Database Connect Port"
-				,required=true)
+			,example="if embaded file database (EX H2, sqlite) is null or empty input.")
 	private String port;
 
 	public DatabaseAddDto() {}

@@ -57,7 +57,7 @@ public enum DatabaseDriver {
 			// view list
 			"SELECT TABLE_NAME AS NAME, 'view' AS COMMENTS, '' as LAST_UPDATE_TIME, 'VALID' as STATUS FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}'",
 			// view detail
-			"SELECT TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,VIEW_DEFINITION,CHECK_OPTION,IS_UPDATABLE,DEFINER,SECURITY_TYPE,CHARACTER_SET_CLIENT,COLLATION_CONNECTION FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}'",
+			"SELECT TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,VIEW_DEFINITION,CHECK_OPTION,IS_UPDATABLE,DEFINER,SECURITY_TYPE,CHARACTER_SET_CLIENT,COLLATION_CONNECTION FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}' AND TABLE_NAME='{name}'",
 			// view source
 			"show create view {name}",
 			// procedure list
@@ -93,7 +93,7 @@ public enum DatabaseDriver {
 			// 한정자 추가
 			"{sqlBody} \n Limit {start},{end}",
 			// Affected Row 를 발생시키는 명령어
-			"insert,update,delete,create,drop,truncate,alter"),
+			"insert,update,delete,create,drop,truncate,alter,kill"),
 
 	@ApiModelProperty
 	ORACLE(
@@ -153,68 +153,67 @@ public enum DatabaseDriver {
 			// 한정자 추가
 			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM ( \n {sqlBody} \n ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}",
 			// Affected Row 를 발생시키는 명령어 -- comment on 의 경우 다른 방법이 필요할 듯.
-			"insert,update,delete,create,drop,truncate,alter,comment on,grant");
+			"insert,update,delete,create,drop,truncate,alter,comment on,grant,kill"),
 
-	/*
 	@ApiModelProperty
-	postgresql(
+	H2(
 			// dbms
-			"postgresql",
+			"h2",
 			// driverName
-			"org.postgresql.Driver",
+			"org.h2.Driver",
 			// url
-			"jdbc:postgresql://{host}:{port}/{schemaName}",
+			"{host}",
 			// validate query
 			"select 1 ",
 			// table list
-			"SELECT * FROM PG_TABLES",
-			// field list TODO. 여기서부터 만들기 시작해야 한다.
-			"SELECT a.COLUMN_ID,a.COLUMN_NAME,a.NULLABLE,decode(b.CONSTRAINT_TYPE,null,'NO','YES') COLUMN_KEY,a.DATA_TYPE,a.DATA_LENGTH,'' CHARACTER_SET,a.DATA_SCALE EXTRA,a.DATA_DEFAULT DEFAULT_VALUE,c.COMMENTS COMMENTS FROM USER_TAB_COLUMNS a, ( SELECT a.TABLE_NAME,a.COLUMN_NAME,b.CONSTRAINT_TYPE FROM USER_CONS_COLUMNS a, USER_CONSTRAINTS b WHERE a.TABLE_NAME = b.TABLE_NAME AND a.CONSTRAINT_NAME = b.CONSTRAINT_NAME AND b.CONSTRAINT_TYPE='P') b, USER_COL_COMMENTS c  WHERE a.TABLE_NAME = b.TABLE_NAME (+) AND a.COLUMN_NAME = b.COLUMN_NAME (+) AND a.TABLE_NAME = c.TABLE_NAME (+) AND a.COLUMN_NAME = c.COLUMN_NAME (+) AND a.TABLE_NAME = '{name}' ORDER BY a.COLUMN_ID",
+			"SELECT TABLE_NAME, REMARKS as TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='{schemaName}' AND TABLE_TYPE='TABLE'",
+			// field list
+			"SELECT ORDINAL_POSITION COLUMN_ID,	COLUMN_NAME, IS_NULLABLE NULLABLE, '' as COLUMN_KEY, TYPE_NAME DATA_TYPE, CHARACTER_OCTET_LENGTH DATA_LENGTH, CHARACTER_SET_NAME CHARACTER_SET,	'' as EXTRA, COLUMN_DEFAULT DEFAULT_VALUE,	REMARKS COMMENTS FROM INFORMATION_SCHEMA.COLUMNS where TABLE_SCHEMA='{schemaName}' AND TABLE_NAME='{name}'",
 			// index list
-			"SELECT a.OWNER, a.INDEX_NAME, a.INDEX_TYPE, a.UNIQUENESS, a.NUM_ROWS CARDINALITY , b.COLUMN_NAME, b.COLUMN_POSITION,b.DESCEND FROM ALL_INDEXES a, ALL_IND_COLUMNS b WHERE a.index_name = b.index_name  AND a.table_name='{name}'",
+			"SELECT TABLE_NAME OWNER, INDEX_NAME, INDEX_TYPE_NAME INDEX_TYPE, DECODE(NON_UNIQUE,'FALSE','UNIQUE','TRUE','NOT_UNIQUE') UNIQUENESS, CARDINALITY, COLUMN_NAME, ORDINAL_POSITION COLUMN_POSITION, DECODE(ASC_OR_DESC,'A','ASC','D','DESC') DESCEND FROM  INFORMATION_SCHEMA.INDEXES WHERE TABLE_SCHEMA='{schemaName}' AND TABLE_NAME='{name}'",
 			// explain
-			"SELECT * from table(dbms_xplan.display('plan_table',null,'typical',null))",
+			null,
 			// view list
-			"SELECT uv.VIEW_NAME as NAME, utc.COMMENTS AS COMMENTS, uo.LAST_DDL_TIME AS LAST_UPDATE_TIME, uo.STATUS FROM  USER_VIEWS uv LEFT JOIN USER_TAB_COMMENTS utc ON (uv.VIEW_NAME=utc.TABLE_NAME and utc.TABLE_TYPE='VIEW') JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW') order by NAME asc",
+			"select TABLE_NAME AS NAME, REMARKS AS COMMENTS, '' AS LAST_UPDATE_TIME, STATUS FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}'",
 			// view detail
-			"SELECT uv.VIEW_NAME, uv.TEXT_LENGTH, uv.TYPE_TEXT_LENGTH, uv.TYPE_TEXT, uv.OID_TEXT_LENGTH, uv.OID_TEXT, uv.VIEW_TYPE_OWNER, uv.VIEW_TYPE, uv.SUPERVIEW_NAME, uv.EDITIONING_VIEW, uv.READ_ONLY, uo.OBJECT_NAME, uo.SUBOBJECT_NAME, uo.OBJECT_ID, uo.DATA_OBJECT_ID, uo.OBJECT_TYPE, uo.CREATED, uo.LAST_DDL_TIME, uo.TIMESTAMP, uo.STATUS, uo.TEMPORARY, uo.GENERATED, uo.SECONDARY, uo.NAMESPACE, uo.EDITION_NAME FROM USER_VIEWS uv JOIN USER_OBJECTS uo on(uv.VIEW_NAME=uo.OBJECT_NAME) WHERE uv.VIEW_NAME=upper('{name}')",
+			"select ID, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, CHECK_OPTION, IS_UPDATABLE, STATUS, REMARKS   FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}' AND TABLE_NAME='{name}'",
 			// view source
-			"SELECT uv.VIEW_NAME as NAME, uv.TEXT FROM USER_VIEWS uv JOIN USER_OBJECTS uo ON (uv.VIEW_NAME=uo.OBJECT_NAME AND uo.object_type = 'VIEW') WHERE  uv.VIEW_NAME=upper('{name}')",
+			"select VIEW_DEFINITION FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}' AND TABLE_NAME='{name}'",
 			// procedure list
-			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'PROCEDURE' order by NAME asc",
+			"SELECT ALIAS_NAME as NAME, '' as LAST_UPDATE_TIME, 'VALID' as STATUS FROM INFORMATION_SCHEMA.FUNCTION_ALIASES  WHERE ALIAS_SCHEMA='{schemaName}'",
 			// procedure detail
-			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
+			"SELECT ID, ALIAS_CATALOG, ALIAS_SCHEMA, ALIAS_NAME, JAVA_CLASS, JAVA_METHOD, DATA_TYPE, TYPE_NAME, COLUMN_COUNT, RETURNS_RESULT, REMARKS FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_SCHEMA='{schemaName}' AND ALIAS_NAME='{name}'",
 			// procedure source
-			"SELECT us.NAME as NAME, SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 1) as text from user_source us where us.NAME = upper('{name}') GROUP BY us.NAME",
+			"SELECT ALIAS_NAME NAME, SOURCE TEXT FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_SCHEMA='{schemaName}' AND ALIAS_NAME='{name}'",
 			// function list
-			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'FUNCTION' order by NAME asc",
+			"SELECT ALIAS_NAME as NAME, '' as LAST_UPDATE_TIME, 'VALID' as STATUS FROM INFORMATION_SCHEMA.FUNCTION_ALIASES  WHERE ALIAS_SCHEMA='{schemaName}'",
 			// function detail
-			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
+			"SELECT ID, ALIAS_CATALOG, ALIAS_SCHEMA, ALIAS_NAME, JAVA_CLASS, JAVA_METHOD, DATA_TYPE, TYPE_NAME, COLUMN_COUNT, RETURNS_RESULT, REMARKS FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_SCHEMA='{schemaName}' AND ALIAS_NAME='{name}'",
 			// function source
-			"SELECT us.NAME as NAME, SUBSTR(XMLAgg(XMLElement(x, '$^$', us.text) ORDER BY us.line).Extract('//text()').getClobVal(), 1) as text from user_source us where us.NAME = upper('{name}') GROUP BY us.NAME",
+			"SELECT ALIAS_NAME NAME, SOURCE TEXT FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_SCHEMA='{schemaName}' AND ALIAS_NAME='{name}'",
 			// trigger list
-			"SELECT OBJECT_NAME as NAME, LAST_DDL_TIME as LAST_UPDATE_TIME, STATUS from user_objects uo where uo.object_type = 'TRIGGER' order by NAME asc",
+			"SELECT TRIGGER_NAME as NAME, '' as LAST_UPDATE_TIME, 'VALID' as  STATUS FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA='{schemaName}'",
 			// trigger detail
-			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
+			"SELECT TRIGGER_CATALOG, TRIGGER_SCHEMA, TRIGGER_NAME, TRIGGER_TYPE, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, BEFORE, JAVA_CLASS, QUEUE_SIZE, NO_WAIT, REMARKS FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA='{schemaName}' AND TRIGGER_NAME='{name}'",
 			// trigger source
-			"SELECT TRIGGER_NAME as NAME, TRIGGER_TYPE, TRIGGERING_EVENT, TABLE_OWNER, BASE_OBJECT_TYPE, TABLE_NAME, COLUMN_NAME, REFERENCING_NAMES, WHEN_CLAUSE, STATUS, DESCRIPTION, ACTION_TYPE, TRIGGER_BODY as TEXT, CROSSEDITION, BEFORE_STATEMENT, BEFORE_ROW, AFTER_ROW,AFTER_STATEMENT, INSTEAD_OF_ROW, FIRE_ONCE, APPLY_SERVER_ONLY from user_triggers where TRIGGER_NAME=upper('{name}')",
-			//sequence list
-			"SELECT SEQUENCE_NAME as NAME, LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from user_sequences order by NAME asc",
+			"SELECT TRIGGER_NAME NAME, SQL TEXT FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA='{schemaName}' AND TRIGGER_NAME='{name}'",
+			// sequence list
+			"SELECT ID, SEQUENCE_NAME NAME, CURRENT_VALUE LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT INCREMENT_BY FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_SCHEMA='{schemaName}'",
 			// sequence detail
-			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from user_objects uo where OBJECT_NAME = upper('{name}')",
+			"SELECT * FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_SCHEMA='{schemaName}' AND SEQUENCE_NAME='{name}'",
 			// process list
-			"SELECT concat(concat(s.sid , ','), s.serial#) as ID, sql.sql_text as SQL_TEXT from v$session s join v$sql sql on s.sql_id = sql.sql_id where s.program='dbClient'",
-			// kill process
-			"alter system kill session '{id}'",
+			"SELECT ID, info as SQL_TEXT FROM information_schema.processlist",
+			// kill connection
+			"KILL CONNECTION {id}",
 			// create table query
-			"select dbms_metadata.get_ddl( 'TABLE', '{name}', '{account}' ) as CREATE_TALBE from dual",
+			"SELECT SQL CREATE_TALBE FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{name}'",
 			// 자동완성용 테이블/필드 전체 리스트 조회
-			"SELECT UTC.TABLE_NAME AS TABLE_NAME, UTC.COLUMN_NAME AS COLUMN_NAME, UCC.COMMENTS AS COLUMN_COMMENT FROM USER_TAB_COLUMNS UTC , USER_COL_COMMENTS UCC WHERE UTC.TABLE_NAME = UCC.TABLE_NAME (+) AND UTC.COLUMN_NAME = UCC.COLUMN_NAME (+)",
+			"SELECT TABLE_NAME, COLUMN_NAME, REMARKS COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
 			// 한정자 추가
-			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM ( \n {sqlBody} \n ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}",
-			// Affected Row 를 발생시키는 명령어 -- comment on 의 경우 다른 방법이 필요할 듯.
-			"insert,update,delete,create,drop,truncate,alter,comment on,grant");
-	 */
+			"{sqlBody} \n Limit {start},{end}",
+			// Affected Row 를 발생시키는 명령어
+			"insert,update,delete,create,drop,truncate,alter,kill,comment on");
+
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -434,6 +433,9 @@ public enum DatabaseDriver {
 	 * @return String
 	 */
 	public String getProcedureListQuery(Database database) {
+		if(null==procedureListQuery || "".equals(procedureListQuery)) {
+			throw new IllegalArgumentException("Stored Procedure Not Support");
+		}
 		try {
 			return repalceDatabase(database, procedureListQuery);
 		} catch (Exception e) {
@@ -605,9 +607,18 @@ public enum DatabaseDriver {
 		String[] queries = query.replace("\t", " ").replace("\n", " ").split(" ");
 
 		for(String keyword : getAffectedRowCommands()) {
-			for(String q : queries) {
-//				logger.trace(format("{}={}", "affected row 를 발생시키는 키워드 검증"),keyword, q);
-				if(keyword.toLowerCase().equals(q.toLowerCase())) {
+			for(int i=0; i < queries.length;i++) {
+				String match = queries[i].toLowerCase();
+				// 2단어 이상인 키워드 인 경우
+				if(keyword.indexOf(" ") >= 0) {
+					int wordCount = StringUtils.countMatches(keyword, " ");
+					for(int j=1;j<=wordCount && i+j < queries.length; j++) {
+						match+= " " + queries[i+j].toLowerCase();
+					}
+				}
+
+//				logger.trace(format("keyword : {} = match : {}", "affected row 를 발생시키는 키워드 검증"),keyword,match);
+				if(keyword.toLowerCase().equals(match)) {
 					return true;
 				}
 			}

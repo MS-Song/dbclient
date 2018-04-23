@@ -221,7 +221,11 @@ var getDataParseEditor = function(url,parmeters,viewName,returnValueName){
 		function(text,data){
 			if(data.json().httpStatus ==200 && null!=data.json().contents){
 				$.each(data.json().contents,function(index, obj){
-					$$(viewName).setValue(obj[returnValueName].unescapeHtml());
+					if(null==returnValueName){
+						$$(viewName).setValue(obj.unescapeHtml());
+					} else {
+						$$(viewName).setValue(obj[returnValueName].unescapeHtml());
+					}
 				});
 				$$(viewName).focus(); 
 			} else {
@@ -380,4 +384,8 @@ var editorPositionWrite = function (cm){
 
 var reload = function() {
 	window.setTimeout(function(){document.location = document.location.href;}, 1000)	
+}
+
+var mvSite = function(src) {
+	document.location = src;	
 }

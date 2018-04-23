@@ -451,5 +451,4 @@ public class MemberManagerImplTest {
 		// then
 		assertThat(databaeList.getContent().size(), equalTo(1));
 	}
-
 }

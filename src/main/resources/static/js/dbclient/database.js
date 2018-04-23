@@ -97,7 +97,11 @@ var select_database_popup=function(){
 	    	   		
 	    			// 선택된 서버 정보를 보여준다.
 	    			$$("toolbar").removeView("toolbar_notices");
-	    			$$("toolbar").addView({id:"toolbar_notices",view: "label", label: database.hostAlias+" ["+database.host+"] 선택"},3);
+	    			$$("toolbar").addView({
+	    				id:"toolbar_notices",
+	    				view: "label", 
+	    				label: database.hostAlias+" ["+database.host+"] 선택"
+	    			},2);
 
     				// SQL Bind Style 정의한다.
 	    			$$("toolbar").removeView("database_developer_combo_prepare_style");
@@ -108,14 +112,14 @@ var select_database_popup=function(){
 						value:"#{field}",
 						options:["?", ":field", "#{field}","${field}"],
 						tooltip:"prepare 스타일을 정의 한다.<br/>?,:field,#{field},${field} 정의 가능"
-					});
+					},3);
 	    			// 캐시 삭제 버튼을 노출 한다.
 	    			$$("toolbar").removeView("toolbar_cache_remove");
 	    			$$("toolbar").addView({id:"toolbar_cache_remove",
 	    				view:"button", 
 	    				value:"Refresh Schema" , 
 	    				type:"form",
-	    				width:100,
+	    				width:200,
 	    				on:{"onItemClick":function(){// 캐시 삭제 실행 
 							// local storage 의 캐시먼저 
 							webix.storage.local.clear();
@@ -127,7 +131,7 @@ var select_database_popup=function(){
 	    						}
 	    					});
 	    				}}
-	    			});
+	    			},4);
 	    			// 선택된 데이터베이스의 정보를 읽는다.
 	    			database_info_data_load();
 	            }}
@@ -404,7 +408,6 @@ var database_info_cell = [{
 				onItemClick:function(){
 	    			var selectedRow = $$("database_info_view_list_view").getSelectedItem();
 	    			database.name=selectedRow.name;
-
 	    			getDataParseProperty("/database/getViewDetailLis",database,"view_info_detail_property");
 	    			getDataParseTextarea("/database/getViewSourceList",database,"view_info_source","editText");
 	    		},
@@ -941,8 +944,11 @@ var database_query_cell = [{
 							width:100,
 							value:"SQL",
 							options:["SQL", "PLSQL"],
-							tooltip:"에디터 모드를 변경한다.[SQL:일반SQL모드][PLSQL:PLSQL개발모드]"
-						},   
+							tooltip:"에디터 모드를 변경한다.[SQL:일반SQL모드][PLSQL:PLSQL개발모드]",
+							on:{"onChange":function(){
+								findEditorContents();
+							}}
+				        },   
 					    {
 							id:"database_query_button_select_count_pk",
 							view:"button",
@@ -1617,4 +1623,21 @@ var database_query_all_field_load = function(){
 			}		
 		},1000);	
 	}
+};
+
+//에디터 창의 내용을 주기적으로 저장 한다.
+var intervalSaveEditor = setInterval(function(){
+	var editorValue = $$("database_query_input").getEditor().getValue();
+	var PLSQL = $$("database_query_develop_mode").getValue();
+	webix.storage.local.put("dbclient_local_editor_save_"+PLSQL,editorValue);
+},20000); 
+
+
+
+// 저장되어 있는 데이터의 내용을 조회 한다.
+var findEditorContents = function(){
+	var PLSQL = $$("database_query_develop_mode").getValue();
+	var editorValue = webix.storage.local.get("dbclient_local_editor_save_"+PLSQL);
+	if(null!=editorValue && ""!=editorValue)
+		$$("database_query_input").setValue(editorValue.unescapeHtml());
 };
