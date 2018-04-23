@@ -49,7 +49,7 @@ dependencies {
 	compile('javax.xml.bind:jaxb-api:2.2.11')
 	compile("com.nimbusds:nimbus-jose-jwt:5.9")
 	compile("org.springframework.boot:spring-boot-devtools")
-	runtime('com.h2database:h2')
+	compile('com.h2database:h2')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
 }
