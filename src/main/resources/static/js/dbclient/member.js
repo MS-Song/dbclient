@@ -70,7 +70,7 @@ var login_form = {
 	view:"form",
 	borderless:true,
 	elements: [
-		{ id:"login_id_input", view:"text", label:'ID', name:"loginId" },
+		{ id:"login_id_input", view:"text", label:'ID', name:"loginId", type:"email" },
 		{ id:"login_password_input", view:"text", label:'Password', name:"password" ,type:"password",
 			on:{"onKeyPress":function(key,e){// 로그인 실행
 					// enter 를 입력하면, 로그인을 실행 한다.
@@ -148,7 +148,7 @@ var resister_member_form = {
 	view:"form",
 	borderless:true,
 	elements: [
-		{ view:"text", label:'로그인ID', 			name:"loginId" 							},
+		{ view:"text", label:'로그인ID', 			name:"loginId", 		type:"email"	},
 		{ view:"text", label:'패스워드', 			name:"password",		type:"password"	},
 		{ view:"text", label:'패스워드 재입력', 		name:"password_repeat",	type:"password"	},
 		{ view:"text", label:'성명', 				name:"name" 							},

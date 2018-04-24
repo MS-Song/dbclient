@@ -22,24 +22,29 @@ var executeQueryParams = {
  * DatabaseDriver 정보
  */
 var drivers=null;
-webix.ajax().get("/database/getDatabaseDriver",function(text,data){
-	if(data.json().httpStatus==200){
-		drivers=data.json().contents;
-	} else {
-		webix.message({ type:"error", text:data.json().message});
-	}
+webix.ready(function(){
+	webix.ajax().get("/database/getDatabaseDriver",function(text,data){
+		if(data.json().httpStatus==200){
+			drivers=data.json().contents;
+		} else {
+			webix.message({ type:"error", text:data.json().message});
+		}
+	});
 });
+
 
 /**
  * Charset 정보
  */
 var charset = null;
-webix.ajax().get("/database/getCharset",function(text,data){
-	if(data.json().httpStatus==200){
-		charset=data.json().contents;
-	} else {
-		webix.message({ type:"error", text:data.json().message});
-	}
+webix.ready(function(){
+	webix.ajax().get("/database/getCharset",function(text,data){
+		if(data.json().httpStatus==200){
+			charset=data.json().contents;
+		} else {
+			webix.message({ type:"error", text:data.json().message});
+		}
+	});
 });
 
 // Database 관리
@@ -58,14 +63,14 @@ var select_database_popup=function(){
         	id:"select_database_loader",
         	view:"datatable",
         	columns:[
-        	        { id:"id",				header:"ID",			width:100, sort:"int"},
-					{ id:"host",			header:"Host",			width:100, sort:"string"},
- 					{ id:"hostAlias",		header:"HostAlias",		width:100, sort:"string"},
- 					{ id:"schemaName",		header:"SchemaName",	width:100, sort:"string"},
- 					{ id:"account",			header:"Account",		width:100, sort:"string"},
- 					{ id:"driver",			header:"Driver",		width:100, sort:"string"},
- 					{ id:"port",			header:"Port",			width:80,  sort:"int"},
- 					{ id:"selected",		header:"선택",			width:50,
+        	        { id:"id",				header:"ID",			adjust:true, sort:"int"},
+					{ id:"host",			header:"Host",			adjust:true, sort:"string"},
+ 					{ id:"hostAlias",		header:"HostAlias",		adjust:true, sort:"string"},
+ 					{ id:"schemaName",		header:"SchemaName",	adjust:true, sort:"string"},
+ 					{ id:"account",			header:"Account",		adjust:true, sort:"string"},
+ 					{ id:"driver",			header:"Driver",		adjust:true, sort:"string"},
+ 					{ id:"port",			header:"Port",			adjust:true,  sort:"int"},
+ 					{ id:"selected",		header:"선택",			adjust:true,
  						template:function(obj){
  							return  obj.id == database.id ? "선택":"";
  						}
@@ -1060,15 +1065,29 @@ var database_query_cell = [{
 					id:"database_query_input",	
 					view : "codemirror-editor-sql"
 				},{ // 쿼리 정보 창
-					cols:[{
+					height:27,paddingY:2, cols:[{
 						// 쿼리 결과 info 창
 						id:"database_query_execute_info",
 						view:"label", 
-						label:"", 
+						label:"Rows: 0, Time: 0 ms", 
+						align:"left",
+						minWidth:150,
+						maxWidth:200,
+						width:150
+					},
+					{
+						view: "label",
+						label:"|",
+						width:10
+					},	
+					{ 
+						id:"database_query_or_error_info",   
 						align:"left",
 						adjust:true,
-						height:25,
-						tooltip:true
+						view:"text", 
+						value:"",
+						inputHeight:25,
+						readonly:true
 					},
 					{
 						view: "label",
@@ -1082,7 +1101,6 @@ var database_query_cell = [{
 						label:"Auto-Commit : "+executeQueryParams.autoCommit, 
 						align:"right",
 						width : 120,
-						height: 25,
 						tooltip : "true : 실행한 내용이 바로 DB에 반영됩니다. false : 실행한 내역이 DB에 반영되지 않습니다." 
 					},
 					{
@@ -1097,7 +1115,6 @@ var database_query_cell = [{
 						label:"Use Limit : "+executeQueryParams.useLimit, 
 						align:"right",
 						width : 90,
-						height: 25,
 						tooltip : "true : 데터를 limit 개수 100개 만큼씩 가져 옵니다. false : 전체 데이터를 조회 합니다." 
 					},
 					{
@@ -1107,7 +1124,6 @@ var database_query_cell = [{
 						type:"image",
 						align:"right",
 						width : 24,
-						height: 25,
 						image:"/static/img/next_data_arrow.png",
 						click:function(){
 							executeQuery(true,null);
@@ -1368,6 +1384,7 @@ var executeQuery = function (isNextData,resultView){
 		resultView.config.offset 	= 	executeQueryParams.offset;
 		resultView.config.page		=	1;
 		resultView.config.isDataLoading=false;
+		$$("database_query_or_error_info").setValue(resultView.config.query);
 	}
 }
 

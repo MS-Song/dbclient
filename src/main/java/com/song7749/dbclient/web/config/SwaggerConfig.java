@@ -29,8 +29,8 @@ public class SwaggerConfig {
 
 	public ApiInfo getApiInfo() {
 		return new ApiInfoBuilder()
-				.title("IncidentAlert")
-				.description("지정된 조건이 발생하면, 대상자에게 Alert 을 보내는 서비스")
+				.title("DB Client")
+				.description("Database Operation Client")
 				.version("1.0.0")
 				.contact(new Contact("Minsoo Song"
 						,"https://github.com/MS-Song/dbclient"

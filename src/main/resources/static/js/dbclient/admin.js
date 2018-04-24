@@ -97,7 +97,7 @@ var adminAddDatabasePopup=function(){
 	webix.ui({
 	    view:"window",
 	    id:"admin_add_database_popup",
-	    autowidth:true,
+	    width:400,
 	    position:"center",
 	    modal:true,
 	    head:{
@@ -110,14 +110,19 @@ var adminAddDatabasePopup=function(){
 			view:"form",
 			borderless:true,
 			elements: [
-				{ id:"host", 		view:"text", 	label:'host', 			name:"host" 		},
+				{ id:"host", 		view:"text", 	label:'host', 			name:"host", 		},
+				{ view:"label", 	label:'Mysql/Oracle/Mssql = IP 또는 Domain, H2/SQLite = JDBC URL 입력'},
+				{ view:"label", 	label:'예시) 127.0.0.1 OR db.song7749.com OR jdbc:h2:file:~/xxx'},
 				{ id:"hostAlias", 	view:"text", 	label:'hostAlias', 		name:"hostAlias" 	},
+				{ view:"label", 	label:'local-oracle-test 등 DB 의 별칭을 입력'},
 				{ id:"schemaName", 	view:"text", 	label:'schemaName', 	name:"schemaName" 	},
+				{ view:"label", 	label:'Mysql/H2 schema, Oracle SID(SERVICE_NAME)'},
 				{ id:"account", 	view:"text", 	label:'account', 		name:"account" 		},
 				{ id:"password", 	view:"text", 	label:'password', 		name:"password" 	},
 				{ id:"charset", 	view:"select", 	label:'charset', 		name:"charset",		options:charset	},
         		{ id:"driver",		view:"select",	label:'driver',			name:"driver", 		options:drivers },
 				{ id:"port", 		view:"text", 	label:'port', 			name:"port" 		},
+				{ view:"label", 	label:'port는 Embeded Database의 경우 생략'},
 				{
 					cols:[
 						{ id:"test", 	view:"button", label:'테스트', click:function(){
@@ -148,7 +153,7 @@ var adminAddDatabasePopup=function(){
 		    			}}
 					]
 				}
-			]	        
+			] // end elements	        
 	    }
     }).show();
 };
@@ -158,7 +163,7 @@ var adminModifyDatabasePopup = function(id){
 	webix.ui({
 	    view:"window",
 	    id:"admin_modify_database_popup",
-	    autowidth:true,
+	    width:400,
 	    position:"center",
 	    modal:true,
 	    head:{
@@ -171,15 +176,20 @@ var adminModifyDatabasePopup = function(id){
 			view:"form",
 			borderless:true,
 			elements: [
-				{ id:"id", 			view:"text", 	type:"hidden",			name:"id",			height:0		},
-				{ id:"host", 		view:"text", 	label:'host', 			name:"host" 		},
-				{ id:"hostAlias", 	view:"text", 	label:'hostAlias', 		name:"hostAlias" 	},
-				{ id:"schemaName", 	view:"text", 	label:'schemaName', 	name:"schemaName" 	},
-				{ id:"account", 	view:"text", 	label:'account', 		name:"account" 		},
-				{ id:"password", 	view:"text", 	label:'password', 		name:"password" 	},
-        		{ id:"driver",		view:"select",	label:'driver',			name:"driver", 		options:drivers },
-				{ id:"charset", 	view:"select", 	label:'charset', 		name:"charset",		options:charset	},
-				{ id:"port", 		view:"text", 	label:'port', 			name:"port" 		},
+				{ id:"id", 				view:"text", 	type:"hidden",			name:"id",			height:0		},
+				{ id:"host", 			view:"text", 	label:'host', 			name:"host" 		},
+				{ view:"label", 	label:'Mysql/Oracle/Mssql = IP 또는 Domain, H2/SQLite = JDBC URL 입력'},
+				{ view:"label", 	label:'예시) 127.0.0.1 OR db.song7749.com OR jdbc:h2:file:~/xxx'},
+				{ id:"hostAlias", 		view:"text", 	label:'hostAlias', 		name:"hostAlias" 	},
+				{ view:"label", 	label:'local-oracle-test 등 DB 의 별칭을 입력'},				
+				{ id:"schemaName", 		view:"text", 	label:'schemaName', 	name:"schemaName" 	},
+				{ view:"label", 	label:'Mysql/H2 schema, Oracle SID(SERVICE_NAME)'},				
+				{ id:"account", 		view:"text", 	label:'account', 		name:"account" 		},
+				{ id:"password", 		view:"text", 	label:'password', 		name:"password" 	},
+				{ id:"driver",			view:"select",	label:'driver',			name:"driver", 		options:drivers },
+				{ id:"charset", 		view:"select", 	label:'charset', 		name:"charset",		options:charset	},
+				{ id:"port", 			view:"text", 	label:'port', 			name:"port" 		},
+				{ view:"label", 	label:'port는 Embeded Database의 경우 생략'},
 				{
 					cols:[
 						{ id:"test", 	view:"button", label:'테스트', click:function(){
@@ -212,7 +222,7 @@ var adminModifyDatabasePopup = function(id){
 		    			}}
 					]
 				}
-			]	        
+			] // end elements
 	    }
     }).show();
 

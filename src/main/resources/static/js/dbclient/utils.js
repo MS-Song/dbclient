@@ -129,12 +129,10 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
         				$$(viewName).config.executedTime=parseInt(data.json().processTime);
         				$$("database_query_execute_info").define("label",'Rows: '+ comma(data.json().rowCount) + ', Time: '+comma(data.json().processTime) + ' ms');	
     				} catch (e) {
-    					$$("database_query_execute_info").define("label",'Error :'+data.json().message);
-        				$$("database_query_execute_info").define("tooltip",'Error :'+data.json().message);    					
+    					$$("database_query_or_error_info").setValue(data.json().message);
     				}
     			} else {
-    				$$("database_query_execute_info").define("label",'Error :'+data.json().message);
-    				$$("database_query_execute_info").define("tooltip",'Error :'+data.json().message);
+					$$("database_query_or_error_info").setValue(data.json().message);
     			}
     			$$("database_query_execute_info").refresh();
     			//쿼리 로그 기록
@@ -198,12 +196,10 @@ var addDataParseView = function(url,parmeters,viewName){
 					$$(viewName).config.executedTime=parseInt(data.json().processTime);
 					$$("database_query_execute_info").define("label",'Rows: '+ comma(data.json().rowCount) + ', Time: '+comma(data.json().processTime) + ' ms');	
 				} catch (e) {
-					$$("database_query_execute_info").define("label",'Error :'+data.json().message);
-					$$("database_query_execute_info").define("tooltip",'Error :'+data.json().message);    					
+					$$("database_query_or_error_info").setValue(data.json().message);
 				}
 			} else {
-				$$("database_query_execute_info").define("label",'Error :'+data.json().message);
-				$$("database_query_execute_info").define("tooltip",'Error :'+data.json().message);
+				$$("database_query_or_error_info").setValue(data.json().message);
 			}
 			$$("database_query_execute_info").refresh();
 		
