@@ -1,4 +1,4 @@
-package com.song7749.dbclient.drs.value.dbclient;
+package com.song7749.dbclient.drs.value;
 
 import com.song7749.base.AbstractVo;
 

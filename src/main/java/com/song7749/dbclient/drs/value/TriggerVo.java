@@ -1,25 +1,26 @@
-package com.song7749.dbclient.drs.value.dbclient;
+package com.song7749.dbclient.drs.value;
 
 import com.song7749.base.AbstractVo;
 
 /**
  * <pre>
- * Class Name : ProcedureVO.java
- * Description : 프로시저 VO  객체
+ * Class Name : TriggerVO.java
+ * Description : Trigger VO 객체
 *
 *  Modification Information
 *  Modify Date 		Modifier	Comment
 *  -----------------------------------------------
-*  2016. 3. 11.		song7749	신규작성
+*  2016. 5. 2.		song7749	신규작성
 *
 * </pre>
 *
 * @author song7749
-* @since 2016. 3. 11.
+* @since 2016. 5. 2.
 */
-public class ProcedureVo extends AbstractVo{
 
-	private static final long serialVersionUID = 2598841737020289017L;
+public class TriggerVo extends AbstractVo{
+
+	private static final long serialVersionUID = 5027937226984774899L;
 
 	private Integer seq;
 	private String name;
@@ -28,9 +29,9 @@ public class ProcedureVo extends AbstractVo{
 	private String text;
 	private String editText;
 
-	public ProcedureVo() {}
+	public TriggerVo() {}
 
-	public ProcedureVo(Integer seq, String name, String status,
+	public TriggerVo(Integer seq, String name, String status,
 			String lastUpdateDate) {
 		this.seq = seq;
 		this.name = name;
@@ -38,7 +39,7 @@ public class ProcedureVo extends AbstractVo{
 		this.lastUpdateDate = lastUpdateDate;
 	}
 
-	public ProcedureVo(String text, String editText) {
+	public TriggerVo(String text, String editText) {
 		this.text = text;
 		this.editText = editText;
 	}
@@ -84,7 +85,7 @@ public class ProcedureVo extends AbstractVo{
 	}
 
 	/**
-	 * Procedure 를 Edit 할경우 추가되는 SQL 과 Procedure 내용을 더해서 출력 한다.
+	 * Trigger 를 Edit 할경우 추가되는 SQL 과 Trigger 내용을 더해서 출력 한다.
 	 * @return String
 	 */
 	public String getEditText() {
@@ -92,7 +93,7 @@ public class ProcedureVo extends AbstractVo{
 	}
 
 	/**
-	 * Procedure 를 edit 할경우 추가되는 SQL 을 넣는다.
+	 * Trigger 를 edit 할경우 추가되는 SQL 을 넣는다.
 	 * @param editText
 	 */
 	public void setEditText(String editText) {

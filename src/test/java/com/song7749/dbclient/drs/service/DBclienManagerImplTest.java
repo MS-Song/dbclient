@@ -32,11 +32,11 @@ import com.song7749.dbclient.drs.type.AuthType;
 import com.song7749.dbclient.drs.type.Charset;
 import com.song7749.dbclient.drs.type.DatabaseDriver;
 import com.song7749.dbclient.drs.value.DatabaseAddDto;
-import com.song7749.dbclient.drs.value.dbclient.ExecuteQueryDto;
-import com.song7749.dbclient.drs.value.dbclient.FieldVo;
-import com.song7749.dbclient.drs.value.dbclient.IndexVo;
-import com.song7749.dbclient.drs.value.dbclient.TableVo;
-import com.song7749.dbclient.drs.value.dbclient.ViewVo;
+import com.song7749.dbclient.drs.value.ExecuteQueryDto;
+import com.song7749.dbclient.drs.value.FieldVo;
+import com.song7749.dbclient.drs.value.IndexVo;
+import com.song7749.dbclient.drs.value.TableVo;
+import com.song7749.dbclient.drs.value.ViewVo;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest

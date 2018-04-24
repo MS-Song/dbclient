@@ -1,4 +1,4 @@
-package com.song7749.dbclient.drs.value.dbclient;
+package com.song7749.dbclient.drs.value;
 
 import javax.validation.constraints.NotNull;
 

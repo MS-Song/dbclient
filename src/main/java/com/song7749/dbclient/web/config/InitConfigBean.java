@@ -27,8 +27,8 @@ import com.song7749.dbclient.drs.service.MemberManager;
 import com.song7749.dbclient.drs.type.AuthType;
 import com.song7749.dbclient.drs.type.Charset;
 import com.song7749.dbclient.drs.type.DatabaseDriver;
+import com.song7749.dbclient.drs.value.ExecuteQueryDto;
 import com.song7749.dbclient.drs.value.MemberVo;
-import com.song7749.dbclient.drs.value.dbclient.ExecuteQueryDto;
 
 /**
  * <pre>
