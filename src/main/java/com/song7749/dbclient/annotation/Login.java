@@ -6,8 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.song7749.dbclient.drs.type.AuthType;
-import com.song7749.dbclient.drs.type.LoginResponseType;
+import com.song7749.dbclient.type.AuthType;
+import com.song7749.dbclient.type.LoginResponseType;
 
 /**
  * <pre>
