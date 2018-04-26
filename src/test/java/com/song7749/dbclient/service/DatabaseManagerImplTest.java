@@ -25,7 +25,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.repository.DatabaseRepository;
-import com.song7749.dbclient.service.DatabaseManager;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 import com.song7749.dbclient.value.DatabaseAddDto;
@@ -36,7 +35,7 @@ import com.song7749.dbclient.value.DatabaseVo;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient.drs"})
+@ComponentScan({"com.song7749.dbclient"})
 public class DatabaseManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());

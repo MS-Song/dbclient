@@ -16,13 +16,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.song7749.dbclient.domain.Log;
 import com.song7749.dbclient.repository.LogRepository;
-import com.song7749.dbclient.service.LogManager;
 import com.song7749.dbclient.value.LogLoginAddDto;
 import com.song7749.dbclient.value.LogQueryAddDto;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient.drs"})
+@ComponentScan({"com.song7749.dbclient"})
 public class LogManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());

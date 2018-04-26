@@ -14,11 +14,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.song7749.dbclient.domain.LogLogin;
 import com.song7749.dbclient.domain.LogQuery;
-import com.song7749.dbclient.repository.LogRepository;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient.drs"})
+@ComponentScan({"com.song7749.dbclient"})
 public class LogRepositoryTest{
 
 	Logger logger = LoggerFactory.getLogger(getClass());

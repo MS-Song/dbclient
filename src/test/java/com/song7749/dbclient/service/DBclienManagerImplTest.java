@@ -28,7 +28,6 @@ import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberRepository;
-import com.song7749.dbclient.service.DBclienManager;
 import com.song7749.dbclient.type.AuthType;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
@@ -41,13 +40,13 @@ import com.song7749.dbclient.value.ViewVo;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient.drs"})
+@ComponentScan({"com.song7749.dbclient"})
 public class DBclienManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	DBclienManager dbclienManager;
+	DBclienManager dbClientManager;
 
 	@Autowired
 	DatabaseRepository databaseRepository;
@@ -105,7 +104,7 @@ public class DBclienManagerImplTest {
 	@Test
 	public void testInsert() throws SQLException {
 
-		Connection conn = dbclienManager.getConnection(mysql);
+		Connection conn = dbClientManager.getConnection(mysql);
 
 
 		PreparedStatement ps = null;
@@ -142,7 +141,7 @@ public class DBclienManagerImplTest {
 		dto.setIp(InetAddress.getLocalHost().getHostAddress());
 		dto.setUseLimit(false);
 		// when
-		MessageVo vo = dbclienManager.executeQuery(dto);
+		MessageVo vo = dbClientManager.executeQuery(dto);
 		// then
 		assertThat(vo.getHttpStatus(),equalTo(200));
 
@@ -151,7 +150,7 @@ public class DBclienManagerImplTest {
 		dto.setLoginId(member.getLoginId());
 		dto.setQuery(oracle.getDriver().getValidateQuery());
 		// when
-		vo = dbclienManager.executeQuery(dto);
+		vo = dbClientManager.executeQuery(dto);
 		// then
 		assertThat(vo.getHttpStatus(),equalTo(200));
 
@@ -164,14 +163,14 @@ public class DBclienManagerImplTest {
 		// give
 		dto.setId(mysql.getId());
 		// when
-		List<TableVo> list = dbclienManager.selectTableVoList(dto);
+		List<TableVo> list = dbClientManager.selectTableVoList(dto);
 		// then
 		assertTrue(list.size() > 0);
 
 		// give
 		dto.setId(oracle.getId());
 		// when
-		list = dbclienManager.selectTableVoList(dto);
+		list = dbClientManager.selectTableVoList(dto);
 		// then
 		assertTrue(list.size() > 0);
 	}
@@ -180,19 +179,19 @@ public class DBclienManagerImplTest {
 	public void testSelectTableFieldVoList() throws Exception {
 		// gvie
 		dto.setId(mysql.getId());
-		List<TableVo> tlist = dbclienManager.selectTableVoList(dto);
+		List<TableVo> tlist = dbClientManager.selectTableVoList(dto);
 		dto.setName(tlist.get(0).getTableName());
 		//when
-		List<FieldVo> flist = dbclienManager.selectTableFieldVoList(dto);
+		List<FieldVo> flist = dbClientManager.selectTableFieldVoList(dto);
 		//then
 		assertTrue(flist.size()>0);
 
 		// give
 		dto.setId(oracle.getId());
-		tlist = dbclienManager.selectTableVoList(dto);
+		tlist = dbClientManager.selectTableVoList(dto);
 		dto.setName(tlist.get(0).getTableName());
 		// when
-		flist = dbclienManager.selectTableFieldVoList(dto);
+		flist = dbClientManager.selectTableFieldVoList(dto);
 		// then
 		assertTrue(flist.size() > 0);
 
@@ -202,19 +201,19 @@ public class DBclienManagerImplTest {
 	public void testSelectTableIndexVoList() throws Exception {
 		// gvie
 		dto.setId(mysql.getId());
-		List<TableVo> tlist = dbclienManager.selectTableVoList(dto);
+		List<TableVo> tlist = dbClientManager.selectTableVoList(dto);
 		dto.setName(tlist.get(0).getTableName());
 		//when
-		List<IndexVo> flist = dbclienManager.selectTableIndexVoList(dto);
+		List<IndexVo> flist = dbClientManager.selectTableIndexVoList(dto);
 		//then
 		assertTrue(flist.size()>0);
 
 		// give
 		dto.setId(oracle.getId());
-		tlist = dbclienManager.selectTableVoList(dto);
+		tlist = dbClientManager.selectTableVoList(dto);
 		dto.setName(tlist.get(0).getTableName());
 		// when
-		flist = dbclienManager.selectTableIndexVoList(dto);
+		flist = dbClientManager.selectTableIndexVoList(dto);
 		// then
 		assertTrue(flist.size() > 0);
 
@@ -225,14 +224,14 @@ public class DBclienManagerImplTest {
 		// gvie
 		dto.setId(mysql.getId());
 		//when
-		List<ViewVo> flist = dbclienManager.selectViewVoList(dto);
+		List<ViewVo> flist = dbClientManager.selectViewVoList(dto);
 		//then
 		assertTrue(flist.size()>0);
 
 		// give
 		dto.setId(oracle.getId());
 		// when
-		flist = dbclienManager.selectViewVoList(dto);
+		flist = dbClientManager.selectViewVoList(dto);
 		// then
 		assertTrue(flist.size() > 0);
 	}
@@ -241,19 +240,19 @@ public class DBclienManagerImplTest {
 	public void testSelectViewDetailList() throws Exception {
 		// gvie
 		dto.setId(mysql.getId());
-		List<ViewVo> tlist = dbclienManager.selectViewVoList(dto);
+		List<ViewVo> tlist = dbClientManager.selectViewVoList(dto);
 		dto.setName(tlist.get(0).getName());
 		//when
-		List<Map<String, String>> flist = dbclienManager.selectViewDetailList(dto);
+		List<Map<String, String>> flist = dbClientManager.selectViewDetailList(dto);
 		//then
 		assertTrue(flist.size()>0);
 
 		// give
 		dto.setId(oracle.getId());
-		tlist = dbclienManager.selectViewVoList(dto);
+		tlist = dbClientManager.selectViewVoList(dto);
 		dto.setName(tlist.get(0).getName());
 		// when
-		flist = dbclienManager.selectViewDetailList(dto);
+		flist = dbClientManager.selectViewDetailList(dto);
 		// then
 		assertTrue(flist.size() > 0);
 	}
@@ -262,19 +261,19 @@ public class DBclienManagerImplTest {
 	public void testSelectViewVoSourceList() throws Exception {
 		// gvie
 		dto.setId(mysql.getId());
-		List<ViewVo> tlist = dbclienManager.selectViewVoList(dto);
+		List<ViewVo> tlist = dbClientManager.selectViewVoList(dto);
 		dto.setName(tlist.get(0).getName());
 		//when
-		List<ViewVo> flist = dbclienManager.selectViewVoSourceList(dto);
+		List<ViewVo> flist = dbClientManager.selectViewVoSourceList(dto);
 		//then
 		assertTrue(flist.size()>0);
 
 		// give
 		dto.setId(oracle.getId());
-		tlist = dbclienManager.selectViewVoList(dto);
+		tlist = dbClientManager.selectViewVoList(dto);
 		dto.setName(tlist.get(0).getName());
 		// when
-		flist = dbclienManager.selectViewVoSourceList(dto);
+		flist = dbClientManager.selectViewVoSourceList(dto);
 		// then
 		assertTrue(flist.size() > 0);
 	}
@@ -284,14 +283,14 @@ public class DBclienManagerImplTest {
 		// give
 		DatabaseAddDto mysqlDto = mapper.map(mysql, DatabaseAddDto.class) ;
 		//when
-		MessageVo vo = dbclienManager.testConnection(mysqlDto);
+		MessageVo vo = dbClientManager.testConnection(mysqlDto);
 		//then
 		assertThat(vo.getHttpStatus(), equalTo(200));
 
 		// give
 		DatabaseAddDto oracleDto = mapper.map(oracle, DatabaseAddDto.class);
 		//when
-		vo = dbclienManager.testConnection(oracleDto);
+		vo = dbClientManager.testConnection(oracleDto);
 		//then
 		assertThat(vo.getHttpStatus(), equalTo(200));
 	}

@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.dbclient.value.MemberAddDto;
 import com.song7749.dbclient.value.MemberVo;
 
+@Ignore
 public class DatabaseSchemaControllerTest extends ControllerTest{
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -86,6 +88,5 @@ public class DatabaseSchemaControllerTest extends ControllerTest{
 		// login cookie 생성
 		cookie = new Cookie("cipher", result.getResponse().getCookie("cipher").getValue());
 	}
-
 
 }

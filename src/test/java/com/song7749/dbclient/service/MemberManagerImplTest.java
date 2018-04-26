@@ -28,7 +28,6 @@ import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberDatabaseRepository;
 import com.song7749.dbclient.repository.MemberRepository;
 import com.song7749.dbclient.repository.MemberSaveQueryRepository;
-import com.song7749.dbclient.service.MemberManager;
 import com.song7749.dbclient.type.AuthType;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
@@ -49,7 +48,7 @@ import com.song7749.dbclient.value.MemberVo;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient.drs"})
+@ComponentScan({"com.song7749.dbclient"})
 public class MemberManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
