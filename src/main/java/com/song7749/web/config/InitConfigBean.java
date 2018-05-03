@@ -88,14 +88,14 @@ public class InitConfigBean {
 		if(null==aleadyMember) {
 			memberRepository.saveAndFlush(member);
 			MemberVo memberVo = memberManager.renewApikeyByAdmin(member.getLoginId());
-			logger.trace(format("{}", "first Start Application with root user create"),memberVo);
+			logger.info(format("{}", "first Start Application with root user create"),memberVo);
 		} else {
-			logger.trace(format("{}", "root user info"),aleadyMember);
+			logger.info(format("{}", "root user info"),aleadyMember);
 		}
 
 
 		// h2 dbconnection add
-		logger.trace(format("{}", "H2 Database Datasource"),hikariH2);
+		logger.info(format("{}", "H2 Database Datasource"),hikariH2);
 		if(null!=hikariH2) {
 			Database db = new Database(
 					"jdbc:h2:file:~/dbclient",
@@ -112,12 +112,14 @@ public class InitConfigBean {
 			// 이미 입력된 내용이 없을 경우에만 입력한다.
 			if(!oDB.isPresent()){
 				databaseRepository.saveAndFlush(db);
+			} else {
+				db = oDB.get();
 			}
 
 			// db 를 pool map 객체에 넣는다.
 			Map<Database, DataSource> map = ((DBclienManagerImpl)dbClientManager).getDataSourceMap();
 			map.put(db, hikariH2);
-			logger.trace(format("{}", "H2 Database Add Complete"),map);
+			logger.info(format("{}", "H2 Database Add Complete"),map);
 
 			// comment 입력
 			String[] comments = {
