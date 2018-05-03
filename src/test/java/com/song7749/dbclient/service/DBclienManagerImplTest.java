@@ -88,7 +88,7 @@ public class DBclienManagerImplTest {
 			, "TestDB"
 			, "SA"
 			, "12345678dsCD!"
-			, DatabaseDriver.MSSQL_2012_MORETHEN
+			, DatabaseDriver.MSSQL
 			, Charset.UTF8
 			, "1401"
 			, null);
