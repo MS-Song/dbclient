@@ -10,6 +10,7 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,9 @@ public class InitConfigBean {
 	@Autowired
 	DataSource hikariH2;
 
+	@Autowired
+	ModelMapper mapper;
+
 	@Transactional
 	@PostConstruct
     public void init(){
@@ -90,7 +94,7 @@ public class InitConfigBean {
 			MemberVo memberVo = memberManager.renewApikeyByAdmin(member.getLoginId());
 			logger.info(format("{}", "first Start Application with root user create"),memberVo);
 		} else {
-			logger.info(format("{}", "root user info"),aleadyMember);
+			logger.info(format("{}", "root user info"),aleadyMember.getMemberVo(mapper));
 		}
 
 
