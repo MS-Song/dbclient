@@ -1,5 +1,7 @@
 package com.song7749.dbclient.value;
 
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
 import com.song7749.base.AbstractDto;
@@ -28,6 +30,16 @@ public class ExecuteQueryDto extends AbstractDto{
 	private boolean htmlAllow = false;
 
 	private boolean usePLSQL = false;
+
+	/**
+	 * Stored Procedure run in paramter
+	 */
+	private Map<String,String> inParameter;
+
+	/**
+	 * Stored Procedure run out
+	 */
+	private Map<String,String> outParameter;
 
 	@ApiModelProperty("최대 조회 개수")
 	private Long limit = 100L;
@@ -167,5 +179,21 @@ public class ExecuteQueryDto extends AbstractDto{
 
 	public void setUseLimit(boolean useLimit) {
 		this.useLimit = useLimit;
+	}
+
+	public Map<String, String> getInParameter() {
+		return inParameter;
+	}
+
+	public void setInParameter(Map<String, String> inParameter) {
+		this.inParameter = inParameter;
+	}
+
+	public Map<String, String> getOutParameter() {
+		return outParameter;
+	}
+
+	public void setOutParameter(Map<String, String> outParameter) {
+		this.outParameter = outParameter;
 	}
 }

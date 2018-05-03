@@ -129,10 +129,10 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
         				$$(viewName).config.executedTime=parseInt(data.json().processTime);
         				$$("database_query_execute_info").define("label",'Rows: '+ comma(data.json().rowCount) + ', Time: '+comma(data.json().processTime) + ' ms');	
     				} catch (e) {
-    					$$("database_query_or_error_info").setValue(data.json().message);
+    					reslutPrintError(data.json().message);
     				}
     			} else {
-					$$("database_query_or_error_info").setValue(data.json().message);
+					reslutPrintError(data.json().message);
     			}
     			$$("database_query_execute_info").refresh();
     			//쿼리 로그 기록
@@ -157,7 +157,6 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 	// 시간 객체 제거 -- 오류가 나도 제거한다.
 	clearInterval(timeInterval);
 };
-
 
 /**
  * 기존 데이터에 데이터를 추가한다.
@@ -196,10 +195,10 @@ var addDataParseView = function(url,parmeters,viewName){
 					$$(viewName).config.executedTime=parseInt(data.json().processTime);
 					$$("database_query_execute_info").define("label",'Rows: '+ comma(data.json().rowCount) + ', Time: '+comma(data.json().processTime) + ' ms');	
 				} catch (e) {
-					$$("database_query_or_error_info").setValue(data.json().message);
+					reslutPrintError(data.json().message);
 				}
 			} else {
-				$$("database_query_or_error_info").setValue(data.json().message);
+				reslutPrintError(data.json().message);
 			}
 			$$("database_query_execute_info").refresh();
 		
@@ -207,6 +206,21 @@ var addDataParseView = function(url,parmeters,viewName){
 	}
 	$$(viewName).config.isDataLoading=false;
 };
+
+//쿼리에 에러가 발생할 경우 result set 공간에 에러를 보여준다.
+var reslutPrintError = function(errorMessage){
+	$$("database_result_list_view").config.columns = [];
+	$$("database_result_list_view").config.columns[0]={};
+	$$("database_result_list_view").config.columns[0].id = "error";
+	$$("database_result_list_view").config.columns[0].header = "SQL ERROR";
+	$$("database_result_list_view").config.columns[0].adjust = true;
+	$$("database_result_list_view").config.columns[0].sort="string";	
+	$$("database_result_list_view").refreshColumns();
+
+	$$("database_result_list_view").data.add({error:errorMessage},1);
+	$$("database_result_list_view").refresh();
+};
+
 
 /**
  * 데이터를 조회하여, editor 에 넣는다.

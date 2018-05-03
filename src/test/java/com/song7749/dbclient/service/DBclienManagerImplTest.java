@@ -82,6 +82,17 @@ public class DBclienManagerImplTest {
 			, "1521"
 			, null);
 
+	Database mssql = new Database(
+			"local-dev"
+			, "mssql-local"
+			, "TestDB"
+			, "SA"
+			, "12345678dsCD!"
+			, DatabaseDriver.MSSQL_2012_MORETHEN
+			, Charset.UTF8
+			, "1401"
+			, null);
+
 	Member member = new Member("test@gmail.com"
 			, "12345678"
 			, "패스워드질문은?"
@@ -97,6 +108,7 @@ public class DBclienManagerImplTest {
 	public void setup() {
 		databaseRepository.saveAndFlush(mysql);
 		databaseRepository.saveAndFlush(oracle);
+		databaseRepository.saveAndFlush(mssql);
 		memberRepository.saveAndFlush(member);
 	}
 

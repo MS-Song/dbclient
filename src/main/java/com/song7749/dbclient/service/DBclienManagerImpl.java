@@ -5,10 +5,11 @@ import static com.song7749.util.StringUtils.htmlentities;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -666,6 +667,7 @@ public class DBclienManagerImpl implements DBclienManager {
 		// DML 이나 PLSQL 인 경우에는 AffectedRow 가 발생한다.
 		isAffected = isAffected || dto.isUsePLSQL();
 
+
 		// row 에 영향이 있는 쿼리
 		if(isAffected){
 			try{
@@ -692,10 +694,8 @@ public class DBclienManagerImpl implements DBclienManager {
 					vo.setContents(list);
 				}
 			} catch (SQLException e) {
-				logger.debug(format("{}","SQL ERROR STATE"),e.getSQLState());
-				logger.debug(format("{}","SQL ERROR MESSAGE"),e.getMessage());
-				logger.debug(format("{}","SQL ERROR CODE"),e.getErrorCode());
-				throw new IllegalArgumentException(e.getMessage());
+				logger.debug(format("{}","SQL ERROR"),"[" + e.getErrorCode() + "][" + e.getSQLState() + "]" + e.getMessage());
+				throw new IllegalArgumentException("[" + e.getErrorCode() + "][" + e.getSQLState() + "]" + e.getMessage());
 			}
 		}
 
@@ -773,15 +773,15 @@ public class DBclienManagerImpl implements DBclienManager {
 	 */
 	private List<Map<String,String>> executeReadQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
 		logger.debug(format("{}","Try Read Excute Query"),dto.getQuery());
-
-		Statement st = null;
+		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 
 		try {
-			st = conn.createStatement();
-			rs = st.executeQuery(dto.getQuery());
+			ps = conn.prepareStatement(dto.getQuery());
+			rs = ps.executeQuery();
 			rs.setFetchSize(100);
+
 			while (rs.next()) {
 				Map<String, String> map=new LinkedHashMap<String, String>();
 				for(int i=1;i<=rs.getMetaData().getColumnCount();i++){
@@ -800,11 +800,15 @@ public class DBclienManagerImpl implements DBclienManager {
 			throw e;
 		} finally {
 			try {
-				closeAll(conn, st, rs);
+				close(conn);
+				close(ps);
+				close(rs);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
-				nullAll(conn, st, rs);
+				setNull(conn);
+				setNull(ps);
+				setNull(rs);
 			}
 		}
 		return list;
@@ -819,22 +823,24 @@ public class DBclienManagerImpl implements DBclienManager {
 	private int executeWriteQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
 		logger.debug(format("{} ","Try Write Excute Query"),dto.getQuery());
 
-		Statement st = null;
+		PreparedStatement ps = null;
 		int affectedRows=0;
 
 		try {
 			conn.setAutoCommit(dto.isAutoCommit());
-			st = conn.createStatement();
-			affectedRows = st.executeUpdate(dto.getQuery());
+			ps = conn.prepareStatement(dto.getQuery());
+			affectedRows = ps.executeUpdate();
 		} catch (SQLException e) {
 			throw e;
 		} finally {
 			try {
-				closeAll(conn, st, null);
+				close(conn);
+				close(ps);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
-				nullAll(conn, st, null);
+				setNull(conn);
+				setNull(ps);
 			}
 		}
 		return affectedRows;
@@ -842,35 +848,62 @@ public class DBclienManagerImpl implements DBclienManager {
 
 
 	/**
-	 * 연결 모두 닫기
-	 *
-	 * @param conn
-	 * @param st
-	 * @param rs
+	 * Callable Query 실행
+	 * @param dto
+	 * @return
 	 * @throws SQLException
 	 */
-	private void closeAll(Connection conn, Statement st, ResultSet rs)
-			throws SQLException {
-		if (null != conn) {
-			conn.close();
+	private List<Map<String,String>> executeCallableQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
+		logger.debug(format("{} ","Try Callable Excute Query"),dto.getQuery());
+
+		CallableStatement cs = null;
+		ResultSet rs = null;
+		try {
+			conn.setAutoCommit(dto.isAutoCommit());
+			cs = conn.prepareCall(dto.getQuery());
+			cs.executeUpdate();
+			cs.getMetaData();
+
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			try {
+				close(conn);
+				close(cs);
+				close(rs);
+			} catch (SQLException e) {
+				throw e;
+			} finally {
+				setNull(conn);
+				setNull(cs);
+				setNull(rs);
+			}
 		}
-		if (null != st) {
-			st.close();
-		}
-		if (null != rs) {
-			rs.close();
-		}
+		return null;
 	}
 
-	/**
-	 * null 로 변경하여 GC 가 일어나도록 유도
-	 * @param conn
-	 * @param st
-	 * @param rs
-	 */
-	private void nullAll(Connection conn, Statement st, ResultSet rs){
+	private void close(Connection conn) throws SQLException {
+		if (null != conn) conn.close();
+	}
+	private void close(PreparedStatement ps) throws SQLException {
+		if (null != ps) ps.close();
+	}
+	private void close(CallableStatement cs) throws SQLException {
+		if (null != cs) cs.close();
+	}
+	private void close(ResultSet rs) throws SQLException {
+		if (null != rs) rs.close();
+	}
+	private void setNull(Connection conn) {
 		conn=null;
-		st=null;
+	}
+	private void setNull(PreparedStatement ps) {
+		ps=null;
+	}
+	private void setNull(CallableStatement cs) {
+		cs=null;
+	}
+	private void setNull(ResultSet rs) {
 		rs=null;
 	}
 

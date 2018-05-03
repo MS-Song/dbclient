@@ -1081,7 +1081,7 @@ var database_query_cell = [{
 						width:10
 					},	
 					{ 
-						id:"database_query_or_error_info",   
+						id:"database_query_server_return",   
 						align:"left",
 						adjust:true,
 						view:"text", 
@@ -1384,7 +1384,7 @@ var executeQuery = function (isNextData,resultView){
 		resultView.config.offset 	= 	executeQueryParams.offset;
 		resultView.config.page		=	1;
 		resultView.config.isDataLoading=false;
-		$$("database_query_or_error_info").setValue(resultView.config.query);
+		$$("database_query_server_return").setValue(resultView.config.query);
 	}
 }
 

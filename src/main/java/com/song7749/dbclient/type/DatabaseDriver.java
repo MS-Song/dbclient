@@ -153,7 +153,66 @@ public enum DatabaseDriver {
 			// 한정자 추가
 			"SELECT * FROM ( SELECT ROWNUM AS RNUM , A.* FROM ( \n {sqlBody} \n ) A WHERE  ROWNUM <= {end} ) WHERE  RNUM > {start}",
 			// Affected Row 를 발생시키는 명령어 -- comment on 의 경우 다른 방법이 필요할 듯.
-			"insert,update,delete,create,drop,truncate,alter,comment on,grant,kill"),
+			"insert,update,delete,create,drop,truncate,alter,comment on,grant,kill,declare,begin"),
+
+	@ApiModelProperty
+	MSSQL(
+			// dbms
+			"mssql",
+			// driverName
+			"com.microsoft.sqlserver.jdbc.SQLServerDriver",
+			// url
+			"jdbc:sqlserver://{host}:{port};databaseName={schemaName};user={account};password={password}",
+			// validate query
+			"select 1 ",
+			// table list
+			"SELECT A.name AS TABLE_NAME, b.value AS TABLE_COMMENT FROM SYSOBJECTS A LEFT OUTER JOIN SYS.extended_properties B ON A.id = B.major_id AND B.minor_id = 0 WHERE A.xtype = 'U' ORDER  BY A.name ASC",
+			// field list
+			"SELECT A.ORDINAL_POSITION AS COLUMN_ID, A.COLUMN_NAME AS COLUMN_NAME, CASE WHEN A.IS_NULLABLE = 'NO' THEN 'N' ELSE 'Y' END AS NULLABLE, CASE WHEN C.COLUMN_NAME IS NULL THEN 'NO' ELSE 'YES' END AS COLUMN_KEY, A.DATA_TYPE, CASE WHEN A.CHARACTER_MAXIMUM_LENGTH IS NULL THEN A.NUMERIC_PRECISION ELSE A.CHARACTER_MAXIMUM_LENGTH END AS DATA_LENGTH,  A.COLLATION_NAME AS CHARACTER_SET, A.NUMERIC_SCALE AS EXTRA, A.COLUMN_DEFAULT AS DEFAULT_VALUE, B.value AS COMMENTS FROM INFORMATION_SCHEMA.COLUMNS A LEFT OUTER JOIN SYS.extended_properties B ON B.major_id = OBJECT_ID(A.TABLE_NAME) AND B.minor_id = A.ORDINAL_POSITION LEFT OUTER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE C ON C.TABLE_NAME = A.TABLE_NAME AND C.ORDINAL_POSITION = A.ORDINAL_POSITION WHERE A.TABLE_NAME = '{name}' ORDER BY COLUMN_ID ASC",
+			// index list
+			"SELECT C.TABLE_SCHEMA AS {schemaName}, A.name AS INDEX_NAME, A.type_desc AS INDEX_TYPE, CASE WHEN A.is_unique = 1 THEN 'UNIQUE' ELSE 'NONUNIQUE' END AS UNIQUENESS, '' AS CARDINALITY, C.COLUMN_NAME, B.key_ordinal AS COLUMN_POSITION, CASE WHEN B.is_descending_key = 1 THEN 'DESC' ELSE 'ASC' END AS DESCEND FROM sys.indexes A INNER JOIN sys.index_columns B ON B.object_id = A.object_id AND B.index_id = A.index_id INNER JOIN INFORMATION_SCHEMA.COLUMNS C ON OBJECT_ID(C.TABLE_NAME) = B.object_id AND C.ORDINAL_POSITION = B.column_id WHERE A.object_id = OBJECT_ID('{name}') ORDER BY A.index_id ASC",
+			// explain
+			null,
+			// view list
+			"SELECT A.name AS NAME, B.value AS COMMENTS, CONVERT(VARCHAR(10), A.modify_date, 111) AS LAST_UPDATE_TIME, '' AS STATUS FROM sys.views A LEFT OUTER JOIN sys.extended_properties B ON B.major_id = A.object_id AND B.minor_id = 0 AND B.name = 'MS_Description'",
+			// view detail
+			null,
+			// view source
+			"SELECT '{name}' AS NAME, OBJECT_DEFINITION (OBJECT_ID(N'{name}')) AS text FROM sys.views A LEFT OUTER JOIN sys.extended_properties B ON B.major_id = A.object_id AND B.minor_id = 0 AND B.name = 'MS_Description'",
+			// procedure list
+			"SELECT A.ROUTINE_NAME AS NAME, CONVERT(VARCHAR(10), A.LAST_ALTERED, 111) AS LAST_UPDATE_TIME, '' AS STATUS FROM INFORMATION_SCHEMA.ROUTINES A WHERE A.ROUTINE_TYPE = 'PROCEDURE' ORDER BY A.LAST_ALTERED DESC",
+			// procedure detail
+			"SELECT  ROUTINE_NAME AS OBJECT_NAME, '' AS SUBOBJECT_NAME, OBJECT_ID(ROUTINE_NAME) AS OBJECT_ID, '' AS DATA_OBJECT_ID, ROUTINE_TYPE AS OBJECT_TYPE, CREATED AS CREATED, LAST_ALTERED AS LAST_DDL_TIME, '' AS TIMESTAMP, '' AS STATUS, '' AS TEMPORARY, '' AS GENERATED, '' AS SECONDARY, '' AS NAMESPACE, '' AS EDITION_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = '{name}'",
+			// procedure source
+			"SELECT '{name}' AS NAME, OBJECT_DEFINITION (OBJECT_ID(N'{name}')) AS text FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = '{name}'",
+			// function list
+			"SELECT A.ROUTINE_NAME AS NAME, CONVERT(VARCHAR(10), A.LAST_ALTERED, 111) AS LAST_UPDATE_TIME, '' AS STATUS FROM INFORMATION_SCHEMA.ROUTINES A WHERE A.ROUTINE_TYPE = 'FUNCTION' ORDER BY A.LAST_ALTERED DESC",
+			// function detail
+			"SELECT ROUTINE_NAME AS OBJECT_NAME, '' AS SUBOBJECT_NAME, OBJECT_ID(ROUTINE_NAME) AS OBJECT_ID, '' AS DATA_OBJECT_ID, ROUTINE_TYPE AS OBJECT_TYPE, CREATED AS CREATED, LAST_ALTERED AS LAST_DDL_TIME, '' AS TIMESTAMP, '' AS STATUS, '' AS TEMPORARY, '' AS GENERATED, '' AS SECONDARY, '' AS NAMESPACE, '' AS EDITION_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = '{name}'",
+			// function source
+			"SELECT '{name}' AS NAME, OBJECT_DEFINITION (OBJECT_ID(N'{name}')) AS text FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = '{name}'",
+			// trigger list
+			"SELECT name AS NAME, CONVERT(VARCHAR(10), modify_date, 111) AS LAST_UPDATE_TIME, '' AS STATUS FROM sys.triggers",
+			// trigger detail
+			"SELECT name AS OBJECT_NAME, '' AS SUBOBJECT_NAME, object_id AS OBJECT_ID, '' AS DATA_OBJECT_ID, type_desc AS OBJECT_TYPE, create_date AS CREATED, modify_date AS LAST_DDL_TIME, '' AS TIMESTAMP, '' AS STATUS, '' AS TEMPORARY, '' AS GENERATED, '' AS SECONDARY, '' AS NAMESPACE, '' AS EDITION_NAME FROM sys.triggers WHERE name = '{name}'",
+			// trigger source
+			"SELECT A.name AS NAME, '' AS TRIGGER_TYPE, C.TRIGGERING_EVENT, '' AS TABLE_OWNER, D.type_desc AS BASE_OBJECT_TYPE, D.name AS TABLE_NAME, '' AS COLUMN_NAME, '' AS REFERENCING_NAMES, '' AS WHEN_CLAUSE, '' AS STATUS, OBJECT_DEFINITION (OBJECT_ID(N'TRG_TB_SSO_USER_DATA')) AS DESCRIPTION, '' AS ACTION_TYPE, '' AS TEXT, '' AS CROSSEDITION, '' AS BEFORE_STATEMENT, '' AS BEFORE_ROW, '' AS AFTER_ROW, '' AS AFTER_STATEMENT, '' AS INSTEAD_OF_ROW, '' AS FIRE_ONCE, '' AS APPLY_SERVER_ONLY FROM sys.triggers A CROSS APPLY ( SELECT * FROM sysobjects WHERE id = A.object_id ) B CROSS APPLY ( SELECT STUFF( (SELECT ',' + type_desc FROM  sys.trigger_events WHERE object_id = A.object_id FOR XML PATH ('')), 1, 1, '') AS TRIGGERING_EVENT ) C  CROSS APPLY ( SELECT * FROM  SYS.tables WHERE object_id = A.parent_id) D WHERE A.name = '{name}'",
+			// sequence list
+			null,
+			// sequence detail
+			null,
+			// process list
+			"SELECT A.spid AS ID, B.text AS SQL_TEXT FROM sys.sysprocesses AS A CROSS APPLY sys.dm_exec_sql_text(sql_handle) AS B",
+			// kill connection
+			null,
+			// create table query
+			null,
+			// 자동완성용 테이블/필드 전체 리스트 조회
+			"SELECT A.TABLE_NAME, A.COLUMN_NAME AS COLUMN_NAME,  B.value AS COLUMN_COMMENT  FROM INFORMATION_SCHEMA.COLUMNS A LEFT OUTER JOIN SYS.extended_properties B ON B.major_id = OBJECT_ID(A.TABLE_NAME) AND B.minor_id = A.ORDINAL_POSITION LEFT OUTER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE C ON C.TABLE_NAME = A.TABLE_NAME AND C.ORDINAL_POSITION = A.ORDINAL_POSITION",
+			// 한정자 추가
+			"DECLARE @StartRowNum INT={start}, @EndRownum INT={end} {sqlBody} OFFSET @StartRowNum ROWS FETCH NEXT @EndRownum ROWS ONLY",
+			// Affected Row 를 발생시키는 명령어
+			"insert,update,delete,create,drop,truncate,alter,kill,comment on"),
 
 	@ApiModelProperty
 	H2(
@@ -213,7 +272,6 @@ public enum DatabaseDriver {
 			"{sqlBody} \n Limit {start},{end}",
 			// Affected Row 를 발생시키는 명령어
 			"insert,update,delete,create,drop,truncate,alter,kill,comment on");
-
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -395,7 +453,7 @@ public enum DatabaseDriver {
 		try {
 			return repalceDatabase(database, viewListQuery);
 		} catch (Exception e) {
-			throw new IllegalArgumentException(e.getCause());
+			throw new IllegalArgumentException(e.getMessage());
 		}
 	}
 
@@ -577,6 +635,11 @@ public enum DatabaseDriver {
 			} else if(this.dbms.toLowerCase().equals("oracle")){
 				// oracle 의 경우 offset 과 limit 의 관계가 시작과 끝의 관계임으로 100,200 으로 표시해야 한다.
 				end = start+end;
+			} else if(this.dbms.toLowerCase().equals("mssql")) {
+				if(null != sqlBody && sqlBody.toLowerCase().indexOf("order by")<=0) {
+					// SQL 내에 order by 가 없을 경우에는 paging 을 할 수 없다. order by 를 추가하라고 Alert 한다.
+					throw new IllegalArgumentException("page 처리를 위해 PK 필드 Order By 조건을 추가하거나, use limit 를 false 로 변경하세요.");
+				}
 			}
 		}
 
