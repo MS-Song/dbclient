@@ -10,6 +10,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -96,11 +98,13 @@ public class Database extends Entities {
 	@Column(nullable = false, updatable = false)
 	@CreationTimestamp
 	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@Temporal(TemporalType.DATE)
 	private Date createDate;
 
 	@Column(nullable = true)
 	@UpdateTimestamp
 	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@Temporal(TemporalType.DATE)
 	private Date modifyDate;
 
 	@Transient

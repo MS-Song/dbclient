@@ -25,15 +25,13 @@ import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.domain.MemberDatabase;
 import com.song7749.dbclient.domain.MemberSaveQuery;
-import com.song7749.dbclient.repository.DatabaseRepository;
-import com.song7749.dbclient.repository.MemberRepository;
 import com.song7749.dbclient.type.AuthType;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient.drs"})
+@ComponentScan({"com.song7749.dbclient"})
 public class MemberRepositoryTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());

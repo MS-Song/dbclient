@@ -44,16 +44,17 @@ public class LogManagerImpl implements LogManager {
 	}
 
 	@Override
-	public List<LogLoginVo> findMemberLoginLogList(LogLoginFindDto dto) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	@Async
 	@Transactional(propagation=Propagation.NOT_SUPPORTED )
 	public void addQueryExecuteLog(LogQueryAddDto dto) {
 		logRepository.saveAndFlush(dto.getLogLogin(mapper)).getLogLoginVo(mapper);
+	}
+
+
+	@Override
+	public List<LogLoginVo> findMemberLoginLogList(LogLoginFindDto dto) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

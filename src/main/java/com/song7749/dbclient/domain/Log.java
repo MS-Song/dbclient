@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -38,6 +40,7 @@ public abstract class Log extends Entities{
 	@Column(nullable=false, updatable=false)
 	@CreationTimestamp
 	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@Temporal(TemporalType.DATE)
 	private Date date;
 
 	public Log() {}
