@@ -43,9 +43,9 @@ public class LogManagerImpl implements LogManager {
 		logRepository.saveAndFlush(dto.getLogLogin(mapper)).getLogLoginVo(mapper);
 	}
 
-	@Override
 	@Async
 	@Transactional(propagation=Propagation.NOT_SUPPORTED )
+	@Override
 	public void addQueryExecuteLog(LogQueryAddDto dto) {
 		logRepository.saveAndFlush(dto.getLogLogin(mapper)).getLogLoginVo(mapper);
 	}

@@ -35,7 +35,7 @@ import com.song7749.dbclient.value.ViewVo;
 * @author song7749@gmail.com
 * @since 2018. 3. 22.
 */
-public interface DBclienManager {
+public interface DBclientManager {
 
 	/**
 	 * get connection

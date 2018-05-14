@@ -247,7 +247,6 @@ var getDataParseEditor = function(url,parmeters,viewName,returnValueName){
 
 /**
  * 데이터를 조회하여 TextArea 에 넣는다.
- * TODO-캐시처리
  */
 var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
 	webix.ajax().get(url,parmeters, 
@@ -267,7 +266,6 @@ var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
 
 /**
  * 데이터를 조회하여 Property 에 넣는다.
- * TODO-캐시처리
  */
 var getDataParseProperty = function(url,parmeters,viewName){
 	webix.ajax().get(url,parmeters, 

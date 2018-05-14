@@ -3,6 +3,8 @@ package com.song7749.web.config;
 import static com.song7749.util.LogMessageFormatter.format;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,18 +20,25 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.song7749.base.SendMethod;
+import com.song7749.base.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberRepository;
-import com.song7749.dbclient.service.DBclienManager;
-import com.song7749.dbclient.service.DBclienManagerImpl;
+import com.song7749.dbclient.service.DBclientManager;
+import com.song7749.dbclient.service.DBclientManagerImpl;
 import com.song7749.dbclient.service.MemberManager;
 import com.song7749.dbclient.type.AuthType;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 import com.song7749.dbclient.value.ExecuteQueryDto;
 import com.song7749.dbclient.value.MemberVo;
+import com.song7749.incident.repository.IncidentAlarmRepository;
+import com.song7749.incident.service.IncidentAlarmManager;
+import com.song7749.incident.value.IncidentAlarmAddDto;
+import com.song7749.incident.value.IncidentAlarmConfirmDto;
+import com.song7749.incident.value.IncidentAlarmVo;
 
 /**
  * <pre>
@@ -67,7 +76,13 @@ public class InitConfigBean {
 	MemberManager memberManager;
 
 	@Autowired
-	DBclienManager dbClientManager;
+	DBclientManager dbClientManager;
+
+	@Autowired
+	IncidentAlarmRepository incidentAlarmRepository;
+
+	@Autowired
+	IncidentAlarmManager incidentAlarmManager;
 
 	@Autowired
 	DataSource hikariH2;
@@ -89,6 +104,8 @@ public class InitConfigBean {
 				, "your name"
 				, AuthType.ADMIN);
 		Member aleadyMember = memberRepository.findByLoginId("root@test.com");
+		Database db=null;
+
 		if(null==aleadyMember) {
 			memberRepository.saveAndFlush(member);
 			MemberVo memberVo = memberManager.renewApikeyByAdmin(member.getLoginId());
@@ -97,11 +114,10 @@ public class InitConfigBean {
 			logger.info(format("{}", "root user info"),aleadyMember.getMemberVo(mapper));
 		}
 
-
 		// h2 dbconnection add
 		logger.info(format("{}", "H2 Database Datasource"),hikariH2);
 		if(null!=hikariH2) {
-			Database db = new Database(
+			db = new Database(
 					"jdbc:h2:file:~/dbclient",
 					"DB Client Local H2 Database",
 					"PUBLIC",
@@ -121,7 +137,7 @@ public class InitConfigBean {
 			}
 
 			// db 를 pool map 객체에 넣는다.
-			Map<Database, DataSource> map = ((DBclienManagerImpl)dbClientManager).getDataSourceMap();
+			Map<Database, DataSource> map = ((DBclientManagerImpl)dbClientManager).getDataSourceMap();
 			map.put(db, hikariH2);
 			logger.info(format("{}", "H2 Database Add Complete"),map);
 
@@ -158,5 +174,33 @@ public class InitConfigBean {
 				}
 			}
 		}
+
+		// incident Alert 의 job 을 하나 등록 한다.(Log 삭제)
+		List<Long> memberIds = new ArrayList<Long>();
+		memberIds.add(member.getId());
+		memberIds.add(member.getId());
+		memberIds.add(member.getId());
+
+		// give
+		IncidentAlarmAddDto dto = new IncidentAlarmAddDto(
+				"테스트 모니터링",
+				"select 'Y' execute from dual",
+				"select * from Database",
+				SendMethod.EMAIL,
+				YN.Y,
+				"*/10 * * * * *",
+				db.getId(),
+				member.getId(),
+				memberIds);
+		IncidentAlarmVo vo = incidentAlarmManager.addIncidentAlarm(dto);
+
+		// give
+		IncidentAlarmConfirmDto confirmDto = new IncidentAlarmConfirmDto(
+				vo.getId(),
+				YN.Y,
+				new Date(System.currentTimeMillis()),
+				member.getId());
+		// when
+		vo = incidentAlarmManager.confirmIncidentAlarm(confirmDto);
     }
 }

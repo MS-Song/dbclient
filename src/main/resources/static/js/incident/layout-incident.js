@@ -30,40 +30,64 @@ webix.ready(function(){
 				view:"accordion",
 				cols:[
 					{ 
-						id:"database_info_view",	
-						header:"Database", 
+						id:"incident_alarm_search",	
+						header:"Search Task Scheduler", 
 						width:450, 
-//						body:{
-//							view:"tabview",
-//							id:"database_info_tab",
-//							animate:false,
-//							cells: database_info_cell
-//						}
+						body:{
+							view:"form",
+							id:"incident_alarm_search_form",
+							animate:false,
+							elements: incident_alarm_search_elements,
+							scroll:true,
+							tooltip:true
+						}
 					},
 					{ view:"resizer", id:"screen_heighter"},
 					{
-						id:"database_query_view",	
-						margin:0,
-//						body:{
-//							view:"tabview",
-//							id:"database_query_tab",
-//							animate:false,
-//							cells: database_query_cell
-//						}	
-					},
-					{ view:"resizer", id:"screen_heighter"},
-					{ 
-						id:"database_log_view",	
-						header:"database log", 
-						collapsed:true,
-						width:450, 
-//						body:{
-//							view:"tabview",
-//							id:"database_log_tab",
-//							animate:false,
-//							cells: database_log_cell
-//						}
-					},
+						id:"incident_alarm_job",	
+						margin:5,
+						body:{ 
+							rows:[{
+								cols:[{
+									id:"incident_alarm_job_search_desc",
+							    	view: "label",
+									label: "<< 검색 조건을 사용해서 검색 가능 합니다.",
+									height:25
+								},{
+									id:"incident_alarm_job_add_button",
+									view:"button",
+									value:"알람 신규 등록",
+									width:150,
+									on:{"onItemClick":function(){
+										// 신규 등록 팝업 호출
+									}}
+								},{
+									
+								}]
+								
+							},{
+								header:"Incident Alarm List",
+								view : "datatable", 
+								id:"incident_alarm_list_view", 						
+								columns:[],	
+								data:[],
+								tooltip:true,
+								select:"row",
+								resizeColumn:true,
+								scroll:true,
+								multiselect:true,
+								clipboard:"selection",
+								dataLimit:"",
+								dataOffset:"",
+								dataPage:1,
+								on:{"onItemClick":function(){
+									console.log(this.getSelectedItem());
+									
+									}
+								}
+							}] // end rows
+						} // end body	
+					}
 				]
 			},
 			{
@@ -75,36 +99,7 @@ webix.ready(function(){
 						label: "Copyrightⓒ Song7749 Co., Ltd. All Rights Reserved.",
 						height:25,
 						adjust:true
-				    },     
-					{
-						id:"editerSelectedStartLine",
-						view: "label",
-						align:"right",
-						label:"",
-						minWidth:50,
-						maxWidth:120,
-						width:90
-					},
-					{
-						view: "label",
-						label:"|",
-						width:10
-					},				
-					{
-						id:"editorCurrentLine",					
-						view: "label",
-						align:"right",
-						label:"1:0",
-						minWidth:30,
-						maxWidth:100,
-						width:70
-					},
-					{
-						view: "label",
-						align:"right",
-						label:"",
-						width:10
-					}
+				    }
 				]				
 			}
 		]
@@ -139,7 +134,6 @@ webix.ready(function(){
 			},
 			data:[
 				{id: 1, value: "Login", 		icon: "user", 		func: "login_popup"},
-				{id: 3, value: "Database 선택", 	icon: "database", 	func: "select_database_popup"},
 				{id: 4, value: "Settings", 		icon: "cog", 		func: "config_popup"}
 			],
 			select:true,

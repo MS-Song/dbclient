@@ -58,7 +58,7 @@ var select_database_popup=function(){
         modal:true,
         head:{view:"button",value:"서버 선택 닫기" , click:function(){
        		$$("select_database_popup").hide();
-    	}},
+    	},hotkey: "esc"},
         body:{
         	id:"select_database_loader",
         	view:"datatable",
@@ -293,7 +293,6 @@ var database_info_cell = [{
 							},
 						},
 						{ 
-							// date 의 경우 달력 출력 
 							id:"field_set",
 							header:['SET','<input type="button" value="reset" onClick="develop_field_clear(\'set\');" />'],
 							width:70,
@@ -308,7 +307,6 @@ var database_info_cell = [{
 							editor:"inline-text",
 						},
 						{ 
-							// date 의 경우 달력 출력 
 							id:"field_where",
 							header:['WHERE','<input type="button" value="reset" onClick="develop_field_clear(\'where\');" />'],
 							width:70,
@@ -1540,7 +1538,7 @@ var add_favority_query_form = {
 			{ view:"button", value:"취소", click:function(){
 				// 팝업 닫기
 				$$("add_favority_query_popup").hide();
-			}}
+			},hotkey: "esc"}
 		]},
 	],
 	elementsConfig:{

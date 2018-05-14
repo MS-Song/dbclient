@@ -46,7 +46,7 @@ public class DBclienManagerImplTest {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	DBclienManager dbClientManager;
+	DBclientManager dbClientManager;
 
 	@Autowired
 	DatabaseRepository databaseRepository;

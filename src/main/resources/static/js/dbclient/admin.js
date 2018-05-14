@@ -12,7 +12,7 @@ var adminDatabaseListPopup = function(){
 	  		        {
 	  		        	view:"button",value:"서버 관리 닫기" , click:function(){
 	  		        		$$("admin_database_list_popup").hide();
-	  		        	}
+	  		        	},hotkey: "esc"
 	  		        },
 			    	{
 	  		        	view:"button",value:"서버 추가" , click:function(){
@@ -103,7 +103,7 @@ var adminAddDatabasePopup=function(){
 	    head:{
 	    	view:"button",value:"서버 관리 닫기" , click:function(){
 	    		$$("admin_add_database_popup").hide();
-	    	}
+	    	},hotkey: "esc"
 	    },
 	    body:{
 	    	id:"admin_add_database_form",
@@ -169,7 +169,7 @@ var adminModifyDatabasePopup = function(id){
 	    head:{
 	    	view:"button",value:"서버 관리 닫기" , click:function(){
 	    		$$("admin_modify_database_popup").hide();
-	    	}
+	    	},hotkey: "esc"
 	    },
 	    body:{
 	    	id:"admin_modify_database_form",
@@ -283,7 +283,7 @@ var adminMemberListPopup = function(){
 	        head:{
 	        	view:"button",value:"회원 관리 닫기" , click:function(){
 	        		$$("admin_member_list_popup").hide();
-	        	}
+	        	},hotkey: "esc"
         	},
 	        body:{
 	        	rows:[{

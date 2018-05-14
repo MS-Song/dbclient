@@ -3,6 +3,8 @@ package com.song7749.incident.value;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -11,6 +13,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 
 import com.song7749.base.AbstractDto;
@@ -28,58 +31,80 @@ public class IncidentAlarmFindDto extends AbstractDto implements Specification<I
 
 	private static final long serialVersionUID = 4844417615852185847L;
 
-	@ApiModelProperty("알람 ID")
+	@ApiModelProperty(value="알람 ID",position=1)
 	private Long id;
 
-	@ApiModelProperty("알람 제목")
+	@ApiModelProperty(value="알람 제목",position=2)
 	private String subject;
 
-	@ApiModelProperty("알람 감지 SQL")
+	@ApiModelProperty(value="알람 감지 SQL",position=3)
 	private String beforeSql;
 
-	@ApiModelProperty("알람 실행 SQL")
+	@ApiModelProperty(value="알람 실행 SQL",position=4)
 	private String runSql;
 
-	@ApiModelProperty("알람 전달 방법")
+	@ApiModelProperty(value="알람 전달 방법",position=5)
 	private SendMethod sendMethod;
 
-	@ApiModelProperty("알람 실행 여부")
+	@ApiModelProperty(value="알람 실행 여부",position=6)
 	private YN enableYN;
 
-	@ApiModelProperty("알람 스케줄")
+	@ApiModelProperty(value="알람 승인 여부",position=7)
+	private YN confirmYN;
+
+	@ApiModelProperty(value="알람 스케줄",position=8)
 	private String schedule;
 
-	@ApiModelProperty("알람 등록일 검색 시작")
+	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@Temporal(TemporalType.DATE)
+	@ApiModelProperty(value="알람 등록일 검색 시작",position=9)
 	private Date fromCreateDate;
-	@ApiModelProperty("알람 등록일 검색 종료")
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@Temporal(TemporalType.DATE)
+	@ApiModelProperty(value="알람 등록일 검색 종료",position=10)
 	private Date toCreateDate;
 
-	@ApiModelProperty("알람 승인일 검색 시작")
+	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@Temporal(TemporalType.DATE)
+	@ApiModelProperty(value="알람 승인일 검색 시작",position=11)
 	private Date fromConfirmDate;
-	@ApiModelProperty("알람 승인일 검색 종료")
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@Temporal(TemporalType.DATE)
+	@ApiModelProperty(value="알람 승인일 검색 종료",position=12)
 	private Date toConfirmDate;
 
-	@ApiModelProperty("알람 마지막 실행일 검색 시작")
+	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@Temporal(TemporalType.DATE)
+	@ApiModelProperty(value="알람 마지막 실행일 검색 시작",position=13)
 	private Date fromLastRunDate;
-	@ApiModelProperty("알람 마지막 실행일 검색 종료")
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@Temporal(TemporalType.DATE)
+	@ApiModelProperty(value="알람 마지막 실행일 검색 종료",position=14)
 	private Date toLastRunDate;
 
-	@ApiModelProperty("알람 마지막 에러 메세지")
+	@ApiModelProperty(value="알람 마지막 에러 메세지",position=15)
 	private String lastErrorMessage;
 
-	@ApiModelProperty("알람 연결 Database")
+	@ApiModelProperty(value="알람 연결 Database",position=16)
 	private Long databaseId;
 
-	@ApiModelProperty("알람 등록자")
+	@ApiModelProperty(value="알람 등록자",position=17)
 	private Long resistMemberId;
 
-	@ApiModelProperty("알람 승인자")
+	@ApiModelProperty(value="알람 승인자",position=18)
 	private Long confirmMemberId;
 
-	@ApiModelProperty("알람 전달자")
+	@ApiModelProperty(value="알람 전달자",position=19)
 	private List<Long> sendMemberIds;
 
 	public IncidentAlarmFindDto() {}
+
+	public IncidentAlarmFindDto(Long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return id;
@@ -127,6 +152,14 @@ public class IncidentAlarmFindDto extends AbstractDto implements Specification<I
 
 	public void setEnableYN(YN enableYN) {
 		this.enableYN = enableYN;
+	}
+
+	public YN getConfirmYN() {
+		return confirmYN;
+	}
+
+	public void setConfirmYN(YN confirmYN) {
+		this.confirmYN = confirmYN;
 	}
 
 	public String getSchedule() {
@@ -262,6 +295,11 @@ public class IncidentAlarmFindDto extends AbstractDto implements Specification<I
 		if(null!=enableYN) {
 			p.getExpressions()
 				.add(cb.equal(root.<YN>get("enableYN"), enableYN));
+		}
+
+		if(null!=confirmYN) {
+			p.getExpressions()
+				.add(cb.equal(root.<YN>get("confirmYN"), confirmYN));
 		}
 
 		if(null!=databaseId) {

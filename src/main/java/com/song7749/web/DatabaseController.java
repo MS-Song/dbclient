@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.song7749.base.MessageVo;
 import com.song7749.dbclient.annotation.Login;
-import com.song7749.dbclient.service.DBclienManager;
+import com.song7749.dbclient.service.DBclientManager;
 import com.song7749.dbclient.service.DatabaseManager;
 import com.song7749.dbclient.service.LoginSession;
 import com.song7749.dbclient.service.MemberManager;
@@ -53,7 +53,7 @@ public class DatabaseController {
 	DatabaseManager databaseManager;
 
 	@Autowired
-	DBclienManager dbclientManager;
+	DBclientManager dbclientManager;
 
 	@Autowired
 	LoginSession session;

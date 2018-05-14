@@ -1,8 +1,13 @@
 package com.song7749.incident.service;
 
+import static com.song7749.util.LogMessageFormatter.format;
+
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
 
 import javax.persistence.EntityManager;
@@ -14,6 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.support.CronSequenceGenerator;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -23,17 +33,21 @@ import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberRepository;
-import com.song7749.dbclient.value.MemberVo;
+import com.song7749.dbclient.service.DBclientManager;
 import com.song7749.incident.domain.IncidentAlarm;
 import com.song7749.incident.repository.IncidentAlarmRepository;
+import com.song7749.incident.task.IncidentAlarmTask;
 import com.song7749.incident.value.IncidentAlarmAddDto;
 import com.song7749.incident.value.IncidentAlarmConfirmDto;
+import com.song7749.incident.value.IncidentAlarmDetailVo;
 import com.song7749.incident.value.IncidentAlarmFindDto;
+import com.song7749.incident.value.IncidentAlarmModifyAfterConfirmDto;
+import com.song7749.incident.value.IncidentAlarmModifyBeforeConfirmDto;
 import com.song7749.incident.value.IncidentAlarmVo;
 import com.song7749.util.validate.Validate;
 
 @Service
-public class IncidentAlarmManagerImpl implements IncidentAlarmManager {
+public class IncidentAlarmManagerImpl implements IncidentAlarmManager, SchedulingConfigurer{
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -46,16 +60,29 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager {
 	@Autowired
 	private IncidentAlarmRepository incidentAlarmRepository;
 
+	@Autowired
+	private DBclientManager dbClientManager;
+
 	@PersistenceContext
 	private EntityManager em;
 
 	@Autowired
 	ModelMapper mapper;
 
+	@Autowired
+	private ThreadPoolTaskScheduler taskScheduler;
+
+	private final Map<Long, ScheduledFuture<?>> taskMap = new ConcurrentHashMap<Long, ScheduledFuture<?>>();
+
 	@Validate
 	@Transactional
 	@Override
 	public IncidentAlarmVo addIncidentAlarm(IncidentAlarmAddDto dto) {
+		// cron 표현식 검증
+		if(!CronSequenceGenerator.isValidExpression(dto.getSchedule())) {
+			throw new IllegalArgumentException("스케줄의 Crontab 표현식이 올바르지 않습니다.");
+		}
+
 		// 객체 형변환
 		IncidentAlarm ia = mapper.map(dto, IncidentAlarm.class);
 
@@ -88,6 +115,41 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager {
 	@Validate
 	@Transactional
 	@Override
+	public IncidentAlarmVo modifyIncidentAlarm(IncidentAlarmModifyBeforeConfirmDto dto) {
+		return modifyIncidentAlarm(mapper.map(dto, IncidentAlarm.class));
+	}
+
+	@Validate
+	@Transactional
+	@Override
+	public IncidentAlarmVo modifyIncidentAlarm(IncidentAlarmModifyAfterConfirmDto dto) {
+		return modifyIncidentAlarm(mapper.map(dto, IncidentAlarm.class));
+	}
+
+	private IncidentAlarmVo modifyIncidentAlarm(IncidentAlarm modifySource) {
+		// cron 표현식 검증
+		if(!CronSequenceGenerator.isValidExpression(modifySource.getSchedule())) {
+			throw new IllegalArgumentException("스케줄의 Crontab 표현식이 올바르지 않습니다.");
+		}
+
+		Optional<IncidentAlarm> oIncidentAlarm = incidentAlarmRepository.findById(modifySource.getId());
+		IncidentAlarm ia = null;
+		if(oIncidentAlarm.isPresent()) {
+			ia = oIncidentAlarm.get();
+			mapper.map(modifySource, ia);
+		} else {
+			throw new IllegalArgumentException("존재하지 않는 작업입니다");
+		}
+
+		incidentAlarmRepository.saveAndFlush(ia);
+		// confirm 이후에 수정되면 스케줄러를 수정한다.
+		addOrModifyTasks(ia);
+		return mapper.map(ia, IncidentAlarmVo.class);
+	}
+
+	@Validate
+	@Transactional
+	@Override
 	public IncidentAlarmVo confirmIncidentAlarm(IncidentAlarmConfirmDto dto) {
 		// 저장되어 있는 객체가 존재해야 한다.
 		Optional<IncidentAlarm> oAlarm = incidentAlarmRepository.findById(dto.getId());
@@ -110,6 +172,8 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager {
 		}
 
 		incidentAlarmRepository.saveAndFlush(ia);
+		// confirm 시에 스케줄러를 수정한다.
+		addOrModifyTasks(ia);
 		return mapper.map(ia, IncidentAlarmVo.class);
 	}
 
@@ -122,10 +186,65 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager {
 			new Function<IncidentAlarm,IncidentAlarmVo>(){
 				@Override
 				public IncidentAlarmVo apply(IncidentAlarm t) {
-					IncidentAlarmVo vo = mapper.map(t,IncidentAlarmVo.class);
-					vo.setResistMemberVo(mapper.map(t.getResistMember(),MemberVo.class));
-					return vo;
+					return mapper.map(t,IncidentAlarmVo.class);
 				}
 		});
+	}
+
+	@Override
+	public Optional<IncidentAlarmDetailVo> findIncidentAlarm(IncidentAlarmFindDto dto) {
+		Optional<IncidentAlarm> oIncidentAlarm = incidentAlarmRepository.findOne(dto);
+		if(oIncidentAlarm.isPresent()) {
+			return Optional.ofNullable(mapper.map(oIncidentAlarm.get(), IncidentAlarmDetailVo.class));
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	/**
+	 * 최초 기동 시에 configure 초기화
+	 */
+	@Override
+	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+		// 실행 가능 상태이고, 컨펌이 완료된 task list를 가져온다.
+		IncidentAlarmFindDto dto = new IncidentAlarmFindDto();
+		dto.setEnableYN(YN.Y);
+		dto.setConfirmYN(YN.Y);
+		List<IncidentAlarm> alarmList = incidentAlarmRepository.findAll(dto);
+
+		// taskRegistrar 를 이용하지 않고 스케줄러에 직접 집어 넣는다.
+		for(IncidentAlarm incidentAlarm : alarmList) {
+			addOrModifyTasks(incidentAlarm);
+		}
+		logger.trace(format("{}", "start task list"), taskMap);
+	}
+
+	/**
+	 * 수정되거나 추가된 알람을 조회하여 스케줄을 변경 한다.
+	 * @param incidentAlarm
+	 */
+	private synchronized void addOrModifyTasks(IncidentAlarm incidentAlarm) {
+		// 새로 설정하기 위해 제거 한다.
+		if(taskMap.containsKey(incidentAlarm.getId())) {
+			logger.trace(format("{}", "already task "), incidentAlarm.getId());
+			// 기존 스케줄을 제거 한다 -- 제거 해야 한다.
+			taskMap.get(incidentAlarm.getId()).cancel(true);
+			taskMap.remove(incidentAlarm.getId());
+		}
+
+		// 사용 중이 아니거나 , confirm 되지 않는 task 는 등록하지 않는다.
+		if(YN.Y.equals(incidentAlarm.getEnableYN())
+				&& YN.Y.equals(incidentAlarm.getConfirmYN())) {
+
+			ScheduledFuture<?> future = taskScheduler.schedule(
+					new IncidentAlarmTask(dbClientManager
+							, incidentAlarm
+							,incidentAlarmRepository)
+					, new CronTrigger(incidentAlarm.getSchedule()));
+
+			taskMap.put(incidentAlarm.getId(), future);
+
+		}
+		logger.trace(format("{}", "add or modify cron task"), taskMap);
 	}
 }

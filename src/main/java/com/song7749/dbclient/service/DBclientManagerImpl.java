@@ -62,7 +62,7 @@ import com.zaxxer.hikari.HikariDataSource;
 * @since 2018. 3. 22.
 */
 @Service("dbClientManager")
-public class DBclienManagerImpl implements DBclienManager {
+public class DBclientManagerImpl implements DBclientManager {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 

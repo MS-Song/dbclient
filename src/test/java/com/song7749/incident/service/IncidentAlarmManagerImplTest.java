@@ -10,8 +10,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,14 +34,20 @@ import com.song7749.dbclient.repository.MemberRepository;
 import com.song7749.dbclient.type.AuthType;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
+import com.song7749.incident.repository.IncidentAlarmRepository;
 import com.song7749.incident.value.IncidentAlarmAddDto;
 import com.song7749.incident.value.IncidentAlarmConfirmDto;
 import com.song7749.incident.value.IncidentAlarmFindDto;
+import com.song7749.incident.value.IncidentAlarmModifyAfterConfirmDto;
+import com.song7749.incident.value.IncidentAlarmModifyBeforeConfirmDto;
 import com.song7749.incident.value.IncidentAlarmVo;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient","com.song7749.incident"})
+@ComponentScan({"com.song7749.dbclient"
+	,"com.song7749.incident"
+	,"com.song7749.config"})
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IncidentAlarmManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -49,6 +57,9 @@ public class IncidentAlarmManagerImplTest {
 
 	@Autowired
 	DatabaseRepository databaseRepository;
+
+	@Autowired
+	IncidentAlarmRepository incidentAlarmRepository;
 
 	@Autowired
 	IncidentAlarmManager incidentAlarmManager;
@@ -79,35 +90,65 @@ public class IncidentAlarmManagerImplTest {
 			, "3333"
 			, "");
 
+	List<Long> memberIds = new ArrayList<Long>();
+
+	IncidentAlarmVo vo;
+
 	@Before
 	public void setup() {
 		memberRepository.saveAndFlush(member);
 		databaseRepository.saveAndFlush(database);
+
+		memberIds.add(member.getId());
+		memberIds.add(member.getId());
+		memberIds.add(member.getId());
 	}
 
-	@Test
-	public void testAddIncidentAlarm() throws Exception {
+//	@Test
+	public void test1AddIncidentAlarm() throws Exception {
 		// give
-		List<Long> memberIds = new ArrayList<Long>();
-		memberIds.add(member.getId());
-		memberIds.add(member.getId());
-		memberIds.add(member.getId());
-
 		IncidentAlarmAddDto dto = new IncidentAlarmAddDto(
 				"테스트 모니터링",
 				"select 'Y' execute from dual",
 				"select * from Database",
 				SendMethod.EMAIL,
 				YN.Y,
-				"0/10 * * * * *",
+				"*/10 * * * * *",
 				database.getId(),
 				member.getId(),
 				memberIds);
 		// when
-		IncidentAlarmVo vo = incidentAlarmManager.addIncidentAlarm(dto);
+		vo = incidentAlarmManager.addIncidentAlarm(dto);
 
 		// then
 		assertThat(vo.getId(),notNullValue());
+	}
+
+//	@Test
+	public void test2ModifyIncidentAlarmIncidentAlarmModifyBeforeConfirmDto() throws Exception {
+		test1AddIncidentAlarm();
+
+		// give
+		IncidentAlarmModifyBeforeConfirmDto beforeConfirmDto = new IncidentAlarmModifyBeforeConfirmDto(
+				vo.getId(),
+				"테스트 모니터링",
+				"select 'Y' execute from dual",
+				"select * from Database",
+				SendMethod.EMAIL,
+				YN.Y,
+				"*/20 * * * * *",
+				database.getId(),
+				member.getId(),
+				memberIds);
+		// when
+		vo = incidentAlarmManager.modifyIncidentAlarm(beforeConfirmDto);
+		// then
+		assertThat(vo.getSchedule(),equalTo("*/20 * * * * *"));
+	}
+
+//	@Test
+	public void test3ConfirmIncidentAlarm() throws Exception {
+		test2ModifyIncidentAlarmIncidentAlarmModifyBeforeConfirmDto();
 
 		// give
 		IncidentAlarmConfirmDto confirmDto = new IncidentAlarmConfirmDto(
@@ -120,6 +161,29 @@ public class IncidentAlarmManagerImplTest {
 		// then
 		assertThat(vo.getId(),notNullValue());
 		assertThat(vo.getConfirmYN(),equalTo(YN.Y));
+	}
+
+//	@Test
+	public void testModifyIncidentAlarmIncidentAlarmModifyAfterConfirmDto() throws Exception {
+		test3ConfirmIncidentAlarm();
+
+		// give
+		IncidentAlarmModifyAfterConfirmDto afterConfirmDto = new IncidentAlarmModifyAfterConfirmDto(
+				vo.getId(),
+				"테스트 모니터링",
+				"select 'Y' execute from dual",
+				YN.Y,
+				"*/30 * * * * *",
+				memberIds);
+		// when
+		vo =incidentAlarmManager.modifyIncidentAlarm(afterConfirmDto);
+		// then
+		assertThat(vo.getSchedule(),equalTo("*/30 * * * * *"));
+	}
+
+	@Test
+	public void test4FindIncidentAlarmList() throws Exception {
+		testModifyIncidentAlarmIncidentAlarmModifyAfterConfirmDto();
 
 		// give
 		Pageable page = PageRequest.of(0, 10);//,Direction.DESC,"id");
@@ -129,8 +193,9 @@ public class IncidentAlarmManagerImplTest {
 		findDto.setToCreateDate(new Date(System.currentTimeMillis()+60*60*1000*24));
 		findDto.setFromConfirmDate(new Date(System.currentTimeMillis()-60*60*1000*24));
 		findDto.setToConfirmDate(new Date(System.currentTimeMillis()+60*60*1000*24));
-		findDto.setFromLastRunDate(new Date(System.currentTimeMillis()-60*60*1000*24));
-		findDto.setToLastRunDate(new Date(System.currentTimeMillis()+60*60*1000*24));
+
+//		findDto.setFromLastRunDate(new Date(System.currentTimeMillis()-60*60*1000*24));
+//		findDto.setToLastRunDate(new Date(System.currentTimeMillis()+60*60*1000*24));
 
 		findDto.setDatabaseId(database.getId());
 		findDto.setResistMemberId(member.getId());
@@ -143,5 +208,12 @@ public class IncidentAlarmManagerImplTest {
 		logger.trace(format("{}", "IncidentAlarmVo Message"),pageVo.getContent());
 
 		assertThat(pageVo.getContent().size(),equalTo(1));
+	}
+
+	@Test
+	public void test5RunScheduler() throws Exception {
+		test1AddIncidentAlarm();
+		test3ConfirmIncidentAlarm();
+		Thread.sleep(30000);
 	}
 }

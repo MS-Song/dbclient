@@ -14,6 +14,9 @@ public class ExecuteQueryDto extends AbstractDto{
 
 	private static final long serialVersionUID = 7378998437614912567L;
 
+	/**
+	 * DatabaseId
+	 */
 	@NotNull
 	private Long id;
 
