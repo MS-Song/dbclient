@@ -185,10 +185,10 @@ public class InitConfigBean {
 		IncidentAlarmAddDto dto = new IncidentAlarmAddDto(
 				"테스트 모니터링",
 				"select 'Y' execute from dual",
-				"select * from Database",
+				"select * from database",
 				SendMethod.EMAIL,
 				YN.Y,
-				"*/10 * * * * *",
+				"*/30 * * * * *",
 				db.getId(),
 				member.getId(),
 				memberIds);

@@ -18,26 +18,30 @@ public class IncidentAlarmVo extends AbstractVo {
 	@ApiModelProperty(value="알람 ID",position=1)
 	private Long id;
 
-	@ApiModelProperty(value="알람 제목",position=2)
+	@ApiModelProperty(value="알람 제목",position=3)
 	private String subject;
 
-	@ApiModelProperty(value="알람 전달 방법",position=3)
+	@ApiModelProperty(value="알람 전달 방법",position=4)
 	private SendMethod sendMethod;
 
-	@ApiModelProperty(value="알람 실행 여부",position=4)
+	@ApiModelProperty(value="알람 실행 여부",position=5)
 	private YN enableYN;
 
-	@ApiModelProperty(value="알람 승인 여부",position=5)
+	@ApiModelProperty(value="알람 승인 여부",position=6)
 	private YN confirmYN;
 
-	@ApiModelProperty(value="알람 스케줄",position=6)
+	@ApiModelProperty(value="알람 스케줄",position=7)
 	private String schedule;
 
-	@ApiModelProperty(value="마지막 실행 일자",position=7)
+	@ApiModelProperty(value="알람 생성일",position=8)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+	private Date createDate;
+
+	@ApiModelProperty(value="마지막 실행 일자",position=9)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
 	private Date lastRunDate;
 
-	@ApiModelProperty(value="마지막 에러 메세지",position=8)
+	@ApiModelProperty(value="마지막 에러 메세지",position=10)
 	private String lastErrorMessage;
 
 	public IncidentAlarmVo() {}
@@ -49,11 +53,14 @@ public class IncidentAlarmVo extends AbstractVo {
 	 * @param enableYN
 	 * @param confirmYN
 	 * @param schedule
+	 * @param createDate
+	 * @param confirmDate
 	 * @param lastRunDate
 	 * @param lastErrorMessage
 	 */
-	public IncidentAlarmVo(Long id, String subject, SendMethod sendMethod, YN enableYN, YN confirmYN, String schedule,
-			Date lastRunDate, String lastErrorMessage) {
+	public IncidentAlarmVo(Long id, String subject, SendMethod sendMethod, YN enableYN,
+			YN confirmYN, String schedule, Date createDate, Date lastRunDate,
+			String lastErrorMessage) {
 		super();
 		this.id = id;
 		this.subject = subject;
@@ -61,6 +68,7 @@ public class IncidentAlarmVo extends AbstractVo {
 		this.enableYN = enableYN;
 		this.confirmYN = confirmYN;
 		this.schedule = schedule;
+		this.createDate = createDate;
 		this.lastRunDate = lastRunDate;
 		this.lastErrorMessage = lastErrorMessage;
 	}
@@ -127,5 +135,13 @@ public class IncidentAlarmVo extends AbstractVo {
 
 	public void setLastErrorMessage(String lastErrorMessage) {
 		this.lastErrorMessage = lastErrorMessage;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 }

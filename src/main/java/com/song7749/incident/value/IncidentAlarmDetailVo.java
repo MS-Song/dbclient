@@ -57,7 +57,6 @@ public class IncidentAlarmDetailVo extends AbstractVo {
 	@ApiModelProperty(value="마지막 에러 메세지",position=12)
 	private String lastErrorMessage;
 
-
 	@ApiModelProperty(value="알람 연결 Database",position=13)
 	private DatabaseVo databaseVo;
 

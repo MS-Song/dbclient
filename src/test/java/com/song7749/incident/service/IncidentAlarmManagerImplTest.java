@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -37,6 +38,7 @@ import com.song7749.dbclient.type.DatabaseDriver;
 import com.song7749.incident.repository.IncidentAlarmRepository;
 import com.song7749.incident.value.IncidentAlarmAddDto;
 import com.song7749.incident.value.IncidentAlarmConfirmDto;
+import com.song7749.incident.value.IncidentAlarmDetailVo;
 import com.song7749.incident.value.IncidentAlarmFindDto;
 import com.song7749.incident.value.IncidentAlarmModifyAfterConfirmDto;
 import com.song7749.incident.value.IncidentAlarmModifyBeforeConfirmDto;
@@ -208,12 +210,16 @@ public class IncidentAlarmManagerImplTest {
 		logger.trace(format("{}", "IncidentAlarmVo Message"),pageVo.getContent());
 
 		assertThat(pageVo.getContent().size(),equalTo(1));
+
+		Optional<IncidentAlarmDetailVo> vo = incidentAlarmManager.findIncidentAlarm(findDto);
+		assertThat(vo.get(),notNullValue());
+		assertThat(vo.get().getSendMemberVos().size(),equalTo(1));
 	}
 
 	@Test
 	public void test5RunScheduler() throws Exception {
 		test1AddIncidentAlarm();
 		test3ConfirmIncidentAlarm();
-		Thread.sleep(30000);
+		Thread.sleep(10000);
 	}
 }

@@ -65,7 +65,7 @@ public class IncidentAlarm  extends Entities {
 	private Long id;
 
 	@NotBlank
-	@Length(max = 60)
+	@Length(max = 120)
 	@Column(nullable = false)
 	private String subject;
 

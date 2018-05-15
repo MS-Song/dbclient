@@ -58,9 +58,9 @@ webix.ready(function(){
 									view:"button",
 									value:"알람 신규 등록",
 									width:150,
-									on:{"onItemClick":function(){
-										// 신규 등록 팝업 호출
-									}}
+									click:function(){
+										add_incident_alarm_popup();
+									}
 								},{
 									
 								}]

@@ -21,44 +21,44 @@ public class IncidentAlarmAddDto extends AbstractDto {
 
 	private static final long serialVersionUID = 5818973514704170127L;
 
-	@ApiModelProperty("알람명칭")
+	@ApiModelProperty(required=true,position=1,value="알람명칭 || 알람의 제목을 작성 120자 이내로 작성")
 	@NotBlank
-	@Length(max = 60)
+	@Length(max = 120)
 	private String subject;
 
-	@ApiModelProperty(name="알람 감지 SQL",example="Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
+	@ApiModelProperty(required=true,position=2,value="알람 감지 SQL || Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
 	@NotBlank
 	@Length(max = 8000)
 	private String beforeSql;
 
-	@ApiModelProperty(name="알람 내역",example="담당자에게 전송할 내용을 생성하는 SQL, Email-> <table> 형태, SMS--> plain text 형태 ")
+	@ApiModelProperty(required=true,position=3,value="알람 내역 SQL || 담당자에게 전송할 내용을 생성하는 SQL. 내용이 100byte 넘을 경우 email로 전환")
 	@NotBlank
 	@Length(max = 8000)
 	private String runSql;
 
-	@ApiModelProperty(name="알람 방법",example="EMAIL or SMS[MMS]")
+	@ApiModelProperty(required=true,position=4,value="알람 방법 || EMAIL or SMS[MMS]")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private SendMethod sendMethod;
 
-	@ApiModelProperty(name="동작여부")
+	@ApiModelProperty(required=true,position=5,value="동작여부 || 현재 실행 중인 경우 실행완료 후 동작 중지")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private YN enableYN;
 
-	@ApiModelProperty(name="알람 주기",example="crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜 년도)")
+	@ApiModelProperty(required=true,position=6,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜 년도)")
 	@NotBlank
 	private String schedule;
 
-	@ApiModelProperty(name="database id",example="실행할 데이터베이스의 ID")
+	@ApiModelProperty(required=true,position=7,value="데이터베이스 || 실행할 데이터베이스를 선택")
 	@NotNull
 	private Long databaseId;
 
-	@ApiModelProperty(name="등록자ID")
+	@ApiModelProperty(required=true,position=8,value="등록자ID",hidden=true)
 	@NotNull
 	private Long memberId;
 
-	@ApiModelProperty(name="전송대상자ID")
+	@ApiModelProperty(required=true,position=9,value="전송대상자ID || ID 를 , 형식으로 복수 입력. EX) 1,2,3,4")
 	@NotNull
 	private List<Long> sendMemberIds;
 

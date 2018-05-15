@@ -21,48 +21,48 @@ public class IncidentAlarmModifyBeforeConfirmDto extends AbstractDto {
 
 	private static final long serialVersionUID = 8931222738608566508L;
 
-	@ApiModelProperty("알람ID")
+	@ApiModelProperty(value="알람ID")
 	@NotNull
 	private Long id;
 
-	@ApiModelProperty("알람명칭")
+	@ApiModelProperty(value="알람명칭")
 	@NotBlank
 	@Length(max = 60)
 	private String subject;
 
-	@ApiModelProperty(name="알람 감지 SQL",example="Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
+	@ApiModelProperty(value="알람 감지 SQL",example="Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
 	@NotBlank
 	@Length(max = 8000)
 	private String beforeSql;
 
-	@ApiModelProperty(name="알람 내역",example="담당자에게 전송할 내용을 생성하는 SQL, Email-> <table> 형태, SMS--> plain text 형태 ")
+	@ApiModelProperty(value="알람 내역",example="담당자에게 전송할 내용을 생성하는 SQL, Email-> <table> 형태, SMS--> plain text 형태 ")
 	@NotBlank
 	@Length(max = 8000)
 	private String runSql;
 
-	@ApiModelProperty(name="알람 방법",example="EMAIL or SMS[MMS]")
+	@ApiModelProperty(value="알람 방법",example="EMAIL or SMS[MMS]")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private SendMethod sendMethod;
 
-	@ApiModelProperty(name="동작여부")
+	@ApiModelProperty(value="동작여부")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private YN enableYN;
 
-	@ApiModelProperty(name="알람 주기",example="crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜 년도)")
+	@ApiModelProperty(value="알람 주기",example="crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜 년도)")
 	@NotBlank
 	private String schedule;
 
-	@ApiModelProperty(name="database id",example="실행할 데이터베이스의 ID")
+	@ApiModelProperty(value="database id",example="실행할 데이터베이스의 ID")
 	@NotNull
 	private Long databaseId;
 
-	@ApiModelProperty(name="등록자ID")
+	@ApiModelProperty(value="등록자ID")
 	@NotNull
 	private Long memberId;
 
-	@ApiModelProperty(name="전송대상자ID")
+	@ApiModelProperty(value="전송대상자ID")
 	@NotNull
 	private List<Long> sendMemberIds;
 

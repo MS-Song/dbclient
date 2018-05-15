@@ -20,30 +20,30 @@ public class IncidentAlarmModifyAfterConfirmDto extends AbstractDto {
 
 	private static final long serialVersionUID = 208893498283713844L;
 
-	@ApiModelProperty("알람ID")
+	@ApiModelProperty(value="알람ID")
 	@NotNull
 	private Long id;
 
-	@ApiModelProperty("알람명칭")
+	@ApiModelProperty(value="알람명칭")
 	@NotBlank
 	@Length(max = 60)
 	private String subject;
 
-	@ApiModelProperty(name="알람 감지 SQL",example="Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
+	@ApiModelProperty(value="알람 감지 SQL",example="Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
 	@NotBlank
 	@Length(max = 8000)
 	private String beforeSql;
 
-	@ApiModelProperty(name="동작여부")
+	@ApiModelProperty(value="동작여부")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private YN enableYN;
 
-	@ApiModelProperty(name="알람 주기",example="crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜 년도)")
+	@ApiModelProperty(value="알람 주기",example="crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜 년도)")
 	@NotBlank
 	private String schedule;
 
-	@ApiModelProperty(name="전송대상자ID")
+	@ApiModelProperty(value="전송대상자ID")
 	@NotNull
 	private List<Long> sendMemberIds;
 

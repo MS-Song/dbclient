@@ -19,21 +19,21 @@ public class IncidentAlarmConfirmDto  extends AbstractDto {
 
 	private static final long serialVersionUID = 4873331161290514134L;
 
-	@ApiModelProperty("알람 ID")
+	@ApiModelProperty(value="알람 ID")
 	@NotNull
 	private Long id;
 
-	@ApiModelProperty("승인여부")
+	@ApiModelProperty(value="승인여부")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private YN confirmYN;
 
-	@ApiModelProperty("승인일자")
+	@ApiModelProperty(value="승인일자")
 	@NotNull
 	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
 	private Date confirmDate;
 
-	@ApiModelProperty("승인자ID")
+	@ApiModelProperty(value="승인자ID")
 	@NotNull
 	private Long confirmMemberId;
 

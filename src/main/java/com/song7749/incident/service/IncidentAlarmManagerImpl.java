@@ -2,6 +2,7 @@ package com.song7749.incident.service;
 
 import static com.song7749.util.LogMessageFormatter.format;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberRepository;
 import com.song7749.dbclient.service.DBclientManager;
+import com.song7749.dbclient.value.MemberVo;
 import com.song7749.incident.domain.IncidentAlarm;
 import com.song7749.incident.repository.IncidentAlarmRepository;
 import com.song7749.incident.task.IncidentAlarmTask;
@@ -143,7 +145,8 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 
 		incidentAlarmRepository.saveAndFlush(ia);
 		// confirm 이후에 수정되면 스케줄러를 수정한다.
-		addOrModifyTasks(ia);
+		if(YN.Y.equals(ia.getConfirmYN())) addOrModifyTasks(ia);
+
 		return mapper.map(ia, IncidentAlarmVo.class);
 	}
 
@@ -195,7 +198,14 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	public Optional<IncidentAlarmDetailVo> findIncidentAlarm(IncidentAlarmFindDto dto) {
 		Optional<IncidentAlarm> oIncidentAlarm = incidentAlarmRepository.findOne(dto);
 		if(oIncidentAlarm.isPresent()) {
-			return Optional.ofNullable(mapper.map(oIncidentAlarm.get(), IncidentAlarmDetailVo.class));
+			IncidentAlarmDetailVo vo = mapper.map(oIncidentAlarm.get(), IncidentAlarmDetailVo.class);
+			List<MemberVo> sendMemberVos = new ArrayList<MemberVo>();
+			for(Member m : oIncidentAlarm.get().getSendMembers()) {
+				sendMemberVos.add(mapper.map(m, MemberVo.class));
+			}
+			vo.setSendMemberVos(sendMemberVos);
+
+			return Optional.ofNullable(vo);
 		} else {
 			return Optional.empty();
 		}
@@ -205,6 +215,7 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	 * 최초 기동 시에 configure 초기화
 	 */
 	@Override
+	@Transactional(readOnly=true)
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 		// 실행 가능 상태이고, 컨펌이 완료된 task list를 가져온다.
 		IncidentAlarmFindDto dto = new IncidentAlarmFindDto();
@@ -233,8 +244,11 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		}
 
 		// 사용 중이 아니거나 , confirm 되지 않는 task 는 등록하지 않는다.
+		// 보내야할 사용자 리스트도 포함 되어야 한다.
 		if(YN.Y.equals(incidentAlarm.getEnableYN())
-				&& YN.Y.equals(incidentAlarm.getConfirmYN())) {
+				&& YN.Y.equals(incidentAlarm.getConfirmYN())
+				&& !incidentAlarm.getSendMembers().isEmpty()
+				) {
 
 			ScheduledFuture<?> future = taskScheduler.schedule(
 					new IncidentAlarmTask(dbClientManager
