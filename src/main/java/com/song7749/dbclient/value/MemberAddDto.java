@@ -48,6 +48,10 @@ public class MemberAddDto  extends AbstractDto {
 	@NotBlank
 	private String name;
 
+	@ApiModelProperty(value="핸드폰 번호")
+	@Length(min = 10, max = 14)
+	private String mobileNumber;
+
 	public MemberAddDto() {}
 
 	/**
@@ -57,19 +61,23 @@ public class MemberAddDto  extends AbstractDto {
 	 * @param passwordAnswer
 	 * @param teamName
 	 * @param name
-	 * @param authType
+	 * @param mobileNumber
 	 */
 	public MemberAddDto(@Email @NotBlank String loginId, @Length(min = 8, max = 20) @NotBlank String password,
 			@NotBlank @Size(min = 6, max = 120) String passwordQuestion,
 			@NotBlank @Size(min = 6, max = 120) String passwordAnswer, @Length(max = 60) @NotBlank String teamName,
-			@Length(max = 60) @NotBlank String name) {
+			@Length(max = 60) @NotBlank String name, @Length(min = 10, max = 14) String mobileNumber) {
+		super();
 		this.loginId = loginId;
 		this.password = password;
 		this.passwordQuestion = passwordQuestion;
 		this.passwordAnswer = passwordAnswer;
 		this.teamName = teamName;
 		this.name = name;
+		this.mobileNumber = mobileNumber;
 	}
+
+
 
 	public String getLoginId() {
 		return loginId;
@@ -117,6 +125,14 @@ public class MemberAddDto  extends AbstractDto {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public Member getMember(ModelMapper mapper) {

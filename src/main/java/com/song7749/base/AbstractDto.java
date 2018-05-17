@@ -25,18 +25,18 @@ public abstract class AbstractDto extends BaseObject implements Dto, Cacheable {
 
 	private boolean useCache = false;
 
-	private String apikey;
+	private String apiAuthkey;
 
 	public AbstractDto() {
 	}
 
-	public AbstractDto(String apikey) {
-		this.apikey = apikey;
+	public AbstractDto(String apiAuthkey) {
+		this.apiAuthkey = apiAuthkey;
 	}
 
-	public AbstractDto(boolean useCache, String apikey) {
+	public AbstractDto(boolean useCache, String apiAuthkey) {
 		this.useCache = useCache;
-		this.apikey = apikey;
+		this.apiAuthkey = apiAuthkey;
 	}
 
 	@Override
@@ -49,12 +49,12 @@ public abstract class AbstractDto extends BaseObject implements Dto, Cacheable {
 		this.useCache = useCache;
 	}
 
-	public String getApikey() {
-		return apikey;
+	public String getApiAuthkey() {
+		return apiAuthkey;
 	}
 
-	public void setApikey(String apikey) {
-		this.apikey = apikey;
+	public void setApiAuthkey(String apiAuthkey) {
+		this.apiAuthkey = apiAuthkey;
 	}
 
 	@Override

@@ -91,13 +91,13 @@ public class IncidentAlarmFindDto extends AbstractDto implements Specification<I
 	@ApiModelProperty(value="알람 연결 Database",position=16)
 	private Long databaseId;
 
-	@ApiModelProperty(value="알람 등록자",position=17)
+	@ApiModelProperty(value="알람 등록자ID",position=17)
 	private Long resistMemberId;
 
-	@ApiModelProperty(value="알람 승인자",position=18)
+	@ApiModelProperty(value="알람 승인자ID",position=18)
 	private Long confirmMemberId;
 
-	@ApiModelProperty(value="알람 전달자",position=19)
+	@ApiModelProperty(value="전송 대상자ID",position=19)
 	private List<Long> sendMemberIds;
 
 	public IncidentAlarmFindDto() {}

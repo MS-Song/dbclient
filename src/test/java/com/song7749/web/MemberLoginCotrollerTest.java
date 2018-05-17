@@ -57,7 +57,8 @@ public class MemberLoginCotrollerTest extends ControllerTest{
 			"passwordQuestion",
 			"passwordAnswer",
 			"teamName",
-			"name");
+			"name",
+			"123-123-1234");
 
 	@Before
 	public void setup(){

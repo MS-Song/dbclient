@@ -104,6 +104,11 @@ public class Member extends Entities {
 	@Enumerated(EnumType.STRING)
 	private AuthType authType;
 
+	@Column(nullable = true)
+	@Length(max = 30)
+	@Convert(converter=CryptoTwoWayConverter.class)
+	private String mobileNumber;
+
 	@Column(nullable = false, updatable = false)
 	@CreationTimestamp
 	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
@@ -238,6 +243,14 @@ public class Member extends Entities {
 
 	public void setAuthType(AuthType authType) {
 		this.authType = authType;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public Date getCreateDate() {

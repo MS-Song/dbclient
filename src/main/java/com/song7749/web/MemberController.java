@@ -142,10 +142,10 @@ public class MemberController {
 		return new MessageVo(HttpStatus.OK.value(), 1, "회원이 삭제 되었습니다.");
 	}
 
-	@ApiOperation(value = "회원 조회 - 관리자"
-			,notes = "회원 리스트를 조회 한다."
+	@ApiOperation(value = "회원 조회"
+			,notes = "회원 리스트를 조회 한다.<br/> 일반회원인 경우에는 개인정보가 제외된다."
 			,response=MemberVo.class)
-	@Login({AuthType.ADMIN})
+	@Login({AuthType.NORMAL, AuthType.ADMIN})
 	@GetMapping("/list")
 	public Page<MemberVo> listMember(
 			HttpServletRequest request,

@@ -11,20 +11,26 @@ getSwaggerApiDocs();
 var useDatabaseOptions = [];
 var useDatabaseOptionsCreator = function(){
 	webix.ajax().get("/database/list",function(text,data){
-		var obj = data.json().contents.content;
-		// 기본값 입력
-		useDatabaseOptions.push({
-			id:"",
-			value:'database 를 선택 하세요'
-		});
-		$.each(obj,function(index,db){
+		if(data.json().httpStatus ==200 
+				&& null!=data.json().contents){	
+			var obj = data.json().contents.content;
+			// 기본값 입력
 			useDatabaseOptions.push({
-				id:db.id,
-				value:db.hostAlias+' ['+db.account+"@"+db.host+':'+db.port+']'
+				id:"",
+				value:'database 를 선택 하세요'
 			});
-		});
+			$.each(obj,function(index,db){
+				useDatabaseOptions.push({
+					id:db.id,
+					value:db.hostAlias+' ['+db.account+"@"+db.host+':'+db.port+']'
+				});
+			});
+		} else {
+			webix.message({ type:"error", text:data.json().message});
+		}
 	});
 }
+// 회원의 데이터베이스 로딩
 useDatabaseOptionsCreator();
 
 // search 항목을 추가 한다.
@@ -114,21 +120,24 @@ var incident_alarm_list_create = function(){
  * 알람 신규 등록 팝업
  */
 var add_incident_alarm_popup = function(){
-	webix.ui({
-	    view:"window",
-	    id:"add_incident_alarm_popup",
-		width:900,
-		autoheight:true,
-	    position:"center",
-	    modal:true,
-	    head:"Add Incident Alarm",
-	    body:{
-	    	id:" add_incident_alarm_form",
-	    	view:"form",
-	    	borderless:true,
-	    	elements: add_incident_alarm_form_elements
-	    }
-	}).show();
+	if($$("add_incident_alarm_popup")==undefined){
+		webix.ui({
+		    view:"window",
+		    id:"add_incident_alarm_popup",
+			width:900,
+			autoheight:true,
+		    position:"center",
+		    modal:true,
+		    head:"Add Incident Alarm",
+		    body:{
+		    	id:" add_incident_alarm_form",
+		    	view:"form",
+		    	borderless:true,
+		    	elements: add_incident_alarm_form_elements
+		    }
+		}).show();
+	}
+	$$("add_incident_alarm_popup").show();
 }
 
 /**
@@ -146,7 +155,6 @@ var add_incident_alarm_form_creator = function(){
 			var placeholder = param.name.indexOf("schedule") >= 0 ? "* */10 * * * *" : ""; 
 			// 필수값 여부를 추가 한다.
 			var required = param.required ? " * " : " ";
-			
 			if(param.enum!=undefined){
 				add_incident_alarm_form_elements.push({
 					cols:[{
@@ -219,6 +227,4 @@ var add_incident_alarm_form_creator = function(){
 			}
 		] // end cols
 	});
-//	if($$("menu").isVisible()) $$("menu").hide();
-//  $$("login_id_input").focus();
 };

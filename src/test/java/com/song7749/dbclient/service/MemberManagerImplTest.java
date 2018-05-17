@@ -8,8 +8,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.song7749.base.Compare;
 import com.song7749.dbclient.domain.Database;
@@ -33,6 +37,7 @@ import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 import com.song7749.dbclient.type.MemberModifyByAdminDto;
 import com.song7749.dbclient.value.DatabaseVo;
+import com.song7749.dbclient.value.LoginAuthVo;
 import com.song7749.dbclient.value.MemberAddDto;
 import com.song7749.dbclient.value.MemberDatabaseAddOrModifyDto;
 import com.song7749.dbclient.value.MemberDatabaseFindDto;
@@ -45,6 +50,7 @@ import com.song7749.dbclient.value.MemberSaveQueryModifyDto;
 import com.song7749.dbclient.value.MemberSaveQueryRemoveDto;
 import com.song7749.dbclient.value.MemberSaveQueryVo;
 import com.song7749.dbclient.value.MemberVo;
+import com.song7749.util.ProxyUtils;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -71,6 +77,9 @@ public class MemberManagerImplTest {
 	@Autowired
 	ModelMapper mapper;
 
+	@Mock
+	LoginSession loginSession;
+
 	/**
 	 * fixture
 	 */
@@ -90,7 +99,8 @@ public class MemberManagerImplTest {
 			, "패스워드질문은?"
 			, "패스워드답변은?"
 			, "제일잘나가는팀"
-			, "song7749");
+			, "song7749"
+			, "123-123-1234");
 
 	Database ds = new Database("10.10.10.10"
 			, "test server"
@@ -101,6 +111,17 @@ public class MemberManagerImplTest {
 			, Charset.UTF8
 			, "3333"
 			, "");
+
+	@Before
+	public void setup() throws Exception {
+		loginSession = new LoginSession();
+		loginSession.setSesseion(new LoginAuthVo(member.getId(),member.getAuthType()));
+
+		MockitoAnnotations.initMocks(this);
+		MemberManager mm = (MemberManager) ProxyUtils.unwrapProxy(memberManager);
+		ReflectionTestUtils.setField(mm, "loginSession", loginSession);
+
+	}
 
 	@Test
 	public void testModelMapperMemberToMemberVo() {

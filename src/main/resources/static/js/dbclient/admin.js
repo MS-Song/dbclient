@@ -33,7 +33,7 @@ var adminDatabaseListPopup = function(){
 				data:[]
 	        }
 	    });
-	}
+	} 
 	$$("admin_database_list_popup").show();
 
     // side menu 닫기
@@ -290,48 +290,51 @@ var adminMemberListPopup = function(){
 	            	id:"admin_member_list_search_form",
 	    			view:"form",
 	    			borderless:true,
-	    			elements: [{
-	    				cols:[
-		    				{ 
-		    					id:"admin_search_login_id", 		
-		    					view:"text", 	
-		    					placeholder:'loginId search',		
-		    					name:"loginId",			
-		    					on:{"onKeyPress":function(key,e){// 검색 실행
-		    						if(key==13) loadAdminMemberList();
-		    					}}
-		    				},
-		    				{ 
-		    					id:"admin_search_authType",	
-		    					view:"select",  	
-		    					name:"authType",
-		    					options:authtypeList,
-		    					on:{"onChange":function(key,e){// 검색 실행
-		    						loadAdminMemberList();
-		    					}}
-		    				},
-    						{ 
-		    					id:"admin_search_button", 	
-		    					view:"button", 	
-		    					label:'검색',		 				
-		    					on:{"onItemClick":function(){
-		    						loadAdminMemberList();
-		    					}}
-    						},
-    						{ 
-    							id:"admin_reset_button", 		
-    							view:"button", 	
-    							label:'리셋',		 				
-    							on:{"onItemClick":function(){
-	    							$$('admin_member_list_search_form').setValues({ 
-	    								id:"",
-	    								email:"",
-	    								authType:""
-	    							});
-	    						}}
-    						}
-		    			]
-	    			}]
+	    			elements: [{ 
+	    					id:"admin_search_page", 	
+	    					view:"text", 	
+	    					name:"page",
+	    					value:1,
+	    					type:"hidden",
+	    					height:0,
+	    					width:0,
+						},{
+	    				cols:[{ 
+	    					id:"admin_search_login_id", 		
+	    					view:"text", 	
+	    					placeholder:'loginId search',		
+	    					name:"loginId",			
+	    					on:{"onKeyPress":function(key,e){// 검색 실행
+	    						if(key==13) loadAdminMemberList();
+	    					}}
+	    				},
+	    				{ 
+	    					id:"admin_search_authType",	
+	    					view:"select",  	
+	    					name:"authType",
+	    					options:authtypeList,
+	    				},
+						{ 
+	    					id:"admin_search_button", 	
+	    					view:"button", 	
+	    					label:'검색',		 				
+	    					on:{"onItemClick":function(){
+	    						loadAdminMemberList();
+	    					}}
+						},
+						{ 
+							id:"admin_reset_button", 		
+							view:"button", 	
+							label:'리셋',		 				
+							on:{"onItemClick":function(){
+    							$$('admin_member_list_search_form').setValues({ 
+    								id:"",
+    								email:"",
+    								authType:""
+    							});
+    						}}
+   						}] // end cols
+	    			}] // end elements
 	        	},        	      
 	        	{
 		        	id:"admin_member_list_view",
@@ -356,8 +359,28 @@ var adminMemberListPopup = function(){
 					autowidth:true,
 					autoheight:true,
 					data:[]
-	        	}]
-	        }
+	        	},{
+	        		cols : [{},{ // 페이지를 가운데 두기 위해 앞뒤로 처리
+		        		id:"admin_member_list_page",
+						view: 'pager',
+						template: '{common.first()} {common.prev()} {common.pages()} {common.next()} {common.last()}',
+						master:false,
+						size: 20,
+						group: 5,
+						count: 1000,
+						align:'center',
+						on: {
+						    onItemClick: function(id, e, node) {
+							    this.select(id);
+							    $$('admin_member_list_search_form').setValues({ 
+							    	page:this.config.page*1 + 1,
+								});
+								loadAdminMemberList();
+						    }
+						}
+	        		},{}] // end cols 
+	        	}] // rows
+	        } // body
 	    });
 	}
 	$$("admin_member_list_popup").show();
@@ -373,12 +396,14 @@ var loadAdminMemberList = function(){
 	$$("admin_member_list_view").clearAll();
 	webix.ajax().get("/member/list", $$("admin_member_list_search_form").getValues(), function(text,data){
 		if(data.json().httpStatus == 200 
-				&& null!=data.json().contents
-				&& null!=data.json().contents.content
-				&& 0<data.json().contents.content.length){
-	
-					$$("admin_member_list_view").parse(data.json().contents.content);
-					$$("admin_member_list_view").refresh();
+				&& null!=data.json().contents){
+			$$("admin_member_list_page").config.size=data.json().contents.size;
+			$$("admin_member_list_page").config.count=data.json().contents.totalElements;
+			$$("admin_member_list_page").refresh();
+			
+			$$("admin_member_list_view").clearAll();
+			$$("admin_member_list_view").parse(data.json().contents.content);
+			$$("admin_member_list_view").refresh();
 		} else {
 			webix.message({ type:"error", text:data.json().message});
 		}  
@@ -420,6 +445,7 @@ var adminModifyMemberPopup = function(memberId){
         		{ id:"password_repeat",			view:"text", 	label:'패스워드 재입력', labelWidth:100, name:"password_repeat",	type:"password"			},
         		{ id:"teamName", 				view:"text", 	label:'팀명', 		labelWidth:100, name:"teamName" 								},
         		{ id:"name", 					view:"text", 	label:'성명', 		labelWidth:100, name:"name" 									},
+        		{ id:"mobileNumber",			view:"text", 	label:'핸드폰 번호',	labelWidth:100, name:"mobileNumber" 							},
         		{ id:"passwordQuestion", 		view:"text", 	label:'비밀번호질문', 	labelWidth:100, name:"passwordQuestion" 						},
         		{ id:"passwordAnswer", 			view:"text", 	label:'비밀번호답변', 	labelWidth:100, name:"passwordAnswer" 							},
         		{ id:"authType", 				view:"select",	label:'회원 권한', 		labelWidth:100, name:"authType",		options:authtypeList 	},

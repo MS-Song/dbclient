@@ -46,10 +46,11 @@ public class MemberModifyByAdminDto extends MemberModifyDto {
 	 * @param passwordAnswer
 	 * @param teamName
 	 * @param name
+	 * @param mobileNumber
 	 */
 	public MemberModifyByAdminDto(Long id, String password, String passwordQuestion,
-			String passwordAnswer, String teamName, String name, AuthType authType) {
-		super(id, password, passwordQuestion, passwordAnswer, teamName, name);
+			String passwordAnswer, String teamName, String name, AuthType authType, String mobileNumber) {
+		super(id, password, passwordQuestion, passwordAnswer, teamName, name, mobileNumber);
 		this.authType=authType;
 	}
 

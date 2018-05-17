@@ -69,7 +69,6 @@ public class IncidentAlarm  extends Entities {
 	@Column(nullable = false)
 	private String subject;
 
-
 	@NotBlank
 	@Length(max = 8000)
 	@Column(nullable = false)

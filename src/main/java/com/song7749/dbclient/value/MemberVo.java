@@ -36,6 +36,9 @@ public class MemberVo extends AbstractVo {
 	@ApiModelProperty("성명")
 	private String name;
 
+	@ApiModelProperty("전화번호")
+	private String mobileNumber;
+
 	@ApiModelProperty("권한")
 	private AuthType authType;
 
@@ -56,28 +59,33 @@ public class MemberVo extends AbstractVo {
 	/**
 	 * @param id
 	 * @param loginId
-	 * @param certificationKey
+	 * @param apikey
 	 * @param passwordQuestion
 	 * @param teamName
 	 * @param name
+	 * @param mobileNumber
 	 * @param authType
 	 * @param createDate
 	 * @param modifyDate
 	 * @param lastLoginDate
 	 */
-	public MemberVo(Long id, String loginId, String apikey, String passwordQuestion, String teamName,
-			String name, AuthType authType, Date createDate, Date modifyDate, Date lastLoginDate) {
+	public MemberVo(Long id, String loginId, String apikey, String passwordQuestion, String teamName, String name,
+			String mobileNumber, AuthType authType, Date createDate, Date modifyDate, Date lastLoginDate) {
+		super();
 		this.id = id;
 		this.loginId = loginId;
 		this.apikey = apikey;
 		this.passwordQuestion = passwordQuestion;
 		this.teamName = teamName;
 		this.name = name;
+		this.mobileNumber = mobileNumber;
 		this.authType = authType;
 		this.createDate = createDate;
 		this.modifyDate = modifyDate;
 		this.lastLoginDate = lastLoginDate;
 	}
+
+
 
 	public Long getId() {
 		return id;
@@ -133,6 +141,14 @@ public class MemberVo extends AbstractVo {
 
 	public void setAuthType(AuthType authType) {
 		this.authType = authType;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public Date getCreateDate() {

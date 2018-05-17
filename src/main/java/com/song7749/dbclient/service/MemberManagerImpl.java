@@ -27,6 +27,7 @@ import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberDatabaseRepository;
 import com.song7749.dbclient.repository.MemberRepository;
 import com.song7749.dbclient.repository.MemberSaveQueryRepository;
+import com.song7749.dbclient.type.AuthType;
 import com.song7749.dbclient.type.MemberModifyByAdminDto;
 import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.dbclient.value.LoginAuthVo;
@@ -203,7 +204,19 @@ public class MemberManagerImpl implements MemberManager {
 			new Function<Member, MemberVo>() {
 				@Override
 				public MemberVo apply(Member t) {
-					return mapper.map(t, MemberVo.class);
+					MemberVo vo = mapper.map(t, MemberVo.class);
+
+					// 미인증 회원이나 일반 회원인 경우 VO 내의 개인정보 일부를 제거 한다.
+					if(null==loginSession.getLogin()
+							||  AuthType.NORMAL.equals(loginSession.getLogin().getAuthType())) {
+						vo.setApikey(null);
+						vo.setAuthType(null);
+						vo.setPasswordQuestion(null);
+						vo.setCreateDate(null);
+						vo.setModifyDate(null);
+						vo.setLastLoginDate(null);
+					}
+					return vo;
 				}
 			}
 		);

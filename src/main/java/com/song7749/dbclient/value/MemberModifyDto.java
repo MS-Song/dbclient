@@ -16,20 +16,23 @@ public class MemberModifyDto  extends AbstractDto {
 	@NotNull
 	private Long id;
 
-	@ApiModelProperty(value = "패스워드", required = true, example = "8~20 자 이내로 영문+특수문자 조합으로 입력하세요")
+	@ApiModelProperty(value = "패스워드", example = "8~20 자 이내로 영문+특수문자 조합으로 입력하세요")
 	private String password;
 
-	@ApiModelProperty(value = "패스워드 찾기 질문", required = true, example = "6~120 자 로 입력하세요")
+	@ApiModelProperty(value = "패스워드 찾기 질문", example = "6~120 자 로 입력하세요")
 	private String passwordQuestion;
 
-	@ApiModelProperty(value = "패스워드 찾기 답변", required = true, example = "6~120 자 로 입력하세요")
+	@ApiModelProperty(value = "패스워드 찾기 답변", example = "6~120 자 로 입력하세요")
 	private String passwordAnswer;
 
-	@ApiModelProperty(value = "팀명", required = true, example = "60자 이내로 입력하세요")
+	@ApiModelProperty(value = "팀명", example = "60자 이내로 입력하세요")
 	private String teamName;
 
-	@ApiModelProperty(value = "성명", required = true, example = "60자 이내로 입력하세요")
+	@ApiModelProperty(value = "성명",example = "60자 이내로 입력하세요")
 	private String name;
+
+	@ApiModelProperty("핸드폰 번호")
+	private String mobileNumber;
 
 	public MemberModifyDto() {}
 
@@ -51,22 +54,23 @@ public class MemberModifyDto  extends AbstractDto {
 
 	/**
 	 * @param id
-	 * @param changeCertificationKey
 	 * @param password
 	 * @param passwordQuestion
 	 * @param passwordAnswer
 	 * @param teamName
 	 * @param name
+	 * @param mobileNumber
 	 */
-	public MemberModifyDto(@NotNull Long id,
-			String password, String passwordQuestion,
-			String passwordAnswer, String teamName,String name) {
+	public MemberModifyDto(@NotNull Long id, String password, String passwordQuestion, String passwordAnswer,
+			String teamName, String name, String mobileNumber) {
+		super();
 		this.id = id;
 		this.password = password;
 		this.passwordQuestion = passwordQuestion;
 		this.passwordAnswer = passwordAnswer;
 		this.teamName = teamName;
 		this.name = name;
+		this.mobileNumber = mobileNumber;
 	}
 
 	public Long getId() {
@@ -115,5 +119,13 @@ public class MemberModifyDto  extends AbstractDto {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 }

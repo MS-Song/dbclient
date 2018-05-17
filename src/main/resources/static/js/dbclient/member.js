@@ -14,6 +14,8 @@ var getMemberAuthTypes = function(){
 		} else { 
 			webix.message({ type:"error", text:data.json().message});
 		}
+		// 맨 앞에 빈값 추가
+		authtypeList.unshift('');
 	});
 };
 
@@ -60,17 +62,21 @@ var login_form = {
 
 // 로그인 팝업
 var login_popup = function(){
-    webix.ui({
-        view:"window",
-        id:"login_popup",
-        width:300,
-        position:"center",
-        modal:true,
-        head:"Log In",
-        body:webix.copy(login_form)
-    }).show();
-	if($$("menu").isVisible()) $$("menu").hide();
-    $$("login_id_input").focus();
+	if($$("admin_member_list_popup")==undefined){
+	    webix.ui({
+	        view:"window",
+	        id:"login_popup",
+	        width:300,
+	        position:"center",
+	        modal:true,
+	        head:"Log In",
+	        body:webix.copy(login_form)
+	    }).show();
+		if($$("menu").isVisible()) $$("menu").hide();
+	    $$("login_id_input").focus();
+	} else {
+		$$("admin_member_list_popup").show();
+	}
 }
 
 // 로그 아웃 처리
@@ -106,6 +112,7 @@ var resister_member_form = {
 		{ view:"text", label:'패스워드 재입력', 		name:"password_repeat",	type:"password"	},
 		{ view:"text", label:'성명', 				name:"name" 							},
 		{ view:"text", label:'팀명', 				name:"teamName" 						},
+		{ view:"text", label:'핸드폰 번호',			name:"mobileNumber" 					},
 		{ view:"text", label:'비밀번호 찾기 질문', 	name:"passwordQuestion" 				},
 		{ view:"text", label:'비밀번호 찾기 답변', 	name:"passwordAnswer" 					},
 		{margin:5, cols:[
@@ -160,6 +167,7 @@ var modify_member_form = {
 		{ view:"text", label:'패스워드 재입력', 		name:"password_repeat",	type:"password"	},
 		{ view:"text", label:'성명', 				name:"name" 							},
 		{ view:"text", label:'팀명', 				name:"teamName" 						},
+		{ view:"text", label:'핸드폰 번호',			name:"mobileNumber" 					},
 		{ view:"text", label:'비밀번호 찾기 질문', 	name:"passwordQuestion" 				},
 		{ view:"text", label:'비밀번호 찾기 답변', 	name:"passwordAnswer" 					},
 		{margin:5, cols:[
@@ -191,8 +199,6 @@ var modify_member_form = {
 		labelPosition:"top"
 	}
 };
-
-// 추석 추가 
 
 // 회원정보 수정
 var modify_member_popup = function(){

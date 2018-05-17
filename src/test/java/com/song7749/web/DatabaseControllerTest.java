@@ -64,7 +64,8 @@ public class DatabaseControllerTest extends ControllerTest{
 			, "passwordQuestion"
 			, "passwordAnswer"
 			, "teamName"
-			, "name");
+			, "name"
+			, "123-123-1234");
 
 	// 테스트를 위한 DB 등록
 	DatabaseAddDto dad = new DatabaseAddDto(
