@@ -519,7 +519,7 @@ var adminModifyMemberPopup = function(memberId){
     // side menu 닫기
     if($$("menu").isVisible()) $$("menu").hide();
     // database 정보 로딩
-    getDataParseView("/database/list",database,"select_database_use_member_database_view",false,false,false);
+    getDataParseView("/database/list",null,"select_database_use_member_database_view",false,false,false);
     // 데이터 베이스 리스트를 그리고 선택된 객체를 선택시키기 위해 delay 시킨다 
     setTimeout(function(){
     	findMemberForModify(memberId);	
