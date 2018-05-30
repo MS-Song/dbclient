@@ -60,6 +60,7 @@ public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
 		logger.trace(format("{}", "Response Advice Request URI"),((ServletServerHttpRequest)request).getServletRequest().getRequestURI());
 
 		if (isSwaggerReqest) {
+			logger.trace(format("{}", "exclude Wrapping Message VO"),body);
 			return body;
 		} else { // swagger 의 호출이 아닌 경우
 			int rowCount = 1;
@@ -84,8 +85,11 @@ public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
 					//response.setStatusCode(HttpStatus.valueOf(((MessageVo) body).getHttpStatus()));
 					response.setStatusCode(HttpStatus.OK);
 				}
+
+				logger.trace(format("{}", "Already Wrapping Message VO"),body);
 				return body;
 			} else {
+				logger.trace(format("{}", "Wrapping Message VO"),body);
 				return new MessageVo(HttpServletResponse.SC_OK, rowCount, body);
 			}
 		}

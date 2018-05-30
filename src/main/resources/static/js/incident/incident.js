@@ -1,12 +1,3 @@
-// swagger 정의를 가져온다.
-var swaggerApiDocs = null;
-var getSwaggerApiDocs = function(){
-	webix.ajax().get("/v2/api-docs",function(text,data){
-		swaggerApiDocs=data.json();
-	});
-};
-getSwaggerApiDocs();
-
 // 사용 가능한 데이터베이스 로딩
 var useDatabaseOptions = [];
 var useDatabaseOptionsCreator = function(){
@@ -30,55 +21,41 @@ var useDatabaseOptionsCreator = function(){
 		}
 	});
 }
-// 회원의 데이터베이스 로딩
 useDatabaseOptionsCreator();
 
-// search 항목을 추가 한다.
-var incident_alarm_search_elements = [];
-webix.ready(function(){
-	var searchParams = swaggerApiDocs.paths['/alarm/list'].get.parameters;
-	var resetValues = [];
+
+// 검색 화면
+var search_form_creator = function(){
+	// 검색 조건 doc 로딩
+	let searchParams = swaggerApiDocs.paths['/alarm/list'].get.parameters;
+	let elementsList = [];
+
+	// 검색 조건 로딩
 	$.each(searchParams,function(index,param){
-		if(param.name != "useCache" &&  param.name != "apikey"){
-			if(param.enum!=undefined){
-				$$("incident_alarm_search_form").addView({ 
-					view:"combo", 
-					label:param.description, 
-					labelWidth:180 ,
-					value:"",
-					options:param.enum,
-					name:param.name});		
-			} else if (param.name.indexOf("databaseId") >= 0){
-				$$("incident_alarm_search_form").addView({ 
-					view:"select", 
-					label:param.description, 
-					labelWidth:180 ,
-					value:"",
-					options:useDatabaseOptions,
-					name:param.name});		
-			} else { // text
-				$$("incident_alarm_search_form").addView({ 
-					view:"text", 
-					label:param.description, 
-					labelWidth:180 ,
-					name:param.name,
-					on:{"onKeyPress":function(key,e){ // enter 검색 추가
-						if(key==13) incident_alarm_list_create();
-					}}
-				});		
-			}
-			// reset-value 
-			resetValues[param.name]="";
+		// 제외 문자열
+		if($.inArray(param.name,excludeParams) == -1) {
+			elementsList.push(getFromView(param,false,false));
 		}
 	});
-	// 검색버튼 추가
-	$$("incident_alarm_search_form").addView({
+	
+	// 페이지 element 추가
+	elementsList.push({ 
+		id:"incident_alarm_search_page", 	
+		view:"text", 	
+		name:"page",
+		value:1,
+		type:"hidden",
+		height:0,
+		width:0,
+	});
+	
+	elementsList.push({
 		cols:[{
 			id:"incident_alarm_search_rest",
 			view:"button",
 			value:"리셋",
 			on:{"onItemClick":function(){
-				$$("incident_alarm_search_form").setValues(resetValues);
+				$$("incident_alarm_search_form").setValues("");
 			}}
 		}, {
 			id:"incident_alarm_search_form_commit",
@@ -90,11 +67,11 @@ webix.ready(function(){
 		}] // end cols
 	});	
 
-	// 알람 리스트 조회 호출 
-	incident_alarm_list_create();
-	// 알람 신규 등록 팝업 폼 생성
-	add_incident_alarm_form_creator();
-});
+	// eleements 추가
+	for(let index in elementsList){
+		$$("incident_alarm_search_form").addView(elementsList[index]);	
+	}
+}
 
 /**
  * 알람 리스트
@@ -103,6 +80,7 @@ var incident_alarm_list_create = function(){
 	// 리스트에서 표시할 데이터를 가져온다.
 	if($$("incident_alarm_list_view").config.columns.length==0){
 		var fields = swaggerApiDocs.definitions['알람작업 리스트'].properties;
+
 		var loop=0;
 		$.each(fields,function(header,obj){
 			$$("incident_alarm_list_view").config.columns[loop]={};
@@ -113,118 +91,254 @@ var incident_alarm_list_create = function(){
 		});
 		$$("incident_alarm_list_view").refreshColumns();
 	} // end create header
-	getDataParseView("/alarm/list",$$("incident_alarm_search_form").getValues(),"incident_alarm_list_view",false,false,false);
+	
+	
+	// progress 시작
+	try {
+		$$("incident_alarm_list_view").showProgress();
+	} catch (e) {
+		// progress 가 없을 경우 생성 한다음 다시 실행 한다.
+		webix.extend($$("incident_alarm_list_view"), webix.ProgressBar);
+		$$("incident_alarm_list_view").showProgress();
+	}
+
+	// 데이터 로딩
+	webix.ajax().get("/alarm/list", $$("incident_alarm_search_form").getValues(), function(text,data){
+		if(data.json().httpStatus == 200 
+				&& null!=data.json().contents){
+
+			$$("incident_alarm_list_page").config.size=data.json().contents.size;
+			$$("incident_alarm_list_page").config.count=data.json().contents.totalElements;
+			$$("incident_alarm_list_page").refresh();
+			$$("incident_alarm_list_view").clearAll();
+			$$("incident_alarm_list_view").parse(data.json().contents.content);		
+			$$("incident_alarm_list_view").refresh();
+		}
+		// progress 를 닫는다.
+		$$("incident_alarm_list_view").hideProgress();
+	});
 };
 
-/**
- * 알람 신규 등록 팝업
- */
-var add_incident_alarm_popup = function(){
-	if($$("add_incident_alarm_popup")==undefined){
-		webix.ui({
-		    view:"window",
-		    id:"add_incident_alarm_popup",
-			width:900,
-			autoheight:true,
-		    position:"center",
-		    modal:true,
-		    head:"Add Incident Alarm",
-		    body:{
-		    	id:" add_incident_alarm_form",
-		    	view:"form",
-		    	borderless:true,
-		    	elements: add_incident_alarm_form_elements
-		    }
-		}).show();
+// 항목 로딩을 지연시키기 위한 처리 
+var swaggerlazyLoading = function(){
+	if(null==swaggerApiDocs || useDatabaseOptions.length==0){
+		setTimeout(() => {swaggerlazyLoading()}, 100);		
+	} else {
+		// 검색창 호출
+		search_form_creator();
+		// 알람 리스트 조회 호출
+		incident_alarm_list_create();
 	}
-	$$("add_incident_alarm_popup").show();
 }
 
+//항목 로딩
+webix.ready(function(){
+	// 검색창과, 알람 리스트 지연 호출
+	swaggerlazyLoading();
+});
+
+
+/**
+ * 알람 등록 팝업
+ */
+var incident_alarm_popup = function(alarmItem){
+
+	webix.ui({
+	    view:"window",
+	    id:"incident_alarm_popup",
+		width:950,
+//		minHeight:600,
+		autoheight:true,
+	    position:"center",
+	    modal:true,
+	    head:(undefined==alarmItem ? "ADD" : "Modify")+" Incident Alarm",
+	    body:{
+	    	id:"incident_alarm_form",
+	    	view:"form",
+	    	borderless:true,
+	    	elements: [],
+//			scroll:true,
+	    }
+	}).show();
+
+	// form 생성
+	incident_alarm_form_creator(alarmItem);
+}
 /**
  * 알람 팝업 elements 생성
  */
-var add_incident_alarm_form_elements = [];
-var add_incident_alarm_form_creator = function(){
-	var path='/alarm/add';
-	var formParams=swaggerApiDocs.paths[path].post.parameters;
-	$.each(formParams,function(index,param){
-		if(param.name != "useCache" &&  param.name != "apikey"){
-			// label을 명칭과 설명으로 나눈다.
-			var discriptions = param.description.split("||");
-			// cron 값은 미리 설정한다.
-			var placeholder = param.name.indexOf("schedule") >= 0 ? "* */10 * * * *" : ""; 
-			// 필수값 여부를 추가 한다.
-			var required = param.required ? " * " : " ";
-			if(param.enum!=undefined){
-				add_incident_alarm_form_elements.push({
-					cols:[{
-						view:"combo", 
-						label:discriptions[0] + required, 
-						labelWidth:130,
-						adjust:true,
-						value:"",
-						options:param.enum,
-						name:param.name
-					},{
-				    	view: "label",
-						label: discriptions[1],
-						adjust:true
-					}]
-				});		
-			} else if (param.name.indexOf("databaseId") >= 0){
-				add_incident_alarm_form_elements.push({
-					cols:[{
-						view:"select", 
-						label:discriptions[0] + required, 
-						labelWidth:130,
-						adjust:true,
-						value:"",
-						options:useDatabaseOptions,
-						name:param.name
-					},{
-				    	view: "label",
-						label: discriptions[1],
-						adjust:true
-					}]
-				});				
-			} else { // text
-				//placeholder:placeholder 를 넣어야 하나, 값이 유지되어야 해서 value 에 넣는다.
-				add_incident_alarm_form_elements.push({ 
-					cols:[{
-						view:"text",
-						label:discriptions[0] + required, 
-						labelWidth:130,
-						adjust:true,
-						name:param.name,
-						value:placeholder
-					},{
-				    	view: "label",
-						label: discriptions[1],
-						adjust:true
-					}]
-				});		
+var incident_alarm_form_creator = function(alarmItem){
+	let path='';
+	let formParams=[];
+	let elementsList = [];
+
+	if(undefined==alarmItem){ // 신규 등록
+		// path 기록
+		path='/alarm/add';
+		// params 설정 
+		formParams=swaggerApiDocs.paths[path].post.parameters;
+		// elements 객체 생성
+		$.each(formParams,function(index,param){
+			// 제외 문자열
+			if($.inArray(param.name,excludeParams) == -1) {		
+				elementsList.push(getFromView(param,true,false));
 			}
+		});
+		// 신규 등록 버튼 추가
+		elementsList.push({
+			cols:[{
+					view:"button", value:"취소", click:function() { // 취소
+						$$("incident_alarm_popup").hide();	
+					} ,hotkey: "esc"
+				},{
+					view:"button", value:"등록", click:function(){// 등록
+						webix.ajax().post(path, $$("incident_alarm_form").getValues(), function(text,data){
+							if(data.json().httpStatus==200){
+								webix.message(data.json().message);
+								$$("incident_alarm_popup").hide();
+								incident_alarm_list_create();
+							} else {
+								webix.message({ type:"error", text:data.json().message });
+							}
+						});
+					}
+				}
+			] // end cols
+		});
+		
+		// eleements 추가
+		for(let index in elementsList){
+			$$("incident_alarm_form").addView(elementsList[index]);	
 		}
-	});
-	
-	add_incident_alarm_form_elements.push({
-		cols:[{
-				view:"button", value:"취소", click:function() { // 취소
-					$$("add_incident_alarm_popup").hide();	
-				} ,hotkey: "esc"
-			},{
-				view:"button", value:"등록", click:function(){// 등록
-					webix.ajax().post(path, $("add_incident_alarm_form").getValues(), function(text,data){
-						if(data.json().httpStatus==200){
-							webix.message(data.json().message);
-							incident_alarm_list_create();
-						} else {
-							webix.message({ type:"error", text:data.json().message });
-						}
-					});
-					$$("add_incident_alarm_popup").hide();
+
+	} else { // 수정
+		// console.log(alarmItem);
+		// detail parameter 설정
+		let pDetailVo=swaggerApiDocs.definitions['알람작업 상세'].properties;
+		// parameter 형식으로 변경 한다.
+		let pDetail = [];
+		$.each(pDetailVo, function(name,value){
+			pDetail.push({
+				name:name,
+				description:value.description,
+			});
+		});
+		
+		// moidfy able parameter 설정
+		let pModify={};
+		// confirm 상태 확인하여 수정범위 지정
+		if(alarmItem.confirmYN == "Y"){
+			path='/alarm/modifyAfterConfirm';
+		} else {
+			path='/alarm/modifyBeforeConfirm';
+		}
+		// parameter 설정
+		pModify=swaggerApiDocs.paths[path].put.parameters;		
+		
+		// elements 객체 생성
+		$.each(pDetail,function(pIndex,param){
+			// 제외 문자열
+			if($.inArray(param.name,excludeParams) == -1) {		
+				// 수정 대상 필드를 찾는다.
+				let modifyParam = null;
+				$.each(pModify,function(cIndex,modify){
+					
+					let isModifyParam = param.name!='id' && param.name==modify.name;								// 파라메터가 ID가 아니면서  이름이 같은경우
+					isModifyParam = isModifyParam || (param.name=='sendMemberVos' && modify.name=='sendMemberIds'); // 또는 sendMember 인 경우 
+					isModifyParam = isModifyParam || (param.name=='databaseVo' && modify.name=='databaseId');		// 또는 Database 인 경우
+					
+					if(isModifyParam){
+						modifyParam = modify;
+					}
+				});
+
+				if(null!=modifyParam){
+					elementsList.push(getFromView(modifyParam,true,false));	
+				} else {
+					elementsList.push(getFromView(param,true,true));
 				}
 			}
-		] // end cols
-	});
+		});
+		
+		// 취소 버튼
+		let cancelButton={
+			view:"button", value:"취소", click:function() { // 취소
+				$$("incident_alarm_popup").hide();	
+			} ,hotkey: "esc"
+		}
+		
+		// 수정 버튼
+		let modifyButton ={
+			view:"button", value:"수정", click:function(){// 수정
+				webix.ajax().put(path, $$("incident_alarm_form").getValues(), function(text,data){
+					if(data.json().httpStatus==200){
+						webix.message(data.json().message);
+						$$("incident_alarm_popup").hide();
+						incident_alarm_list_create();
+					} else {
+						webix.message({ type:"error", text:data.json().message });
+					}
+				});
+			}
+		} 
+
+		// 승인 버튼
+		let confirmButton={
+			view:"button", value:"승인", click:function(){// 승인
+				webix.ajax().put('/alarm/confirm', {id : alarmItem.id}, function(text,data){
+					if(data.json().httpStatus==200){
+						webix.message(data.json().message);
+						$$("incident_alarm_popup").hide();
+						incident_alarm_list_create();
+					} else {
+						webix.message({ type:"error", text:data.json().message });
+					}
+				});
+			}
+		}
+		
+		// 승인 버튼 노출
+		if(alarmItem.confirmYN != "Y" && member.authType=='ADMIN'){
+			elementsList.push({cols:[cancelButton,modifyButton,confirmButton]});
+		} else {
+			elementsList.push({cols:[cancelButton,modifyButton]});
+		}
+
+		// eleements 추가
+		for(let index in elementsList){
+			$$("incident_alarm_form").addView(elementsList[index]);	
+		}
+
+		// 대상 데이터를 로딩
+		webix.ajax().get('/alarm/detail', {id:alarmItem.id}, function(text,data){
+			if(data.json().httpStatus==200){
+				// 설정 값
+				let values = {};
+				$.each(data.json().contents,function(key,value){
+					if(value!=null){
+						if(key.indexOf('MemberVo')>= 0) { // 회원인 경우
+							if(key=='sendMemberVos'){ // 전송 대상자 -- 배열로 들어온다.
+								var sendMembers=[];
+								for(index in value){
+									sendMembers.push(value[index].id);
+								}
+								// 키도 변경 한다.
+								values['sendMemberIds']=sendMembers.join(',');
+							} else { // 그외
+								values[key]='['+ value.loginId +']'+'['+ value.teamName +'] ' + value.name;							
+							}
+						} else if (key.indexOf('databaseVo')>= 0){ // database 경우
+							values['databaseId']=value.id;
+						} else {
+							values[key]=value;
+						}
+					}
+				});
+				// form 에 값을 넣는다.
+				$$("incident_alarm_form").setValues(values);
+			} else {
+				webix.message({ type:"error", text:data.json().message });
+			}
+		});
+	}
 };

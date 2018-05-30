@@ -50,16 +50,6 @@ public class DatabaseRepositoryTest {
 		//then -- expacted
 	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void testSaveGivenNullHost() {
-		//give
-		ds.setHost(null);
-		//when
-		databaseRepository.saveAndFlush(ds);
-		//then -- expacted
-
-	}
-
 	@Test
 	public void testSave() {
 		//give

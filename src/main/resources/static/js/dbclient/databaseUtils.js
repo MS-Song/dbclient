@@ -270,7 +270,7 @@ var columnTypeConverter=function(operation,type,value){
   	isNotQuate=isNotQuate || type.toUpperCase().indexOf("NUMBER")>=0;		// 숫자인 경우
   	isNotQuate=isNotQuate || type.toUpperCase().indexOf("INT")>=0			// 숫자인 경우
   	isNotQuate=isNotQuate || type.toUpperCase().indexOf("INTERGER")>=0		// 숫자인 경우
-  	//isNotQuate=isNotQuate || type.toUpperCase().indexOf("DATE")>=0			// 날짜 형식인 경우
+  	//isNotQuate=isNotQuate || type.toUpperCase().indexOf("DATE")>=0		// 날짜 형식인 경우
   	isNotQuate=isNotQuate || type.toUpperCase().indexOf("TIME")>=0			// 날짜 형식인 경우
   	
   	if(isNotQuate==false)	quate="'";

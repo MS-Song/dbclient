@@ -871,8 +871,6 @@ var database_info_data_load=function(){
 	getDataParseView("/database/getSequenceList",database,"database_info_sequence_list_view",false,true,false);
 	// 자동완성용 테이블 데이터 로딩
 	database_query_all_field_load();
-	// 자동완성 이벤트 호출
-	autoCompleteEvent();
 	// 즐겨 찾는 배송지 로딩
 	database_query_favorities_view_load();
 };
@@ -1268,7 +1266,7 @@ var getQueryString = function(){
 		// PLSQL인 경우 별도 가공을 하지 않고 PLSQL 모드로 변경 한다.
 	} else {
 		if(""!=doc.getSelection()){ // drag 되어 있는 쿼리가 있으면, 해당 부분만 가져온다.
-			retQuery=doc.getSelection();
+			retQuery=doc.getSelection().replace(/;/g,"");;
 		} else { // 쿼리의 포인터를 찾아 해당 위치에서 실행 한다.  
 		    var separator = [];
 		    var validRange = {
@@ -1312,7 +1310,8 @@ var getQueryString = function(){
 	        	}
 	        }
 	        retQuery=queries.join("\n").replace(/;/g,"");
-		}		
+		}
+        
 	}
 	return retQuery;
 }

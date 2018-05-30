@@ -119,7 +119,7 @@ public class IncidentAlarm  extends Entities {
 	private String lastErrorMessage;
 
 	@ManyToOne(targetEntity=Database.class, fetch = FetchType.EAGER)
-	@JoinColumn(name = "database_id", nullable = true, insertable = true, updatable = false)
+	@JoinColumn(name = "database_id", nullable = true, insertable = true, updatable = true)
 	private Database database;
 
 	@NotNull

@@ -15,33 +15,33 @@ public class IncidentAlarmVo extends AbstractVo {
 
 	private static final long serialVersionUID = 7599341008290697822L;
 
-	@ApiModelProperty(value="알람 ID",position=1)
+	@ApiModelProperty(value="ID",position=1)
 	private Long id;
 
-	@ApiModelProperty(value="알람 제목",position=3)
+	@ApiModelProperty(value="제목",position=3)
 	private String subject;
 
-	@ApiModelProperty(value="알람 전달 방법",position=4)
+	@ApiModelProperty(value="전달 방법",position=4)
 	private SendMethod sendMethod;
 
-	@ApiModelProperty(value="알람 실행 여부",position=5)
+	@ApiModelProperty(value="실행 여부",position=5)
 	private YN enableYN;
 
-	@ApiModelProperty(value="알람 승인 여부",position=6)
+	@ApiModelProperty(value="승인 여부",position=6)
 	private YN confirmYN;
 
-	@ApiModelProperty(value="알람 스케줄",position=7)
+	@ApiModelProperty(value="스케줄",position=7)
 	private String schedule;
 
-	@ApiModelProperty(value="알람 생성일",position=8)
+	@ApiModelProperty(value="생성일",position=8)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
 	private Date createDate;
 
-	@ApiModelProperty(value="마지막 실행 일자",position=9)
+	@ApiModelProperty(value="마지막 실행일",position=9)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
 	private Date lastRunDate;
 
-	@ApiModelProperty(value="마지막 에러 메세지",position=10)
+	@ApiModelProperty(value="마지막 에러",position=10)
 	private String lastErrorMessage;
 
 	public IncidentAlarmVo() {}

@@ -1,4 +1,4 @@
-package com.song7749.dbclient.service;
+package com.song7749.log.service;
 
 import static org.junit.Assert.assertTrue;
 
@@ -14,14 +14,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.song7749.dbclient.domain.Log;
 import com.song7749.dbclient.repository.LogRepository;
-import com.song7749.dbclient.value.LogLoginAddDto;
-import com.song7749.dbclient.value.LogQueryAddDto;
+import com.song7749.log.domain.Log;
+import com.song7749.log.value.LogIncidentAlaramAddDto;
+import com.song7749.log.value.LogLoginAddDto;
+import com.song7749.log.value.LogQueryAddDto;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient"})
+@ComponentScan({"com.song7749.log"})
 public class LogManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -66,6 +67,22 @@ public class LogManagerImplTest {
 
 		// when
 		logManager.addQueryExecuteLog(dto);
+		// then
+		Thread.sleep(1000);
+		List<Log> logList = logRepository.findAll();
+		assertTrue(logList.size()>0);
+	}
+
+	@Test
+	public void testAddIncidentAlarmLog() throws Exception {
+		// give
+		LogIncidentAlaramAddDto dto = new LogIncidentAlaramAddDto(
+				"10.10.10.10",
+				1L,
+				"{이전내용}",
+				"{변경내용}") ;
+		// when
+		logManager.addIncidentAlarmLog(dto);
 		// then
 		Thread.sleep(1000);
 		List<Log> logList = logRepository.findAll();

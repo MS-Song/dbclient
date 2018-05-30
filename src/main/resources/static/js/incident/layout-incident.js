@@ -37,7 +37,7 @@ webix.ready(function(){
 							view:"form",
 							id:"incident_alarm_search_form",
 							animate:false,
-							elements: incident_alarm_search_elements,
+							elements: [],
 							scroll:true,
 							tooltip:true
 						}
@@ -48,25 +48,31 @@ webix.ready(function(){
 						margin:5,
 						body:{ 
 							rows:[{
-								cols:[{
-									id:"incident_alarm_job_search_desc",
-							    	view: "label",
-									label: "<< 검색 조건을 사용해서 검색 가능 합니다.",
-									height:25
+								cols:[{},{
+									id:"incident_alarm_list_page",
+									view: 'pager',
+									template: '{common.first()} {common.prev()} {common.pages()} {common.next()} {common.last()}',
+									master:false,
+									size: 20,
+									group: 5,
+									count: 1000,
+									align:'center',
+									on: { onItemClick: function(id, e, node) {
+										    $$('incident_alarm_search_page').setValue(id*1 + 1);
+										    incident_alarm_list_create();
+									}}
 								},{
 									id:"incident_alarm_job_add_button",
 									view:"button",
 									value:"알람 신규 등록",
 									width:150,
 									click:function(){
-										add_incident_alarm_popup();
+										incident_alarm_popup();
 									}
 								},{
 									
 								}]
-								
 							},{
-								header:"Incident Alarm List",
 								view : "datatable", 
 								id:"incident_alarm_list_view", 						
 								columns:[],	
@@ -77,14 +83,9 @@ webix.ready(function(){
 								scroll:true,
 								multiselect:true,
 								clipboard:"selection",
-								dataLimit:"",
-								dataOffset:"",
-								dataPage:1,
 								on:{"onItemClick":function(){
-									console.log(this.getSelectedItem());
-									
-									}
-								}
+									incident_alarm_popup(this.getSelectedItem());
+								}}
 							}] // end rows
 						} // end body	
 					}
@@ -92,15 +93,11 @@ webix.ready(function(){
 			},
 			{
 				// footer 구성
-				cols:[
-				    {
-				    	id:"footer",
-				    	view: "label",
-						label: "Copyrightⓒ Song7749 Co., Ltd. All Rights Reserved.",
-						height:25,
-						adjust:true
-				    }
-				]				
+		    	id:"footer",
+		    	view: "label",
+				label: "Copyrightⓒ Song7749 Co., Ltd. All Rights Reserved.",
+				height:25,
+				adjust:true
 			}
 		]
 	});
@@ -134,7 +131,6 @@ webix.ready(function(){
 			},
 			data:[
 				{id: 1, value: "Login", 		icon: "user", 		func: "login_popup"},
-				{id: 4, value: "Settings", 		icon: "cog", 		func: "config_popup"}
 			],
 			select:true,
 			type:{ height: 30 },
@@ -199,7 +195,6 @@ webix.ready(function(){
 			}
 		}
 	});
-
 	
 	// layout 화면 사이즈를 재 계산한다.
 	setTimeout(function(){

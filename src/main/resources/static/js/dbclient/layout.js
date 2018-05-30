@@ -142,8 +142,6 @@ webix.ready(function(){
 			},
 			data:[
 				{id: 1, value: "Login", 		icon: "user", 		func: "login_popup"},
-				{id: 3, value: "Database 선택", 	icon: "database", 	func: "select_database_popup"},
-				{id: 4, value: "Settings", 		icon: "cog", 		func: "config_popup"}
 			],
 			select:true,
 			type:{ height: 30 },

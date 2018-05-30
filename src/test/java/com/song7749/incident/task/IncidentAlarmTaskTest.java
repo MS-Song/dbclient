@@ -28,12 +28,17 @@ import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 import com.song7749.incident.domain.IncidentAlarm;
 import com.song7749.incident.repository.IncidentAlarmRepository;
+import com.song7749.mail.domain.MailConfig;
+import com.song7749.mail.repository.MailConfigRepository;
+import com.song7749.mail.service.EmailService;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ComponentScan({"com.song7749.dbclient"
 	,"com.song7749.incident"
-	,"com.song7749.config"})
+	,"com.song7749.config"
+	,"com.song7749.mail"
+	,"com.song7749.log"})
 public class IncidentAlarmTaskTest {
 
 	@Autowired
@@ -51,11 +56,17 @@ public class IncidentAlarmTaskTest {
 	@Autowired
 	DataSource hikariH2;
 
+	@Autowired
+	private EmailService emailService;
+
+	@Autowired
+	MailConfigRepository mailConfigRepository;
+
 	/**
 	 * fixture
 	 */
 	Member member = new Member(
-			"song7749@gmail.com"
+			"song7749@homeplus.co.kr"
 			, "12345678"
 			, "패스워드질문은?"
 			, "패스워드답변은?"
@@ -76,6 +87,12 @@ public class IncidentAlarmTaskTest {
 
 	List<Member> members = new ArrayList<Member>();
 
+	MailConfig mailConfig = new MailConfig(
+			"smtp.homeplusnet.co.kr",
+			25, // TLS 587 // SSL 465
+			null,
+			null);
+
 	@Before
 	public void setup() {
 		memberRepository.saveAndFlush(member);
@@ -89,6 +106,12 @@ public class IncidentAlarmTaskTest {
 			Map<Database, DataSource> map = ((DBclientManagerImpl)dbClientManager).getDataSourceMap();
 			map.put(database, hikariH2);
 		}
+
+		mailConfig.setAuth(false);
+		mailConfig.setEnableSSL(false);
+		mailConfig.setStarttls(false);
+		mailConfig.setDebug(true);
+		mailConfigRepository.saveAndFlush(mailConfig);
 	}
 
 	@Test
@@ -113,11 +136,12 @@ public class IncidentAlarmTaskTest {
 		IncidentAlarmTask task = new IncidentAlarmTask(
 				dbClientManager,
 				incidentAlarm,
-				incidentAlarmRepository);
+				incidentAlarmRepository,
+				emailService);
 
 		task.run();
 
 		// thread 처리 종료 시간을 벌어 준다.
-		Thread.sleep(1000);
+		Thread.sleep(10000);
 	}
 }

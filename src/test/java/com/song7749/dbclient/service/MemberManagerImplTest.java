@@ -8,6 +8,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +57,7 @@ import com.song7749.util.ProxyUtils;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient"})
+@ComponentScan({"com.song7749.dbclient","com.song7749.log"})
 public class MemberManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -221,36 +224,52 @@ public class MemberManagerImplTest {
 			dto = new MemberFindDto();
 			Page<MemberVo> pageList = null;
 
+			// give
 			dto.setId(vo.getId());
 			pageList = memberManager.findMemberList(dto,page);
 			// then
 			assertTrue(pageList.getContent().size() == 1);
 
+			// give
+			List<Long> ids = new ArrayList<Long>();
+			ids.add(vo.getId());
+			dto.setIds(ids);
+			pageList = memberManager.findMemberList(dto,page);
+			// then
+			assertTrue(pageList.getContent().size() == 1);
+
+			// give
 			dto.setLoginId(vo.getLoginId());
 			pageList = memberManager.findMemberList(dto,page);
 			// then
 			assertTrue(pageList.getContent().size() == 1);
 
+
+			// give
 			dto.setLoginIdCompare(Compare.LIKE);
 			pageList = memberManager.findMemberList(dto,page);
 			// then
 			assertTrue(pageList.getContent().size() == 1);
 
+			// give
 			dto.setName(vo.getName());
 			pageList = memberManager.findMemberList(dto,page);
 			// then
 			assertTrue(pageList.getContent().size() == 1);
 
+			// give
 			dto.setNameCompare(Compare.LIKE);
 			pageList = memberManager.findMemberList(dto,page);
 			// then
 			assertTrue(pageList.getContent().size() == 1);
 
+			// give
 			dto.setTeamName(vo.getTeamName());
 			pageList = memberManager.findMemberList(dto,page);
 			// then
 			assertTrue(pageList.getContent().size() == 1);
 
+			// give
 			dto.setTeamNameCompare(Compare.LIKE);
 			pageList = memberManager.findMemberList(dto,page);
 			// then
@@ -285,7 +304,7 @@ public class MemberManagerImplTest {
 	@Test
 	public void testFindMemberLongReturnNull() throws Exception {
 		// give
-		Long id = 20L;
+		Long id = 100L;
 		// when
 		MemberVo vo2 = memberManager.findMember(id);
 		// then

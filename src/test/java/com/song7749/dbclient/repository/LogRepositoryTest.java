@@ -12,12 +12,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.song7749.dbclient.domain.LogLogin;
-import com.song7749.dbclient.domain.LogQuery;
+import com.song7749.log.domain.LogLogin;
+import com.song7749.log.domain.LogQuery;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient"})
+@ComponentScan({"com.song7749.log"})
 public class LogRepositoryTest{
 
 	Logger logger = LoggerFactory.getLogger(getClass());

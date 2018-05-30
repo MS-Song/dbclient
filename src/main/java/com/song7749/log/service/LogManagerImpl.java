@@ -1,6 +1,4 @@
-package com.song7749.dbclient.service;
-
-import java.util.List;
+package com.song7749.log.service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,12 +13,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dbclient.repository.LogRepository;
-import com.song7749.dbclient.value.LogLoginAddDto;
-import com.song7749.dbclient.value.LogLoginFindDto;
-import com.song7749.dbclient.value.LogLoginVo;
-import com.song7749.dbclient.value.LogQueryAddDto;
-import com.song7749.dbclient.value.LogQueryFindDto;
-import com.song7749.dbclient.value.LogQueryVo;
+import com.song7749.log.value.LogIncidentAlaramAddDto;
+import com.song7749.log.value.LogLoginAddDto;
+import com.song7749.log.value.LogQueryAddDto;
 
 @Service("logManager")
 public class LogManagerImpl implements LogManager {
@@ -40,26 +35,22 @@ public class LogManagerImpl implements LogManager {
 	@Transactional(propagation=Propagation.NOT_SUPPORTED )
 	@Override
 	public void addLogLogin(LogLoginAddDto dto) {
-		logRepository.saveAndFlush(dto.getLogLogin(mapper)).getLogLoginVo(mapper);
+		logRepository.saveAndFlush(dto.getLogLogin(mapper));
 	}
 
 	@Async
 	@Transactional(propagation=Propagation.NOT_SUPPORTED )
 	@Override
 	public void addQueryExecuteLog(LogQueryAddDto dto) {
-		logRepository.saveAndFlush(dto.getLogLogin(mapper)).getLogLoginVo(mapper);
+		logRepository.saveAndFlush(dto.getLogQuery(mapper));
 	}
 
-
+	@Async
+	@Transactional(propagation=Propagation.NOT_SUPPORTED )
 	@Override
-	public List<LogLoginVo> findMemberLoginLogList(LogLoginFindDto dto) {
-		// TODO Auto-generated method stub
-		return null;
+	public void addIncidentAlarmLog(LogIncidentAlaramAddDto dto) {
+		logRepository.saveAndFlush(dto.getLogIncidentAlarm(mapper));
+
 	}
 
-	@Override
-	public List<LogQueryVo> findQueryExecuteLog(LogQueryFindDto dto) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

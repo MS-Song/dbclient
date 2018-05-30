@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.song7749.dbclient.type.LogType;
+import com.song7749.log.type.LogType;
 
 /**
  * <pre>

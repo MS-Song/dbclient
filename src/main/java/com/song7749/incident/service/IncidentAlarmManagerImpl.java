@@ -35,6 +35,7 @@ import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberRepository;
 import com.song7749.dbclient.service.DBclientManager;
+import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.dbclient.value.MemberVo;
 import com.song7749.incident.domain.IncidentAlarm;
 import com.song7749.incident.repository.IncidentAlarmRepository;
@@ -46,6 +47,10 @@ import com.song7749.incident.value.IncidentAlarmFindDto;
 import com.song7749.incident.value.IncidentAlarmModifyAfterConfirmDto;
 import com.song7749.incident.value.IncidentAlarmModifyBeforeConfirmDto;
 import com.song7749.incident.value.IncidentAlarmVo;
+import com.song7749.log.service.LogManager;
+import com.song7749.log.value.LogIncidentAlaramAddDto;
+import com.song7749.mail.service.EmailService;
+import com.song7749.util.ObjectJsonUtil;
 import com.song7749.util.validate.Validate;
 
 @Service
@@ -65,6 +70,9 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	@Autowired
 	private DBclientManager dbClientManager;
 
+	@Autowired
+	private LogManager logManager;
+
 	@PersistenceContext
 	private EntityManager em;
 
@@ -75,6 +83,9 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	private ThreadPoolTaskScheduler taskScheduler;
 
 	private final Map<Long, ScheduledFuture<?>> taskMap = new ConcurrentHashMap<Long, ScheduledFuture<?>>();
+
+	@Autowired
+	private EmailService emailService;
 
 	@Validate
 	@Transactional
@@ -103,7 +114,6 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		}
 
 		List<Member> memberList = memberRepository.findAllById(dto.getSendMemberIds());
-
 		if(!CollectionUtils.isEmpty(memberList)) {
 			ia.setSendMembers(memberList);
 		} else {
@@ -118,14 +128,46 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	@Transactional
 	@Override
 	public IncidentAlarmVo modifyIncidentAlarm(IncidentAlarmModifyBeforeConfirmDto dto) {
-		return modifyIncidentAlarm(mapper.map(dto, IncidentAlarm.class));
+		// 객체 형변환
+		IncidentAlarm ia = mapper.map(dto, IncidentAlarm.class);
+
+		Optional<Database> oDatabase = databaseRepository.findById(dto.getDatabaseId());
+		if(oDatabase.isPresent()) {
+			ia.setDatabase(oDatabase.get());
+		} else {
+			throw new IllegalArgumentException("Database 정보가 일치하지 않습니다. DatabaseId="+dto.getDatabaseId());
+		}
+
+		List<Member> memberList = memberRepository.findAllById(dto.getSendMemberIds());
+		if(!CollectionUtils.isEmpty(memberList)) {
+			ia.setSendMembers(memberList);
+		} else {
+			throw new IllegalArgumentException("수신 대상자가 없습니다.");
+		}
+		return modifyIncidentAlarm(ia);
 	}
 
 	@Validate
 	@Transactional
 	@Override
 	public IncidentAlarmVo modifyIncidentAlarm(IncidentAlarmModifyAfterConfirmDto dto) {
-		return modifyIncidentAlarm(mapper.map(dto, IncidentAlarm.class));
+		// 객체 형변환
+		IncidentAlarm ia = mapper.map(dto, IncidentAlarm.class);
+
+		Optional<Database> oDatabase = databaseRepository.findById(dto.getDatabaseId());
+		if(oDatabase.isPresent()) {
+			ia.setDatabase(oDatabase.get());
+		} else {
+			throw new IllegalArgumentException("Database 정보가 일치하지 않습니다. DatabaseId="+dto.getDatabaseId());
+		}
+
+		List<Member> memberList = memberRepository.findAllById(dto.getSendMemberIds());
+		if(!CollectionUtils.isEmpty(memberList)) {
+			ia.setSendMembers(memberList);
+		} else {
+			throw new IllegalArgumentException("수신 대상자가 없습니다.");
+		}
+		return modifyIncidentAlarm(ia);
 	}
 
 	private IncidentAlarmVo modifyIncidentAlarm(IncidentAlarm modifySource) {
@@ -144,9 +186,20 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		}
 
 		incidentAlarmRepository.saveAndFlush(ia);
+
+		try {
+			// 로그를 기록 한다.
+			LogIncidentAlaramAddDto logDto = new LogIncidentAlaramAddDto(
+					"Not Support",
+					ia.getId(),
+					ObjectJsonUtil.getJsonStringByObject(modifySource),
+					ObjectJsonUtil.getJsonStringByObject(ia));
+			logManager.addIncidentAlarmLog(logDto);
+		} catch (Exception e) {
+			logger.error("알람 로그 기록 실패 ID:" + modifySource.getId());
+		}
 		// confirm 이후에 수정되면 스케줄러를 수정한다.
 		if(YN.Y.equals(ia.getConfirmYN())) addOrModifyTasks(ia);
-
 		return mapper.map(ia, IncidentAlarmVo.class);
 	}
 
@@ -177,6 +230,18 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		incidentAlarmRepository.saveAndFlush(ia);
 		// confirm 시에 스케줄러를 수정한다.
 		addOrModifyTasks(ia);
+
+		try {
+			// 로그를 기록 한다.
+			LogIncidentAlaramAddDto logDto = new LogIncidentAlaramAddDto(
+					"Not Support",
+					ia.getId(),
+					"{}",
+					ObjectJsonUtil.getJsonStringByObject(ia));
+			logManager.addIncidentAlarmLog(logDto);
+		} catch (Exception e) {
+			logger.error("알람 로그 기록 실패 ID:" + ia.getId());
+		}
 		return mapper.map(ia, IncidentAlarmVo.class);
 	}
 
@@ -194,11 +259,26 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		});
 	}
 
+	@Validate
+	@Transactional(readOnly=true)
 	@Override
 	public Optional<IncidentAlarmDetailVo> findIncidentAlarm(IncidentAlarmFindDto dto) {
 		Optional<IncidentAlarm> oIncidentAlarm = incidentAlarmRepository.findOne(dto);
 		if(oIncidentAlarm.isPresent()) {
 			IncidentAlarmDetailVo vo = mapper.map(oIncidentAlarm.get(), IncidentAlarmDetailVo.class);
+			// databaseVo
+			if(null!=oIncidentAlarm.get().getDatabase()) {
+				vo.setDatabaseVo(mapper.map(oIncidentAlarm.get().getDatabase(),DatabaseVo.class));
+			}
+			// resist member
+			if(null!=oIncidentAlarm.get().getResistMember()) {
+				vo.setResistMemberVo(mapper.map(oIncidentAlarm.get().getResistMember(), MemberVo.class));
+			}
+			// confirm member
+			if(null!=oIncidentAlarm.get().getConfirmMember()) {
+				vo.setConfirmMemberVo(mapper.map(oIncidentAlarm.get().getConfirmMember(), MemberVo.class));
+			}
+			// send memberVo
 			List<MemberVo> sendMemberVos = new ArrayList<MemberVo>();
 			for(Member m : oIncidentAlarm.get().getSendMembers()) {
 				sendMemberVos.add(mapper.map(m, MemberVo.class));
@@ -235,6 +315,7 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	 * @param incidentAlarm
 	 */
 	private synchronized void addOrModifyTasks(IncidentAlarm incidentAlarm) {
+
 		// 새로 설정하기 위해 제거 한다.
 		if(taskMap.containsKey(incidentAlarm.getId())) {
 			logger.trace(format("{}", "already task "), incidentAlarm.getId());
@@ -247,13 +328,10 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		// 보내야할 사용자 리스트도 포함 되어야 한다.
 		if(YN.Y.equals(incidentAlarm.getEnableYN())
 				&& YN.Y.equals(incidentAlarm.getConfirmYN())
-				&& !incidentAlarm.getSendMembers().isEmpty()
-				) {
+				&& !incidentAlarm.getSendMembers().isEmpty()) {
 
 			ScheduledFuture<?> future = taskScheduler.schedule(
-					new IncidentAlarmTask(dbClientManager
-							, incidentAlarm
-							,incidentAlarmRepository)
+					new IncidentAlarmTask(dbClientManager, incidentAlarm, incidentAlarmRepository, emailService)
 					, new CronTrigger(incidentAlarm.getSchedule()));
 
 			taskMap.put(incidentAlarm.getId(), future);

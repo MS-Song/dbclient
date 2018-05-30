@@ -181,26 +181,30 @@ public class InitConfigBean {
 		memberIds.add(member.getId());
 		memberIds.add(member.getId());
 
-		// give
 		IncidentAlarmAddDto dto = new IncidentAlarmAddDto(
 				"테스트 모니터링",
 				"select 'Y' execute from dual",
 				"select * from database",
 				SendMethod.EMAIL,
 				YN.Y,
-				"*/30 * * * * *",
+				"0 */5 * * * *",
 				db.getId(),
 				member.getId(),
 				memberIds);
 		IncidentAlarmVo vo = incidentAlarmManager.addIncidentAlarm(dto);
 
-		// give
 		IncidentAlarmConfirmDto confirmDto = new IncidentAlarmConfirmDto(
 				vo.getId(),
 				YN.Y,
 				new Date(System.currentTimeMillis()),
 				member.getId());
-		// when
-		vo = incidentAlarmManager.confirmIncidentAlarm(confirmDto);
+
+		incidentAlarmManager.confirmIncidentAlarm(confirmDto);
+
+		// 테스트를 위한 대량 등록
+		for(int i=0;i<50;i++) {
+			dto.setSubject(dto.getSubject()+i);
+			incidentAlarmManager.addIncidentAlarm(dto);
+		}
     }
 }

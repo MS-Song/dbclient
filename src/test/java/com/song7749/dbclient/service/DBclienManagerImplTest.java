@@ -40,7 +40,7 @@ import com.song7749.dbclient.value.ViewVo;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan({"com.song7749.dbclient"})
+@ComponentScan({"com.song7749.dbclient","com.song7749.log"})
 public class DBclienManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());

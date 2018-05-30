@@ -36,12 +36,13 @@ import com.song7749.dbclient.value.ExecuteQueryDto;
 import com.song7749.dbclient.value.FieldVo;
 import com.song7749.dbclient.value.FunctionVo;
 import com.song7749.dbclient.value.IndexVo;
-import com.song7749.dbclient.value.LogQueryAddDto;
 import com.song7749.dbclient.value.ProcedureVo;
 import com.song7749.dbclient.value.SequenceVo;
 import com.song7749.dbclient.value.TableVo;
 import com.song7749.dbclient.value.TriggerVo;
 import com.song7749.dbclient.value.ViewVo;
+import com.song7749.log.service.LogManager;
+import com.song7749.log.value.LogQueryAddDto;
 import com.zaxxer.hikari.HikariDataSource;
 
 

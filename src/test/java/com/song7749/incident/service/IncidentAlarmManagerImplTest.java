@@ -48,7 +48,9 @@ import com.song7749.incident.value.IncidentAlarmVo;
 @DataJpaTest
 @ComponentScan({"com.song7749.dbclient"
 	,"com.song7749.incident"
-	,"com.song7749.config"})
+	,"com.song7749.config"
+	,"com.song7749.mail"
+	,"com.song7749.log"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IncidentAlarmManagerImplTest {
 
@@ -92,6 +94,17 @@ public class IncidentAlarmManagerImplTest {
 			, "3333"
 			, "");
 
+	Database database2 = new Database("20.20.20.20"
+			, "test server"
+			, "dbTest"
+			, "song7749"
+			, "12345678"
+			, DatabaseDriver.ORACLE
+			, Charset.UTF8
+			, "3333"
+			, "");
+
+
 	List<Long> memberIds = new ArrayList<Long>();
 
 	IncidentAlarmVo vo;
@@ -100,7 +113,7 @@ public class IncidentAlarmManagerImplTest {
 	public void setup() {
 		memberRepository.saveAndFlush(member);
 		databaseRepository.saveAndFlush(database);
-
+		databaseRepository.saveAndFlush(database2);
 		memberIds.add(member.getId());
 		memberIds.add(member.getId());
 		memberIds.add(member.getId());
@@ -139,8 +152,7 @@ public class IncidentAlarmManagerImplTest {
 				SendMethod.EMAIL,
 				YN.Y,
 				"*/20 * * * * *",
-				database.getId(),
-				member.getId(),
+				database2.getId(),
 				memberIds);
 		// when
 		vo = incidentAlarmManager.modifyIncidentAlarm(beforeConfirmDto);
@@ -176,6 +188,7 @@ public class IncidentAlarmManagerImplTest {
 				"select 'Y' execute from dual",
 				YN.Y,
 				"*/30 * * * * *",
+				database.getId(),
 				memberIds);
 		// when
 		vo =incidentAlarmManager.modifyIncidentAlarm(afterConfirmDto);

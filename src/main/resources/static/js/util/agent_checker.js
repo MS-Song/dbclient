@@ -29,7 +29,7 @@ function isBrowserCheck(){
 }
 
 if(isBrowserCheck() != 'Chrome'){
-	document.writeln('크롬 브라우저에서만 작동 됩니다.');
-	document.writeln('아래 링크를 통해서 다운로드 하세요');
+	document.writeln('크롬 브라우저/엣지브라우저/사파리에서 작동 됩니다.');
+	document.writeln('아래 링크를 통해서 크롬 브라우저를 다운로드 하세요');
 	document.writeln('<br/> <a href="https://www.google.co.kr/chrome/browser/desktop/index.html">링크</a>');
 }

@@ -20,30 +20,34 @@ public class IncidentAlarmModifyAfterConfirmDto extends AbstractDto {
 
 	private static final long serialVersionUID = 208893498283713844L;
 
-	@ApiModelProperty(value="알람ID")
+	@ApiModelProperty(required=true, position=0, value="알람ID || 알람의 ID, 수정 불가")
 	@NotNull
 	private Long id;
 
-	@ApiModelProperty(value="알람명칭")
+	@ApiModelProperty(required=true,position=1,value="알람명칭 || 알람의 제목을 작성 120자 이내로 작성")
 	@NotBlank
-	@Length(max = 60)
+	@Length(max = 120)
 	private String subject;
 
-	@ApiModelProperty(value="알람 감지 SQL",example="Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
+	@ApiModelProperty(required=true,position=2,value="알람 감지 SQL || Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
 	@NotBlank
 	@Length(max = 8000)
 	private String beforeSql;
 
-	@ApiModelProperty(value="동작여부")
+	@ApiModelProperty(required=true,position=5,value="동작여부 || 현재 실행 중인 경우 실행완료 후 동작 중지")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private YN enableYN;
 
-	@ApiModelProperty(value="알람 주기",example="crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜 년도)")
+	@ApiModelProperty(required=true,position=6,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜) <a href='https://www.freeformatter.com/cron-expression-generator-quartz.html' target='_blank'>cron 확인</a>")
 	@NotBlank
 	private String schedule;
 
-	@ApiModelProperty(value="전송대상자ID")
+	@ApiModelProperty(required=true,position=7,value="데이터베이스 || 실행할 데이터베이스를 선택")
+	@NotNull
+	private Long databaseId;
+
+	@ApiModelProperty(required=true,position=9,value="전송대상자ID || ID 를 , 형식으로 복수 입력. EX) 1,2,3,4")
 	@NotNull
 	private List<Long> sendMemberIds;
 
@@ -57,22 +61,24 @@ public class IncidentAlarmModifyAfterConfirmDto extends AbstractDto {
 	}
 
 	/**
-	 * @param apikey
 	 * @param id
 	 * @param subject
 	 * @param beforeSql
 	 * @param enableYN
 	 * @param schedule
+	 * @param databaseId
 	 * @param sendMemberIds
 	 */
 	public IncidentAlarmModifyAfterConfirmDto(@NotNull Long id,
-			@NotBlank @Length(max = 60) String subject, @NotBlank @Length(max = 8000) String beforeSql,
-			@NotNull YN enableYN, @NotBlank String schedule, @NotNull List<Long> sendMemberIds) {
+			@NotBlank @Length(max = 120) String subject, @NotBlank @Length(max = 8000) String beforeSql,
+			@NotNull YN enableYN, @NotBlank String schedule, @NotNull Long databaseId,
+			@NotNull List<Long> sendMemberIds) {
 		this.id = id;
 		this.subject = subject;
 		this.beforeSql = beforeSql;
 		this.enableYN = enableYN;
 		this.schedule = schedule;
+		this.databaseId = databaseId;
 		this.sendMemberIds = sendMemberIds;
 	}
 
@@ -114,6 +120,14 @@ public class IncidentAlarmModifyAfterConfirmDto extends AbstractDto {
 
 	public void setSchedule(String schedule) {
 		this.schedule = schedule;
+	}
+
+	public Long getDatabaseId() {
+		return databaseId;
+	}
+
+	public void setDatabaseId(Long databaseId) {
+		this.databaseId = databaseId;
 	}
 
 	public List<Long> getSendMemberIds() {

@@ -1,4 +1,4 @@
-package com.song7749.dbclient.value;
+package com.song7749.log.value;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -7,9 +7,9 @@ import javax.validation.constraints.Size;
 import org.modelmapper.ModelMapper;
 
 import com.song7749.base.AbstractDto;
-import com.song7749.dbclient.domain.LogLogin;
+import com.song7749.log.domain.LogLogin;
 
-public class LogLoginAddDto  extends AbstractDto {
+public class LogLoginAddDto extends AbstractDto {
 
 	private static final long serialVersionUID = 1207184553943521808L;
 

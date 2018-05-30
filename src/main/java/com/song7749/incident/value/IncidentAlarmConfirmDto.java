@@ -24,17 +24,14 @@ public class IncidentAlarmConfirmDto  extends AbstractDto {
 	private Long id;
 
 	@ApiModelProperty(value="승인여부")
-	@NotNull
 	@Enumerated(EnumType.STRING)
 	private YN confirmYN;
 
 	@ApiModelProperty(value="승인일자")
-	@NotNull
 	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
 	private Date confirmDate;
 
 	@ApiModelProperty(value="승인자ID")
-	@NotNull
 	private Long confirmMemberId;
 
 	public IncidentAlarmConfirmDto() {}
@@ -45,8 +42,7 @@ public class IncidentAlarmConfirmDto  extends AbstractDto {
 	 * @param confirmDate
 	 * @param memberId
 	 */
-	public IncidentAlarmConfirmDto(@NotNull Long id, @NotNull YN confirmYN, @NotNull Date confirmDate,
-			@NotNull Long confirmMemberId) {
+	public IncidentAlarmConfirmDto(@NotNull Long id, YN confirmYN, Date confirmDate, Long confirmMemberId) {
 		this.id = id;
 		this.confirmYN = confirmYN;
 		this.confirmDate = confirmDate;

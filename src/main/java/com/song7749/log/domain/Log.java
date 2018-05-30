@@ -1,4 +1,4 @@
-package com.song7749.dbclient.domain;
+package com.song7749.log.domain;
 
 import java.util.Date;
 

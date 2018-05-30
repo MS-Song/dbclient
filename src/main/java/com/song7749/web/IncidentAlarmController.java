@@ -79,6 +79,8 @@ public class IncidentAlarmController {
 			HttpServletResponse response,
 			@Valid @ModelAttribute IncidentAlarmAddDto dto){
 
+		// 인증 정보 추가
+		dto.setMemberId(session.getLogin().getId());
 		return new MessageVo(HttpStatus.OK.value(), 1
 				, incidentAlarmManager.addIncidentAlarm(dto), "알람 등록이 완료되었습니다.");
 	}
@@ -95,8 +97,9 @@ public class IncidentAlarmController {
 
 		// 관리자
 		boolean modifyAble = AuthType.ADMIN.equals(session.getLogin().getAuthType());
-		// 관리자 아니면 본인 확인 추가
+		// 관리자 아니면
 		if(modifyAble==false) {
+			//본인 확인 추가
 			IncidentAlarmFindDto findDto = new IncidentAlarmFindDto(dto.getId());
 			findDto.setResistMemberId(session.getLogin().getId());
 			Optional<IncidentAlarmDetailVo> vo = incidentAlarmManager.findIncidentAlarm(findDto);
@@ -119,6 +122,8 @@ public class IncidentAlarmController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@Valid @ModelAttribute IncidentAlarmConfirmDto dto){
+			// 로그인 세션 ID
+			dto.setConfirmMemberId(session.getLogin().getId());
 			return new MessageVo(HttpStatus.OK.value(), 1
 					, incidentAlarmManager.confirmIncidentAlarm(dto), "알람 승인이 완료되었습니다.");
 	}

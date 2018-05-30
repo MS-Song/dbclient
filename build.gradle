@@ -12,6 +12,8 @@ buildscript {
 	}
 }
 
+buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'no' }
+
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
@@ -28,6 +30,10 @@ repositories {
 	maven { url "https://repo.spring.io/milestone" }
 	maven { url "https://repo.spring.io/snapshot" }
 	maven { url "https://code.lds.org/nexus/content/groups/main-repo" }
+}
+
+configurations {
+	providedRuntime
 }
 
 dependencies {

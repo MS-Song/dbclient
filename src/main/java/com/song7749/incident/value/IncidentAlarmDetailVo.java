@@ -18,55 +18,55 @@ public class IncidentAlarmDetailVo extends AbstractVo {
 
 	private static final long serialVersionUID = 7599341008290697822L;
 
-	@ApiModelProperty(value="알람 ID",position=1)
+	@ApiModelProperty(value="알람ID",position=1)
 	private Long id;
 
-	@ApiModelProperty(value="알람 제목",position=2)
+	@ApiModelProperty(value="알람명칭",position=2)
 	private String subject;
 
 	@ApiModelProperty(value="알람 감지 SQL",position=3)
 	private String beforeSql;
 
-	@ApiModelProperty(value="알람 실행 SQL",position=4)
+	@ApiModelProperty(value="알람 내역 SQL",position=4)
 	private String runSql;
 
-	@ApiModelProperty(value="알람 전달 방법",position=5)
+	@ApiModelProperty(value="알람 방법",position=5)
 	private SendMethod sendMethod;
 
-	@ApiModelProperty(value="알람 실행 여부",position=6)
+	@ApiModelProperty(value="동작여부",position=6)
 	private YN enableYN;
 
-	@ApiModelProperty(value="알람 승인 여부",position=7)
+	@ApiModelProperty(value="승인여부",position=7)
 	private YN confirmYN;
 
-	@ApiModelProperty(value="알람 스케줄",position=8)
+	@ApiModelProperty(value="알람 주기",position=8)
 	private String schedule;
 
-	@ApiModelProperty(value="알람 생성일",position=9)
+	@ApiModelProperty(value="생성일",position=9)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
 	private Date createDate;
 
-	@ApiModelProperty(value="알람 승인일",position=10)
+	@ApiModelProperty(value="승인일",position=10)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
 	private Date confirmDate;
 
-	@ApiModelProperty(value="마지막 실행 일자",position=11)
+	@ApiModelProperty(value="마지막 실행일",position=11)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
 	private Date lastRunDate;
 
 	@ApiModelProperty(value="마지막 에러 메세지",position=12)
 	private String lastErrorMessage;
 
-	@ApiModelProperty(value="알람 연결 Database",position=13)
+	@ApiModelProperty(value="데이터베이스",position=13)
 	private DatabaseVo databaseVo;
 
-	@ApiModelProperty(value="알람 등록자",position=14)
+	@ApiModelProperty(value="등록자",position=14)
 	private MemberVo resistMemberVo;
 
-	@ApiModelProperty(value="알람 승인자",position=15)
+	@ApiModelProperty(value="승인자",position=15)
 	private MemberVo confirmMemberVo;
 
-	@ApiModelProperty(value="알람 전송 대상자",position=16)
+	@ApiModelProperty(value="전송대상자",position=16)
 	private List<MemberVo> sendMemberVos;
 
 	public IncidentAlarmDetailVo() {}

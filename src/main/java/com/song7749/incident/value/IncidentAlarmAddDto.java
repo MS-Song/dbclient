@@ -46,7 +46,7 @@ public class IncidentAlarmAddDto extends AbstractDto {
 	@Enumerated(EnumType.STRING)
 	private YN enableYN;
 
-	@ApiModelProperty(required=true,position=6,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜 년도)")
+	@ApiModelProperty(required=true,position=6,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜) <a href='https://www.freeformatter.com/cron-expression-generator-quartz.html' target='_blank'>cron 확인</a>")
 	@NotBlank
 	private String schedule;
 
@@ -55,7 +55,6 @@ public class IncidentAlarmAddDto extends AbstractDto {
 	private Long databaseId;
 
 	@ApiModelProperty(required=true,position=8,value="등록자ID",hidden=true)
-	@NotNull
 	private Long memberId;
 
 	@ApiModelProperty(required=true,position=9,value="전송대상자ID || ID 를 , 형식으로 복수 입력. EX) 1,2,3,4")

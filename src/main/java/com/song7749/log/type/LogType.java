@@ -1,4 +1,4 @@
-package com.song7749.dbclient.type;
+package com.song7749.log.type;
 
 /**
  * <pre>
@@ -18,24 +18,27 @@ package com.song7749.dbclient.type;
 */
 public enum LogType {
 	// 로그 정의
-	LOG("QUERY", "LOGIN","MEMBER","DATABASE");
+	LOG("QUERY", "LOGIN","MEMBER","DATABASE","INCIDENT_ALARM");
 
 	// 테이블 명칭에 사용됨
 	public static final String QUERY 	= "QUERY";
 	public static final String LOGIN 	= "LOGIN";
 	public static final String MEMBER 	= "MEMBER";
 	public static final String DATABASE = "DATABASE";
+	public static final String INCIDENT_ALARM = "INCIDENT_ALARM";
 
 	private String query;
 	private String login;
 	private String member;
 	private String database;
+	private String incidentAlarm;
 
-	LogType(String query, String login, String member, String database) {
+	LogType(String query, String login, String member, String database, String incidentAlarm) {
 		this.query=query;
 		this.login=login;
 		this.member=member;
 		this.database=database;
+		this.database=incidentAlarm;
 	}
 
 	public String getQuery() {
@@ -68,5 +71,13 @@ public enum LogType {
 
 	public void setDatabase(String database) {
 		this.database = database;
+	}
+
+	public String getIncidentAlarm() {
+		return incidentAlarm;
+	}
+
+	public void setIncidentAlarm(String incidentAlarm) {
+		this.incidentAlarm = incidentAlarm;
 	}
 }

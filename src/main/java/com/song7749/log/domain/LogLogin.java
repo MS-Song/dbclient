@@ -1,5 +1,5 @@
 
-package com.song7749.dbclient.domain;
+package com.song7749.log.domain;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -10,8 +10,8 @@ import javax.validation.constraints.Size;
 
 import org.modelmapper.ModelMapper;
 
-import com.song7749.dbclient.type.LogType;
-import com.song7749.dbclient.value.LogLoginVo;
+import com.song7749.log.type.LogType;
+import com.song7749.log.value.LogLoginVo;
 
 /**
  * <pre>

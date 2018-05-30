@@ -1,49 +1,70 @@
-package com.song7749.dbclient.value;
+package com.song7749.log.domain;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.modelmapper.ModelMapper;
 
-import com.song7749.base.AbstractDto;
-import com.song7749.dbclient.domain.LogQuery;
+import com.song7749.log.type.LogType;
+import com.song7749.log.value.LogQueryVo;
 
-public class LogQueryAddDto  extends AbstractDto {
+/**
+ * <pre>
+ * Class Name : LogQuery.java
+ * Description : 유저가 사용한 쿼리에 대한 로그
+*
+*  Modification Information
+*  Modify Date 		Modifier	Comment
+*  -----------------------------------------------
+*  2016. 2. 22.		song7749	신규작성
+*
+* </pre>
+*
+* @author song7749
+* @since 2016. 2. 22.
+*/
+@Entity
+@DiscriminatorValue(LogType.QUERY)
+public class LogQuery extends Log{
 
-	private static final long serialVersionUID = -60340203267080918L;
+	private static final long serialVersionUID = 240902778616234461L;
 
 	@NotBlank
-	@Size(min = 8, max = 64)
-	private String ip;
-
-	@NotBlank
-	@Size(min = 4, max = 20)
+	@Column(nullable = false, updatable = false)
 	private String loginId;
 
 	@NotNull
+	@Column(nullable=false,updatable=false)
 	private Long databaseId;
 
+	@Column(nullable=false, updatable=false)
 	@NotBlank
 	private String host;
 
+	@Column(nullable=false, updatable=false)
 	@NotBlank
 	private String hostAlias;
 
+	@Column(nullable=false, updatable=false)
 	@NotBlank
 	private String schemaName;
 
+	@Column(nullable=false, updatable=false)
 	@NotBlank
 	private String account;
 
+	@Column(nullable=false, updatable=false)
 	@NotBlank
 	@Size(max=8000)
 	private String query;
 
-	public LogQueryAddDto() {}
+	public LogQuery() {}
 
 	/**
-	 * @param ip
 	 * @param loginId
 	 * @param databaseId
 	 * @param host
@@ -52,11 +73,9 @@ public class LogQueryAddDto  extends AbstractDto {
 	 * @param account
 	 * @param query
 	 */
-	public LogQueryAddDto(@NotBlank @Size(min = 8, max = 64) String ip,
-			@NotBlank @Size(min = 4, max = 20) String loginId, @NotNull Long databaseId, @NotBlank String host,
+	public LogQuery(@NotBlank @Size(min = 4, max = 20) String loginId, @NotBlank Long databaseId, @NotBlank String host,
 			@NotBlank String hostAlias, @NotBlank String schemaName, @NotBlank String account,
 			@NotBlank @Size(max = 8000) String query) {
-		this.ip = ip;
 		this.loginId = loginId;
 		this.databaseId = databaseId;
 		this.host = host;
@@ -66,12 +85,12 @@ public class LogQueryAddDto  extends AbstractDto {
 		this.query = query;
 	}
 
-	public String getIp() {
-		return ip;
+	public Long getDatabaseId() {
+		return databaseId;
 	}
 
-	public void setIp(String ip) {
-		this.ip = ip;
+	public void setDatabaseId(Long databaseId) {
+		this.databaseId = databaseId;
 	}
 
 	public String getLoginId() {
@@ -80,14 +99,6 @@ public class LogQueryAddDto  extends AbstractDto {
 
 	public void setLoginId(String loginId) {
 		this.loginId = loginId;
-	}
-
-	public Long getDatabaseId() {
-		return databaseId;
-	}
-
-	public void setDatabaseId(Long databaseId) {
-		this.databaseId = databaseId;
 	}
 
 	public String getHost() {
@@ -130,8 +141,7 @@ public class LogQueryAddDto  extends AbstractDto {
 		this.query = query;
 	}
 
-	public LogQuery getLogLogin(ModelMapper mapper) {
-		return mapper.map(this, LogQuery.class);
+	public LogQueryVo getLogLoginVo(ModelMapper mapper) {
+		return mapper.map(this, LogQueryVo.class);
 	}
-
 }

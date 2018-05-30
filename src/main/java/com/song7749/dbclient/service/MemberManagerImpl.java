@@ -12,13 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.song7749.base.Compare;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.domain.MemberDatabase;
@@ -165,41 +163,7 @@ public class MemberManagerImpl implements MemberManager {
 	@Transactional(readOnly=true)
 	@Override
 	public Page<MemberVo> findMemberList(MemberFindDto dto, Pageable page) {
-		// entity from dto
-		Member m = mapper.map(dto, Member.class);
-		// matcher define
-		ExampleMatcher matcher = ExampleMatcher.matching()
-			.withMatcher("name",  match -> {
-				// like
-				if(null!=dto.getName()
-						&& dto.getNameCompare().equals(Compare.LIKE)) {
-					match.contains();
-				} else { // equal
-					match.exact();
-				}
-			})
-			.withMatcher("teamName",  match -> {
-				// like
-				if(null!=dto.getTeamName()
-						&& dto.getNameCompare().equals(Compare.LIKE)) {
-					match.contains();
-				} else { // equal
-					match.exact();
-				}
-			})
-			.withMatcher("loginId",  match -> {
-				// like
-				if(null!=dto.getLoginId()
-						&& dto.getLoginIdCompare().equals(Compare.LIKE)) {
-					match.contains();
-				} else { // equal
-					match.exact();
-				}
-			})
-			;
-
-		Example<Member> example = Example.of(m, matcher);
-		Page<Member> pm = memberRepository.findAll(example, page);
+		Page<Member> pm = memberRepository.findAll(dto, page);
 		return  pm.map(
 			new Function<Member, MemberVo>() {
 				@Override

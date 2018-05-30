@@ -1,3 +1,16 @@
+// swagger 정의를 가져온다.
+var swaggerApiDocs = null;
+var getSwaggerApiDocs = function(){
+	if(null==swaggerApiDocs){
+		webix.ajax().get("/v2/api-docs",function(text,data){
+			swaggerApiDocs=data.json();
+		});
+	}
+};
+// swagger doc 로딩
+getSwaggerApiDocs();
+
+
 /**
  * 데이터를 조회하여, data view 에 넣는다.
  */
@@ -271,11 +284,19 @@ var getDataParseProperty = function(url,parmeters,viewName){
 	webix.ajax().get(url,parmeters, 
 			function(text,data){
 //				console.log(data.json());
-				if(data.json().httpStatus ==200 && null!=data.json().contents){
+				if(data.json().httpStatus ==200 
+						&& null!=data.json().contents){
 
+					var contents = null;
+					if(undefined!=data.json().contents.content){ //page 구조
+						contents=data.json().contents.content;
+					} else { //일반
+						contents=data.json().contents;
+					}
+					
 					var elementList=[];
 					var valueList={};
-					$.each(data.json().contents,function(index, obj){
+					$.each(contents,function(index, obj){
 						var loop=0
 						$.each(obj,function(name,value){
 							elementList.push({"label":name,type:"text","id":name,width:300})
@@ -318,7 +339,7 @@ var autoCompleteEvent = function(){
 	// 중복 호출 방지
 	if(autoCompleteEvent_Const==0){
 		$$("database_query_input").getEditor().on("keyup", function(cm, e) {
-		  if (e.keyCode == 190) {
+			if (e.keyCode == 190) {
 			  $$("database_query_input").getEditor().execCommand("autocomplete")
 		  }
 		})
@@ -397,3 +418,125 @@ var reload = function() {
 var mvSite = function(src) {
 	document.location = src;	
 }
+
+/**
+ * form view 를 생성 한다. 
+ */
+/**
+ * 제외 시켜야 하는 파라메터
+ */
+var excludeParams = ["useCache","apiAuthkey","page","size","sort"];
+var getFromView = function(param,isRightDescription=false,isDisable=false){
+	// 제외 되는 파라메터 인 경우 null을 리턴한다.
+	if($.inArray(param.name,excludeParams) != -1) {
+		return null;
+	}
+	
+	// view 객체
+	let viewElement = {};
+	// cron 값
+	let placeholder = param.name.indexOf("schedule") >= 0 ? "* */10 * * * *" : ""; 
+	
+	// 필수값 여부를 추가 한다.
+	let required = param.required ? " * " : " ";
+	// label을 명칭과 설명으로 나눈다.
+	
+	let discriptions;
+	if(undefined==param.description){
+		discriptions=[param.name,""];
+	} else {
+		discriptions = param.description.split("||");
+	}
+	
+	let leftDescription		= discriptions[0] + required;
+	let rightDescription	= isRightDescription && undefined!=discriptions[1] ? discriptions[1] : ""; 
+	
+	if(param.enum!=undefined){
+		viewElement={
+				view:"combo", 
+				label:leftDescription, 
+				labelWidth:150,
+				adjust:true,
+				options:param.enum,
+				name:param.name,
+				disabled:isDisable
+		};		
+	} else if(param.type=="boolean"){
+		viewElement={
+				view:"combo", 
+				label:leftDescription, 
+				labelWidth:150,
+				adjust:true,
+				options:["true","false"],
+				name:param.name,
+				disabled:isDisable
+		};		
+	} else if (param.name.toLowerCase().indexOf("databaseid") >= 0
+				|| param.name.toLowerCase().indexOf('databasevo')>= 0){
+		viewElement={
+				view:"select", 
+				label:leftDescription, 
+				labelWidth:150,
+				adjust:true,
+				options:useDatabaseOptions,
+				name:'databaseId',
+				disabled:isDisable
+		};				
+	} else if (param.name.toLowerCase().indexOf("member") >= 0){
+		viewElement={ 
+				view:"text",
+				label:leftDescription, 
+				labelWidth:150,
+				adjust:true,
+				name:param.name,
+				readonly:true,
+				disabled:isDisable,
+				on:{"onItemClick":function(view,e){ // enter 검색 추가
+					if(undefined!=param.collectionFormat 
+							&& param.collectionFormat=="multi"){
+						member_list_popup(view,true);	
+					} else {
+						member_list_popup(view,false);
+					}					
+				}}						
+		};		
+	} 
+	else if (param.name.toLowerCase().indexOf("sql") >= 0){
+		viewElement={ 
+				view:"textarea",
+				label:leftDescription, 
+				labelWidth:150,
+				height:60,
+				adjust:true,
+				name:param.name,
+				disabled:isDisable,
+				on:{"onItemClick":function(view,e){ // query popup 창 추가
+					// 검색 창에서는 실행이 불가능하다.
+					if('incident_alarm_search_form'!=$$(view).getFormView().config.id){
+						database_sql_execute_popup(view,$$("incident_alarm_form").getValues().databaseId,$$(view).getValue());						
+					} else {
+						console.log("검색창 호출");
+					}
+				}}						
+		};		
+	} else { // text
+		viewElement={ 
+				view:"text",
+				label:leftDescription, 
+				labelWidth:150,
+				adjust:true,
+				name:param.name,
+				placeholder:placeholder,
+				disabled:isDisable
+		};		
+	}
+	// 오른쪽 설명이 필요한 경우에 오른족 설명을 붙인다
+	if(isRightDescription){
+		viewElement = {cols:[viewElement,{
+	    	view: "label",
+			label: rightDescription,
+			adjust:true
+		}]}
+	}
+	return viewElement;
+};

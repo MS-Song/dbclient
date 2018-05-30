@@ -11,19 +11,14 @@ webix.ready(function(){
     		$$("menu").getBody().data.remove(1);	
     		$$("menu").getBody().data.add({id: 1, value: member.name+" 님  (수정)", icon: "user", func: "modify_member_popup"},0);
     		$$("menu").getBody().data.add({id: 2, value: " 로그아웃 ", icon: "user", func: "log_out"},1);
-    		// 권한 할당이 안된 경우 표시
-    		if(member.authType==null){
-    			// Database 관련 기능 비 활성화
-    			$$("menu").getBody().data.remove(3);
+
+    		if(member.authType!=null){ // 권한 할당이 된 경우
+    			$$("menu").getBody().data.add({id: 3, value: "Database 선택", 	icon: "database", 	func: "select_database_popup"});    			
+    		} else if(member.authType==null){// 권한 할당이 안된 경우 표시
     			$$("toolbar").addView({view: "label", label: "권한이 없습니다. 관리자에게 연락하시기 바랍니다."},3);
     			return false;
-    		} else if(member.authType=='ADMIN') { // 관리자 권한이 있는 경우 메뉴 활성화
-    			$$("menu").getBody().data.add({id: 5, value: null, 				icon: null, 		func: null},					4);
-    			$$("menu").getBody().data.add({id: 6, value: " 관리자 메뉴", 		icon: "cog", 		func: null},					5);
-        		$$("menu").getBody().data.add({id: 7, value: " Database 관리", 	icon: "database", 	func: "adminDatabaseListPopup"},6);
-        		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 			icon: "user", 		func: "adminMemberListPopup"},	7);
-    		}
-
+    		} 
+    		
     		// 로그인 된 경우 서버 선택이 되어 있지 않으면 서버 선택 창을 활성화 한다. 
     		if(database.id==null){
     			select_database_popup();
