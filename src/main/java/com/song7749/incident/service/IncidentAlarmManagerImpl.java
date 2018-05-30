@@ -35,6 +35,7 @@ import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberRepository;
 import com.song7749.dbclient.service.DBclientManager;
+import com.song7749.dbclient.service.LoginSession;
 import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.dbclient.value.MemberVo;
 import com.song7749.incident.domain.IncidentAlarm;
@@ -50,7 +51,6 @@ import com.song7749.incident.value.IncidentAlarmVo;
 import com.song7749.log.service.LogManager;
 import com.song7749.log.value.LogIncidentAlaramAddDto;
 import com.song7749.mail.service.EmailService;
-import com.song7749.util.ObjectJsonUtil;
 import com.song7749.util.validate.Validate;
 
 @Service
@@ -86,6 +86,10 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 
 	@Autowired
 	private EmailService emailService;
+
+	@Autowired
+	LoginSession loginSession;
+
 
 	@Validate
 	@Transactional
@@ -189,11 +193,31 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 
 		try {
 			// 로그를 기록 한다.
+			StringBuffer before = new StringBuffer();
+			StringBuffer after = new StringBuffer();
+
+			before.append("subject : " +		modifySource.getSubject());
+			before.append(", beforeSql : " + 	modifySource.getBeforeSql());
+			before.append(", runSql : " +		modifySource.getRunSql());
+			before.append(", databaseId : " + 	modifySource.getDatabase().getId());
+			before.append(", schedule : " + 	modifySource.getSchedule());
+			before.append(", enable : " +		modifySource.getEnableYN());
+
+			after.append("subject : " + 		ia.getSubject());
+			after.append(", beforeSql : " + 	ia.getBeforeSql());
+			after.append(", runSql : " + 		ia.getRunSql());
+			after.append(", databaseId : " + 	ia.getDatabase().getId());
+			after.append(", schedule : " + 		ia.getSchedule());
+			after.append(", enable : " + 		ia.getEnableYN());
+			if(null!=loginSession && null!=loginSession.getLogin()) {
+				after.append(", modifyId : " + 		loginSession.getLogin().getLoginId());
+			}
+
 			LogIncidentAlaramAddDto logDto = new LogIncidentAlaramAddDto(
 					"Not Support",
 					ia.getId(),
-					ObjectJsonUtil.getJsonStringByObject(modifySource),
-					ObjectJsonUtil.getJsonStringByObject(ia));
+					before.toString(),
+					after.toString());
 			logManager.addIncidentAlarmLog(logDto);
 		} catch (Exception e) {
 			logger.error("알람 로그 기록 실패 ID:" + modifySource.getId());
@@ -232,12 +256,18 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		addOrModifyTasks(ia);
 
 		try {
+			StringBuffer after = new StringBuffer();
+			after.append("confirm:Y");
+			if(null!=loginSession && null!=loginSession.getLogin()) {
+				after.append(", modifyId : " + 	loginSession.getLogin().getLoginId());
+			}
+
 			// 로그를 기록 한다.
 			LogIncidentAlaramAddDto logDto = new LogIncidentAlaramAddDto(
 					"Not Support",
 					ia.getId(),
 					"{}",
-					ObjectJsonUtil.getJsonStringByObject(ia));
+					after.toString());
 			logManager.addIncidentAlarmLog(logDto);
 		} catch (Exception e) {
 			logger.error("알람 로그 기록 실패 ID:" + ia.getId());

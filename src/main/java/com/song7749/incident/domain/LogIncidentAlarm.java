@@ -5,6 +5,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.song7749.log.domain.Log;
 import com.song7749.log.type.LogType;
@@ -37,10 +38,12 @@ public class LogIncidentAlarm extends Log {
 	private Long incidentAlarmId;
 
 	@NotBlank
+	@Size(max=8000)
 	@Column(nullable = false, updatable = false)
 	private String before;
 
 	@NotBlank
+	@Size(max=8000)
 	@Column(nullable = false, updatable = false)
 	private String after;
 

@@ -257,6 +257,10 @@ public class MemberFindDto extends AbstractDto implements Specification<Member> 
 			p.getExpressions() .add(root.<Long>get("id").in(ids));
 		}
 
+		if(null!=authType) {
+			p.getExpressions().add(cb.equal(root.<AuthType>get("authType"), authType));
+		}
+
 		if(!StringUtils.isEmpty(name)) {
 			p.getExpressions()
 				.add(cb.like(root.<String>get("name"),  "%" + name + "%"));
