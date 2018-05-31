@@ -103,13 +103,13 @@ public class MailConfig {
 
 	@Column(nullable = false, updatable = false)
 	@CreationTimestamp
-	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.DATE)
 	private Date createDate;
 
 	@Column(nullable = true,  updatable = true)
 	@UpdateTimestamp
-	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.DATE)
 	private Date modifyDate;
 

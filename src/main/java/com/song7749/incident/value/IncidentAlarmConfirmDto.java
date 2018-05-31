@@ -28,7 +28,7 @@ public class IncidentAlarmConfirmDto  extends AbstractDto {
 	private YN confirmYN;
 
 	@ApiModelProperty(value="승인일자")
-	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date confirmDate;
 
 	@ApiModelProperty(value="승인자ID")

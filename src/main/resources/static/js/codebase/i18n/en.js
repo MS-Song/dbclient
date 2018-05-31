@@ -5,9 +5,9 @@ webix.i18n.locales["en-US"]={
 	decimalSize:2,
 
 	dateFormat:"%m/%d/%Y",
-	timeFormat:"%h:%i %A",
+	timeFormat:"%h:%i:%s %A",
 	longDateFormat:"%d %F %Y",
-	fullDateFormat:"%m/%d/%Y %h:%i %A",
+	fullDateFormat:"%m/%d/%Y %h:%i:%s %A",
 	am:["am","AM"],
 	pm:["pm","PM"],
 

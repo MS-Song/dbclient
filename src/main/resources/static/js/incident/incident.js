@@ -107,7 +107,7 @@ var incident_alarm_list_create = function(){
 	}
 
 	// 데이터 로딩
-	webix.ajax().get("/alarm/list", $$("incident_alarm_search_form").getValues(), function(text,data){
+	webix.ajax().get("/alarm/list",  $$("incident_alarm_search_form").getValues(), function(text,data){
 		if(data.json().httpStatus == 200 
 				&& null!=data.json().contents){
 
@@ -117,6 +117,8 @@ var incident_alarm_list_create = function(){
 			$$("incident_alarm_list_view").clearAll();
 			$$("incident_alarm_list_view").parse(data.json().contents.content);		
 			$$("incident_alarm_list_view").refresh();
+		} else {
+			webix.message({ type:"error", text:data.json().message });	
 		}
 		// progress 를 닫는다.
 		$$("incident_alarm_list_view").hideProgress();

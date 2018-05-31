@@ -535,7 +535,23 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 					}
 				}}	
 		};		
-	} else { // text
+	} else if(param.name.toLowerCase().indexOf("date") >= 0 ){
+		viewElement={ 
+				view:"datepicker",
+				label:leftDescription, 
+				labelWidth:150,
+				adjust:true,
+				name:param.name,
+				//format:"%d %M %Y at %H:%i",
+				format:"%Y-%m-%d %H:%i",
+				timepicker: true,
+				stringResult:true,
+				disabled:isDisable,
+				//on:{"onChange":function(before,after){ 
+				//	console.log(this.getValue());
+				//}}	
+		};		
+	}else { // text
 		viewElement={ 
 				view:"text",
 				label:leftDescription, 
@@ -566,8 +582,6 @@ var formatDate = function (date) {
  };
  
  var gapDate = function (beforeDate, afterDate){
-	 console.log(beforeDate);
-	 console.log(afterDate);
 	 let gap 		= afterDate.getTime() - beforeDate.getTime();
 	 let sec_gap 	= parseInt(gap / 1000);
 	 var min_gap 	= parseInt(gap / 1000 /60);

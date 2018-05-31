@@ -35,10 +35,10 @@ public class LoginAuthVo extends AbstractVo {
 
 	private AuthType authType;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date create;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd h:i:s")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date refresh;
 
 	public LoginAuthVo() {}
