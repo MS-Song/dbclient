@@ -1,5 +1,7 @@
 package com.song7749.web;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.song7749.base.MessageVo;
@@ -183,5 +186,17 @@ public class IncidentAlarmController {
 			throw new NotDataFoundException();
 		}
 		return o.get();
+	}
+
+	@ApiOperation(value = "알람 다음 스케줄 조회"
+			,notes = "입력된 crontab expression 을 확인하여 다음 스케줄 리스트를 반환한다."
+			,response=List.class)
+	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@GetMapping("/nextSchedule")
+	public List<Date> nextSchedule(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@RequestParam(required=true) String schedule){
+		return incidentAlarmManager.crontabNextRunTimes(schedule);
 	}
 }

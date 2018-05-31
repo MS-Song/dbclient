@@ -39,7 +39,7 @@ public class IncidentAlarmModifyAfterConfirmDto extends AbstractDto {
 	@Enumerated(EnumType.STRING)
 	private YN enableYN;
 
-	@ApiModelProperty(required=true,position=6,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜) <a href='https://www.freeformatter.com/cron-expression-generator-quartz.html' target='_blank'>cron 확인</a>")
+	@ApiModelProperty(required=true,position=6,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜) 30초 이내는 실행 불가")
 	@NotBlank
 	private String schedule;
 

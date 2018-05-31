@@ -62,6 +62,10 @@ var search_form_creator = function(){
 			view:"button",
 			value:"검색",
 			on:{"onItemClick":function(){
+				// 페이지 초기화
+			    $$('incident_alarm_search_page').setValue(0);
+			    $$("incident_alarm_list_page").config.page=0;
+			    // 리스트 검색
 				incident_alarm_list_create();
 			}}
 		}] // end cols
@@ -341,4 +345,91 @@ var incident_alarm_form_creator = function(alarmItem){
 			}
 		});
 	}
+};
+
+/**
+ * crontab schedule 확인
+ */
+var crontabSchedulePopup = function(view,value){
+	webix.ui({
+	    view:"window",
+	    id:"crontab_schedule_popup",
+		width:600,
+		minHeight:500,
+		autoheight:true,
+	    position:"center",
+	    modal:true,
+	    head:"Crontab Schedule 확인",
+	    body:{
+	    	id:"crontab_schedule_form",
+	    	view:"form",
+	    	borderless:true,
+	    	elements: [{
+	    		rows:[{
+	    			cols:[{
+	    				id:"crontab_schedule_expression",
+	    				view:"text", 	
+	    				label:'schedule', 			
+	    				name:"schedule",
+	    				value:value,
+	    				width:250
+	    			},{
+	    				id:"crontab_schedule_cansel", 	
+	    				view:"button", 
+	    				label:'닫기', 
+	    				click:function(){
+    					    $$("crontab_schedule_popup").hide();
+	    				},hotkey: "esc"
+	    			},{
+	    				id:"crontab_schedule_validate_button", 	
+	    				view:"button", 
+	    				label:'점검', 
+	    				click:function(){
+	    					webix.ajax().get("/alarm/nextSchedule",this.getFormView().getValues(),function(text,data){
+	    						if(data.json().httpStatus ==200 
+	    								&& null!=data.json().contents){	
+	    							let beforeDate = null;
+	    							
+	    							$$("crontab_schedule_list").clearAll();
+	    							$.each(data.json().contents, function(key,value){
+	    								// 시간차 구하기
+	    								let gap = "";
+	    								let runDate = new Date(value);
+	    								if(beforeDate != null){
+	    									gap = gapDate(beforeDate,runDate);
+	    								}
+	    								
+		    							$$("crontab_schedule_list").add({
+		    								"crontab_schedule_next" : formatDate(runDate)
+		    								,"crontab_schedule_gap" : gap});	    
+		    							// 이전 시간 값 설정
+		    							beforeDate=runDate;
+	    							})
+	    						}
+	    					});
+	    				}
+	    			},{
+	    				id:"crontab_schedule_accept", 	
+	    				view:"button", 
+	    				label:'적용', 
+	    				click:function(){
+    					    $$(view).setValue($$("crontab_schedule_expression").getValue());
+    					    $$("crontab_schedule_popup").hide();
+	    				}
+	    			}] //end cols
+	    		},{
+		        	id:"crontab_schedule_list",
+		        	view:"datatable",
+					tooltip:true,
+					select:"row",
+					resizeColumn:true,
+					columns:[
+						{ id:"crontab_schedule_next",	header:"다음 Crontab Schedule 리스트", width:300},
+						{ id:"crontab_schedule_gap",header:"시간 간격", width:200},
+            		],
+					data:[]
+	    		}]// end rows;
+	    	}] // end elements
+	    }
+	}).show();
 };

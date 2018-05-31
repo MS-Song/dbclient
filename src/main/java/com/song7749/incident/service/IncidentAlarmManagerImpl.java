@@ -95,10 +95,8 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	@Transactional
 	@Override
 	public IncidentAlarmVo addIncidentAlarm(IncidentAlarmAddDto dto) {
-		// cron 표현식 검증
-		if(!CronSequenceGenerator.isValidExpression(dto.getSchedule())) {
-			throw new IllegalArgumentException("스케줄의 Crontab 표현식이 올바르지 않습니다.");
-		}
+		// crontab 검증
+		validateCrontabExpression(dto.getSchedule());
 
 		// 객체 형변환
 		IncidentAlarm ia = mapper.map(dto, IncidentAlarm.class);
@@ -175,10 +173,9 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	}
 
 	private IncidentAlarmVo modifyIncidentAlarm(IncidentAlarm modifySource) {
-		// cron 표현식 검증
-		if(!CronSequenceGenerator.isValidExpression(modifySource.getSchedule())) {
-			throw new IllegalArgumentException("스케줄의 Crontab 표현식이 올바르지 않습니다.");
-		}
+		// crontab 검증
+		validateCrontabExpression(modifySource.getSchedule());
+
 
 		Optional<IncidentAlarm> oIncidentAlarm = incidentAlarmRepository.findById(modifySource.getId());
 		IncidentAlarm ia = null;
@@ -368,5 +365,43 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 
 		}
 		logger.trace(format("{}", "add or modify cron task"), taskMap);
+	}
+
+	@Override
+	public List<Date> crontabNextRunTimes(String schedule) {
+		// cron 표현식 검증
+		if(!CronSequenceGenerator.isValidExpression(schedule)) {
+			throw new IllegalArgumentException("스케줄의 Crontab 표현식이 올바르지 않습니다.");
+		}
+		// 스케줄러 생성
+		CronSequenceGenerator cg = new CronSequenceGenerator(schedule);
+		List<Date> list  = new ArrayList<Date>();
+		// 향후 10회 정도의 스케줄을 생성해서 사용자에게 고지시켜 준다.
+		for(int i=0;i<10;i++) {
+			if(list.isEmpty()){ // 처음 실행
+				list.add(cg.next(new Date()));
+			} else {
+				list.add(cg.next(list.get(i-1)));
+			}
+		}
+		return list;
+	}
+
+	private void validateCrontabExpression(String schedule) {
+		// cron 표현식 검증
+		if(!CronSequenceGenerator.isValidExpression(schedule)) {
+			throw new IllegalArgumentException("스케줄의 Crontab 표현식이 올바르지 않습니다.");
+		}
+		// 스케줄 간격이 너무 짧은 경우 입력을 실패 시킨다.
+		List<Date> list = crontabNextRunTimes(schedule);
+		Date before = null;
+		for(Date now : list) {
+			if(before != null) {
+				if(now.getTime() - before.getTime() < 30000) {
+					throw new IllegalArgumentException("스케줄 간격이 30초 이내입니다. 30초 이상 되도록 설정 하세요");
+				}
+			}
+			before=now;
+		}
 	}
 }

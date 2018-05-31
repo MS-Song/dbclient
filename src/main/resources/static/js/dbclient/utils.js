@@ -434,9 +434,7 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 	
 	// view 객체
 	let viewElement = {};
-	// cron 값
-	let placeholder = param.name.indexOf("schedule") >= 0 ? "* */10 * * * *" : ""; 
-	
+
 	// 필수값 여부를 추가 한다.
 	let required = param.required ? " * " : " ";
 	// label을 명칭과 설명으로 나눈다.
@@ -519,6 +517,24 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 					}
 				}}						
 		};		
+	} else if(param.name.indexOf("schedule") >= 0 ){
+		viewElement={ 
+				view:"text",
+				label:leftDescription, 
+				labelWidth:150,
+				adjust:true,
+				name:param.name,
+				placeholder:"* */10 * * * *",
+				disabled:isDisable,
+				on:{"onItemClick":function(view,e){ // crontab 확인
+					// 검색 창에서는 실행이 불가능하다.
+					if('incident_alarm_search_form'!=$$(view).getFormView().config.id){
+						crontabSchedulePopup(view,$$(view).getValue());						
+					} else {
+						console.log("검색창 호출");
+					}
+				}}	
+		};		
 	} else { // text
 		viewElement={ 
 				view:"text",
@@ -526,7 +542,6 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 				labelWidth:150,
 				adjust:true,
 				name:param.name,
-				placeholder:placeholder,
 				disabled:isDisable
 		};		
 	}
@@ -540,3 +555,27 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 	}
 	return viewElement;
 };
+
+var formatDate = function (date) {
+  return date.getFullYear() + '년 ' + 
+    (date.getMonth() + 1) + '월 ' + 
+    date.getDate() + '일 ' + 
+    date.getHours() + '시 ' + 
+    date.getMinutes() + '분 ' + 
+    date.getSeconds() + '초';
+ };
+ 
+ var gapDate = function (beforeDate, afterDate){
+	 console.log(beforeDate);
+	 console.log(afterDate);
+	 let gap 		= afterDate.getTime() - beforeDate.getTime();
+	 let sec_gap 	= parseInt(gap / 1000);
+	 var min_gap 	= parseInt(gap / 1000 /60);
+	 var hour_gap 	= parseInt(gap / 1000 /60 / 60);
+	 var day_gap 	= parseInt( gap / 1000 /60 / 60 / 24);
+	 // 시간 단위보다 클 경우 윗단계에 포함됨으로 초기화
+	 if(sec_gap>=60) 	sec_gap=0; 
+	 if(min_gap>=60) 	min_gap=0;
+	 if(hour_gap>=24) 	hour_gap=0;
+	 return day_gap + "일 " + hour_gap + "시 " + min_gap + "분 " + sec_gap + "초";
+ }

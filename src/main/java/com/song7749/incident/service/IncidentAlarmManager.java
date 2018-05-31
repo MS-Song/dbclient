@@ -1,5 +1,7 @@
 package com.song7749.incident.service;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -76,4 +78,11 @@ public interface IncidentAlarmManager {
 	 * @return
 	 */
 	Optional<IncidentAlarmDetailVo> findIncidentAlarm(IncidentAlarmFindDto dto);
+
+	/**
+	 * 입력된 crontab expression 의 다음 실행 시간을 출력해 준다.
+	 * @param schedule
+	 * @return
+	 */
+	List<Date> crontabNextRunTimes(String schedule);
 }

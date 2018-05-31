@@ -342,6 +342,8 @@ var adminMemberListPopup = function(){
     					view:"button", 	
     					label:'검색',		 				
     					on:{"onItemClick":function(){
+    					    $$('admin_search_page').setValue(0);
+    					    $$("admin_member_list_page").config.page=0;
     						loadAdminMemberList();
     					}}
 					},
