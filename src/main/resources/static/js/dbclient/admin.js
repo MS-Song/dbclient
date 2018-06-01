@@ -795,6 +795,7 @@ let client;
 webix.ready(function(){
 		sock = new SockJS("/alarm");			// sock 생성
 		client = Stomp.over(sock);				// client 호출
+		client.debug = null						// debug off
 		client.connect({}, function (frame) {	// 연결
 			client.subscribe('/topic/recieve', function (message) {
 				let body = JSON.parse(message.body);
