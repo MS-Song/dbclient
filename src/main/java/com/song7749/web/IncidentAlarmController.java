@@ -41,6 +41,7 @@ import com.song7749.incident.value.IncidentAlarmVo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 /**
  * <pre>
@@ -129,6 +130,35 @@ public class IncidentAlarmController {
 			dto.setConfirmMemberId(session.getLogin().getId());
 			return new MessageVo(HttpStatus.OK.value(), 1
 					, incidentAlarmManager.confirmIncidentAlarm(dto), "알람 승인이 완료되었습니다.");
+	}
+
+	@ApiOperation(value = "알람 즉시 실행"
+			,notes = "알람을 즉시 실행 한다."
+			,response=MessageVo.class)
+	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@PutMapping("/runNow")
+	public MessageVo runNow(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@ApiParam("database id")
+			@RequestParam(required=true, name="id") Long alarmId){
+
+		// 관리자
+		boolean modifyAble = AuthType.ADMIN.equals(session.getLogin().getAuthType());
+		// 관리자 아니면 본인 확인 추가
+		if(modifyAble==false) {
+			IncidentAlarmFindDto findDto = new IncidentAlarmFindDto(alarmId);
+			findDto.setResistMemberId(session.getLogin().getId());
+			Optional<IncidentAlarmDetailVo> vo = incidentAlarmManager.findIncidentAlarm(findDto);
+			modifyAble = modifyAble || vo.isPresent();
+		}
+
+		if(modifyAble) {
+			incidentAlarmManager.runNow(alarmId);
+			return new MessageVo(HttpStatus.OK.value(), 1, "즉시 실행 하였습니다.");
+		} else {
+			throw new AuthorityUserException("본인이 등록한 알람만 즉시 수정 가능합니다.");
+		}
 	}
 
 	@ApiOperation(value = "알람 승인 후 수정"

@@ -11,6 +11,8 @@ import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import com.song7749.base.MessageVo;
 import com.song7749.base.SendMethod;
@@ -51,15 +53,19 @@ public class IncidentAlarmTask implements Runnable {
 
 	private EmailService emailService;
 
+	private SimpMessagingTemplate template;
+
 	public IncidentAlarmTask(DBclientManager dbClientManager
 			, IncidentAlarm incidentAlarm
 			, IncidentAlarmRepository incidentAlarmRepository
-			, EmailService emailService) {
+			, EmailService emailService
+			, SimpMessagingTemplate template) {
 
 		this.dbClientManager=dbClientManager;
 		this.incidentAlarm=incidentAlarm;
 		this.incidentAlarmRepository=incidentAlarmRepository;
 		this.emailService=emailService;
+		this.template=template;
 	}
 
 	public IncidentAlarm getIncidentAlarm() {
@@ -69,6 +75,7 @@ public class IncidentAlarmTask implements Runnable {
 	@Override
 	public void run() {
 		logger.trace(format("{}", "TASK RUN START"),incidentAlarm.getId());
+		Long startTime = System.currentTimeMillis();
 
 		// 실행 상태
 		 boolean isExecute = YN.Y.equals(incidentAlarm.getEnableYN());
@@ -130,6 +137,7 @@ public class IncidentAlarmTask implements Runnable {
 				isExecute=false; // 실행 중지
 				logger.error(e.getMessage());
 				incidentAlarm.setLastErrorMessage(e.getMessage());
+				incidentAlarmRepository.saveAndFlush(incidentAlarm);
 			}
 		}
 
@@ -138,6 +146,17 @@ public class IncidentAlarmTask implements Runnable {
 			incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
 			incidentAlarmRepository.saveAndFlush(incidentAlarm);
 			logger.trace(format("{}", "TASK RUN END"),incidentAlarm.getId());
+		}
+
+		try {
+			MessageVo sendMessage = new MessageVo();
+			sendMessage.setHttpStatus(isExecute ? HttpStatus.OK.value() : HttpStatus.INTERNAL_SERVER_ERROR.value());
+			sendMessage.setMessage(incidentAlarm.getSubject());
+			sendMessage.setContents(incidentAlarm.getId());
+			sendMessage.setProcessTime(System.currentTimeMillis()-startTime);
+			template.convertAndSend("/topic/runAlarms", sendMessage);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
 		}
 	}
 

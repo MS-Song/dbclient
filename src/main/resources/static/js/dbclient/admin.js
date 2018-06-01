@@ -10,7 +10,8 @@ var adminMenuLazyLoading = function(){
     			$$("menu").getBody().data.add({id: 6, value: " 관리자 메뉴", 		icon: "cog", 			func: null},						5);
         		$$("menu").getBody().data.add({id: 7, value: " Database 관리", 	icon: "database", 		func: "adminDatabaseListPopup"},	6);
         		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 			icon: "user", 			func: "adminMemberListPopup"},		7);
-        		$$("menu").getBody().data.add({id: 9, value: " 메일서버 설정", 		icon: "send",			func: "adminConfigMailServerPopup"},8);        		
+        		$$("menu").getBody().data.add({id: 9, value: " 메일서버 설정", 		icon: "send",			func: "adminConfigMailServerPopup"},8);       		
+        		$$("menu").getBody().data.add({id: 10,value: " 관리자 메세지 전송", 	icon: "mail-reply",		func: "adminSendMessagePopup"},		9);
     		}
 		}
 	}, 100);
@@ -671,7 +672,7 @@ var adminConfigMailServerForm = function(){
 				} ,hotkey: "esc"
 			},
 			{
-				view:"button", value:"테스트", click:function() { // 취소
+				view:"button", value:"테스트", click:function() { // 테스트
 					webix.ajax().post('/common/config/mail/test', $$("admin_config_main_server_form").getValues(), function(text,data){
 						if(data.json().httpStatus==200){
 							webix.message(data.json().message);
@@ -713,3 +714,103 @@ var adminConfigMailServerForm = function(){
 	});
 	
 };
+
+/**
+ * 관리자 메세지 전송
+ */
+var adminSendMessagePopup = function(){
+	webix.ui({
+	    view:"window",
+	    id:"admin_send_message_popup",
+		width:500,
+		autoheight:true,
+	    position:"center",
+	    modal:true,
+	    head:" 관리자 메세지 (모든 사용자에게 메세지를 전송한다) ",
+	    body:{
+	    	id:"admin_send_message_form",
+	    	view:"form",
+	    	borderless:true,
+	    	elements: [
+	    		{				
+	    			id:"admin_send_message_text",
+	    			view:"textarea",
+					height:120,
+					adjust:true,
+					name:"message",
+				},
+				{ 
+					id:"admin_send_message_button", 	
+					view:"button", 	
+					label:'전송',		 				
+					on:{"onItemClick":function(){
+						client.send("/app/send", {}, JSON.stringify({"httpStatus":200,"message":$$("admin_send_message_text").getValue()}));
+					}}
+				},
+				{ 
+					id:"admin_send_message_reset_button", 		
+					view:"button", 	
+					label:'취소',		 				
+					click:function(){
+						$$('admin_send_message_popup').hide();
+					},hotkey: "esc"
+				}
+			]// end elements
+	    }
+	}).show();
+    // side menu 닫기
+    if($$("menu").isVisible()) $$("menu").hide();
+}
+
+/**
+ * 관리자 메세지 수신
+ */
+var adminRecieveMessagePopup = function(message){
+	webix.ui({
+	    view:"window",
+	    id:"admin_recieve_message_popup",
+		width:500,
+		autoheight:true,
+	    position:"center",
+	    modal:true,
+	    head:{
+			view:"button", value:"관리자 메세지 닫기", click:function() {
+				$$("admin_recieve_message_popup").hide();	
+			} ,hotkey: "esc"
+		},
+	    body:{
+	    	rows:[{
+		    	id:"admin_recieve_message",
+		    	template: message.replace("\n","<br/>")
+	    	},{
+		    	view:"label",
+		    	label:"수신시간  : " + formatDate(new Date())
+	    	}]
+	    }
+	}).show();
+}
+
+let sock;
+let client;
+webix.ready(function(){
+		sock = new SockJS("/alarm");			// sock 생성
+		client = Stomp.over(sock);				// client 호출
+		client.connect({}, function (frame) {	// 연결
+			client.subscribe('/topic/recieve', function (message) {
+				let body = JSON.parse(message.body);
+				adminRecieveMessagePopup(body.message);
+	        });
+			if(undefined!=$$("incident_alarm_run_log")){
+				client.subscribe('/topic/runAlarms', function (message) {
+					let body = JSON.parse(message.body);
+					$$("incident_alarm_run_log").add({
+					 	"status"		: body.httpStatus == 200 ? "성공":"실패"	
+						,"id"			: body.contents
+						,"subject" 		: body.message
+						,"processTime"	: body.processTime + ' ms'
+						,"time"			: body.date + ' ' + body.time
+					});	    
+				});
+			}
+		 });		
+});

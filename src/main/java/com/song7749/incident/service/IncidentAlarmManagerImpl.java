@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -90,6 +91,8 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	@Autowired
 	LoginSession loginSession;
 
+	@Autowired
+	private SimpMessagingTemplate template;
 
 	@Validate
 	@Transactional
@@ -322,7 +325,7 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	 * 최초 기동 시에 configure 초기화
 	 */
 	@Override
-	@Transactional(readOnly=true)
+	@Transactional
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 		// 실행 가능 상태이고, 컨펌이 완료된 task list를 가져온다.
 		IncidentAlarmFindDto dto = new IncidentAlarmFindDto();
@@ -358,7 +361,8 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 				&& !incidentAlarm.getSendMembers().isEmpty()) {
 
 			ScheduledFuture<?> future = taskScheduler.schedule(
-					new IncidentAlarmTask(dbClientManager, incidentAlarm, incidentAlarmRepository, emailService)
+					new IncidentAlarmTask(dbClientManager, incidentAlarm,
+							incidentAlarmRepository, emailService,template)
 					, new CronTrigger(incidentAlarm.getSchedule()));
 
 			taskMap.put(incidentAlarm.getId(), future);
@@ -403,5 +407,21 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 			}
 			before=now;
 		}
+	}
+
+	@Override
+	@Transactional
+	public void runNow(Long alarmId) {
+		Optional<IncidentAlarm> oAlarm = incidentAlarmRepository.findById(alarmId);
+		IncidentAlarm incidentAlarm = null;
+		if(oAlarm.isPresent()) {
+			incidentAlarm = oAlarm.get();
+		} else {
+			throw new IllegalArgumentException("알람정보가 일치하지 않습니다. id="+alarmId);
+		}
+
+		taskScheduler.getScheduledExecutor().execute(new IncidentAlarmTask(dbClientManager, incidentAlarm,
+				incidentAlarmRepository, emailService,template));
+		;
 	}
 }

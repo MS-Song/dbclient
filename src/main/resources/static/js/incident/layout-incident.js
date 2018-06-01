@@ -88,8 +88,35 @@ webix.ready(function(){
 								}}
 							}] // end rows
 						} // end body	
+					},
+					{ view:"resizer", id:"screen_heighter"},
+					{ 
+						id:"incident_alarm_run_tab",	
+						header:"Alarm Task Run Log", 
+						collapsed:false,
+						width:400, 
+						body:{
+							view:"datatable",
+							id:"incident_alarm_run_log", 	
+							columns:[
+				        		{id:"status", 				header:"실행",	adjust:true},
+								{id:"id", 					header:"ID",	adjust:true},
+				        		{id:"subject", 				header:"제목",	adjust:true},
+				        		{id:"processTime", 			header:"실행시간",	adjust:true},
+				        		{id:"time", 				header:"시간",	adjust:true},
+							],	
+							data:[],
+							tooltip:true,
+							select:"row",
+							resizeColumn:true,
+							scroll:true,
+							clipboard:"selection",
+							on:{"onItemClick":function(){
+								incident_alarm_popup(this.getSelectedItem());
+							}}
+						}
 					}
-				]
+				]// end cols
 			},
 			{
 				// footer 구성

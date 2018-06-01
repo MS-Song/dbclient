@@ -85,4 +85,10 @@ public interface IncidentAlarmManager {
 	 * @return
 	 */
 	List<Date> crontabNextRunTimes(String schedule);
+
+	/**
+	 * task 를 즉시 실행한다.
+	 * @param alarmId
+	 */
+	void runNow(Long alarmId);
 }

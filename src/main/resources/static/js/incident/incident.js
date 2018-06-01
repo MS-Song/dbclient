@@ -125,7 +125,7 @@ var incident_alarm_list_create = function(){
 	});
 };
 
-// 항목 로딩을 지연시키기 위한 처리 
+// 항목 로딩을 지연시키기 위한 처리
 var swaggerlazyLoading = function(){
 	if(null==swaggerApiDocs || useDatabaseOptions.length==0){
 		setTimeout(() => {swaggerlazyLoading()}, 100);		
@@ -137,7 +137,7 @@ var swaggerlazyLoading = function(){
 	}
 }
 
-//항목 로딩
+// 항목 로딩
 webix.ready(function(){
 	// 검색창과, 알람 리스트 지연 호출
 	swaggerlazyLoading();
@@ -153,7 +153,7 @@ var incident_alarm_popup = function(alarmItem){
 	    view:"window",
 	    id:"incident_alarm_popup",
 		width:950,
-//		minHeight:600,
+// minHeight:600,
 		autoheight:true,
 	    position:"center",
 	    modal:true,
@@ -163,7 +163,7 @@ var incident_alarm_popup = function(alarmItem){
 	    	view:"form",
 	    	borderless:true,
 	    	elements: [],
-//			scroll:true,
+// scroll:true,
 	    }
 	}).show();
 
@@ -181,7 +181,7 @@ var incident_alarm_form_creator = function(alarmItem){
 	if(undefined==alarmItem){ // 신규 등록
 		// path 기록
 		path='/alarm/add';
-		// params 설정 
+		// params 설정
 		formParams=swaggerApiDocs.paths[path].post.parameters;
 		// elements 객체 생성
 		$.each(formParams,function(index,param){
@@ -235,6 +235,18 @@ var incident_alarm_form_creator = function(alarmItem){
 		// confirm 상태 확인하여 수정범위 지정
 		if(alarmItem.confirmYN == "Y"){
 			path='/alarm/modifyAfterConfirm';
+			// 승인 상태인 경우에는 즉시 실행 버튼 추가 한다 -- 오류인 경우 처리를 위해서
+			elementsList.push({
+				view:"button", value:"즉시 실행] 오류로 인해 실패한 경우 사용", click:function(){
+					webix.ajax().put('/alarm/runNow',$$("incident_alarm_form").getValues(), function(text,data){
+						if(data.json().httpStatus==200){
+							webix.message(data.json().message);
+						} else {
+							webix.message({ type:"error", text:data.json().message });
+						}
+					});
+				}
+			});
 		} else {
 			path='/alarm/modifyBeforeConfirm';
 		}
@@ -248,11 +260,9 @@ var incident_alarm_form_creator = function(alarmItem){
 				// 수정 대상 필드를 찾는다.
 				let modifyParam = null;
 				$.each(pModify,function(cIndex,modify){
-					
-					let isModifyParam = param.name!='id' && param.name==modify.name;								// 파라메터가 ID가 아니면서  이름이 같은경우
-					isModifyParam = isModifyParam || (param.name=='sendMemberVos' && modify.name=='sendMemberIds'); // 또는 sendMember 인 경우 
-					isModifyParam = isModifyParam || (param.name=='databaseVo' && modify.name=='databaseId');		// 또는 Database 인 경우
-					
+					let isModifyParam = param.name!='id' && param.name==modify.name;								// 파라메터가
+					isModifyParam = isModifyParam || (param.name=='sendMemberVos' && modify.name=='sendMemberIds'); // 또는
+					isModifyParam = isModifyParam || (param.name=='databaseVo' && modify.name=='databaseId');		// 또는
 					if(isModifyParam){
 						modifyParam = modify;
 					}
@@ -333,7 +343,8 @@ var incident_alarm_form_creator = function(alarmItem){
 							} else { // 그외
 								values[key]='['+ value.loginId +']'+'['+ value.teamName +'] ' + value.name;							
 							}
-						} else if (key.indexOf('databaseVo')>= 0){ // database 경우
+						} else if (key.indexOf('databaseVo')>= 0){ // database
+																	// 경우
 							values['databaseId']=value.id;
 						} else {
 							values[key]=value;
@@ -361,27 +372,40 @@ var crontabSchedulePopup = function(view,value){
 		autoheight:true,
 	    position:"center",
 	    modal:true,
-	    head:"Crontab Schedule 확인",
+	    head:{
+			id:"crontab_schedule_cansel", 	
+			view:"button", 
+			label:'Crontab 점검 팝업 닫기', 
+			click:function(){
+			    $$("crontab_schedule_popup").hide();
+			},hotkey: "esc"
+		},
 	    body:{
 	    	id:"crontab_schedule_form",
 	    	view:"form",
 	    	borderless:true,
 	    	elements: [{
 	    		rows:[{
+			    	id:"crontab_generator_url",
+			    	view: "label",
+					label: "<a href='https://www.freeformatter.com/cron-expression-generator-quartz.html' target='_blank'>crontab expression 생성기</a> (년을 제외하세요)",
+					height:25,
+					adjust:true
+	    			},{
 	    			cols:[{
 	    				id:"crontab_schedule_expression",
 	    				view:"text", 	
 	    				label:'schedule', 			
 	    				name:"schedule",
 	    				value:value,
-	    				width:250
-	    			},{
-	    				id:"crontab_schedule_cansel", 	
-	    				view:"button", 
-	    				label:'닫기', 
-	    				click:function(){
-    					    $$("crontab_schedule_popup").hide();
-	    				},hotkey: "esc"
+	    				placeholder:"* */10 * * * *",
+	    				width:250,
+	    				on:{"onKeyPress":function(key,e){// 실행
+	    					// enter 를 입력하면, 점검을 시작 한다.
+	    					if(key==13){
+	    						 $$("crontab_schedule_validate_button").callEvent("onItemClick");
+	    					}
+	    				}}
 	    			},{
 	    				id:"crontab_schedule_validate_button", 	
 	    				view:"button", 
@@ -407,6 +431,8 @@ var crontabSchedulePopup = function(view,value){
 		    							// 이전 시간 값 설정
 		    							beforeDate=runDate;
 	    							})
+	    						} else {
+	    							webix.message({ type:"error", text:data.json().message });
 	    						}
 	    					});
 	    				}
@@ -418,7 +444,7 @@ var crontabSchedulePopup = function(view,value){
     					    $$(view).setValue($$("crontab_schedule_expression").getValue());
     					    $$("crontab_schedule_popup").hide();
 	    				}
-	    			}] //end cols
+	    			}] // end cols
 	    		},{
 		        	id:"crontab_schedule_list",
 		        	view:"datatable",
@@ -427,7 +453,7 @@ var crontabSchedulePopup = function(view,value){
 					resizeColumn:true,
 					columns:[
 						{ id:"crontab_schedule_next",	header:"다음 Crontab Schedule 리스트", width:300},
-						{ id:"crontab_schedule_gap",header:"시간 간격", width:200},
+						{ id:"crontab_schedule_gap",	header:"시간 간격", 					width:200},
             		],
 					data:[]
 	    		}]// end rows;

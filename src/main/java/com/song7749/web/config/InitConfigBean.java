@@ -187,7 +187,7 @@ public class InitConfigBean {
 				"select * from database",
 				SendMethod.EMAIL,
 				YN.Y,
-				"0 */5 * * * *",
+				"*/30 * * * * *",
 				db.getId(),
 				member.getId(),
 				memberIds);

@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.song7749.base.SendMethod;
@@ -61,6 +62,9 @@ public class IncidentAlarmTaskTest {
 
 	@Autowired
 	MailConfigRepository mailConfigRepository;
+
+	@Autowired
+	private SimpMessagingTemplate template;
 
 	/**
 	 * fixture
@@ -137,7 +141,8 @@ public class IncidentAlarmTaskTest {
 				dbClientManager,
 				incidentAlarm,
 				incidentAlarmRepository,
-				emailService);
+				emailService,
+				template);
 
 		task.run();
 
