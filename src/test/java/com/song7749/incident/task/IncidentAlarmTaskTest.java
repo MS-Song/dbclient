@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -63,8 +64,10 @@ public class IncidentAlarmTaskTest {
 	@Autowired
 	MailConfigRepository mailConfigRepository;
 
-	@Autowired
 	private SimpMessagingTemplate template;
+
+	@Autowired
+	ModelMapper mapper;
 
 	/**
 	 * fixture
@@ -142,7 +145,8 @@ public class IncidentAlarmTaskTest {
 				incidentAlarm,
 				incidentAlarmRepository,
 				emailService,
-				template);
+				template,
+				mapper);
 
 		task.run();
 

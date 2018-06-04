@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,12 +17,14 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import com.song7749.base.MessageVo;
 import com.song7749.base.SendMethod;
+import com.song7749.base.WebSocketMessageVo;
 import com.song7749.base.YN;
 import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.service.DBclientManager;
 import com.song7749.dbclient.value.ExecuteQueryDto;
 import com.song7749.incident.domain.IncidentAlarm;
 import com.song7749.incident.repository.IncidentAlarmRepository;
+import com.song7749.incident.value.IncidentAlarmVo;
 import com.song7749.mail.service.EmailService;
 import com.song7749.mail.value.MailMessageVo;
 
@@ -55,17 +58,21 @@ public class IncidentAlarmTask implements Runnable {
 
 	private SimpMessagingTemplate template;
 
+	ModelMapper mapper;
+
 	public IncidentAlarmTask(DBclientManager dbClientManager
 			, IncidentAlarm incidentAlarm
 			, IncidentAlarmRepository incidentAlarmRepository
 			, EmailService emailService
-			, SimpMessagingTemplate template) {
+			, SimpMessagingTemplate template
+			, ModelMapper mapper) {
 
 		this.dbClientManager=dbClientManager;
 		this.incidentAlarm=incidentAlarm;
 		this.incidentAlarmRepository=incidentAlarmRepository;
 		this.emailService=emailService;
 		this.template=template;
+		this.mapper=mapper;
 	}
 
 	public IncidentAlarm getIncidentAlarm() {
@@ -149,10 +156,10 @@ public class IncidentAlarmTask implements Runnable {
 		}
 
 		try {
-			MessageVo sendMessage = new MessageVo();
+			WebSocketMessageVo sendMessage = new WebSocketMessageVo();
 			sendMessage.setHttpStatus(isExecute ? HttpStatus.OK.value() : HttpStatus.INTERNAL_SERVER_ERROR.value());
-			sendMessage.setMessage(incidentAlarm.getSubject());
-			sendMessage.setContents(incidentAlarm.getId());
+			sendMessage.setMessage("Task Execute Run Finish");
+			sendMessage.setContents(mapper.map(incidentAlarm, IncidentAlarmVo.class));
 			sendMessage.setProcessTime(System.currentTimeMillis()-startTime);
 			template.convertAndSend("/topic/runAlarms", sendMessage);
 		} catch (Exception e) {

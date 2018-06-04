@@ -161,6 +161,20 @@ var modify_member_form = {
 	view:"form",
 	borderless:true,
 	elements: [
+ 		{margin:5, cols:[
+			{ id:"apikey", 				view:"text", 	label:'인증키', 	adjust:true,	name:"apikey"},
+			{ view:"button", 			value:"갱신" , 	type:"form", 	width:50, click:function(){
+				let formMember = $$('modify_member_form').getValues();
+				webix.ajax().put("/member/renewApiKey", {"loginId":formMember.loginId,"password":formMember.password}, function(text,data){
+					if(data.json().httpStatus ==200){
+						webix.message("인증키가 갱신되었습니다.");
+						$$('modify_member_form').setValues({apikey:data.json().contents.apikey},true);
+					} else { 
+						webix.message({ type:"error", text:data.json().message});
+					}
+				});
+			}}
+		]},
 		{ view:"text", type:"hidden",			name:"id",				height:0		},
 		{ view:"text", label:'로그인ID', 			name:"loginId",			readonly:true	},
 		{ view:"text", label:'패스워드', 			name:"password",		type:"password"	},
@@ -177,6 +191,7 @@ var modify_member_form = {
 					webix.message({ type:"error", text:"패스워드와 재입력한 패스워드가 다릅니다. 패스워드를 확인해주세요"});
 					return;
 				}
+				sendData.apikey = null;	// api key 는 넘기지 않는다.
 				webix.ajax().put("/member/modify", sendData, function(text,data){
 					if(data.json().httpStatus ==200){
 						member=data.json().contents;
@@ -217,6 +232,7 @@ var modify_member_popup = function(){
 
     //$$("modify_member_form").getFormView().getValues();
     $$("modify_member_form").setValues({
+    	apikey:member.apikey,
     	id:member.id,
     	loginId:member.loginId,
     	name:member.name,

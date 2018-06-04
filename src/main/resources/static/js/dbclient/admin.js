@@ -446,7 +446,7 @@ var adminModifyMemberPopup = function(memberId){
         		{margin:5, cols:[
         			{ id:"apikey", 				view:"text", 	label:'인증키', 	adjust:true,	name:"apikey"},
         			{ view:"button", 			value:"갱신" , 	type:"form", 	width:50, click:function(){
-        				var formMember = $$('admin_modify_member_form').getValues();
+        				let formMember = $$('admin_modify_member_form').getValues();
         				webix.ajax().put("/member/renewApiKeyByAdmin", {"loginId":formMember.loginId}, function(text,data){
         					if(data.json().httpStatus ==200){
         						webix.message("인증키가 갱신되었습니다.");
@@ -516,7 +516,9 @@ var adminModifyMemberPopup = function(memberId){
         					return;
         				}
         				// 회원정보 수정
-        				webix.ajax().put("/member/modifyByAdmin", this.getFormView().getValues(), function(text,data){
+
+        				sendData.apikey = null;
+        				webix.ajax().put("/member/modifyByAdmin", sendData, function(text,data){
         					if(data.json().httpStatus ==200){
         						webix.message("수정이 완료되었습니다.");
         						$$("admin_modify_member_popup").hide();
@@ -744,7 +746,8 @@ var adminSendMessagePopup = function(){
 					view:"button", 	
 					label:'전송',		 				
 					on:{"onItemClick":function(){
-						client.send("/app/send", {}, JSON.stringify({"httpStatus":200,"message":$$("admin_send_message_text").getValue()}));
+						client.send("/app/send", {}, JSON.stringify({"httpStatus":200,"message":$$("admin_send_message_text").getValue(),"senderApikey":member.apikey}));
+						webix.message("관리자 메세지가 전송되었습니다.");
 					}}
 				},
 				{ 
@@ -765,7 +768,7 @@ var adminSendMessagePopup = function(){
 /**
  * 관리자 메세지 수신
  */
-var adminRecieveMessagePopup = function(message){
+var adminRecieveMessagePopup = function(message,sender){
 	webix.ui({
 	    view:"window",
 	    id:"admin_recieve_message_popup",
@@ -784,6 +787,9 @@ var adminRecieveMessagePopup = function(message){
 		    	template: message.replace("\n","<br/>")
 	    	},{
 		    	view:"label",
+		    	label:"발신자: " + sender.loginId
+	    	},{
+		    	view:"label",
 		    	label:"수신시간  : " + formatDate(new Date())
 	    	}]
 	    }
@@ -799,15 +805,27 @@ webix.ready(function(){
 		client.connect({}, function (frame) {	// 연결
 			client.subscribe('/topic/recieve', function (message) {
 				let body = JSON.parse(message.body);
-				adminRecieveMessagePopup(body.message);
+				// 정상적인  상황이면 메세지 전송
+				if(body.httpStatus == 200) {
+					// 전송자 본인에게는 전송하지 않는다.
+					if(body.contents.id!=member.id){
+						adminRecieveMessagePopup(body.message,body.contents);					
+					}
+				} else {
+					if(body.contents.id==member.id){
+						// 에러 메세지를 관리자에게 출력
+						webix.message({ type:"error", text:data.json().message });
+					}
+				}
 	        });
 			if(undefined!=$$("incident_alarm_run_log")){
 				client.subscribe('/topic/runAlarms', function (message) {
 					let body = JSON.parse(message.body);
 					$$("incident_alarm_run_log").add({
 					 	"status"		: body.httpStatus == 200 ? "성공":"실패"	
-						,"id"			: body.contents
-						,"subject" 		: body.message
+						,"id"			: body.contents.id
+						,"subject" 		: body.contents.subject
+						,"confirmYN" 	: "Y"
 						,"processTime"	: body.processTime + ' ms'
 						,"time"			: body.date + ' ' + body.time
 					});	    

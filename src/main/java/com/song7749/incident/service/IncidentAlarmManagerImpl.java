@@ -362,7 +362,7 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 
 			ScheduledFuture<?> future = taskScheduler.schedule(
 					new IncidentAlarmTask(dbClientManager, incidentAlarm,
-							incidentAlarmRepository, emailService,template)
+							incidentAlarmRepository, emailService, template, mapper)
 					, new CronTrigger(incidentAlarm.getSchedule()));
 
 			taskMap.put(incidentAlarm.getId(), future);
@@ -419,9 +419,14 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		} else {
 			throw new IllegalArgumentException("알람정보가 일치하지 않습니다. id="+alarmId);
 		}
+		if(YN.Y.equals(incidentAlarm.getEnableYN())
+				&& YN.Y.equals(incidentAlarm.getConfirmYN())
+				&& !incidentAlarm.getSendMembers().isEmpty()) {
 
-		taskScheduler.getScheduledExecutor().execute(new IncidentAlarmTask(dbClientManager, incidentAlarm,
-				incidentAlarmRepository, emailService,template));
-		;
+			taskScheduler.getScheduledExecutor().execute(new IncidentAlarmTask(dbClientManager, incidentAlarm,
+				incidentAlarmRepository, emailService, template, mapper));
+		} else {
+			throw new IllegalArgumentException("승인되지 않았거나, 실행 가능 상태가 아닙니다. 또는 전달 대상자가 없습니다");
+		}
 	}
 }

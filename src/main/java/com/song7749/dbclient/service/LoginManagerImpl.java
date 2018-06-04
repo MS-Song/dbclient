@@ -150,28 +150,28 @@ public class LoginManagerImpl implements LoginManager{
 	@Override
 	public String getLoginID(HttpServletRequest request, HttpServletResponse response) {
 		// 인증키가 있는 경우
-		if(null!=request.getParameter("apiAuthkey")
-				&& !request.getParameter("apiAuthkey").isEmpty()) {
+		if(null!=request.getParameter("apikey")
+				&& !request.getParameter("apikey").isEmpty()) {
 			// 인증키를 가져온다.
-			String apiAuthkey = request.getParameter("apiAuthkey");
-			logger.debug(format("value : {} , size : {}","login apiAuthkey inifo"),apiAuthkey,apiAuthkey.length());
+			String apikey = request.getParameter("apikey");
+			logger.debug(format("value : {} , size : {}","login apikey inifo"),apikey,apikey.length());
 
 			// 인증 객체로 변경 한다.
 			LoginAuthVo lav = null;
 			try {
-				lav = (LoginAuthVo) ObjectJsonUtil.getObjectByJsonString(CryptoAES.decrypt(apiAuthkey),LoginAuthVo.class);
-				logger.debug(format("{}","Login apiAuthkey 복호화 완료"),lav);
+				lav = (LoginAuthVo) ObjectJsonUtil.getObjectByJsonString(CryptoAES.decrypt(apikey),LoginAuthVo.class);
+				logger.debug(format("{}","Login apikey 복호화 완료"),lav);
 			} catch (Exception e) {
-				throw new IllegalArgumentException("apiAuthkey 정보 복호화 실패. 관리자에게 문의 하시기 바랍니다.");
+				throw new IllegalArgumentException("apikey 정보 복호화 실패. 관리자에게 문의 하시기 바랍니다.");
 			}
 			// Login Session 도 생성 한다.
 			try {
 				if(!loginSession.isLogin()) {
-					logger.debug(format("{}","apiAuthkey Session create"),lav);
+					logger.debug(format("{}","apikey Session create"),lav);
 					loginSession.setSesseion(lav);
 				}
 			} catch (Exception e) {
-				logger.info(format("{}", "apiAuthkey Session Error Message"),e.getMessage());
+				logger.info(format("{}", "apikey Session Error Message"),e.getMessage());
 			}
 
 			// 인증에 대한 기록을 남겨야 하나 인증키 방식은 빈번함으로 별도의 프로세스가 필요 할 것으로 보임.
