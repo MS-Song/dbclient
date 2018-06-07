@@ -182,7 +182,7 @@ public class IncidentAlarmTask implements Runnable {
 
 		// 메일 내용이 있는 경우에는 추가 한다.
 		if(StringUtils.isNotBlank(incidentAlarm.getSendMessage())) {
-			sendMessageBuffer.append(incidentAlarm.getSendMessage());
+			sendMessageBuffer.append(incidentAlarm.getSendMessage().replace("\r\n", "<br/>"));
 		}
 
 		sendMessageBuffer.append("<table class=\"tg\">");

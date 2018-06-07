@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -37,7 +38,8 @@ import com.song7749.mail.service.EmailService;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ComponentScan({"com.song7749.dbclient"
-	,"com.song7749.incident"
+	,"com.song7749.incident.repository"
+	,"com.song7749.incident.task"
 	,"com.song7749.config"
 	,"com.song7749.mail"
 	,"com.song7749.log"})
@@ -64,6 +66,7 @@ public class IncidentAlarmTaskTest {
 	@Autowired
 	MailConfigRepository mailConfigRepository;
 
+	@Mock
 	private SimpMessagingTemplate template;
 
 	@Autowired
@@ -134,6 +137,7 @@ public class IncidentAlarmTaskTest {
 				member,
 				members);
 
+		incidentAlarm.setSendMessage("감사합니다.\r\n감사합니다.\r\n감사합니다.\r\n감사합니다.\r\n감사합니다.\r\n");
 		incidentAlarm.setConfirmYN(YN.Y);
 		incidentAlarm.setConfirmMember(member);
 		incidentAlarm.setConfirmDate(new Date(System.currentTimeMillis()));
