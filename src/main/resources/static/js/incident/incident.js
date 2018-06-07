@@ -153,8 +153,8 @@ var incident_alarm_popup = function(alarmItem){
 	    view:"window",
 	    id:"incident_alarm_popup",
 		width:950,
-// minHeight:600,
 		autoheight:true,
+		minHeight:400,
 	    position:"center",
 	    modal:true,
 	    head:(undefined==alarmItem ? "ADD" : "Modify")+" Incident Alarm",
@@ -163,7 +163,7 @@ var incident_alarm_popup = function(alarmItem){
 	    	view:"form",
 	    	borderless:true,
 	    	elements: [],
-// scroll:true,
+	    	scroll:"y",
 	    }
 	}).show();
 
@@ -186,8 +186,13 @@ var incident_alarm_form_creator = function(alarmItem){
 		// elements 객체 생성
 		$.each(formParams,function(index,param){
 			// 제외 문자열
-			if($.inArray(param.name,excludeParams) == -1) {		
-				elementsList.push(getFromView(param,true,false));
+			if($.inArray(param.name,excludeParams) == -1) {
+				// DB 선택을 맨 위로
+				if(param.name.toLowerCase().indexOf("databaseid") >=0){
+					elementsList.unshift(getFromView(param,true,false));
+				} else {
+					elementsList.push(getFromView(param,true,false));
+				}
 			}
 		});
 		// 신규 등록 버튼 추가

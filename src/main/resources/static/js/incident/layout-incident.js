@@ -16,6 +16,7 @@ webix.ready(function(){
 					}
 				},
 				{ id:"logo", view: "label", label: "Incident Alert"},
+				{ id:"toolbar_cache_remove"},
 				{ id:"menu_right_icon", view: "icon", icon: "bars", click: function(){
 						if( $$("menu_right").config.hidden) 
 							$$("menu_right").show();

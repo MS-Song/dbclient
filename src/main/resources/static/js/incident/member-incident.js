@@ -21,7 +21,28 @@ webix.ready(function(){
 			// 에러처리
 			errorControll(data.json());
 		}
-	});			
+	});	
+	
+	// 캐시 삭제 버튼 추가
+	// 캐시 삭제 버튼을 노출 한다.
+	$$("toolbar").addView({id:"toolbar_cache_remove",
+		view:"button", 
+		value:"Refresh Schema" , 
+		type:"form",
+		width:200,
+		align:"right",
+		on:{"onItemClick":function(){// 캐시 삭제 실행 
+			// local storage 의 캐시먼저 
+			webix.storage.local.clear();
+			webix.message("캐시 삭제가 완료 되었습니다.");
+			webix.ajax().get("/database/deleteCache", function(text,data){
+				if(data.json().httpStatus !=200){
+					webix.message({ type:"error", text:data.json().message});
+				}
+			});
+		}}
+	},3);
+
 });
 
 // 회원 검색 
@@ -59,7 +80,12 @@ var member_list_popup = function(view,multi){
     					placeholder:'loginId search',		
     					name:"loginId",			
     					on:{"onKeyPress":function(key,e){// 검색 실행
-    						if(key==13) loadMemberList(view);
+    						if(key==13) {
+    							// 페이지 초기화
+    						    $$('member_search_page').setValue(0);
+    						    $$("member_list_page").config.page=0;
+    							loadMemberList(view);
+    						}
     					}}
     				},
     				{ 
@@ -68,7 +94,12 @@ var member_list_popup = function(view,multi){
     					placeholder:'name search',		
     					name:"name",			
     					on:{"onKeyPress":function(key,e){// 검색 실행
-    						if(key==13) loadMemberList(view);
+    						if(key==13) {
+    							// 페이지 초기화
+    						    $$('member_search_page').setValue(0);
+    						    $$("member_list_page").config.page=0;
+    							loadMemberList(view);
+    						}
     					}}
     				},
     				{ 
@@ -77,7 +108,12 @@ var member_list_popup = function(view,multi){
     					placeholder:'team name search',		
     					name:"teamName",			
     					on:{"onKeyPress":function(key,e){// 검색 실행
-    						if(key==13) loadMemberList(view);
+    						if(key==13) {
+    							// 페이지 초기화
+    						    $$('member_search_page').setValue(0);
+    						    $$("member_list_page").config.page=0;
+    							loadMemberList(view);
+    						}
     					}}
     				},
 					{ 
@@ -85,7 +121,12 @@ var member_list_popup = function(view,multi){
     					view:"button", 	
     					label:'검색',		 				
     					on:{"onItemClick":function(){
-    						loadMemberList(view);
+    						if(key==13) {
+    							// 페이지 초기화
+    						    $$('member_search_page').setValue(0);
+    						    $$("member_list_page").config.page=0;
+    							loadMemberList(view);
+    						}
     					}}
 					},
 					{ 
@@ -109,11 +150,11 @@ var member_list_popup = function(view,multi){
 	        	view:"dbllist",
 	        	list:{ 
 					autowidth:true,
-					height:300,
+					height:400,
 	        		scroll:true 
 	        	},
-	            labelBottomLeft:"회원리스트",
-	            labelBottomRight:"대상자리스트",
+	            labelLeft:"회원리스트",
+	            labelRight:"대상자리스트",
 				data:[]
         	},{
         		cols : [{ // 페이지를 가운데 두기 위해 앞뒤로 처리
@@ -148,9 +189,10 @@ var loadMemberList = function(view){
 			$$("member_list_page").config.size=data.json().contents.size;
 			$$("member_list_page").config.count=data.json().contents.totalElements;
 			$$("member_list_page").refresh();
-	
+
+			$$("member_list_view").$$("left").clearAll();
     		$$("member_list_view").parse(convertMemberList(data.json().contents.content));
-    		
+
     		// 이미 선택된 회원을 조회해서 right 에 넣는다.
     		if(""!=$$(view).getValue().trim()
     				&& $$(view).getValue().trim().length>0){
@@ -163,15 +205,11 @@ var loadMemberList = function(view){
     				webix.ajax().get("/member/list", {ids:$$(view).getValue()} , function(text,data){
     					if(data.json().httpStatus == 200 
     							&& null!=data.json().contents){
-
     						$$("member_list_view").parse(convertMemberList(data.json().contents.content));    					
     					}
-    					
     				});
     			}
     		}
-    		
-    		
 		} else {
 			webix.message({ type:"error", text:data.json().message});
 		}  

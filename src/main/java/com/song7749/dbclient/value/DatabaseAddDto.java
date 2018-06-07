@@ -12,7 +12,7 @@ import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("데이터베이스 입력 모델")
 public class DatabaseAddDto  extends AbstractDto {
@@ -21,43 +21,42 @@ public class DatabaseAddDto  extends AbstractDto {
 
 	@Length(max=120)
 	@NotBlank
-	@ApiParam(value="Database Host Name (IP Adress OR Domain)"
+	@ApiModelProperty(value="Database Host Name (IP Adress OR Domain)"
 				,example="127.0.0.1 or db.song7749.com, if embaded database (EX h2, sqlite) is file-path"
 				,required=true)
 	private String host;
 
 	@Length(max=120)
 	@NotBlank
-	@ApiParam(value="Database Host Alias"
+	@ApiModelProperty(value="Database Host Alias"
 				,example=" XXX Service Test / XXX Service Production ... ENV Config"
 				,required=true)
 	private String hostAlias;
 
 	@Length(max=120)
-	@ApiParam(value="Database Schema(Mysql), SID(Oracle)..., if embaded database is skip.")
+	@ApiModelProperty(value="Database Schema(Mysql), SID(Oracle)..., if embaded database is skip.")
 	private String schemaName;
 
 	@Length(max=60)
 	@NotBlank
-	@ApiParam(value="Database Account" ,required=true)
+	@ApiModelProperty(value="Database Account" ,required=true)
 	private String account;
 
-	@ApiParam(value="Database Password"
-			,example="if database password not set, it input valuse is null or empty."
-			,format="password")
+	@ApiModelProperty(value="Database Password"
+			,example="if database password not set, it input valuse is null or empty.")
 	private String password;
 
 	@Enumerated(EnumType.STRING)
 	@NotNull
-	@ApiParam(value="Database Driver Selection",required=true)
+	@ApiModelProperty(value="Database Driver Selection",required=true)
 	private DatabaseDriver driver;
 
 	@Enumerated(EnumType.STRING)
 	@NotNull
-	@ApiParam(value="Database Connnect Charicter Set",required=true)
+	@ApiModelProperty(value="Database Connnect Charicter Set",required=true)
 	private Charset charset;
 
-	@ApiParam(value="Database Connect Port"
+	@ApiModelProperty(value="Database Connect Port"
 			,example="if embaded file database (EX H2, sqlite) is null or empty input.")
 	private String port;
 

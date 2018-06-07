@@ -282,37 +282,85 @@ var getDataParseTextarea = function(url,parmeters,viewName,returnValueName){
  */
 var getDataParseProperty = function(url,parmeters,viewName){
 	webix.ajax().get(url,parmeters, 
-			function(text,data){
-//				console.log(data.json());
-				if(data.json().httpStatus ==200 
-						&& null!=data.json().contents){
+		function(text,data){
+			if(data.json().httpStatus ==200 
+					&& null!=data.json().contents){
 
-					var contents = null;
-					if(undefined!=data.json().contents.content){ //page 구조
-						contents=data.json().contents.content;
-					} else { //일반
-						contents=data.json().contents;
-					}
-					
-					var elementList=[];
-					var valueList={};
-					$.each(contents,function(index, obj){
-						var loop=0
-						$.each(obj,function(name,value){
-							elementList.push({"label":name,type:"text","id":name,width:300})
-							valueList[name]=value;
-							
-						})
-					});
-					$$(viewName).define("elements",elementList);
-					$$(viewName).setValues(valueList);
-					$$(viewName).refresh();
-				} else {
-					errorControll(data.json());
+				var contents = null;
+				if(undefined!=data.json().contents.content){ //page 구조
+					contents=data.json().contents.content;
+				} else { //일반
+					contents=data.json().contents;
 				}
+				
+				var elementList=[];
+				var valueList={};
+				$.each(contents,function(index, obj){
+					var loop=0
+					$.each(obj,function(name,value){
+						elementList.push({"label":name,type:"text","id":name,width:300})
+						valueList[name]=value;
+						
+					})
+				});
+				$$(viewName).define("elements",elementList);
+				$$(viewName).setValues(valueList);
+				$$(viewName).refresh();
+			} else {
+				errorControll(data.json());
 			}
-		);
-	};
+		}
+	);
+};
+
+/** 
+ * 자동완성 테이블/필드 데이터 로딩
+ * 1 초 이후에 실행 한다. 대량의 데이터가 들어 올 위험이 있다. 
+ */
+var database_query_all_field_load = function(databaseId){
+	if(undefined==databaseId){
+		databaseId=database.id;
+	}
+	
+	var	cachedList = webix.storage.local.get("database_"+databaseId+"_autoComplete");
+	// cache 에 데이터가 존재하면 캐시의 데이터를 노출한다.
+	if(null != cachedList){
+		autoCompleteAddTablesReset();
+		$.each(cachedList,function(objIndex){
+			autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
+		});
+	} else {
+		setTimeout(function(){
+			// 테이블_필드 리스트 조회
+			autoCompleteAddTablesReset();
+			if(null!=database.id){
+				webix.ajax().get("/database/getAllFieldList",database, 
+					function(text,data){
+						if(data.json().httpStatus ==200 && null!=data.json().contents){
+							let obj = data.json().contents;
+								// 정렬
+								obj.sort(function(a,b){
+									return(a.tableName < b.tableName) ? -1 : (a.tableName > b.tableName) ? 1 : 0;
+								});
+								
+								$.each(obj,function(objIndex){
+									autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
+								});
+								try {
+									webix.storage.local.put("database_"+databaseId+"_autoComplete",obj);	
+								} catch (e) {
+									// 캐시에 저장 실패
+								}
+								
+						} else {
+							errorControll(data.json());
+						}
+					}
+				);
+			}		
+		},1000);	
+	}
+};
 
 //자동완성 데이터 저장 (all Table)
 var autoCompleteAddTablesAll = function(tableName,columnName,columnComment){
@@ -504,9 +552,10 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 				view:"textarea",
 				label:leftDescription, 
 				labelWidth:150,
-				height:60,
+				height:100,
 				adjust:true,
 				name:param.name,
+				readonly:true,
 				disabled:isDisable,
 				on:{"onItemClick":function(view,e){ // query popup 창 추가
 					// 검색 창에서는 실행이 불가능하다.
@@ -517,7 +566,18 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 					}
 				}}						
 		};		
-	} else if(param.name.indexOf("schedule") >= 0 ){
+	} else if(param.name.toLowerCase().indexOf("sendmessage") >=0 ){
+		viewElement={ 
+				view:"textarea",
+				label:leftDescription, 
+				labelWidth:150,
+				height:100,
+				adjust:true,
+				name:param.name,
+				disabled:isDisable
+		};		
+	} 
+	else if(param.name.toLowerCase().indexOf("schedule") >= 0 ){
 		viewElement={ 
 				view:"text",
 				label:leftDescription, 
@@ -565,7 +625,8 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 	if(isRightDescription){
 		viewElement = {cols:[viewElement,{
 	    	view: "label",
-			label: rightDescription,
+	    	template: "<span>"+rightDescription+"</span>",
+			maxWidth: 300,
 			adjust:true
 		}]}
 	}

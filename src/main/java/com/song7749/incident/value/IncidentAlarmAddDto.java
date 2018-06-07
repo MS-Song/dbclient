@@ -36,6 +36,10 @@ public class IncidentAlarmAddDto extends AbstractDto {
 	@Length(max = 8000)
 	private String runSql;
 
+	@ApiModelProperty(required=true,position=3,value="본문내용 || 실행 SQL은 표형식 입니다. 상단에 표기할 메세지를 기록하세요. EX) 안녕하세요 XXX 입니다.등")
+	@Length(max = 8000)
+	private String sendMessage;
+
 	@ApiModelProperty(required=true,position=4,value="알람 방법 || EMAIL or SMS[MMS]")
 	@NotNull
 	@Enumerated(EnumType.STRING)
@@ -50,7 +54,7 @@ public class IncidentAlarmAddDto extends AbstractDto {
 	@NotBlank
 	private String schedule;
 
-	@ApiModelProperty(required=true,position=7,value="데이터베이스 || 실행할 데이터베이스를 선택")
+	@ApiModelProperty(required=true,position=0,value="데이터베이스 || 실행할 데이터베이스를 선택")
 	@NotNull
 	private Long databaseId;
 
@@ -112,6 +116,14 @@ public class IncidentAlarmAddDto extends AbstractDto {
 
 	public void setRunSql(String runSql) {
 		this.runSql = runSql;
+	}
+
+	public String getSendMessage() {
+		return sendMessage;
+	}
+
+	public void setSendMessage(String sendMessage) {
+		this.sendMessage = sendMessage;
 	}
 
 	public SendMethod getSendMethod() {

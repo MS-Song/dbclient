@@ -3,6 +3,8 @@ package com.song7749.web;
 import static com.song7749.util.LogMessageFormatter.format;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,9 +23,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.song7749.base.MessageVo;
+import com.song7749.base.YN;
 import com.song7749.dbclient.annotation.Login;
 import com.song7749.dbclient.service.DBclientManager;
 import com.song7749.dbclient.service.DatabaseManager;
@@ -35,9 +39,14 @@ import com.song7749.dbclient.type.DatabaseDriver;
 import com.song7749.dbclient.value.DatabaseAddDto;
 import com.song7749.dbclient.value.DatabaseFindDto;
 import com.song7749.dbclient.value.DatabaseModifyDto;
+import com.song7749.dbclient.value.DatabasePrivacyPolicyAddDto;
+import com.song7749.dbclient.value.DatabasePrivacyPolicyFindDto;
+import com.song7749.dbclient.value.DatabasePrivacyPolicyModifyDto;
+import com.song7749.dbclient.value.DatabasePrivacyPolicyVo;
 import com.song7749.dbclient.value.DatabaseRemoveDto;
 import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.dbclient.value.MemberDatabaseFindDto;
+import com.song7749.util.StringUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -130,5 +139,66 @@ public class DatabaseController {
 	@ApiOperation(value = "Charset 조회", response=Charset.class)
 	public Charset[] getCharset(HttpServletRequest request, HttpServletResponse response){
 		return Charset.values();
+	}
+
+	@PostMapping("/addDatabasePrivacyPolicy")
+	@ApiOperation(value = "데이터베이스 개인정보 식별 입력", response = DatabasePrivacyPolicyVo.class)
+	@Login({ AuthType.ADMIN })
+	public MessageVo addDatabasePrivacyPolicy(HttpServletRequest request, HttpServletResponse response,
+			@Valid @ModelAttribute DatabasePrivacyPolicyAddDto dto) {
+		return new MessageVo(HttpServletResponse.SC_OK, 1, databaseManager.addDatabasePrivacyPolicy(dto), "Database 개인정보 식별 정보가 저장 되었습니다.");
+	}
+
+	@PostMapping("/addOrModifyDatabasePrivacyPolicy")
+	@ApiOperation(value = "데이터베이스 개인정보 식별 입력 또는 수정 일괄 처리", response = DatabasePrivacyPolicyVo.class)
+	@Login({ AuthType.ADMIN })
+	public MessageVo addOrModifyDatabasePrivacyPolicy(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(required=true) Long databaseId,
+			@RequestParam(required=true) String[] databaseTableColumns) {
+
+		List<DatabasePrivacyPolicyAddDto> list = new ArrayList<DatabasePrivacyPolicyAddDto>();
+		if(null!=databaseTableColumns) {
+			for(String tableColumnString : databaseTableColumns) {
+				if(!StringUtils.isBlank(tableColumnString)) {
+					String[] tc=tableColumnString.split("\\.");
+					list.add(new DatabasePrivacyPolicyAddDto(
+							tc[0],
+							tc[1],
+							YN.Y,
+							"",
+							databaseId));
+				}
+			}
+		}
+		databaseManager.addOrModifyDatabasePrivacyPolicyFasade(list);
+		return new MessageVo(HttpServletResponse.SC_OK, 1, "Database 개인정보 식별 정보가 저장 되었습니다.");
+	}
+
+
+	@PutMapping("/modifyDatabasePrivacyPolicy")
+	@ApiOperation(value = "데이터베이스 개인정보 식별  수정", response = DatabasePrivacyPolicyVo.class)
+	@Login({ AuthType.ADMIN })
+	public MessageVo modifyDatabasePrivacyPolicy(HttpServletRequest request, HttpServletResponse response,
+			@Valid @ModelAttribute DatabasePrivacyPolicyModifyDto dto) {
+		return new MessageVo(HttpServletResponse.SC_OK, 1, databaseManager.modifyDatabasePrivacyPolicy(dto), "Database 개인정보 식별 정보가  저장 되었습니다.");
+	}
+
+	@DeleteMapping("/removeDatabasePrivacyPolicy")
+	@ApiOperation(value = "데이터베이스 개인정보 식별  삭제", response = MessageVo.class)
+	@Login({ AuthType.ADMIN })
+	public MessageVo removeDatabasePrivacyPolicy(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(required=true) Long id) {
+		databaseManager.removeDatabasePrivacyPolicy(id);
+		return new MessageVo(HttpServletResponse.SC_OK , 1, "Database 개인정보 식별 정보가  삭제 되었습니다.");
+	}
+
+	@GetMapping("/findDatabasePrivacyPolicyList")
+	@ApiOperation(value = "데이터베이스 개인정보 식별  조회", response = DatabasePrivacyPolicyVo.class)
+	@Login({AuthType.ADMIN })
+	public Page<DatabasePrivacyPolicyVo> findDatabasePrivacyPolicyList(HttpServletRequest request, HttpServletResponse response,
+			@Valid @ModelAttribute DatabasePrivacyPolicyFindDto dto,
+			@PageableDefault(page=0, size=500, direction=Direction.DESC, sort="id")
+			Pageable page){
+		return databaseManager.findDatabasePrivacyPolicyList(dto, page);
 	}
 }

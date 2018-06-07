@@ -10,7 +10,9 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 import com.song7749.base.AbstractDto;
 import com.song7749.dbclient.type.Charset;
 
+import io.swagger.annotations.ApiModel;
 
+@ApiModel("데이터베이스 정보 수정 객체")
 public class DatabaseModifyDto  extends AbstractDto {
 
 	private static final long serialVersionUID = -6233451074229529873L;

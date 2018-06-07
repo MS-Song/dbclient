@@ -79,6 +79,10 @@ public class IncidentAlarm  extends Entities {
 	@Column(nullable = false)
 	private String runSql;
 
+	@Length(max = 8000)
+	@Column(nullable = true)
+	private String sendMessage;
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(nullable=false)
@@ -96,7 +100,6 @@ public class IncidentAlarm  extends Entities {
 	@NotBlank
 	@Column(nullable = false)
 	private String schedule;
-
 
 	@CreationTimestamp
 	@Column(nullable = true)
@@ -214,6 +217,14 @@ public class IncidentAlarm  extends Entities {
 
 	public void setRunSql(String runSql) {
 		this.runSql = runSql;
+	}
+
+	public String getSendMessage() {
+		return sendMessage;
+	}
+
+	public void setSendMessage(String sendMessage) {
+		this.sendMessage = sendMessage;
 	}
 
 	public SendMethod getSendMethod() {

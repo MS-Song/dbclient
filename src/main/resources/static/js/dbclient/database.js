@@ -93,6 +93,7 @@ var select_database_popup=function(){
 	    			);
 	    			// 설정 정보 저장
 	    			database=selectedRow;
+	    			console.log(database);
 	    			selectedRow.selected="선택";
 	    			// 입력한 값을 재 로딩 한다.
 	    			$$("select_database_loader").refresh();
@@ -1594,59 +1595,12 @@ var database_query_favorities_view_load = function(){
 			"database_query_favorities_view",false,false,false);
 }; 
 
-/** 
- * 자동완성 테이블/필드 데이터 로딩
- * 1 초 이후에 실행 한다. 대량의 데이터가 들어 올 위험이 있다. 
- */
-var database_query_all_field_load = function(){
-	var	cachedList = webix.storage.local.get(JSON.stringify(database, null, 2)+"_autoComplete");
-	// cache 에 데이터가 존재하면 캐시의 데이터를 노출한다.
-	if(null != cachedList){
-		autoCompleteAddTablesReset();
-		$.each(cachedList,function(objIndex){
-			autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
-		});
-	} else {
-		setTimeout(function(){
-			// 테이블_필드 리스트 조회
-			autoCompleteAddTablesReset();
-			if(null!=database.id){
-				webix.ajax().get("/database/getAllFieldList",database, 
-					function(text,data){
-						if(data.json().httpStatus ==200 && null!=data.json().contents){
-							var obj = data.json().contents;
-								// 정렬
-								obj.sort(function(a,b){
-									return(a.tableName < b.tableName) ? -1 : (a.tableName > b.tableName) ? 1 : 0;
-								});
-								
-								$.each(obj,function(objIndex){
-									autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
-								});
-								try {
-									webix.storage.local.put(JSON.stringify(database, null, 2)+"_autoComplete",obj);	
-								} catch (e) {
-									// 캐시에 저장 실패
-								}
-								
-						} else {
-							errorControll(data.json());
-						}
-					}
-				);
-			}		
-		},1000);	
-	}
-};
-
 //에디터 창의 내용을 주기적으로 저장 한다.
 var intervalSaveEditor = setInterval(function(){
 	var editorValue = $$("database_query_input").getEditor().getValue();
 	var PLSQL = $$("database_query_develop_mode").getValue();
 	webix.storage.local.put("dbclient_local_editor_save_"+PLSQL,editorValue);
 },20000); 
-
-
 
 // 저장되어 있는 데이터의 내용을 조회 한다.
 var findEditorContents = function(){

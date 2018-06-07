@@ -262,18 +262,27 @@ public class MemberFindDto extends AbstractDto implements Specification<Member> 
 		}
 
 		if(!StringUtils.isEmpty(name)) {
-			p.getExpressions()
-				.add(cb.like(root.<String>get("name"),  "%" + name + "%"));
+			if(Compare.LIKE.equals(nameCompare)) {
+				p.getExpressions().add(cb.like(root.<String>get("name"),  "%" + name + "%"));
+			} else {
+				p.getExpressions().add(cb.equal(root.<String>get("name"), name));
+			}
 		}
 
 		if(!StringUtils.isEmpty(teamName)) {
-			p.getExpressions()
-				.add(cb.like(root.<String>get("teamName"),  "%" + teamName + "%"));
+			if(Compare.LIKE.equals(teamNameCompare)) {
+				p.getExpressions().add(cb.like(root.<String>get("teamName"),  "%" + teamName + "%"));
+			} else {
+				p.getExpressions().add(cb.equal(root.<String>get("teamName"), teamName));
+			}
 		}
 
 		if(!StringUtils.isEmpty(loginId)) {
-			p.getExpressions()
-				.add(cb.like(root.<String>get("loginId"),  "%" + loginId + "%"));
+			if(Compare.LIKE.equals(loginIdCompare)) {
+				p.getExpressions().add(cb.like(root.<String>get("loginId"),  "%" + loginId + "%"));
+			} else {
+				p.getExpressions().add(cb.equal(root.<String>get("loginId"), loginId));
+			}
 		}
 
 		return p;

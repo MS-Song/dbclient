@@ -105,6 +105,11 @@ var adminDatabaseListPopup = function(){
 			$$("admin_database_list_view").config.columns[loop+1].header = "삭제";
 			$$("admin_database_list_view").config.columns[loop+1].adjust = true;
 			$$("admin_database_list_view").config.columns[loop+1].template='<input type="button" value="삭제" style="width:40px;" onClick="adminDeleteDatabase(#id#);"/>',
+			$$("admin_database_list_view").config.columns[loop+2]={};
+			$$("admin_database_list_view").config.columns[loop+2].id = "database_privacy_policy_popup";
+			$$("admin_database_list_view").config.columns[loop+2].header = "개인정보";
+			$$("admin_database_list_view").config.columns[loop+2].adjust = true;
+			$$("admin_database_list_view").config.columns[loop+2].template='<input type="button" value="정의" style="width:60px;" onClick="adminDatabasePrivacyPolicyPopup(#id#);"/>',
 			
 			// 관리자 메뉴 추가 종료
 			$$("admin_database_list_view").refreshColumns();
@@ -295,13 +300,154 @@ var adminDeleteDatabase = function(databaseId){
 		}
 	});
 };
+
+// 개인정보 정의  팝업
+var adminDatabasePrivacyPolicyPopup = function(databaseId){
+	webix.ui({
+        view:"window",
+        id:"admin_database_privacy_policy_popup",
+        width:1000,
+        position:"center",
+        modal:true,
+        head:{
+        	view:"button",value:"데이터베이스 개인정보 정의 닫기" , click:function(){
+        		$$("admin_database_privacy_policy_popup").hide();
+        	},hotkey: "esc"
+    	},
+        body:{
+        	rows:[{ // 검색 조건
+        		cols:[{
+        			view:"text", 
+        			id:"admin_database_privacy_policy_left_table_filter",
+        			placeholder:"테이블 검색"
+        		},
+        		{
+           			view:"text", 
+        			id:"admin_database_privacy_policy_left_column_filter",
+        			placeholder:"컬럼 검색",
+        		},
+        		{
+					view:"button", value:"저장", click:function(){
+						let databaseTableColumns=$$("admin_database_privacy_policy_list_view").getValue();
+						webix.ajax().post("/database/addOrModifyDatabasePrivacyPolicy", {databaseId:databaseId,databaseTableColumns:databaseTableColumns}, function(text,data){
+							if(data.json().httpStatus==200){
+								webix.message(data.json().message);
+								//$$("admin_database_privacy_policy_popup").hide();
+							} else {
+								webix.message({ type:"error", text:data.json().message });
+							}
+						});
+					}	
+        		},{
+        			// 테스트 - 운영 데이터 동기화를 위한 복제 기능 - 추후 개발
+        			
+        		}] // end colse
+        	},
+        	{	// 리스트
+	        	id:"admin_database_privacy_policy_list_view",
+	        	view:"dbllist",
+	        	list:{ 
+					autowidth:true,
+					height:400,
+	        		scroll:true,
+	        		tooltip:function(obj, common){
+	        			return "[" + obj.id  + "] " + obj.obj.comment;
+				    }
+	        	},
+	        	labelLeft:"Database List",
+	        	labelRight:"Database Privacy Policy List",
+				data:[]
+        	}] // end rows
+       	}
+	}).show();
+	// 데이터 로딩
+	loadDatabasePrivacyPolicy(databaseId);
 	
+	// 검색 필터 이벤트부여
+   $$("admin_database_privacy_policy_left_table_filter").attachEvent("onTimedKeyPress",function(){
+        let value = this.getValue().toLowerCase();
+        $$("admin_database_privacy_policy_list_view").$$("left").filter(function(obj){
+            return obj.obj.tableName.toLowerCase().indexOf(value)>=0;
+        })
+    });
+	// 검색 필터 이벤트부여
+   $$("admin_database_privacy_policy_left_column_filter").attachEvent("onTimedKeyPress",function(){
+        let value = this.getValue().toLowerCase();
+        $$("admin_database_privacy_policy_list_view").$$("left").filter(function(obj){
+            return obj.obj.columnName.toLowerCase().indexOf(value)>=0;
+        })
+    });
+}
+
+// 테이블 데이터 로딩
+var loadDatabasePrivacyPolicy = function(databaseId){
+	// 데이터 로딩
+	let	cachedList = webix.storage.local.get("database_"+databaseId+"_autoComplete");
+	// cache 에 데이터가 존재하면 캐시의 데이터를 노출한다.
+	if(null != cachedList){
+		convertDatabasePrivacyPolicy(cachedList,databaseId);
+		// 데이터 넣기
+	} else {
+		webix.ajax().get("/database/getAllFieldList",{id:databaseId},function(text,data){
+				if(data.json().httpStatus ==200 && null!=data.json().contents){
+					let obj = data.json().contents;
+					// 정렬
+					obj.sort(function(a,b){
+						return(a.tableName < b.tableName) ? -1 : (a.tableName > b.tableName) ? 1 : 0;
+					});
+					// 데이터 입력
+					convertDatabasePrivacyPolicy(data.json().contents,databaseId);
+					// 캐시
+					try {
+						webix.storage.local.put("database_"+databaseId+"_autoComplete",obj);	
+					} catch (e) {}
+				} else {
+					errorControll(data.json());
+				}
+			}
+		);
+	}
+};
+
+// 테이블데이터 생성
+var convertDatabasePrivacyPolicy = function(data,databaseId){
+	let databaseTableList = [];
+	$.each(data,function(key,val){
+		databaseTableList.push({id:val.tableName+'.'+val.columnName,value:"["+val.tableName+"] "+val.columnName,obj:val});
+	});
+	$$("admin_database_privacy_policy_list_view").$$("left").clearAll();
+	$$("admin_database_privacy_policy_list_view").parse(databaseTableList);
+	
+	// 이미 선택 중인 데이터를 읽어서 right 에 넣는다.
+	webix.ajax().get("/database/findDatabasePrivacyPolicyList",{databaseId:databaseId},function(text,data){
+		if(data.json().httpStatus ==200 
+				&& null!=data.json().contents){
+			let obj = data.json().contents.content;
+			// 정렬
+			obj.sort(function(a,b){
+				return(a.tableName < b.tableName) ? -1 : (a.tableName > b.tableName) ? 1 : 0;
+			});
+			// 데이터를 넣기 위한 가공 처리
+			let databasePrivacySetValue = []
+			$.each(obj,function(key,val){
+				databasePrivacySetValue.push(val.tableName+'.'+val.fieldName);
+			});
+			if(databasePrivacySetValue.length>0){
+				$$("admin_database_privacy_policy_list_view").setValue(databasePrivacySetValue.join(","));				
+			}
+		} else {
+			errorControll(data.json());
+		}
+	});
+}
+
 // 회원 리스트 팝업
 var adminMemberListPopup = function(){
 	webix.ui({
         view:"window",
         id:"admin_member_list_popup",
         autowidth:true,
+		autoheight:true,
         position:"center",
         modal:true,
         head:{
@@ -363,7 +509,7 @@ var adminMemberListPopup = function(){
     			}] // end elements
         	},        	      
         	{
-	        	id:"admin_member_list_view",
+        		id:"admin_member_list_view",
 	        	view:"datatable",
 	        	columns:[
 	        		{id:"id", 					header:"Member No",		adjust:true, sort:"int" 	},
@@ -383,7 +529,9 @@ var adminMemberListPopup = function(){
 				select:"row",
 				resizeColumn:true,
 				autowidth:true,
-				autoheight:true,
+				//autoheight:true,
+				height:500,
+            	scroll:"y",
 				data:[]
         	},{
         		cols : [{},{ // 페이지를 가운데 두기 위해 앞뒤로 처리
@@ -652,7 +800,6 @@ var adminConfigMailServerPopup = function(){
 };
 
 
-
 //메일 환경 설정 form 생성
 var adminConfigMailServerForm = function(){
 	// path 기록
@@ -799,37 +946,37 @@ var adminRecieveMessagePopup = function(message,sender){
 let sock;
 let client;
 webix.ready(function(){
-		sock = new SockJS("/alarm");			// sock 생성
-		client = Stomp.over(sock);				// client 호출
-		client.debug = null						// debug off
-		client.connect({}, function (frame) {	// 연결
-			client.subscribe('/topic/recieve', function (message) {
-				let body = JSON.parse(message.body);
-				// 정상적인  상황이면 메세지 전송
-				if(body.httpStatus == 200) {
-					// 전송자 본인에게는 전송하지 않는다.
-					if(body.contents.id!=member.id){
-						adminRecieveMessagePopup(body.message,body.contents);					
-					}
-				} else {
-					if(body.contents.id==member.id){
-						// 에러 메세지를 관리자에게 출력
-						webix.message({ type:"error", text:data.json().message });
-					}
+	sock = new SockJS("/alarm");			// sock 생성
+	client = Stomp.over(sock);				// client 호출
+	client.debug = null						// debug off
+	client.connect({}, function (frame) {	// 연결
+		client.subscribe('/topic/recieve', function (message) {
+			let body = JSON.parse(message.body);
+			// 정상적인  상황이면 메세지 전송
+			if(body.httpStatus == 200) {
+				// 전송자 본인에게는 전송하지 않는다.
+				if(body.contents.id!=member.id){
+					adminRecieveMessagePopup(body.message,body.contents);					
 				}
-	        });
-			if(undefined!=$$("incident_alarm_run_log")){
-				client.subscribe('/topic/runAlarms', function (message) {
-					let body = JSON.parse(message.body);
-					$$("incident_alarm_run_log").add({
-					 	"status"		: body.httpStatus == 200 ? "성공":"실패"	
-						,"id"			: body.contents.id
-						,"subject" 		: body.contents.subject
-						,"confirmYN" 	: "Y"
-						,"processTime"	: body.processTime + ' ms'
-						,"time"			: body.date + ' ' + body.time
-					});	    
-				});
+			} else {
+				if(body.contents.id==member.id){
+					// 에러 메세지를 관리자에게 출력
+					webix.message({ type:"error", text:data.json().message });
+				}
 			}
-		 });		
+        });
+		if(undefined!=$$("incident_alarm_run_log")){
+			client.subscribe('/topic/runAlarms', function (message) {
+				let body = JSON.parse(message.body);
+				$$("incident_alarm_run_log").add({
+				 	"status"		: body.httpStatus == 200 ? "성공":"실패"	
+					,"id"			: body.contents.id
+					,"subject" 		: body.contents.subject
+					,"confirmYN" 	: "Y"
+					,"processTime"	: body.processTime + ' ms'
+					,"time"			: body.date + ' ' + body.time
+				});	    
+			});
+		}
+	 });		
 });

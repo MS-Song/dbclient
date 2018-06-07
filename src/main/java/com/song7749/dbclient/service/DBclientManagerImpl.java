@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,8 @@ import org.springframework.stereotype.Service;
 
 import com.song7749.base.MessageVo;
 import com.song7749.dbclient.domain.Database;
+import com.song7749.dbclient.domain.DatabasePrivacyPolicy;
+import com.song7749.dbclient.repository.DatabasePrivacyPolicyRepository;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.type.DatabaseDriver;
 import com.song7749.dbclient.value.DatabaseAddDto;
@@ -72,6 +75,9 @@ public class DBclientManagerImpl implements DBclientManager {
 
 	@Autowired
 	DatabaseRepository databaseRepository;
+
+	@Autowired
+	DatabasePrivacyPolicyRepository dppRepository;
 
 	@Autowired
 	LogManager logManager;
@@ -121,7 +127,6 @@ public class DBclientManagerImpl implements DBclientManager {
 			hDataSource.addDataSourceProperty("prepStmtCacheSize", "250");
 			hDataSource.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 			hDataSource.setPoolName(database.getHost() + "[" + database.getHostAlias() + "]");
-
 
 			// 오라클의 경우 client, terminal 이름을 변경 한다.
 			if(database.getDriver().equals(DatabaseDriver.ORACLE)){
@@ -669,6 +674,9 @@ public class DBclientManagerImpl implements DBclientManager {
 		isAffected = isAffected || dto.isUsePLSQL();
 
 
+		// 개인정보에 대한 처리 -- 개인 정보가 포함되면 실행을 중단 시킨다.
+		validatePrivacyPolicy(database,dto.getQuery());
+
 		// row 에 영향이 있는 쿼리
 		if(isAffected){
 			try{
@@ -881,6 +889,31 @@ public class DBclientManagerImpl implements DBclientManager {
 			}
 		}
 		return null;
+	}
+
+	private boolean validatePrivacyPolicy(Database database,String sql) {
+		if(StringUtils.isBlank(sql)) {
+			throw new IllegalArgumentException("입력된 SQL 이 없습니다.");
+		}
+		// 개인정보 테이블을 조회 한다 -- 개인정보 필드는 많지 않다. 전체 조회 한다.
+		List<DatabasePrivacyPolicy> dppList = dppRepository.findAll();
+		if(dppList.isEmpty()) { // 개인정보 정의가 없으면 skip
+			return true;
+		}
+		for(DatabasePrivacyPolicy dpp : dppList) {
+			// 테이블 검색
+			if(sql.indexOf(dpp.getTableName())>=0) {
+				// select * 가 있을 경우 fail
+				if(sql.indexOf("*") >=0) {
+					throw new IllegalArgumentException("개인 정보 테이블 "+dpp.getTableName()+" 에 '*' 가 포함되어 있습니다. 실행이 중단됩니다.");
+				}
+				// 필드명이 있을 경우 fail
+				if(sql.indexOf(dpp.getFieldName())>=0){
+					throw new IllegalArgumentException("개인 정보 테이블 "+dpp.getTableName()+" 에 개인정보 컬럼 " + dpp.getFieldName() + " 가 포함되어 있습니다. 실행이 중단됩니다.");
+				}
+			}
+		}
+		return true;
 	}
 
 	private void close(Connection conn) throws SQLException {

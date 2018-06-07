@@ -40,21 +40,25 @@ public class IncidentAlarmModifyBeforeConfirmDto extends AbstractDto {
 	@Length(max = 8000)
 	private String runSql;
 
-	@ApiModelProperty(required=true,position=4,value="알람 방법 || EMAIL or SMS[MMS]")
+	@ApiModelProperty(required=true,position=4,value="본문내용 || 실행 SQL은 표형식 입니다. 상단에 표기할 메세지를 기록하세요. EX) 안녕하세요 XXX 입니다.등")
+	@Length(max = 8000)
+	private String sendMessage;
+
+	@ApiModelProperty(required=true,position=5,value="알람 방법 || EMAIL or SMS[MMS]")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private SendMethod sendMethod;
 
-	@ApiModelProperty(required=true,position=5,value="동작여부 || 현재 실행 중인 경우 실행완료 후 동작 중지")
+	@ApiModelProperty(required=true,position=6,value="동작여부 || 현재 실행 중인 경우 실행완료 후 동작 중지")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private YN enableYN;
 
-	@ApiModelProperty(required=true,position=6,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜) 30초 이내는 실행 불가")
+	@ApiModelProperty(required=true,position=7,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜) 30초 이내는 실행 불가")
 	@NotBlank
 	private String schedule;
 
-	@ApiModelProperty(required=true,position=7,value="데이터베이스 || 실행할 데이터베이스를 선택")
+	@ApiModelProperty(required=true,position=8,value="데이터베이스 || 실행할 데이터베이스를 선택")
 	@NotNull
 	private Long databaseId;
 
@@ -126,6 +130,14 @@ public class IncidentAlarmModifyBeforeConfirmDto extends AbstractDto {
 
 	public void setRunSql(String runSql) {
 		this.runSql = runSql;
+	}
+
+	public String getSendMessage() {
+		return sendMessage;
+	}
+
+	public void setSendMessage(String sendMessage) {
+		this.sendMessage = sendMessage;
 	}
 
 	public SendMethod getSendMethod() {

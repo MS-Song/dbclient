@@ -249,12 +249,9 @@ var editorLazyLoading = function(sql){
 		// 에디터에 SQL 설정
 		$$("database_query_input").getEditor().setValue(sql);
 		// 자동완성 데이터 로딩
-		//database_query_all_field_load(executeQueryParams.id);
+		// database_query_all_field_load(executeQueryParams.id);
 	}
 }
-
-
-
 
 /**
  * 에디터에 존재하는 실행 하려고하는 쿼리 
@@ -343,48 +340,3 @@ var executeQuery = function (){
 
 // 결과 창
 var database_result_cell = [];
-
-/** 
- * 자동완성 테이블/필드 데이터 로딩
- * 1 초 이후에 실행 한다. 대량의 데이터가 들어 올 위험이 있다. 
- */
-var database_query_all_field_load = function(databaseId){
-	var	cachedList = webix.storage.local.get(JSON.stringify(databaseId, null, 2)+"_autoComplete");
-	// cache 에 데이터가 존재하면 캐시의 데이터를 노출한다.
-	if(null != cachedList){
-		autoCompleteAddTablesReset();
-		$.each(cachedList,function(objIndex){
-			autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
-		});
-	} else {
-		setTimeout(function(){
-			// 테이블_필드 리스트 조회
-			autoCompleteAddTablesReset();
-			if(null!=databaseId){
-				webix.ajax().get("/database/getAllFieldList",{id:databaseId}, 
-					function(text,data){
-						if(data.json().httpStatus ==200 && null!=data.json().contents){
-							var obj = data.json().contents;
-								// 정렬
-								obj.sort(function(a,b){
-									return(a.tableName < b.tableName) ? -1 : (a.tableName > b.tableName) ? 1 : 0;
-								});
-								
-								$.each(obj,function(objIndex){
-									autoCompleteAddTablesAll(this.tableName,this.columnName,this.comment);								
-								});
-								try {
-									webix.storage.local.put(JSON.stringify(databaseId, null, 2)+"_autoComplete",obj);	
-								} catch (e) {
-									// 캐시에 저장 실패
-								}
-								
-						} else {
-							errorControll(data.json());
-						}
-					}
-				);
-			}		
-		},1000);	
-	}
-};

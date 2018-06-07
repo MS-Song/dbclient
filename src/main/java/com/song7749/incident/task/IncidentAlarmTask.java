@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,6 +179,12 @@ public class IncidentAlarmTask implements Runnable {
 		sendMessageBuffer.append(".tg .tg-us36{border-color:inherit;vertical-align:top}");
 		sendMessageBuffer.append(".tg .tg-3mv2{background-color:#96fffb;border-color:inherit;vertical-align:top}");
 		sendMessageBuffer.append("</style>");
+
+		// 메일 내용이 있는 경우에는 추가 한다.
+		if(StringUtils.isNotBlank(incidentAlarm.getSendMessage())) {
+			sendMessageBuffer.append(incidentAlarm.getSendMessage());
+		}
+
 		sendMessageBuffer.append("<table class=\"tg\">");
 		for(int i=0; i < contents.size(); i++) {
 			// table head 만들기

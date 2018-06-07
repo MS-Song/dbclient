@@ -34,6 +34,10 @@ public class IncidentAlarmModifyAfterConfirmDto extends AbstractDto {
 	@Length(max = 8000)
 	private String beforeSql;
 
+	@ApiModelProperty(required=true,position=3,value="본문내용 || 실행 SQL은 표형식 입니다. 상단에 표기할 메세지를 기록하세요. EX) 안녕하세요 XXX 입니다.등")
+	@Length(max = 8000)
+	private String sendMessage;
+
 	@ApiModelProperty(required=true,position=5,value="동작여부 || 현재 실행 중인 경우 실행완료 후 동작 중지")
 	@NotNull
 	@Enumerated(EnumType.STRING)
@@ -104,6 +108,14 @@ public class IncidentAlarmModifyAfterConfirmDto extends AbstractDto {
 
 	public void setBeforeSql(String beforeSql) {
 		this.beforeSql = beforeSql;
+	}
+
+	public String getSendMessage() {
+		return sendMessage;
+	}
+
+	public void setSendMessage(String sendMessage) {
+		this.sendMessage = sendMessage;
 	}
 
 	public YN getEnableYN() {

@@ -5,13 +5,19 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,16 +28,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import com.song7749.base.YN;
 import com.song7749.dbclient.domain.Database;
+import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.repository.DatabaseRepository;
+import com.song7749.dbclient.repository.MemberRepository;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 import com.song7749.dbclient.value.DatabaseAddDto;
 import com.song7749.dbclient.value.DatabaseFindDto;
 import com.song7749.dbclient.value.DatabaseModifyDto;
+import com.song7749.dbclient.value.DatabasePrivacyPolicyAddDto;
+import com.song7749.dbclient.value.DatabasePrivacyPolicyModifyDto;
+import com.song7749.dbclient.value.DatabasePrivacyPolicyVo;
 import com.song7749.dbclient.value.DatabaseRemoveDto;
 import com.song7749.dbclient.value.DatabaseVo;
+import com.song7749.dbclient.value.LoginAuthVo;
+import com.song7749.util.ProxyUtils;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -48,11 +63,25 @@ public class DatabaseManagerImplTest {
 
 	@Autowired
 	ModelMapper mapper;
+
+	@Mock
+	LoginSession loginSession;
+	@Mock
+	MemberRepository memberRepository;
+
 	/**
 	 * Fixture
 	 */
 	DatabaseAddDto databaseAddDto = new DatabaseAddDto("10.10.10.10", "Test Database", "Test Schema", "song7749",
 			"1234", DatabaseDriver.MYSQL, Charset.UTF8, "3306");
+
+	@Before
+	public void setup() throws Exception {
+		MockitoAnnotations.initMocks(this);
+		DatabaseManager dm = (DatabaseManager) ProxyUtils.unwrapProxy(databaseManager);
+		ReflectionTestUtils.setField(dm, "loginSession", loginSession);
+		ReflectionTestUtils.setField(dm, "memberRepository", memberRepository);
+	}
 
 
 	@Test
@@ -177,5 +206,36 @@ public class DatabaseManagerImplTest {
 		assertThat(list.getContent().size(), equalTo(0));
 
 
+	}
+
+	@Ignore // mock 테스트를 위해서 JPA 객체를 핸들링 하는 방법을 찾아야 한다.
+	@Test
+	public void testAddDatabaseDatabasePrivacyPolicyAddDto() throws Exception {
+		// give
+		DatabaseVo dv = databaseManager.addDatabase(databaseAddDto);
+		DatabasePrivacyPolicyAddDto dto = new DatabasePrivacyPolicyAddDto(
+				"tableName",
+				"fieldName",
+				YN.Y,
+				"테스트",
+				dv.getId());
+
+		given(loginSession.getLogin()).willReturn(new LoginAuthVo(1L));
+		Optional<Member> oMember = Optional.of(new Member());
+		given(memberRepository.findById(1L)).willReturn(oMember);
+
+
+		// when
+		DatabasePrivacyPolicyVo vo = databaseManager.addDatabasePrivacyPolicy(dto);
+		// then
+		assertThat(vo.getId(), notNullValue());
+
+		// give
+		DatabasePrivacyPolicyModifyDto modifyDto = new DatabasePrivacyPolicyModifyDto(
+			vo.getId(), YN.Y, "테스트2", vo.getDatabaseVo().getId());
+		// when
+		vo = databaseManager.modifyDatabasePrivacyPolicy(modifyDto);
+		// then
+		assertThat(vo.getEnableYN(), equalTo(modifyDto.getEnableYN()));
 	}
 }
