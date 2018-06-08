@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.song7749.dbclient.repository.DatabaseRepository;
@@ -18,7 +17,6 @@ import com.song7749.dbclient.service.MemberManager;
 import com.song7749.incident.repository.IncidentAlarmRepository;
 import com.song7749.incident.service.IncidentAlarmManager;
 
-@ActiveProfiles("local")
 @Component
 public class initIncidentAlarmConfigBean {
 	Logger logger = LoggerFactory.getLogger(getClass());
