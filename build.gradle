@@ -57,6 +57,7 @@ dependencies {
 	compile('javax.xml.bind:jaxb-api:2.2.11')
 	compile("com.nimbusds:nimbus-jose-jwt:5.9")
     compile('mysql:mysql-connector-java')
+	compile('org.mariadb.jdbc:mariadb-java-client:2.2.3')
 	compile('com.oracle:ojdbc6:11.2.0.3')
 	compile('com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8')
 	compile('com.h2database:h2')

@@ -1,9 +1,7 @@
 # DBClient ? 
 ----
 * DBClient 는 SQL IDE Tool 입니다.
-* 현재는 Mysql 및 Oracle 을 지원하고 추후 여러 DBMS 를 지원할 예정입니다. 
-* 2018.04.23 -- H2 Database Support Complete
-* 2018.05.03 -- MSSQL Database Support Complete
+* 현재는 Mysql/MariaDB/H2/Oracle/MSSQL 을 지원하고 추후 여러 DBMS 를 지원할 예정입니다. 
 * Tode/Orange 와 유사한 인터페이스를 지원하며, WEB 베이스로 제작되어 있습니다.
 * 버그가 있으면 issue 똔느 request 에 올려주세요
 * jar 다운로드 링크 :  https://github.com/MS-Song/InsidentAlert/raw/incidentAlertV1/incidentAlert/dbclient-1.0-SNAPSHOT.jar 
@@ -22,7 +20,14 @@
 * Table 기반의 Java Model, Hibernate Model 자동 완성 기능
 * Table 기반의 Mybatis Insert/Update/Select/Result 자동 매팽 기능
 * Query 결과 엑셀 다운로드 지원
-* autocommit on/off 기능
+* Auto Commit on/off 기능
+* Auto Limit on/off 기능
+
+# Incident Alaram ?
+* DB 베이스의 자동 메일링 도구인 Incident Alarm 기능 추가
+* 메일을 보내야 하는 상황을 SQL 로 확인하여 보내야할 상황이라면, 결과 메일을 SQL로 작성 후 해당 메일을 대상자에게 전송
+* 오른쪽 메뉴을 통해 이동 가능
+
 
 # 구동 환경 
 * SpringBoot 2.0 으로 기동되며 java8 이상에서 작동 합니다.  
@@ -51,7 +56,6 @@
 
 
 # 향후 계획
-* MS SQL 지원 계획
 * 모든 데이터베이스 및 NoSQL 지원
 * websock 을 이용한 transaction 기능 지원 
 
