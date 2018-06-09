@@ -286,7 +286,7 @@ var adminDeleteDatabase = function(databaseId){
 		callback:function(result){
 			if(result==true){
 				// 데이터 베이스 삭제 실행
-				webix.ajax().del("/database/deleteDatabases.json?databaseId="+databaseId, function(text,data){
+				webix.ajax().del("/database/deleteDatabases?databaseId="+databaseId, function(text,data){
 					// 삭제 결과 확인
 					if(data.json().httpStatus ==200){	
 						window.setTimeout(function(){
