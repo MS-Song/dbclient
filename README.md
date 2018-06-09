@@ -1,5 +1,3 @@
-# 월급쟁이 생활 중이라 업데이트가 늦을 수 있으니 양해 부탁 드립니다.
-
 # DBClient ? 
 ----
 * DBClient 는 SQL IDE Tool 입니다.
@@ -25,13 +23,6 @@
 * Auto Commit on/off 기능
 * Auto Limit on/off 기능
 
-# Incident Alaram ?
-----
-* DB 베이스의 자동 메일링 도구인 Incident Alarm 기능 추가
-* 메일을 보내야 하는 상황을 SQL 로 확인하여 보내야할 상황이라면, 결과 메일을 SQL로 작성 후 해당 메일을 대상자에게 전송
-* 오른쪽 메뉴을 통해 이동 가능
-
-
 # 구동 환경 
 * SpringBoot 2.0 으로 기동되며 java8 이상에서 작동 합니다.  
 * gradle 을 통한 빌드를 해야 하며, gradle Profile 을 통한 환경 변수 관리가 필요 합니다.
@@ -40,7 +31,6 @@
 * 기본 서비스 포트는 9009 포트이며, 아래 방법으로 실행하시면 됩니다.
 	* 크롬 브라우저를 여시고  127.0.0.1:9009 입력 후 실행 (IP 는 설치되어 있는 서버마다 다름
 	
-
 ----
 
 # 실행 방법
@@ -64,9 +54,9 @@
 
 [![DB Client Live Demo](https://img.youtube.com/vi/2-QUOFtrfpA/0.jpg)](https://youtu.be/2-QUOFtrfpA)
 
-
-
-
 # screenshot
 ![DBClient Execute Image](https://raw.githubusercontent.com/MS-Song/dbclient/master/dbclient_example_image.png "dbClient Screenshot")
+
+## 월급쟁이 생활 중이라 업데이트가 늦을 수 있으니 양해 부탁 드립니다.
+## 개인 및 소규모 회사에는 무료입니다.
 
