@@ -31,12 +31,12 @@ public class IncidentAlarmDetailVo extends AbstractVo {
 	@ApiModelProperty(value="알람 감지 SQL",position=3)
 	private String beforeSql;
 
-	@ApiModelProperty(value="알람 내역 SQL",position=4)
-	private String runSql;
-
-	@ApiModelProperty(value="본문내용",position=5)
+	@ApiModelProperty(value="본문내용",position=4)
 	@Length(max = 8000)
 	private String sendMessage;
+
+	@ApiModelProperty(value="알람 내역 SQL",position=5)
+	private String runSql;
 
 	@ApiModelProperty(value="알람 방법",position=6)
 	private SendMethod sendMethod;
@@ -65,7 +65,7 @@ public class IncidentAlarmDetailVo extends AbstractVo {
 	@ApiModelProperty(value="마지막 에러 메세지",position=13)
 	private String lastErrorMessage;
 
-	@ApiModelProperty(value="데이터베이스",position=14)
+	@ApiModelProperty(value="데이터베이스",position=0)
 	private DatabaseVo databaseVo;
 
 	@ApiModelProperty(value="등록자",position=15)

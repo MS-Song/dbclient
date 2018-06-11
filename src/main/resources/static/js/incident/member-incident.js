@@ -121,12 +121,10 @@ var member_list_popup = function(view,multi){
     					view:"button", 	
     					label:'검색',		 				
     					on:{"onItemClick":function(){
-    						if(key==13) {
-    							// 페이지 초기화
-    						    $$('member_search_page').setValue(0);
-    						    $$("member_list_page").config.page=0;
-    							loadMemberList(view);
-    						}
+							// 페이지 초기화
+						    $$('member_search_page').setValue(0);
+						    $$("member_list_page").config.page=0;
+							loadMemberList(view);
     					}}
 					},
 					{ 

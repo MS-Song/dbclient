@@ -4,6 +4,7 @@ import static com.song7749.util.LogMessageFormatter.format;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,7 @@ import com.song7749.mail.value.MailMessageVo;
 * @author song7749@gmail.com
 * @since 2018. 5. 13.
 */
+@SuppressWarnings("unchecked")
 public class IncidentAlarmTask implements Runnable {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -95,6 +97,21 @@ public class IncidentAlarmTask implements Runnable {
 				&& null!=incidentAlarm.getSendMembers()
 				&& !incidentAlarm.getSendMembers().isEmpty();
 
+		// 테스트 인 경우에만 허용 한다.
+		isExecute = isExecute || incidentAlarm.isTest();
+
+		// 실행 불가능 상태인 경우에는 에러를 내보낸다.
+		if(isExecute==false) {
+			try {
+				throw new IllegalArgumentException("실행 실패. 실행가능 상태가 아니거나, 승인되지 않았거나, 전송대상자 없음.");
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				incidentAlarm.setLastErrorMessage(e.getMessage());
+				incidentAlarmRepository.saveAndFlush(incidentAlarm);
+			}
+		}
+
+
 		ExecuteQueryDto dto = new ExecuteQueryDto();
 		dto.setId(incidentAlarm.getDatabase().getId());
 		dto.setLoginId(incidentAlarm.getResistMember().getLoginId());
@@ -128,18 +145,10 @@ public class IncidentAlarmTask implements Runnable {
 
 		// 전송해야 하는 데이터
 		if(isExecute) {
-			dto.setQuery(incidentAlarm.getRunSql());
-			dto.setUseLimit(false);
-			dto.setUseCache(false);
-
 			try {
-				MessageVo vo = dbClientManager.executeQuery(dto);
-				List<Map<String,String>> contents = (List<Map<String, String>>) vo.getContents();
 				// email 전송
 				if(SendMethod.EMAIL.equals(incidentAlarm.getSendMethod())) {
-					sendEmailMessage(contents);
-				} else if(SendMethod.SMS.equals(incidentAlarm.getSendMethod())) {
-					sendSMSMessage(contents);
+					sendEmailMessage(dto);
 				}
 			} catch (Exception e) {
 				isExecute=false; // 실행 중지
@@ -153,8 +162,8 @@ public class IncidentAlarmTask implements Runnable {
 		if(isExecute) {
 			incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
 			incidentAlarmRepository.saveAndFlush(incidentAlarm);
-			logger.trace(format("{}", "TASK RUN END"),incidentAlarm.getId());
 		}
+		logger.trace(format("{}", "TASK RUN END"),incidentAlarm.getId());
 
 		try {
 			WebSocketMessageVo sendMessage = new WebSocketMessageVo();
@@ -168,7 +177,50 @@ public class IncidentAlarmTask implements Runnable {
 		}
 	}
 
-	private void sendEmailMessage(List<Map<String,String>> contents) {
+	private void sendEmailMessage(ExecuteQueryDto dto) {
+
+		String sendEmailContents = "";
+		// 다중 발송인가 확인 필요 <sql> 테그가 있으면 다중 발송이다.
+		if(incidentAlarm.getRunSql().toLowerCase().indexOf("<sql>") >=0) {
+			// 쓰기 테그와 닫기테그가 같은 숫자인지 확인한다.
+			int openTag = StringUtils.countMatches(incidentAlarm.getRunSql(), "<sql>");
+			int closeTag = StringUtils.countMatches(incidentAlarm.getRunSql(), "</sql>");
+			if(openTag != closeTag) {
+				throw new IllegalArgumentException("SQL 테그의 열기테그와 닫기 테그의 숫자가 일치하지 않습니다");
+			}
+
+			// 테그의 숫자 만큼 수행 한다. -- SQL 뽑아내기
+			String contents = incidentAlarm.getRunSql();
+			Map<String,String> sqlMap = new HashMap<String,String>();
+			for(int i=0;i<openTag;i++) {
+				// 해당 테그의 시작과 끝을 뽑아온다.
+				int startIndex=contents.toLowerCase().indexOf("<sql>");
+				int endIndex=contents.toLowerCase().indexOf("</sql>")+6;
+				if(startIndex>=0) {
+					String sql = contents.substring(startIndex, endIndex);
+					contents=contents.replace(sql, "#^#"+i);
+//					logger.trace(format("{}", "email replace sql"),sql);
+//					logger.trace(format("{}", "email replace contents"),contents);
+					sqlMap.put("#^#"+i, sql.toLowerCase().replace("<sql>", "").replace("</sql>", ""));
+				}
+			}
+
+			// 쿼리를 실행해서 html 을 생성 한다.
+			for(String key : sqlMap.keySet()) {
+				dto.setQuery(sqlMap.get(key));
+				MessageVo vo = dbClientManager.executeQuery(dto);
+				String html = generateEmailHtml((List<Map<String, String>>) vo.getContents());
+				contents=contents.replace(key, html);
+			}
+			sendEmailContents=contents;
+//			logger.trace(format("{}", "email Send"),sendEmailContents);
+//			throw new IllegalArgumentException("실행중지");
+		} else {
+			dto.setQuery(incidentAlarm.getRunSql());
+			MessageVo vo = dbClientManager.executeQuery(dto);
+			sendEmailContents = generateEmailHtml((List<Map<String, String>>) vo.getContents());
+		}
+
 		logger.info(format("{}", "SEND Email"),incidentAlarm.getId());
 		// 메세지 생성
 		StringBuffer sendMessageBuffer = new StringBuffer();
@@ -185,36 +237,24 @@ public class IncidentAlarmTask implements Runnable {
 			sendMessageBuffer.append(incidentAlarm.getSendMessage().replace("\r\n", "<br/>"));
 		}
 
-		sendMessageBuffer.append("<table class=\"tg\">");
-		for(int i=0; i < contents.size(); i++) {
-			// table head 만들기
-			if(i==0) {
-				sendMessageBuffer.append("<thead>");
-				sendMessageBuffer.append("<tr>");
-				for(String head : contents.get(i).keySet()) {
-					sendMessageBuffer.append("<th class=\"tg-3mv2\">");
-					sendMessageBuffer.append(head);
-					sendMessageBuffer.append("</th>");
-				}
-				sendMessageBuffer.append("</tr>");
-				sendMessageBuffer.append("</thead>");
-			} else {
-				sendMessageBuffer.append("<tr>");
-				for(String head : contents.get(i).keySet()) {
-					sendMessageBuffer.append("<td class=\"tg-us36\">");
-					sendMessageBuffer.append(contents.get(i).get(head));
-					sendMessageBuffer.append("</td>");
-				}
-				sendMessageBuffer.append("</tr>");
-			}
+		// 메일 contents 추가
+		if(StringUtils.isNotBlank(sendEmailContents)){
+			sendMessageBuffer.append(sendEmailContents.replace("\r\n", "<br/>"));
+		} else {
+			throw new IllegalArgumentException("메일 contets 가 없습니다. 실행 SQL을 확인해주세요");
 		}
-		sendMessageBuffer.append("</table>");
 
 		// 전송 대상자 포멧 변경
 		List<String> to = new ArrayList<String>();
-		for(Member m : incidentAlarm.getSendMembers()) {
-			to.add(m.getLoginId());
-		}
+		// 테스트 인 경우 본인에게만 전송
+		if(incidentAlarm.isTest()) {
+				to.add(incidentAlarm.getResistMember().getLoginId());
+ 		} else { // 테스트가 아닌 경우 수신자에게 전송
+ 			for(Member m : incidentAlarm.getSendMembers()) {
+ 				to.add(m.getLoginId());
+ 			}
+ 		}
+
 		// 메일 메세지 생성
 		MailMessageVo vo = new MailMessageVo(incidentAlarm.getResistMember().getLoginId()
 				, to
@@ -232,15 +272,36 @@ public class IncidentAlarmTask implements Runnable {
 		}
 	}
 
-	private void sendSMSMessage(List<Map<String,String>> contents) {
-		logger.info(format("{}", "SEND SMS - 아직 개발되지 않았습니다"),incidentAlarm.getId());
+	private String generateEmailHtml(List<Map<String,String>> contents) {
 		StringBuffer sendMessageBuffer = new StringBuffer();
-		for(int i=0; i < contents.size(); i++) {
-			for(String head : contents.get(i).keySet()) {
-				sendMessageBuffer.append(contents.get(i).get(head));
+		if(null!=contents) {
+			sendMessageBuffer.append("<table class=\"tg\">");
+			for(int i=0; i < contents.size(); i++) {
+				// table head 만들기
+				if(i==0) {
+					sendMessageBuffer.append("<thead>");
+					sendMessageBuffer.append("<tr>");
+					for(String head : contents.get(i).keySet()) {
+						sendMessageBuffer.append("<th class=\"tg-3mv2\">");
+						sendMessageBuffer.append(head);
+						sendMessageBuffer.append("</th>");
+					}
+					sendMessageBuffer.append("</tr>");
+					sendMessageBuffer.append("</thead>");
+				} else {
+					sendMessageBuffer.append("<tr>");
+					for(String head : contents.get(i).keySet()) {
+						sendMessageBuffer.append("<td class=\"tg-us36\">");
+						sendMessageBuffer.append(contents.get(i).get(head));
+						sendMessageBuffer.append("</td>");
+					}
+					sendMessageBuffer.append("</tr>");
+				}
 			}
+			sendMessageBuffer.append("</table>");
+		} else {
+			sendMessageBuffer.append("<table class=\"tg\"><tr><td class=\"tg-us36\">데이터가 없습니다</td></tr></table>");
 		}
-		sendMessageBuffer.append("\n");
-		// TODO SMS 전송 로직 개발
+		return sendMessageBuffer.toString();
 	}
 }

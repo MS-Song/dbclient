@@ -126,7 +126,6 @@ var resister_member_form = {
 				webix.ajax().post("/member/add", sendData, function(text,data){
 					if(data.json().httpStatus ==200) {
 						webix.message(data.json().message);
-						reload();										
 					} else {
 						errorControll(data.json())
 					}

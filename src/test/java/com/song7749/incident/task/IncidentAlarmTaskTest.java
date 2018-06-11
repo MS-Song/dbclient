@@ -129,7 +129,8 @@ public class IncidentAlarmTaskTest {
 		IncidentAlarm incidentAlarm = new IncidentAlarm(
 				"테스트 모니터링",
 				"select 'Y' execute from dual",
-				"select * from database",
+				//"첫번째 SQL 입니다 \r\n <sql>select * from database</sql>\r\n 두번째 SQL 입니다 \r\n <sql>select * from member</sql>\r\n 세번째 SQL 입니다 \r\n  <sql>select * from log</sql>",
+				"메일 내용은 이러하다 \r\n <sql> select * from database </sql>  \r\n 메일 내용은 이러하다 \r\n <sql> select * from database </sql>",
 				SendMethod.EMAIL,
 				YN.Y,
 				"*/10 * * * * *",

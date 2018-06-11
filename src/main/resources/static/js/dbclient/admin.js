@@ -505,6 +505,14 @@ var adminMemberListPopup = function(){
 								authType:""
 							});
 						}}
+					},
+					{ 
+						id:"admin_add_member_button", 		
+						view:"button", 	
+						label:'회원추가',		 				
+						on:{"onItemClick":function(){
+							resister_member_popup();
+						}}
 					}] // end cols
     			}] // end elements
         	},        	      

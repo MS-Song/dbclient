@@ -89,6 +89,7 @@ public interface IncidentAlarmManager {
 	/**
 	 * task 를 즉시 실행한다.
 	 * @param alarmId
+	 * @param test
 	 */
-	void runNow(Long alarmId);
+	void runNow(Long alarmId, boolean test);
 }

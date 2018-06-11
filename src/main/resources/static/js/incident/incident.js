@@ -148,7 +148,6 @@ webix.ready(function(){
  * 알람 등록 팝업
  */
 var incident_alarm_popup = function(alarmItem){
-
 	webix.ui({
 	    view:"window",
 	    id:"incident_alarm_popup",
@@ -240,18 +239,6 @@ var incident_alarm_form_creator = function(alarmItem){
 		// confirm 상태 확인하여 수정범위 지정
 		if(alarmItem.confirmYN == "Y"){
 			path='/alarm/modifyAfterConfirm';
-			// 승인 상태인 경우에는 즉시 실행 버튼 추가 한다 -- 오류인 경우 처리를 위해서
-			elementsList.push({
-				view:"button", value:"즉시 실행] 오류로 인해 실패한 경우 사용", click:function(){
-					webix.ajax().put('/alarm/runNow',$$("incident_alarm_form").getValues(), function(text,data){
-						if(data.json().httpStatus==200){
-							webix.message(data.json().message);
-						} else {
-							webix.message({ type:"error", text:data.json().message });
-						}
-					});
-				}
-			});
 		} else {
 			path='/alarm/modifyBeforeConfirm';
 		}
@@ -287,6 +274,32 @@ var incident_alarm_form_creator = function(alarmItem){
 				$$("incident_alarm_popup").hide();	
 			} ,hotkey: "esc"
 		}
+
+		// 즉시 실행 버튼
+		let runNow = {
+			view:"button", value:"즉시 실행-전체구성원에게 메일 발송", click:function(){
+				webix.ajax().put('/alarm/runNow',{id:alarmItem.id,test:"false"}, function(text,data){
+					if(data.json().httpStatus==200){
+						webix.message(data.json().message);
+					} else {
+						webix.message({ type:"error", text:data.json().message });
+					}
+				});
+			}
+		}
+		
+		// 테스트 실행 
+		let runTest = {
+			view:"button", value:"테스트 실행-본인에게만 메일 발송", click:function(){
+				webix.ajax().put('/alarm/runNow',{id:alarmItem.id,test:"true"}, function(text,data){
+					if(data.json().httpStatus==200){
+						webix.message(data.json().message);
+					} else {
+						webix.message({ type:"error", text:data.json().message });
+					}
+				});
+			}
+		}
 		
 		// 수정 버튼
 		let modifyButton ={
@@ -318,6 +331,12 @@ var incident_alarm_form_creator = function(alarmItem){
 			}
 		}
 		
+		// 테스트 실행 및 즉시 실행
+		if(alarmItem.confirmYN == "Y"){
+			elementsList.push({cols:[runTest,runNow]});
+		} else {
+			elementsList.push({cols:[runTest,{}]});
+		}
 		// 승인 버튼 노출
 		if(alarmItem.confirmYN != "Y" && member.authType=='ADMIN'){
 			elementsList.push({cols:[cancelButton,modifyButton,confirmButton]});
@@ -360,6 +379,7 @@ var incident_alarm_form_creator = function(alarmItem){
 				$$("incident_alarm_form").setValues(values);
 			} else {
 				webix.message({ type:"error", text:data.json().message });
+				$$("incident_alarm_popup").hide();
 			}
 		});
 	}

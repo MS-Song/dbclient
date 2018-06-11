@@ -411,7 +411,7 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 
 	@Override
 	@Transactional
-	public void runNow(Long alarmId) {
+	public void runNow(Long alarmId,boolean test) {
 		Optional<IncidentAlarm> oAlarm = incidentAlarmRepository.findById(alarmId);
 		IncidentAlarm incidentAlarm = null;
 		if(oAlarm.isPresent()) {
@@ -419,10 +419,16 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		} else {
 			throw new IllegalArgumentException("알람정보가 일치하지 않습니다. id="+alarmId);
 		}
-		if(YN.Y.equals(incidentAlarm.getEnableYN())
-				&& YN.Y.equals(incidentAlarm.getConfirmYN())
-				&& !incidentAlarm.getSendMembers().isEmpty()) {
 
+		// 실행 조건
+		boolean runable = YN.Y.equals(incidentAlarm.getEnableYN());		// 실행 가능 상태
+		runable  = runable && YN.Y.equals(incidentAlarm.getConfirmYN());// 승인 상태
+		runable  = runable && !incidentAlarm.getSendMembers().isEmpty();// 전송대상자 존재 상태
+		// 테스트 인 경우에는 허용한다.
+		runable  = runable || test;
+
+		if(runable){
+			incidentAlarm.setTest(test);
 			taskScheduler.getScheduledExecutor().execute(new IncidentAlarmTask(dbClientManager, incidentAlarm,
 				incidentAlarmRepository, emailService, template, mapper));
 		} else {

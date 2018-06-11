@@ -16,6 +16,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -138,6 +139,9 @@ public class IncidentAlarm  extends Entities {
 	@ManyToMany(targetEntity=Member.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "send_member_id", nullable = false, insertable = true, updatable = true)
 	private List<Member> sendMembers;
+
+	@Transient
+	private boolean test=false;
 
 	public IncidentAlarm() {}
 
@@ -321,6 +325,14 @@ public class IncidentAlarm  extends Entities {
 
 	public void setLastErrorMessage(String lastErrorMessage) {
 		this.lastErrorMessage = lastErrorMessage;
+	}
+
+	public boolean isTest() {
+		return test;
+	}
+
+	public void setTest(boolean test) {
+		this.test = test;
 	}
 
 	@Override

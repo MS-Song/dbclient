@@ -31,26 +31,26 @@ public class IncidentAlarmAddDto extends AbstractDto {
 	@Length(max = 8000)
 	private String beforeSql;
 
-	@ApiModelProperty(required=true,position=3,value="알람 내역 SQL || 담당자에게 전송할 내용을 생성하는 SQL. 내용이 100byte 넘을 경우 email로 전환")
-	@NotBlank
-	@Length(max = 8000)
-	private String runSql;
-
 	@ApiModelProperty(required=true,position=3,value="본문내용 || 실행 SQL은 표형식 입니다. 상단에 표기할 메세지를 기록하세요. EX) 안녕하세요 XXX 입니다.등")
 	@Length(max = 8000)
 	private String sendMessage;
 
-	@ApiModelProperty(required=true,position=4,value="알람 방법 || EMAIL or SMS[MMS]")
+	@ApiModelProperty(required=true,position=4,value="알람 내역 SQL ||담당자에게 전송할 내용을 생성하는 SQL.<br>&ltsql&gt SELECT * FROM XX &lt/sql&gt<br>&ltsql&gt 테그가 없으면 1Query")
+	@NotBlank
+	@Length(max = 8000)
+	private String runSql;
+
+	@ApiModelProperty(required=true,position=5,value="알람 방법 || EMAIL or SMS[MMS]")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private SendMethod sendMethod;
 
-	@ApiModelProperty(required=true,position=5,value="동작여부 || 현재 실행 중인 경우 실행완료 후 동작 중지")
+	@ApiModelProperty(required=true,position=6,value="동작여부 || 현재 실행 중인 경우 실행완료 후 동작 중지")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private YN enableYN;
 
-	@ApiModelProperty(required=true,position=6,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜)  30초 이내는 실행 불가")
+	@ApiModelProperty(required=true,position=7,value="알람 주기 || crontab 양식, * * * * * * (초 분 시 날짜 달 주의날짜)  30초 이내는 실행 불가")
 	@NotBlank
 	private String schedule;
 

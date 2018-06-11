@@ -141,7 +141,8 @@ public class IncidentAlarmController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@ApiParam("database id")
-			@RequestParam(required=true, name="id") Long alarmId){
+			@RequestParam(required=true, name="id") Long alarmId,
+			@RequestParam(required=true, name="test") boolean test){
 
 		// 관리자
 		boolean modifyAble = AuthType.ADMIN.equals(session.getLogin().getAuthType());
@@ -154,10 +155,10 @@ public class IncidentAlarmController {
 		}
 
 		if(modifyAble) {
-			incidentAlarmManager.runNow(alarmId);
-			return new MessageVo(HttpStatus.OK.value(), 1, "즉시 실행 하였습니다.");
+			incidentAlarmManager.runNow(alarmId,test);
+			return new MessageVo(HttpStatus.OK.value(), 1, "실행 하였습니다.");
 		} else {
-			throw new AuthorityUserException("본인이 등록한 알람만 즉시 수정 가능합니다.");
+			throw new AuthorityUserException("본인이 등록한 알람만 실행 가능합니다.");
 		}
 	}
 
