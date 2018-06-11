@@ -310,8 +310,8 @@ var getQueryString = function(){
 	        		queries[0].substring(parseInt(queries[0].indexOf(";")+1),queries[0].length);	
 	        	}
 	        }
+	        retQuery=queries.join("\n").replace(/;/g,"");
 		}		
-        retQuery=queries.join("\n").replace(/;/g,"");
 	}
 	return retQuery;
 }
