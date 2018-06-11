@@ -201,10 +201,10 @@ public class InitConfigBean {
 
 		incidentAlarmManager.confirmIncidentAlarm(confirmDto);
 
-		// 테스트를 위한 대량 등록
-		for(int i=0;i<50;i++) {
-			dto.setSubject(dto.getSubject()+i);
-			incidentAlarmManager.addIncidentAlarm(dto);
-		}
+//		// 테스트를 위한 대량 등록
+//		for(int i=0;i<50;i++) {
+//			dto.setSubject(dto.getSubject()+i);
+//			incidentAlarmManager.addIncidentAlarm(dto);
+//		}
     }
 }
