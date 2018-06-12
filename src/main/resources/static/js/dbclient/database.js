@@ -1484,7 +1484,7 @@ webix.ready(function(){
 
 //실행중인 쿼리 중단
 var killExecuteQuery = function (){
-	webix.ajax().post("/database/killExecuteQuery",{executeQueryParams}, 
+	webix.ajax().post("/database/killExecuteQuery",executeQueryParams, 
 		function(text,data){
 			if(data.json().httpStatus ==200){
 				webix.message("쿼리가 실행 중지 되었습니다. ");
