@@ -726,8 +726,12 @@ public class DBclientManagerImpl implements DBclientManager {
 
 	@Override
 	public void killQuery(ExecuteQueryDto dto) {
+		// 중지 대상 쿼리 저장
+		String stopQuery = dto.getQuery();
+
 		Database database = getDatabase(dto.getId());
 		database.setName(dto.getName());
+		// 프로세스 조회 쿼리로 변경
 		dto.setQuery(database.getDriver().getProcessListQuery());
 
 		// 프로세스 리스트를 조회 한다.
@@ -741,36 +745,37 @@ public class DBclientManagerImpl implements DBclientManager {
 		// 프로세스 리스트를 검색해서 맞는 조건일 경우 해당 쿼리를 kill 한다.
 		if(null!=list && list.size()>0){
 			for(Map<String,String> porcess : list){
-				// 실행중인 쿼리
-				String runQuery = porcess.get("SQL_TEXT").replace("\n", "").replace("\t", "").replace(" ", "");
-				// 중지 대상 쿼리
-				String stopQuery = dto.getQuery().replace("\n", "").replace("\t", "").replace(" ", "");
-				// rownum 을 추가한 쿼리로 한번 더 검사한다.
-				String stopQueryWithLimit = database.getDriver().getAddRangeOperator(dto.getQuery(), dto.getOffset(), dto.getLimit()).replace("\n", "").replace("\t", "").replace(" ", "");
+				if(null!=porcess.get("SQL_TEXT")) {
+					// 실행중인 쿼리
+					String runQuery = porcess.get("SQL_TEXT").replace("\n", "").replace("\t", "").replace(" ", "");
+					// 중지 대상 쿼리
+					stopQuery = stopQuery.replace("\n", "").replace("\t", "").replace(" ", "");
+					// rownum 을 추가한 쿼리로 한번 더 검사한다.
+					String stopQueryWithLimit = database.getDriver().getAddRangeOperator(stopQuery, dto.getOffset(), dto.getLimit()).replace("\n", "").replace("\t", "").replace(" ", "");
 
-				logger.debug(
-						format(
-								"{}\n{}",
-								"SQL 중지 쿼리 비교"),
-								runQuery,
-								stopQuery);
+					logger.debug(
+							format(
+									"{}\n{}",
+									"SQL 중지 쿼리 비교"),
+									runQuery,
+									stopQuery);
 
-				// 방금 사용한 쿼리가 맞을 경우
-				if(stopQuery.indexOf(runQuery) >= 0 || stopQueryWithLimit.indexOf(runQuery) >= 0){
-					// 쿼리 실행 중단
-					logger.debug(format("{}","SQL쿼리 중단 실행"),runQuery);
-					try {
-						dto.setQuery(database.getDriver().getProcessKillQuery(porcess.get("ID")));
-						executeWriteQuery(getConnection(database),dto);
-					} catch (SQLException e) {
-						logger.debug(format("{}","prorcess kill 실패"),e.getMessage());
-						throw new IllegalArgumentException(e.getMessage());
+					// 방금 사용한 쿼리가 맞을 경우
+					if(stopQuery.indexOf(runQuery) >= 0 || stopQueryWithLimit.indexOf(runQuery) >= 0){
+						// 쿼리 실행 중단
+						logger.debug(format("{}","SQL쿼리 중단 실행"),runQuery);
+						try {
+							dto.setQuery(database.getDriver().getProcessKillQuery(porcess.get("ID")));
+							executeWriteQuery(getConnection(database),dto);
+						} catch (SQLException e) {
+							logger.debug(format("{}","prorcess kill 실패"),e.getMessage());
+							throw new IllegalArgumentException(e.getMessage());
+						}
+						break; // 해당하는 쿼리를 찾은 경우에는 중단 시킨다.
 					}
-					break; // 해당하는 쿼리를 찾은 경우에는 중단 시킨다.
 				}
 			}
 		}
-
 	}
 
 	/**

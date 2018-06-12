@@ -319,9 +319,9 @@ public enum DatabaseDriver {
 			// sequence detail
 			"SELECT * FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_SCHEMA='{schemaName}' AND SEQUENCE_NAME='{name}'",
 			// process list
-			"SELECT ID, info as SQL_TEXT FROM information_schema.processlist",
+			"select ID , STATEMENT as SQL_TEXT from information_schema.sessions",
 			// kill connection
-			"KILL CONNECTION {id}",
+			"CALL CANCEL_SESSION({id})",
 			// create table query
 			"SELECT SQL CREATE_TALBE FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{name}'",
 			// 자동완성용 테이블/필드 전체 리스트 조회

@@ -160,6 +160,7 @@ public class IncidentAlarmTask implements Runnable {
 
 		// 전송
 		if(isExecute) {
+			incidentAlarm.setLastErrorMessage("");
 			incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
 			incidentAlarmRepository.saveAndFlush(incidentAlarm);
 		}

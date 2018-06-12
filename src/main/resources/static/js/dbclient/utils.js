@@ -119,8 +119,11 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 							});
 						}
 						else {
-							// 데이터를 파싱 한다.
-							$$(viewName).parse(obj)								
+							// 데이터를 파싱 한다. -- 너무 오래 걸려 방법을 변경 해 본다.
+							$$(viewName).parse(obj)
+							//$.each(obj,function(key,value){
+							//	$$(viewName).data.add(value);
+							//});
 						}
 						// 캐시를 사용한다면 캐시에 넣는다.
 						if(isCache){

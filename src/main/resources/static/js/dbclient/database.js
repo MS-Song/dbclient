@@ -93,7 +93,6 @@ var select_database_popup=function(){
 	    			);
 	    			// 설정 정보 저장
 	    			database=selectedRow;
-	    			console.log(database);
 	    			selectedRow.selected="선택";
 	    			// 입력한 값을 재 로딩 한다.
 	    			$$("select_database_loader").refresh();
@@ -1052,7 +1051,10 @@ var database_query_cell = [{
 							value:"Execute",
 							tooltip:"입력된 쿼리를 실행한다. 단축키: Ctrl+Enter ",
 							on:{"onItemClick":function(){
+								setTimeout(() => {
 									executeQuery(false,null);
+								}, 100);
+									
 								}
 							}
 						}

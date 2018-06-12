@@ -983,7 +983,11 @@ webix.ready(function(){
 					,"confirmYN" 	: "Y"
 					,"processTime"	: body.processTime + ' ms'
 					,"time"			: body.date + ' ' + body.time
-				});	    
+				});	 
+				
+    			$$("incident_alarm_run_log").sort("time", "desc","string");
+    			$$("incident_alarm_run_log").refresh();
+
 			});
 		}
 	 });		
