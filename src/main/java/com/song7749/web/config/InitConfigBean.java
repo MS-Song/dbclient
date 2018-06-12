@@ -182,12 +182,16 @@ public class InitConfigBean {
 		memberIds.add(member.getId());
 
 		IncidentAlarmAddDto dto = new IncidentAlarmAddDto(
-				"테스트 모니터링",
+				"[로그 삭제] dbclient 30일 지난 로그를 삭제 - 매일 00:30 에 실행 됨",
 				"select 'Y' execute from dual",
-				"메일 내용은 이러하다 \r\n <sql> select * from database </sql>  \r\n 메일 내용은 이러하다 \r\n <sql> select * from database </sql>",
+				"<sql> DELETE from LOG_QUERY lq where lq.LOG_ID in (select l.LOG_ID from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE)) </sql>" +
+				"<sql> DELETE from LOG_INCIDENT_ALARM lq where lq.LOG_ID in (select l.LOG_ID from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE)) </sql>" +
+				"<sql> DELETE from LOG_LOGIN lq where lq.LOG_ID in (select l.LOG_ID from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE)) </sql>" +
+				"<sql> DELETE from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE) </sql>" +
+				"<sql> select count(LOG_ID) from LOG </sql>",
 				SendMethod.EMAIL,
 				YN.Y,
-				"*/30 * * * * *",
+				"0 30 00 * * *",
 				db.getId(),
 				member.getId(),
 				memberIds);

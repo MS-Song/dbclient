@@ -249,7 +249,7 @@ public class IncidentAlarmTask implements Runnable {
 		List<String> to = new ArrayList<String>();
 		// 테스트 인 경우 본인에게만 전송
 		if(incidentAlarm.isTest()) {
-				to.add(incidentAlarm.getResistMember().getLoginId());
+				to.add(incidentAlarm.getTestSendMember().getLoginId());
  		} else { // 테스트가 아닌 경우 수신자에게 전송
  			for(Member m : incidentAlarm.getSendMembers()) {
  				to.add(m.getLoginId());

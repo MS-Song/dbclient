@@ -427,8 +427,18 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		// 테스트 인 경우에는 허용한다.
 		runable  = runable || test;
 
+		// 실행 상태인 경우
 		if(runable){
-			incidentAlarm.setTest(test);
+			// 테스트인 경우
+			if(test) {
+				Optional<Member> oMember = memberRepository.findById(loginSession.getLogin().getId());
+				if(oMember.isPresent()) {
+					incidentAlarm.setTestSendMember(oMember.get());
+				} else {
+					incidentAlarm.setTestSendMember(incidentAlarm.getResistMember());
+				}
+				incidentAlarm.setTest(test);
+			}
 			taskScheduler.getScheduledExecutor().execute(new IncidentAlarmTask(dbClientManager, incidentAlarm,
 				incidentAlarmRepository, emailService, template, mapper));
 		} else {

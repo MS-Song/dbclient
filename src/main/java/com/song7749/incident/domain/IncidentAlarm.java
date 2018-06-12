@@ -143,6 +143,9 @@ public class IncidentAlarm  extends Entities {
 	@Transient
 	private boolean test=false;
 
+	@Transient
+	private Member testSendMember;
+
 	public IncidentAlarm() {}
 
 	/**
@@ -333,6 +336,14 @@ public class IncidentAlarm  extends Entities {
 
 	public void setTest(boolean test) {
 		this.test = test;
+	}
+
+	public Member getTestSendMember() {
+		return testSendMember;
+	}
+
+	public void setTestSendMember(Member testSendMember) {
+		this.testSendMember = testSendMember;
 	}
 
 	@Override

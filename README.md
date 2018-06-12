@@ -58,5 +58,6 @@
 ![DBClient Execute Image](https://raw.githubusercontent.com/MS-Song/dbclient/master/dbclient_example_image.png "dbClient Screenshot")
 
 ## 월급쟁이 생활 중이라 업데이트가 늦을 수 있으니 양해 부탁 드립니다.
-## 개인 및 소규모 회사에는 무료입니다.
+## 개인 및 회사에서 무료입니다.
+## 제품화 하여 판매는 불허 합니다.
 
