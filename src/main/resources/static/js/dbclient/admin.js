@@ -117,7 +117,7 @@ var adminDatabaseListPopup = function(){
 			$$("admin_database_list_view").parse(data.json().contents.content);
     		$$("admin_database_list_view").refresh();
 		} else {
-			webix.message(data.json().message);
+			errorControll(data.json());
 		}
 	});
 };
@@ -977,14 +977,13 @@ webix.ready(function(){
 			client.subscribe('/topic/runAlarms', function (message) {
 				let body = JSON.parse(message.body);
 				$$("incident_alarm_run_log").add({
-				 	"status"		: body.httpStatus == 200 ? "성공":"실패"	
-					,"id"			: body.contents.id
+					"alarmId"		: body.contents.id,
+					"status"		: body.httpStatus == 200 ? "성공":"실패"	
 					,"subject" 		: body.contents.subject
 					,"confirmYN" 	: "Y"
 					,"processTime"	: body.processTime + ' ms'
 					,"time"			: body.date + ' ' + body.time
 				});	 
-				
     			$$("incident_alarm_run_log").sort("time", "desc","string");
     			$$("incident_alarm_run_log").refresh();
 

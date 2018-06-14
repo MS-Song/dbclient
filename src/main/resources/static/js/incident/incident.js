@@ -349,8 +349,15 @@ var incident_alarm_form_creator = function(alarmItem){
 			$$("incident_alarm_form").addView(elementsList[index]);	
 		}
 
+		// run log 에서 온 경우에는 Id가 다르다. -- UI 상의 문제로 변경 처리 
+		let alarmId;
+		if(undefined!=alarmItem.alarmId){
+			alarmId=alarmItem.alarmId;
+		} else if(undefined!= alarmItem.id){
+			alarmId=alarmItem.id;
+		}
 		// 대상 데이터를 로딩
-		webix.ajax().get('/alarm/detail', {id:alarmItem.id}, function(text,data){
+		webix.ajax().get('/alarm/detail', {id:alarmId}, function(text,data){
 			if(data.json().httpStatus==200){
 				// 설정 값
 				let values = {};

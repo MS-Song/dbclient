@@ -212,6 +212,10 @@ public class IncidentAlarmController {
 			HttpServletResponse response,
 			@Valid @ModelAttribute IncidentAlarmFindDto dto){
 
+		if(dto.getId()==null) {
+			throw new IllegalArgumentException("알람 상세조회에는 반드시 ID가 필요 합니다.");
+		}
+
 		Optional<IncidentAlarmDetailVo> o = incidentAlarmManager.findIncidentAlarm(dto);
 		if(!o.isPresent()) {
 			throw new NotDataFoundException();
