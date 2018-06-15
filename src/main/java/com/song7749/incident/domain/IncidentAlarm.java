@@ -71,16 +71,16 @@ public class IncidentAlarm  extends Entities {
 	private String subject;
 
 	@NotBlank
-	@Length(max = 8000)
+	@Length(max = 4000)
 	@Column(nullable = false)
 	private String beforeSql;
 
 	@NotBlank
-	@Length(max = 8000)
+	@Length(max = 4000)
 	@Column(nullable = false)
 	private String runSql;
 
-	@Length(max = 8000)
+	@Length(max = 1000)
 	@Column(nullable = true)
 	private String sendMessage;
 
@@ -119,7 +119,7 @@ public class IncidentAlarm  extends Entities {
 	private Date lastRunDate;
 
 	@Column(nullable = true)
-	@Length(max = 8000)
+	@Length(max = 1000)
 	private String lastErrorMessage;
 
 	@ManyToOne(targetEntity=Database.class, fetch = FetchType.EAGER)

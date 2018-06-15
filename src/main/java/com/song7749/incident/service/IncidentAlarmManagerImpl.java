@@ -401,8 +401,8 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		Date before = null;
 		for(Date now : list) {
 			if(before != null) {
-				if(now.getTime() - before.getTime() < 30000) {
-					throw new IllegalArgumentException("스케줄 간격이 30초 이내입니다. 30초 이상 되도록 설정 하세요");
+				if(now.getTime() - before.getTime() < 60000) {
+					throw new IllegalArgumentException("스케줄 간격이 1분 이내입니다. 1분 이상 되도록 설정 하세요");
 				}
 			}
 			before=now;

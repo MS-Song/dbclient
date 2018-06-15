@@ -28,7 +28,7 @@ public class MemberSaveQueryModifyDto  extends AbstractDto {
 
 	@ApiModelProperty("Query 내용")
 	@NotBlank
-	@Size(min = 10, max=8000)
+	@Size(min = 10, max=4000)
 	private String query;
 
 	public MemberSaveQueryModifyDto() {}
@@ -40,7 +40,7 @@ public class MemberSaveQueryModifyDto  extends AbstractDto {
 	 * @param query
 	 */
 	public MemberSaveQueryModifyDto(Long memberId, @NotNull Long id, @NotBlank @Size(min = 4) String memo,
-			@NotBlank @Size(min = 10, max = 8000) String query) {
+			@NotBlank @Size(min = 10, max = 4000) String query) {
 		super();
 		this.memberId = memberId;
 		this.id = id;

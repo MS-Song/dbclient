@@ -760,4 +760,13 @@ public enum DatabaseDriver {
 		logger.trace(format("{}", "Replace BY Database"), str);
 		return str;
 	}
+
+	public static DatabaseDriver getDatabaseDriverByDriverClassName(String driverClassName) {
+		for(DatabaseDriver dd:DatabaseDriver.values()) {
+			if(dd.driverName.equals(driverClassName)) {
+				return dd;
+			}
+		}
+		return null;
+	}
 }

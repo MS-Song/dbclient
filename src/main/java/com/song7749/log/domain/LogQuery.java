@@ -59,7 +59,7 @@ public class LogQuery extends Log{
 
 	@Column(nullable=false, updatable=false)
 	@NotBlank
-	@Size(max=8000)
+	@Size(max=4000)
 	private String query;
 
 	public LogQuery() {}
@@ -75,7 +75,7 @@ public class LogQuery extends Log{
 	 */
 	public LogQuery(@NotBlank @Size(min = 4, max = 20) String loginId, @NotBlank Long databaseId, @NotBlank String host,
 			@NotBlank String hostAlias, @NotBlank String schemaName, @NotBlank String account,
-			@NotBlank @Size(max = 8000) String query) {
+			@NotBlank @Size(max = 4000) String query) {
 		this.loginId = loginId;
 		this.databaseId = databaseId;
 		this.host = host;

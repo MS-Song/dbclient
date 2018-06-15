@@ -58,7 +58,7 @@ public class MemberSaveQuery extends Entities {
 
 	@Column
 	@NotBlank
-	@Size(min = 10, max=8000)
+	@Size(min = 10, max=4000)
 	private String query;
 
 	@Column(nullable = false, updatable = false)

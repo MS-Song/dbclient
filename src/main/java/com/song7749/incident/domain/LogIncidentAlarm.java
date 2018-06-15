@@ -38,13 +38,13 @@ public class LogIncidentAlarm extends Log {
 	private Long incidentAlarmId;
 
 	@NotBlank
-	@Size(max=8000)
-	@Column(nullable = false, updatable = false)
+	@Size(max=4000)
+	@Column(name="befor_info", nullable = false, updatable = false)
 	private String before;
 
 	@NotBlank
-	@Size(max=8000)
-	@Column(nullable = false, updatable = false)
+	@Size(max=4000)
+	@Column(name="after_info", nullable = false, updatable = false)
 	private String after;
 
 	public LogIncidentAlarm() {}

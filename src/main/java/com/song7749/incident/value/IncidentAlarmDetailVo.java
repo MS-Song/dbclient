@@ -32,7 +32,7 @@ public class IncidentAlarmDetailVo extends AbstractVo {
 	private String beforeSql;
 
 	@ApiModelProperty(value="본문내용",position=4)
-	@Length(max = 8000)
+	@Length(max = 4000)
 	private String sendMessage;
 
 	@ApiModelProperty(value="알람 내역 SQL",position=5)
@@ -99,7 +99,7 @@ public class IncidentAlarmDetailVo extends AbstractVo {
 	 * @param sendMemberVos
 	 */
 	public IncidentAlarmDetailVo(Long id, String subject, String beforeSql, String runSql,
-			@NotBlank @Length(max = 8000) String sendMessage, SendMethod sendMethod, YN enableYN, YN confirmYN,
+			@NotBlank @Length(max = 4000) String sendMessage, SendMethod sendMethod, YN enableYN, YN confirmYN,
 			String schedule, Date createDate, Date confirmDate, Date lastRunDate, String lastErrorMessage,
 			DatabaseVo databaseVo, MemberVo resistMemberVo, MemberVo confirmMemberVo, List<MemberVo> sendMemberVos) {
 		this.id = id;

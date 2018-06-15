@@ -47,7 +47,7 @@ import com.song7749.util.crypto.CryptoTwoWayConverter;
  * @since 2018. 1. 16.
  */
 
-@Entity
+@Entity(name="database_info")
 @SelectBeforeUpdate(true)
 @DynamicUpdate(true)
 public class Database extends Entities {

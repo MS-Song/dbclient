@@ -23,12 +23,12 @@ public class LogIncidentAlaramAddDto extends AbstractDto {
 	private Long incidentAlarmId;
 
 	@NotBlank
-	@Size(max=8000)
+	@Size(max=4000)
 	@Column(nullable = false, updatable = false)
 	private String before;
 
 	@NotBlank
-	@Size(max=8000)
+	@Size(max=4000)
 	@Column(nullable = false, updatable = false)
 	private String after;
 
@@ -41,7 +41,7 @@ public class LogIncidentAlaramAddDto extends AbstractDto {
 	 * @param after
 	 */
 	public LogIncidentAlaramAddDto(@NotBlank @Size(min = 8, max = 64) String ip, @NotNull Long incidentAlarmId,
-			@NotBlank @Size(max = 8000) String before, @NotBlank @Size(max = 8000) String after) {
+			@NotBlank @Size(max = 4000) String before, @NotBlank @Size(max = 4000) String after) {
 		this.ip = ip;
 		this.incidentAlarmId = incidentAlarmId;
 		this.before = before;

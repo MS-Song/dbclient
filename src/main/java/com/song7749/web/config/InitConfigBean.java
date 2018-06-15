@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +61,6 @@ import com.song7749.incident.value.IncidentAlarmVo;
 * @author song7749@gmail.com
 * @since 2018. 3. 29.
 */
-
 @Component
 public class InitConfigBean {
 
@@ -85,10 +85,36 @@ public class InitConfigBean {
 	IncidentAlarmManager incidentAlarmManager;
 
 	@Autowired
-	DataSource hikariH2;
+	DataSource hikariCP;
 
 	@Autowired
 	ModelMapper mapper;
+
+	@Value("${spring.datasource.url}")
+	private String springDatasourceUrl;
+
+	@Value("${spring.datasource.host}")
+	private String springDatasourceHost;
+
+	@Value("${spring.datasource.schemaName}")
+	private String springDatasourceSchemaName;
+
+	@Value("${spring.datasource.databaseName}")
+	private String springDatasourceDatabaseName;
+
+	@Value("${spring.datasource.username}")
+	private String springDatasourceUsername;
+
+	@Value("${spring.datasource.password}")
+	private String springDatasourcePassword;
+
+	@Value("${spring.datasource.driver-class-name}")
+	private String springDatasourceDriverClassName;
+
+	@Value("${spring.datasource.port}")
+	private String springDatasourcePort;
+
+
 
 	@Transactional
 	@PostConstruct
@@ -115,17 +141,42 @@ public class InitConfigBean {
 		}
 
 		// h2 dbconnection add
-		logger.info(format("{}", "H2 Database Datasource"),hikariH2);
-		if(null!=hikariH2) {
+		logger.info(format("{}", "Database Datasource"),hikariCP);
+		if(null!=hikariCP) {
+			// 데이터베이스 드라이버 명칭을 검색 한다.
+			String DatabaseName = null;
+
+			try {
+				DatabaseName=hikariCP.getConnection().getMetaData().getDatabaseProductName();
+				logger.trace(format("{}", "Database Name"),DatabaseName);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				logger.error(format("{}", "Database Name Fail"),DatabaseName);
+			}
+
+			if(logger.isTraceEnabled()) {
+				Object[] databaseInfo = {
+					springDatasourceDatabaseName,
+					springDatasourceHost,
+					springDatasourceUrl,
+					springDatasourcePort,
+					springDatasourceSchemaName,
+					springDatasourceUsername,
+					springDatasourcePassword,
+					springDatasourceDriverClassName};
+				logger.trace(format("DatabaseName:{}\nhost:{}\nURL:{}\nport:{}\nSchemaName:{}\nUserName:{}\nPassword:{}\nClassName:{}", "Define Database"),databaseInfo);
+			}
+			// database 설정
+
 			db = new Database(
-					"jdbc:h2:file:~/dbclient",
-					"DB Client Local H2 Database",
-					"PUBLIC",
-					"sa",
-					"",
-					DatabaseDriver.H2,
+					springDatasourceHost,
+					springDatasourceDatabaseName,
+					springDatasourceSchemaName,
+					springDatasourceUsername,
+					springDatasourcePassword,
+					DatabaseDriver.getDatabaseDriverByDriverClassName(springDatasourceDriverClassName),
 					Charset.UTF8,
-					"");
+					springDatasourcePort);
 
 			Example<Database> example = Example.of(db);
 			Optional<Database> oDB = databaseRepository.findOne(example);
@@ -138,27 +189,30 @@ public class InitConfigBean {
 
 			// db 를 pool map 객체에 넣는다.
 			Map<Database, DataSource> map = ((DBclientManagerImpl)dbClientManager).getDataSourceMap();
-			map.put(db, hikariH2);
+			map.put(db, hikariCP);
 			logger.info(format("{}", "H2 Database Add Complete"),map);
 
-			// comment 입력
-			String[] comments = {
-					 "COMMENT ON TABLE DATABASE IS 'Database 연결 정보'"
-					,"COMMENT ON TABLE LOG IS '로그 마스터 정보'"
-					,"COMMENT ON TABLE LOG_LOGIN IS '로그인 로그 정보'"
-					,"COMMENT ON TABLE MEMBER_DATABASE IS '회원과 데이터베이스 간의 연결'"
-					,"COMMENT ON TABLE LOG_QUERY IS '쿼리 실행 로그'"
-					,"COMMENT ON TABLE MEMBER_SAVE_QUERY IS '회원의 저장된 쿼리'"
-					,"COMMENT ON TABLE MEMBER IS '회원'"
-			};
-			ExecuteQueryDto dto = new ExecuteQueryDto();
-			dto.setId(db.getId());
-			dto.setIp("10.10.10.10");
-			dto.setAutoCommit(true);
-			dto.setLoginId(member.getLoginId());
-			for(String query : comments) {
-				dto.setQuery(query);
-				dbClientManager.executeQuery(dto);
+
+			if("H2".endsWith(DatabaseName)) {
+				// comment 입력
+				String[] comments = {
+						 "COMMENT ON TABLE DATABASE_INFO IS 'Database 연결 정보'"
+						,"COMMENT ON TABLE LOG IS '로그 마스터 정보'"
+						,"COMMENT ON TABLE LOG_LOGIN IS '로그인 로그 정보'"
+						,"COMMENT ON TABLE MEMBER_DATABASE IS '회원과 데이터베이스 간의 연결'"
+						,"COMMENT ON TABLE LOG_QUERY IS '쿼리 실행 로그'"
+						,"COMMENT ON TABLE MEMBER_SAVE_QUERY IS '회원의 저장된 쿼리'"
+						,"COMMENT ON TABLE MEMBER IS '회원'"
+				};
+				ExecuteQueryDto dto = new ExecuteQueryDto();
+				dto.setId(db.getId());
+				dto.setIp("10.10.10.10");
+				dto.setAutoCommit(true);
+				dto.setLoginId(member.getLoginId());
+				for(String query : comments) {
+					dto.setQuery(query);
+					dbClientManager.executeQuery(dto);
+				}
 			}
 		}
 

@@ -28,16 +28,16 @@ public class IncidentAlarmAddDto extends AbstractDto {
 
 	@ApiModelProperty(required=true,position=2,value="알람 감지 SQL || Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
 	@NotBlank
-	@Length(max = 8000)
+	@Length(max = 4000)
 	private String beforeSql;
 
 	@ApiModelProperty(required=true,position=3,value="본문내용 || 실행 SQL은 표형식 입니다. 상단에 표기할 메세지를 기록하세요. EX) 안녕하세요 XXX 입니다.등")
-	@Length(max = 8000)
+	@Length(max = 4000)
 	private String sendMessage;
 
 	@ApiModelProperty(required=true,position=4,value="알람 내역 SQL ||담당자에게 전송할 내용을 생성하는 SQL.<br>&ltsql&gt SELECT * FROM XX &lt/sql&gt<br>&ltsql&gt 테그가 없으면 1Query")
 	@NotBlank
-	@Length(max = 8000)
+	@Length(max = 4000)
 	private String runSql;
 
 	@ApiModelProperty(required=true,position=5,value="알람 방법 || EMAIL or SMS[MMS]")
@@ -79,7 +79,7 @@ public class IncidentAlarmAddDto extends AbstractDto {
 	 * @param sendMemberIds
 	 */
 	public IncidentAlarmAddDto(@NotBlank @Length(max = 60) String subject,
-			@NotBlank @Length(max = 8000) String beforeSql, @NotBlank @Length(max = 8000) String runSql,
+			@NotBlank @Length(max = 4000) String beforeSql, @NotBlank @Length(max = 4000) String runSql,
 			@NotNull SendMethod sendMethod, @NotNull YN enableYN, @NotBlank String schedule, @NotNull Long databaseId,
 			@NotNull Long memberId, @NotNull List<Long> sendMemberIds) {
 

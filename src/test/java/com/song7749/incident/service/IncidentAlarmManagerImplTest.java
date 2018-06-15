@@ -128,7 +128,7 @@ public class IncidentAlarmManagerImplTest {
 				"select * from Database",
 				SendMethod.EMAIL,
 				YN.Y,
-				"*/30 * * * * *",
+				"0 */1 * * * *",
 				database.getId(),
 				member.getId(),
 				memberIds);
@@ -151,13 +151,13 @@ public class IncidentAlarmManagerImplTest {
 				"select * from Database",
 				SendMethod.EMAIL,
 				YN.Y,
-				"*/40 * * * * *",
+				"0 */2 * * * *",
 				database2.getId(),
 				memberIds);
 		// when
 		vo = incidentAlarmManager.modifyIncidentAlarm(beforeConfirmDto);
 		// then
-		assertThat(vo.getSchedule(),equalTo("*/40 * * * * *"));
+		assertThat(vo.getSchedule(),equalTo("0 */2 * * * *"));
 	}
 
 //	@Test
@@ -187,13 +187,13 @@ public class IncidentAlarmManagerImplTest {
 				"테스트 모니터링",
 				"select 'Y' execute from dual",
 				YN.Y,
-				"*/50 * * * * *",
+				"0 */3 * * * *",
 				database.getId(),
 				memberIds);
 		// when
 		vo =incidentAlarmManager.modifyIncidentAlarm(afterConfirmDto);
 		// then
-		assertThat(vo.getSchedule(),equalTo("*/50 * * * * *"));
+		assertThat(vo.getSchedule(),equalTo("0 */3 * * * *"));
 	}
 
 	@Test
@@ -239,11 +239,11 @@ public class IncidentAlarmManagerImplTest {
 	@Test
 	public void testCrontabNext() throws Exception {
 		// give
-		String seconds30 = "*/30 * * * * *";
-//		String minits10 = "0 */10 * * * *";
+//		String seconds30 = "*/30 * * * * *";
+		String minits10 = "0 */10 * * * *";
 //		String hours8_10 = "0 0 8-10 * * *";
 		// when
-		List<Date> list = incidentAlarmManager.crontabNextRunTimes(seconds30);
+		List<Date> list = incidentAlarmManager.crontabNextRunTimes(minits10);
 		// then
 		assertThat(list.get(1), notNullValue());
 	}
