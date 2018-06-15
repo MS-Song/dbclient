@@ -863,7 +863,16 @@ var adminConfigMailServerForm = function(){
 		if(null!=data.json() 
 				&& data.json().httpStatus==200){
 			if(data.json().contents!=null){
-				$$("admin_config_main_server_form").setValues(data.json().contents);				
+				$$("admin_config_main_server_form").setValues({
+					host		: data.json().contents.host,
+					username	: data.json().contents.username,
+					password	: data.json().contents.password,
+					port		: data.json().contents.port,
+					protocol	: data.json().contents.protocol,
+					starttls	: data.json().contents.starttls ? "true": "false",
+					auth		: data.json().contents.auth		? "true": "false",
+					enableSSL	: data.json().contents.enableSSL? "true": "false"
+				});				
 			}
 		} else {
 			webix.message({ type:"error", text:data.json().message });
