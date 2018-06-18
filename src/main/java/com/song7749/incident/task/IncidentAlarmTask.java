@@ -148,7 +148,7 @@ public class IncidentAlarmTask implements Runnable {
 			try {
 				// email 전송
 				if(SendMethod.EMAIL.equals(incidentAlarm.getSendMethod())) {
-					sendEmailMessage(dto);
+					sendEmailMessage(makeEmailContents(dto));
 				}
 			} catch (Exception e) {
 				isExecute=false; // 실행 중지
@@ -178,8 +178,12 @@ public class IncidentAlarmTask implements Runnable {
 		}
 	}
 
-	private void sendEmailMessage(ExecuteQueryDto dto) {
-
+	/**
+	 * 메일 내용을 생성 한다.
+	 * @param dto
+	 * @return String
+	 */
+	private String makeEmailContents(ExecuteQueryDto dto) {
 		String sendEmailContents = "";
 		// 다중 발송인가 확인 필요 <sql> 테그가 있으면 다중 발송이다.
 		if(incidentAlarm.getRunSql().toLowerCase().indexOf("<sql>") >=0) {
@@ -221,6 +225,10 @@ public class IncidentAlarmTask implements Runnable {
 			MessageVo vo = dbClientManager.executeQuery(dto);
 			sendEmailContents = generateEmailHtml((List<Map<String, String>>) vo.getContents());
 		}
+		return sendEmailContents;
+	}
+
+	private void sendEmailMessage(String sendEmailContents) {
 
 		logger.info(format("{}", "SEND Email"),incidentAlarm.getId());
 		// 메세지 생성
@@ -235,12 +243,13 @@ public class IncidentAlarmTask implements Runnable {
 
 		// 메일 내용이 있는 경우에는 추가 한다.
 		if(StringUtils.isNotBlank(incidentAlarm.getSendMessage())) {
-			sendMessageBuffer.append(incidentAlarm.getSendMessage().replace("\r\n", "<br/>"));
+			logger.trace(format("{}", "Alarm Send Message"),incidentAlarm.getSendMessage());
+			sendMessageBuffer.append(incidentAlarm.getSendMessage().replace("\n", "<br/>"));
 		}
 
 		// 메일 contents 추가
 		if(StringUtils.isNotBlank(sendEmailContents)){
-			sendMessageBuffer.append(sendEmailContents.replace("\r\n", "<br/>"));
+			sendMessageBuffer.append(sendEmailContents.replace("\n", "<br/>"));
 		} else {
 			throw new IllegalArgumentException("메일 contets 가 없습니다. 실행 SQL을 확인해주세요");
 		}

@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -306,11 +307,12 @@ public class DatabaseSchemaController {
 		return new MessageVo(HttpStatus.OK.value(), "쿼리가 중지되었습니다.");
 	}
 
-	@ApiOperation(value = "데이터 베이스 캐시 삭제 - 미구현"
+	@ApiOperation(value = "데이터 베이스 캐시 삭제 "
 			,notes = "저장되어 있는 캐시를 일괄 삭제 한다"
 			,response=MessageVo.class)
 	@GetMapping(value="/deleteCache")
 	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@CacheEvict(cacheNames = {"com.song7749.database.cache"}, allEntries = true)
 	public MessageVo deleteCache(
 			HttpServletRequest request, HttpServletResponse response){
 		return new MessageVo(HttpStatus.OK.value(), "캐시가 갱신되었습니다.");

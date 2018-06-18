@@ -24,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -184,10 +185,12 @@ public class DBclientManagerImpl implements DBclientManager {
 	}
 
 
+	@Cacheable(value="com.song7749.database.cache",key="'selectTableVoList'+#id")
 	@Override
 	public List<TableVo> selectTableVoList(ExecuteQueryDto dto) {
 		// database 조회
 		Database database = getDatabase(dto.getId());
+
 		// 테이블 리스트 조회 쿼리 생성
 		dto.setQuery(database.getDriver().getTableListQuery(database));
 
@@ -209,6 +212,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
+	@Cacheable(value="com.song7749.database.cache",key="'selectTableFieldVoList'+#id")
 	@Override
 	public List<FieldVo> selectTableFieldVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -240,6 +244,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
+	@Cacheable(value="com.song7749.database.cache",key="'selectTableIndexVoList'+#id")
 	@Override
 	public List<IndexVo> selectTableIndexVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -268,6 +273,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
+	@Cacheable(value="com.song7749.database.cache",key="'selectViewVoList'+#id")
 	@Override
 	public List<ViewVo> selectViewVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -346,6 +352,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
+	@Cacheable(value="com.song7749.database.cache",key="'selectProcedureVoList'+#id")
 	@Override
 	public List<ProcedureVo> selectProcedureVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -420,6 +427,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
+	@Cacheable(value="com.song7749.database.cache",key="'selectFunctionVoList'+#id")
 	@Override
 	public List<FunctionVo> selectFunctionVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -493,6 +501,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
+	@Cacheable(value="com.song7749.database.cache",key="'selectTriggerVoList'+#id")
 	@Override
 	public List<TriggerVo> selectTriggerVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -573,6 +582,8 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
+
+	@Cacheable(value="com.song7749.database.cache",key="'selectSequenceVoList'+#id")
 	@Override
 	public List<SequenceVo> selectSequenceVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -613,6 +624,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		}
 	}
 
+	@Cacheable(value="com.song7749.database.cache",key="'selectShowCreateTable'+#id")
 	@Override
 	public List<DatabaseDdlVo> selectShowCreateTable(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -641,6 +653,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
+	@Cacheable(value="com.song7749.database.cache",key="'selectAllFieldList'+#id")
 	@Override
 	public List<FieldVo> selectAllFieldList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -923,7 +936,7 @@ public class DBclientManagerImpl implements DBclientManager {
 				}
 				// 유사한 테이블 명칭 검색
 				if(sql.indexOf(dpp.getTableName(),startTableOffset)>=0) {
-					// 테이블 명칭 앞 뒤의 단어가  "," 또는 " " 또는 "." 인가 확인 한다.
+					// 테이블 명칭 앞 뒤의 단어를 확인하기 위해 index 를 검사 한다.
 					int beforeIndex = sql.indexOf(dpp.getTableName(),startTableOffset);
 					int afterIndex = beforeIndex + dpp.getTableName().length();
 					// 시작점 변경
@@ -1021,8 +1034,6 @@ public class DBclientManagerImpl implements DBclientManager {
 						startFieldOffset=-1;
 					}
 				}
-				//TODO WHERE 에 있을 경우에는 허용해야 함.. 확인 필요..
-
 				// 필드명이 있을 경우 fail
 				if(isMatchFieldName){
 					throw new IllegalArgumentException("개인 정보 테이블 "+dpp.getTableName()+" 에 개인정보 컬럼 " + dpp.getFieldName() + " 가 포함되어 있습니다. 실행이 중단됩니다.");

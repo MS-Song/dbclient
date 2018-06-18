@@ -127,6 +127,10 @@ var resister_member_form = {
 					if(data.json().httpStatus ==200) {
 						webix.message(data.json().message);
 						$$("resister_member_popup").hide();
+						try {
+							// 관리자 회원 등록인 경우에 회원 리스트 새로 고침을 위해서 호출 한다.
+							$$("admin_search_button").callEvent("onItemClick");
+						} catch (e) {}
 					} else {
 						errorControll(data.json())
 					}

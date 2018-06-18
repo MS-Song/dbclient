@@ -413,6 +413,8 @@ var errorControll = function(response){
 	// 로그인 에러 처리
 	webix.message({ type:"error", text:response.message });
 	if(response.httpStatus == 405){
+		$$("menu").getBody().clearAll();
+		$$("menu").getBody().data.add({id: 1, value: "Login", 		icon: "user", 		func: "login_popup"},1);
 		login_popup();
 	} 
 };

@@ -4,6 +4,9 @@ INSERT INTO database_info (database_id,host,host_alias,schema_name,account,passw
 INSERT INTO database_info (database_id,host,host_alias,schema_name,account,password,driver,charset,port,create_date,modify_date) VALUES(nextval('hibernate_sequence'),'local-dev','oracle-local','XE','SONG7749','Hg4wBsGlYDlKGTP1G5mgCQ==','ORACLE','UTF8','1521',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 INSERT INTO database_info (database_id,host,host_alias,schema_name,account,password,driver,charset,port,create_date,modify_date) VALUES(nextval('hibernate_sequence'),'local-dev','mssql-local','TestDB','SA','nsrEB4MDwGX+ZjlBfdFq2Q==','MSSQL','UTF8','1401',GETDATE(),GETDATE());
 
+-- mail config 
+INSERT INTO MAIL_CONFIG (MAIL_CONFIG_ID,AUTH,CREATE_DATE,DEBUG,ENABLESSL,HOST,MODIFY_DATE,PASSWORD,PORT,PROTOCOL,QUITWAIT,SOCKET_FACTORY_CLASS,SOCKET_FACTORY_FALLBACK,STARTTLS,USERNAME)VALUES(nextval('hibernate_sequence'),'false',GETDATE(),'false','false','smtp.homeplusnet.co.kr',GETDATE(),'',25,'smtp','false','javax.net.ssl.SSLSocketFactory','false','false','');
+
 -- test member add
 INSERT INTO MEMBER (MEMBER_ID,APIKEY,AUTH_TYPE,CREATE_DATE,LAST_LOGIN_DATE,LOGIN_ID,MODIFY_DATE,NAME,PASSWORD,PASSWORD_ANSWER,PASSWORD_QUESTION,TEAM_NAME) VALUES(nextval('hibernate_sequence'),null,'NORMAL',GETDATE(),GETDATE(),'song0001@test.com',GETDATE(),'testMember1','Hg4wBsGlYDlKGTP1G5mgCQ==','passwordAnswer','passwordQuestion','testTeam1');
 INSERT INTO MEMBER (MEMBER_ID,APIKEY,AUTH_TYPE,CREATE_DATE,LAST_LOGIN_DATE,LOGIN_ID,MODIFY_DATE,NAME,PASSWORD,PASSWORD_ANSWER,PASSWORD_QUESTION,TEAM_NAME) VALUES(nextval('hibernate_sequence'),null,'NORMAL',GETDATE(),GETDATE(),'song0002@test.com',GETDATE(),'testMember2','Hg4wBsGlYDlKGTP1G5mgCQ==','passwordAnswer','passwordQuestion','testTeam1');

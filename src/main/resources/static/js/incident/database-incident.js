@@ -13,6 +13,33 @@ var executeQueryParams = {
 	limit:10
 }; 	
 
+/**
+ * DatabaseDriver 정보
+ */
+var drivers=null;
+webix.ready(function(){
+	webix.ajax().get("/database/getDatabaseDriver",function(text,data){
+		if(data.json().httpStatus==200){
+			drivers=data.json().contents;
+		} else {
+			webix.message({ type:"error", text:data.json().message});
+		}
+	});
+});
+
+/**
+ * Charset 정보
+ */
+var charset = null;
+webix.ready(function(){
+	webix.ajax().get("/database/getCharset",function(text,data){
+		if(data.json().httpStatus==200){
+			charset=data.json().contents;
+		} else {
+			webix.message({ type:"error", text:data.json().message});
+		}
+	});
+});
 
 /**
  * Database Query 입력 Popup
