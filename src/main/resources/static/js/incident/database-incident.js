@@ -198,7 +198,7 @@ var database_sql_execute_popup = function(view,databaseId,sql){
 							width:10
 						},	
 						{
-							// auto-commit 상태 확인
+							// use limit 상태 확인
 							id:"database_query_use_limit_info",
 							view:"label", 
 							label:"Use Limit : "+executeQueryParams.useLimit, 
@@ -276,7 +276,7 @@ var editorLazyLoading = function(sql){
 		// 에디터에 SQL 설정
 		$$("database_query_input").getEditor().setValue(sql);
 		// 자동완성 데이터 로딩
-		// database_query_all_field_load(executeQueryParams.id);
+		database_query_all_field_load(executeQueryParams.id);
 	}
 }
 

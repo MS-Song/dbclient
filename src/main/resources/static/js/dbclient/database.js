@@ -1108,7 +1108,7 @@ var database_query_cell = [{
 						width:10
 					},	
 					{
-						// auto-commit 상태 확인
+						// use limit 상태 확인
 						id:"database_query_use_limit_info",
 						view:"label", 
 						label:"Use Limit : "+executeQueryParams.useLimit, 

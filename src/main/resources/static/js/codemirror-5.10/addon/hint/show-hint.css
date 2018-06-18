@@ -1,6 +1,6 @@
 .CodeMirror-hints {
   position: absolute;
-  z-index: 10;
+  z-index: 200;
   overflow: hidden;
   list-style: none;
 
@@ -38,4 +38,13 @@
 li.CodeMirror-hint-active {
   background: #08f;
   color: white;
+}
+
+.fake {
+    height:1px;
+    width:100%;
+    position:absolute;
+    margin-top:3px;
+    left:0px;
+    z-index:200;
 }

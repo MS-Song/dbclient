@@ -73,6 +73,14 @@ webix.protoUI({
 			hintOptions		:this.config.hintOptions
 		});
 
+//		console.log(document.getElementsByClassName("CodeMirror cm-s-default")[0]);
+//		CodeMirror.commands.autocomplete = function(cm) {
+//			cm.showHint({
+//				hint: CodeMirror.hint.sql,
+//				container: document.getElementsByClassName("CodeMirror cm-s-default")[0]
+//			});
+//		};
+		
 		this.setValue(this.config.value);
 		
 		if (this._focus_await){

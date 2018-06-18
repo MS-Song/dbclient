@@ -207,7 +207,7 @@
     this.picked = false;
     var widget = this, cm = completion.cm;
 
-    var hints = this.hints = document.createElement("ul");
+    var hints = this.hints = document.createElement("div");
     hints.className = "CodeMirror-hints";
     this.selectedHint = data.selectedHint || 0;
 
