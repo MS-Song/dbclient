@@ -1,7 +1,9 @@
 package com.song7749.dbclient.service;
 
 import static com.song7749.util.LogMessageFormatter.format;
+import static com.song7749.util.StringUtils.getSubStringEqualMatchIndex;
 import static com.song7749.util.StringUtils.htmlentities;
+import static com.song7749.util.StringUtils.isSubStringEqualMatch;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -11,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -919,58 +922,12 @@ public class DBclientManagerImpl implements DBclientManager {
 			return true;
 		}
 		for(DatabasePrivacyPolicy dpp : dppList) {
-			// 테이블 매치 확인
-			boolean isMatchTable = false;
-			// 필드가 테이블 명으로 시작하는 경우도 있음으로, 인덱스를 바꿔가면서 계속 검사 한다.
-			int startTableOffset = 0;
-			// 테이블 명칭 검색 시작
-			while(true) {
-				logger.trace(format("{}", "Database Privacy start offset"),startTableOffset);
-
-				// 매치 되었거나, 매치되는 데이터가 없거나, index 가 초과 할 경우 중지
-				if(isMatchTable || startTableOffset < 0 || startTableOffset >= sql.length()) {
-					break;
-				}
-				// 유사한 테이블 명칭 검색
-				if(sql.indexOf(dpp.getTableName(),startTableOffset)>=0) {
-					// 테이블 명칭 앞 뒤의 단어를 확인하기 위해 index 를 검사 한다.
-					int beforeIndex = sql.indexOf(dpp.getTableName(),startTableOffset);
-					int afterIndex = beforeIndex + dpp.getTableName().length();
-					// 시작점 변경
-					startTableOffset = afterIndex+1;
-
-					// 앞단어가 " " 또는 "," "." 인가 확인
-					String beforIndexWord = sql.substring(beforeIndex-1, beforeIndex);
-					logger.trace(format("word : {}\nIndex:{}", "Database Privacy "+dpp.getTableName()+" before "),beforIndexWord,beforeIndex);
-
-					// 앞 단어 검증
-					if(beforIndexWord.equals(" ")
-							|| beforIndexWord.equals(",")
-							|| beforIndexWord.equals(".")
-							|| beforIndexWord.equals("(")) {
-						isMatchTable=true;
-					} else {
-						isMatchTable=false;
-					}
-
-					// SQL 의 길이가 큰 경우에만 검사
-					if(sql.length() >= afterIndex+1) {
-						// 뒤단어가 " " 또는 "," 인가 확인
-						String afterIndexWord = sql.substring(afterIndex, afterIndex+1);
-						logger.trace(format("word : {}\nIndex:{}", "Database Privacy "+dpp.getTableName()+" after "),afterIndexWord,afterIndex);
-
-						if(afterIndexWord.equals(" ")
-								|| afterIndexWord.equals(",")
-								|| afterIndexWord.equals(")")) {
-							isMatchTable=true;
-						} else {
-							isMatchTable=false;
-						}
-					}
-				} else {
-					startTableOffset=-1;
-				}
-			}
+			boolean isMatchTable = isSubStringEqualMatch(
+					sql.toLowerCase(),
+					dpp.getTableName().toLowerCase(),
+					0,
+					Arrays.asList(new String[] {" ",",",".","("}),
+					Arrays.asList(new String[] {" ",",",")"}));
 
 			// 테이블이 명확히 일치 하는 경우에만 검증
 			if(isMatchTable) {
@@ -979,61 +936,88 @@ public class DBclientManagerImpl implements DBclientManager {
 					throw new IllegalArgumentException("개인 정보 테이블 "+dpp.getTableName()+" 에 '*' 가 포함되어 있습니다. 실행이 중단됩니다.");
 				}
 
-				// 필드 명칭도 일치 하도록 처리 - 필드 앞에는 "." 또는 "," 또는 " " 가능하다.
-				boolean isMatchFieldName = false;
-				// 검색 시작 지정
-				int startFieldOffset = 0;
-				// 필드 검색 시작
-				while(true) {
-					logger.trace(format("{}", "Database Privacy field start offset"),startFieldOffset);
+				// 매핑 결과
+				boolean isMatchFieldName=false;
+				// 필드 명칭 검색
+				int fieldOffset = getSubStringEqualMatchIndex(
+						sql.toLowerCase(),
+						dpp.getFieldName().toLowerCase(),
+						0,
+						Arrays.asList(new String[] {" ",",",".","("}),
+						Arrays.asList(new String[] {" ",",",")"}));
 
-					// 매치 되었가나, 매치되는 데이터가 없거나, 쿼리 길이를 넘게 검사 한 경우에 중지 한다.
-					if(isMatchFieldName || startFieldOffset < 0 || startFieldOffset >= sql.length()) {
-						break;
+				// 해당 필드가 select ~ from 사이에 존재 하는지 검증
+				if(fieldOffset >= 0){
+					// select 의 위치를 모두 검색 한다.
+					int startSelectIndex = 0;
+					List<Integer> selectIndexList = new ArrayList<Integer>();
+					while(true) {
+						startSelectIndex = getSubStringEqualMatchIndex(
+								sql.toLowerCase(),
+								"select",
+								startSelectIndex,
+								Arrays.asList(new String[] {" ",",","("}),
+								Arrays.asList(new String[] {" ","("}));
+						if(startSelectIndex>=0) {
+							selectIndexList.add(startSelectIndex);
+						} else {
+							break;
+						}
+						startSelectIndex += "select".length();
+
+					}
+					logger.trace(format("{}", "selectIndexList Message"),selectIndexList);
+
+					// from 의 위치를 모두 검색 한다.
+					int startFromIndex = 0;
+					List<Integer> fromIndexList = new ArrayList<Integer>();
+					while(true) {
+						startFromIndex = getSubStringEqualMatchIndex(
+								sql.toLowerCase(),
+								"from",
+								startFromIndex,
+								Arrays.asList(new String[] {" ",")"}),
+								Arrays.asList(new String[] {" ","("}));
+						if(startFromIndex>=0) {
+							fromIndexList.add(startFromIndex);
+						} else {
+							break;
+						}
+						startFromIndex+="from".length();
+					}
+					logger.trace(format("{}", "fromIndexList Message"),fromIndexList);
+
+					if(selectIndexList.size()!=fromIndexList.size()) {
+						throw new IllegalArgumentException("개인정보 검색 시에는 select 명령과 from 명령의 개수가 일치해야 합니다.");
 					}
 
-					// 필드명이 있을 경우
-					if(sql.indexOf(dpp.getFieldName(),startFieldOffset)>=0){
-						// 필드 명칭의 앞/뒤를 검증 한다.
-						int beforeFieldIndex = sql.indexOf(dpp.getFieldName(),startFieldOffset);
-						int afterFieldIndex = beforeFieldIndex + dpp.getFieldName().length();
-						// 시작점 변경
-						startFieldOffset = afterFieldIndex+1;
-
-						// 앞단어가 " " 또는 "," "." 인가 확인하기 위에 앞 단어 자름
-						String beforFieldIndexWord = sql.substring(beforeFieldIndex-1, beforeFieldIndex);
-						logger.trace(format("word : {}\nIndex:{}", "Database Privacy Field "+dpp.getFieldName()+" before "),beforFieldIndexWord,beforeFieldIndex);
-
-						// 앞 단어 검증
-						if(beforFieldIndexWord.equals(" ")
-								|| beforFieldIndexWord.equals(",")
-								|| beforFieldIndexWord.equals(".")
-								|| beforFieldIndexWord.equals("(")) {
-							isMatchFieldName=true;
-						} else {
-							isMatchFieldName=false;
-						}
-						// SQL 의 길이가 큰 경우에만 검사
-						if(sql.length() >= afterFieldIndex+1) {
-							// 뒤단어가 " " 또는 "," 인가 확인
-							String afterFieldIndexWord = sql.substring(afterFieldIndex, afterFieldIndex+1);
-							logger.trace(format("word : {}\nIndex:{}", "Database Privacy Field "+dpp.getFieldName()+" after "),afterFieldIndexWord,afterFieldIndex);
-
-							if(afterFieldIndexWord.equals(" ")
-									|| afterFieldIndexWord.equals(",")
-									|| afterFieldIndexWord.equals(")")) {
-								isMatchFieldName=true;
-							} else {
-								isMatchFieldName=false;
+					// select 와 from 사이가 가장 짧은 구간부터 지워 간다.
+					int start = 0;
+					int end = 0;
+					// from 을 먼저 검색한다.
+					for(int fromIndex : fromIndexList) {
+						// select 를 검색하는데, from 에 제일 가까운 from 과의 사이 값을 구한다.
+						for(int selectIndex : selectIndexList) {
+							// offset 이 - 로 가면, 엇갈림으로, + 상태를 유지 한다.
+							if(fromIndex-selectIndex > 0) {
+								start=selectIndex;
+								end=fromIndex;
 							}
 						}
-					} else {
-						startFieldOffset=-1;
+						// 첫 from 부터 select 를 이동하며 그 사이에 필드가 존재 하는지 확인 한다.
+						// select ~ from 사이에 있는 경우에만 검증 한다.
+						if(start <= fieldOffset && end >= fieldOffset) {
+							isMatchFieldName=true;
+							break;
+						}
+						// 한번 검증이 된 구간은  제외 시켜야 한다.
+						selectIndexList.remove(new Integer(start));
 					}
 				}
+
 				// 필드명이 있을 경우 fail
 				if(isMatchFieldName){
-					throw new IllegalArgumentException("개인 정보 테이블 "+dpp.getTableName()+" 에 개인정보 컬럼 " + dpp.getFieldName() + " 가 포함되어 있습니다. 실행이 중단됩니다.");
+					throw new IllegalArgumentException("개인 정보 테이블 "+dpp.getTableName()+" 에 개인정보 컬럼 " + dpp.getFieldName() + " 가 포함되어 있습니다. 개인정보 필드는 Select ~ From 사이에는 허용되지 않습니다. 실행이 중단됩니다.");
 				}
 			}
 		}

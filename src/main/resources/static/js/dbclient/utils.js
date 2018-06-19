@@ -389,6 +389,7 @@ var autoCompleteEvent_Const=0;
 var autoCompleteEvent = function(){
 	// 중복 호출 방지
 	if(autoCompleteEvent_Const==0){
+		console.log("autoComplete Event Call");
 		$$("database_query_input").getEditor().on("keyup", function(cm, e) {
 			if (e.keyCode == 190) {
 			  $$("database_query_input").getEditor().execCommand("autocomplete")
