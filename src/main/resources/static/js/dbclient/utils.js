@@ -336,7 +336,7 @@ var database_query_all_field_load = function(databaseId){
 		setTimeout(function(){
 			// 테이블_필드 리스트 조회
 			autoCompleteAddTablesReset();
-			if(null!=database.id){
+			if(null!=databaseId){
 				webix.ajax().get("/database/getAllFieldList",database, 
 					function(text,data){
 						if(data.json().httpStatus ==200 && null!=data.json().contents){
