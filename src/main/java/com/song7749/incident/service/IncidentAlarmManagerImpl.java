@@ -18,6 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -93,6 +94,9 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 
 	@Autowired
 	private SimpMessagingTemplate template;
+
+	@Value("${app.alarm.scheduler.run}")
+	private boolean isSchedulerRun;
 
 	@Validate
 	@Transactional
@@ -328,16 +332,20 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	@Transactional
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 		// 실행 가능 상태이고, 컨펌이 완료된 task list를 가져온다.
-		IncidentAlarmFindDto dto = new IncidentAlarmFindDto();
-		dto.setEnableYN(YN.Y);
-		dto.setConfirmYN(YN.Y);
-		List<IncidentAlarm> alarmList = incidentAlarmRepository.findAll(dto);
 
-		// taskRegistrar 를 이용하지 않고 스케줄러에 직접 집어 넣는다.
-		for(IncidentAlarm incidentAlarm : alarmList) {
-			addOrModifyTasks(incidentAlarm);
+		// 스케줄러 실행 가능 상태인 경우에만..
+		if(isSchedulerRun) {
+			IncidentAlarmFindDto dto = new IncidentAlarmFindDto();
+			dto.setEnableYN(YN.Y);
+			dto.setConfirmYN(YN.Y);
+			List<IncidentAlarm> alarmList = incidentAlarmRepository.findAll(dto);
+
+			// taskRegistrar 를 이용하지 않고 스케줄러에 직접 집어 넣는다.
+			for(IncidentAlarm incidentAlarm : alarmList) {
+				addOrModifyTasks(incidentAlarm);
+			}
+			logger.trace(format("{}", "start task list"), taskMap);
 		}
-		logger.trace(format("{}", "start task list"), taskMap);
 	}
 
 	/**
@@ -345,30 +353,32 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	 * @param incidentAlarm
 	 */
 	private synchronized void addOrModifyTasks(IncidentAlarm incidentAlarm) {
+		// 스케줄러 실행 가능 상태인 경우에만..
+		if(isSchedulerRun) {
+			// 새로 설정하기 위해 제거 한다.
+			if(taskMap.containsKey(incidentAlarm.getId())) {
+				logger.trace(format("{}", "already task "), incidentAlarm.getId());
+				// 기존 스케줄을 제거 한다 -- 제거 해야 한다.
+				taskMap.get(incidentAlarm.getId()).cancel(true);
+				taskMap.remove(incidentAlarm.getId());
+			}
 
-		// 새로 설정하기 위해 제거 한다.
-		if(taskMap.containsKey(incidentAlarm.getId())) {
-			logger.trace(format("{}", "already task "), incidentAlarm.getId());
-			// 기존 스케줄을 제거 한다 -- 제거 해야 한다.
-			taskMap.get(incidentAlarm.getId()).cancel(true);
-			taskMap.remove(incidentAlarm.getId());
+			// 사용 중이 아니거나 , confirm 되지 않는 task 는 등록하지 않는다.
+			// 보내야할 사용자 리스트도 포함 되어야 한다.
+			if(YN.Y.equals(incidentAlarm.getEnableYN())
+					&& YN.Y.equals(incidentAlarm.getConfirmYN())
+					&& !incidentAlarm.getSendMembers().isEmpty()) {
+
+				ScheduledFuture<?> future = taskScheduler.schedule(
+						new IncidentAlarmTask(dbClientManager, incidentAlarm,
+								incidentAlarmRepository, emailService, template, mapper)
+						, new CronTrigger(incidentAlarm.getSchedule()));
+
+				taskMap.put(incidentAlarm.getId(), future);
+
+			}
+			logger.trace(format("{}", "add or modify cron task"), taskMap);
 		}
-
-		// 사용 중이 아니거나 , confirm 되지 않는 task 는 등록하지 않는다.
-		// 보내야할 사용자 리스트도 포함 되어야 한다.
-		if(YN.Y.equals(incidentAlarm.getEnableYN())
-				&& YN.Y.equals(incidentAlarm.getConfirmYN())
-				&& !incidentAlarm.getSendMembers().isEmpty()) {
-
-			ScheduledFuture<?> future = taskScheduler.schedule(
-					new IncidentAlarmTask(dbClientManager, incidentAlarm,
-							incidentAlarmRepository, emailService, template, mapper)
-					, new CronTrigger(incidentAlarm.getSchedule()));
-
-			taskMap.put(incidentAlarm.getId(), future);
-
-		}
-		logger.trace(format("{}", "add or modify cron task"), taskMap);
 	}
 
 	@Override
