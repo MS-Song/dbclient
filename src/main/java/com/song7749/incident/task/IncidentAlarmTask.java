@@ -20,6 +20,12 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,6 +184,34 @@ public class IncidentAlarmTask implements Runnable {
 					        HSSFRow row;
 					        // 쎌 생성
 					        HSSFCell cell;
+
+					        //스타일 설정 -- header
+					        CellStyle styleOfColorHeader = workbook.createCellStyle();
+					        //정렬
+					        styleOfColorHeader.setAlignment(HorizontalAlignment.CENTER);
+					        styleOfColorHeader.setVerticalAlignment(VerticalAlignment.CENTER);
+					        //테두리 라인
+					        styleOfColorHeader.setBorderRight(BorderStyle.THIN);
+					        styleOfColorHeader.setBorderLeft(BorderStyle.THIN);
+					        styleOfColorHeader.setBorderTop(BorderStyle.THIN);
+					        styleOfColorHeader.setBorderBottom(BorderStyle.THIN);
+					        styleOfColorHeader.setFillForegroundColor(HSSFColorPredefined.AQUA.getIndex());
+					        styleOfColorHeader.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+					        //스타일 설정 -- header
+					        CellStyle styleOfColorBody = workbook.createCellStyle();
+					        //정렬
+					        styleOfColorBody.setAlignment(HorizontalAlignment.CENTER);
+					        styleOfColorBody.setVerticalAlignment(VerticalAlignment.CENTER);
+					        //테두리 라인
+					        styleOfColorBody.setBorderRight(BorderStyle.THIN);
+					        styleOfColorBody.setBorderLeft(BorderStyle.THIN);
+					        styleOfColorBody.setBorderTop(BorderStyle.THIN);
+					        styleOfColorBody.setBorderBottom(BorderStyle.THIN);
+					        styleOfColorBody.setFillForegroundColor(HSSFColorPredefined.WHITE.getIndex());
+					        styleOfColorBody.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+
 					        // 엑셀 생성 시작
 					        int listLoop=0;
 					        int mapLoop=0;
@@ -185,20 +219,24 @@ public class IncidentAlarmTask implements Runnable {
 					        	// 첫번째 loop 인 경우에는 header 를 만든다.
 					        	if(listLoop==0) {
 				        			row = sheet.createRow(listLoop);
+				        			// 색상 지정
 				        			for(String key : ((Map<String, String>)data).keySet()) {
-					        			cell = row.createCell(mapLoop);
+				        				cell = row.createCell(mapLoop);
 				        		        cell.setCellValue(key);
+				        		        cell.setCellStyle(styleOfColorHeader);
 						        		mapLoop++;
 						        	}
 				        			mapLoop=0;
 					        	}
+					        	// 색상 지정
 					        	// 그 외에는 body 를 만든다.
 			        			row = sheet.createRow(listLoop+1);
 			        			for(String key : ((Map<String, String>)data).keySet()) {
 			        				cell = row.createCell(mapLoop);
 				        		    cell.setCellValue((String)data.get(key));
-			        				sheet.autoSizeColumn(mapLoop);
-				        		    mapLoop++;
+			        		        cell.setCellStyle(styleOfColorBody);
+				        		    sheet.autoSizeColumn(mapLoop);
+			        				mapLoop++;
 					        	}
 					        	listLoop++;
 					        	mapLoop=0;

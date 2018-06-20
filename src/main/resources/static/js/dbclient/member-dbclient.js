@@ -3,7 +3,8 @@ webix.ready(function(){
 	// 로그인 정보 획득
 	webix.ajax().get("/member/getLogin", function(text,data){
 		// 로그인 정보를 획득한 경우
-		if(data.json().httpStatus ==200 
+		if(null!= data.json() 
+				&& data.json().httpStatus ==200 
 				&& null!=data.json().contents){	
 			// 로그인 정보 획득 
 			member = data.json().contents;

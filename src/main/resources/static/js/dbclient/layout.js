@@ -189,7 +189,7 @@ webix.ready(function(){
 			data:[
 				{id: 1, value: "DBClient", 				icon: "bookmark", 		func: "mvSite('index.html')"},
 				{id: 3, value: "IncidentAlert", 		icon: "bookmark", 		func: "mvSite('/static/incident.html')"},
-				{id: 4, value: "API Development", 		icon: "bookmark", 		func: "mvSite('/static/api.html')"}
+				{id: 4, value: "API Development", 		icon: "bookmark", 		func: "mvSite('/static/service_reqest.html')"}
 			],
 			select:true,
 			type:{ height: 30 },
