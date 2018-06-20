@@ -3,8 +3,6 @@ package com.song7749.web.config;
 import static com.song7749.util.LogMessageFormatter.format;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,8 +19,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.song7749.base.SendMethod;
-import com.song7749.base.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.Member;
 import com.song7749.dbclient.repository.DatabaseRepository;
@@ -37,9 +33,6 @@ import com.song7749.dbclient.value.ExecuteQueryDto;
 import com.song7749.dbclient.value.MemberVo;
 import com.song7749.incident.repository.IncidentAlarmRepository;
 import com.song7749.incident.service.IncidentAlarmManager;
-import com.song7749.incident.value.IncidentAlarmAddDto;
-import com.song7749.incident.value.IncidentAlarmConfirmDto;
-import com.song7749.incident.value.IncidentAlarmVo;
 
 /**
  * <pre>
@@ -229,35 +222,35 @@ public class InitConfigBean {
 			}
 		}
 
-		// incident Alert 의 job 을 하나 등록 한다.(Log 삭제)
-		List<Long> memberIds = new ArrayList<Long>();
-		memberIds.add(member.getId());
-		memberIds.add(member.getId());
-		memberIds.add(member.getId());
-
-		IncidentAlarmAddDto dto = new IncidentAlarmAddDto(
-				"[로그 삭제] dbclient 30일 지난 로그를 삭제 - 매일 00:30 에 실행 됨",
-				"select 'Y' execute from dual",
-				"<sql> DELETE from LOG_QUERY lq where lq.LOG_ID in (select l.LOG_ID from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE)) </sql>" +
-				"<sql> DELETE from LOG_INCIDENT_ALARM lq where lq.LOG_ID in (select l.LOG_ID from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE)) </sql>" +
-				"<sql> DELETE from LOG_LOGIN lq where lq.LOG_ID in (select l.LOG_ID from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE)) </sql>" +
-				"<sql> DELETE from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE) </sql>" +
-				"<sql> select count(LOG_ID) from LOG </sql>",
-				SendMethod.EMAIL,
-				YN.Y,
-				"0 30 00 * * *",
-				db.getId(),
-				member.getId(),
-				memberIds);
-		IncidentAlarmVo vo = incidentAlarmManager.addIncidentAlarm(dto);
-
-		IncidentAlarmConfirmDto confirmDto = new IncidentAlarmConfirmDto(
-				vo.getId(),
-				YN.Y,
-				new Date(System.currentTimeMillis()),
-				member.getId());
-
-		incidentAlarmManager.confirmIncidentAlarm(confirmDto);
+//		// incident Alert 의 job 을 하나 등록 한다.(Log 삭제)
+//		List<Long> memberIds = new ArrayList<Long>();
+//		memberIds.add(member.getId());
+//		memberIds.add(member.getId());
+//		memberIds.add(member.getId());
+//
+//		IncidentAlarmAddDto dto = new IncidentAlarmAddDto(
+//				"[로그 삭제] dbclient 30일 지난 로그를 삭제 - 매일 00:30 에 실행 됨",
+//				"select 'Y' execute from dual",
+//				"<sql> DELETE from LOG_QUERY lq where lq.LOG_ID in (select l.LOG_ID from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE)) </sql>" +
+//				"<sql> DELETE from LOG_INCIDENT_ALARM lq where lq.LOG_ID in (select l.LOG_ID from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE)) </sql>" +
+//				"<sql> DELETE from LOG_LOGIN lq where lq.LOG_ID in (select l.LOG_ID from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE)) </sql>" +
+//				"<sql> DELETE from LOG l where l.DATE < DATEADD('DAY',-30, CURRENT_DATE) </sql>" +
+//				"<sql> select count(LOG_ID) from LOG </sql>",
+//				SendMethod.EMAIL,
+//				YN.Y,
+//				"0 30 00 * * *",
+//				db.getId(),
+//				member.getId(),
+//				memberIds);
+//		IncidentAlarmVo vo = incidentAlarmManager.addIncidentAlarm(dto);
+//
+//		IncidentAlarmConfirmDto confirmDto = new IncidentAlarmConfirmDto(
+//				vo.getId(),
+//				YN.Y,
+//				new Date(System.currentTimeMillis()),
+//				member.getId());
+//
+//		incidentAlarmManager.confirmIncidentAlarm(confirmDto);
 
 //		// 테스트를 위한 대량 등록
 //		for(int i=0;i<50;i++) {
