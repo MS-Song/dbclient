@@ -2,7 +2,12 @@ package com.song7749.incident.task;
 
 import static com.song7749.util.LogMessageFormatter.format;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +16,10 @@ import java.util.Map;
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +135,6 @@ public class IncidentAlarmTask implements Runnable {
 			try {
 				MessageVo vo = dbClientManager.executeQuery(dto);
 				List<Map<String,String>> contents = (List<Map<String, String>>) vo.getContents();
-
 				if(null!=contents && contents.size()>0) {
 					for(String  key : contents.get(0).keySet()) {
 						if("Y".equals(contents.get(0).get(key))){
@@ -148,7 +156,83 @@ public class IncidentAlarmTask implements Runnable {
 			try {
 				// email 전송
 				if(SendMethod.EMAIL.equals(incidentAlarm.getSendMethod())) {
-					sendEmailMessage(makeEmailContents(dto));
+					String emailContents=null;
+					String fileName=null;
+					// 다중 SQL 인 경우에는 컨텐츠 생성.
+					if(incidentAlarm.getRunSql().toLowerCase().indexOf("<sql>") >=0) {
+						emailContents = makeEmailContents(dto);
+					} else { // 싱글 SQL 인 경우
+						// contents 의 길이가 길면 엑셀로 만들어서 첨부해야 한다.
+						dto.setQuery(incidentAlarm.getRunSql());
+						MessageVo vo = dbClientManager.executeQuery(dto);
+						// size 가 긴 경우 엑셀로 만들어서 첨부한다.
+						if(null!=vo.getContents()
+								&& vo.getContents() instanceof List
+								&& ((List)vo.getContents()).size() > 0) {
+
+					        // 워크북 생성
+					        HSSFWorkbook workbook = new HSSFWorkbook();
+					        // 워크시트 생성
+					        HSSFSheet sheet = workbook.createSheet();
+					        // 행 생성
+					        HSSFRow row;
+					        // 쎌 생성
+					        HSSFCell cell;
+					        // 엑셀 생성 시작
+					        int listLoop=0;
+					        int mapLoop=0;
+					        for(Map data : (List<Map<String, String>>)vo.getContents()) {
+					        	// 첫번째 loop 인 경우에는 header 를 만든다.
+					        	if(listLoop==0) {
+				        			row = sheet.createRow(listLoop);
+				        			for(String key : ((Map<String, String>)data).keySet()) {
+					        			cell = row.createCell(mapLoop);
+				        		        cell.setCellValue(key);
+						        		mapLoop++;
+						        	}
+				        			mapLoop=0;
+					        	}
+					        	// 그 외에는 body 를 만든다.
+			        			row = sheet.createRow(listLoop+1);
+			        			for(String key : ((Map<String, String>)data).keySet()) {
+			        				cell = row.createCell(mapLoop);
+				        		    cell.setCellValue((String)data.get(key));
+			        				sheet.autoSizeColumn(mapLoop);
+				        		    mapLoop++;
+					        	}
+					        	listLoop++;
+					        	mapLoop=0;
+					        }
+							// 엑셀 파일을 생성하여 저장 한다.
+							fileName=System.getProperty("java.io.tmpdir")+"/"+incidentAlarm.getId() + "mail_contents.xls";
+							File file = new File(fileName);
+							FileOutputStream fos = null;
+							try {
+								fos = new FileOutputStream(file);
+								workbook.write(fos);
+							} catch (FileNotFoundException e) {
+								throw e;
+							} catch (IOException e) {
+								throw e;
+							} finally {
+								try {
+									if(workbook!=null) workbook.close();
+									if(fos!=null) fos.close();
+								} catch (IOException e) {
+									throw e;
+								}
+							}
+						} else { // 짧은 경우에는  내용으로 첨부 한다.
+							emailContents = generateEmailHtml((List<Map<String, String>>) vo.getContents());
+						}
+					}
+					sendEmailMessage(emailContents, fileName);
+					// 메일 전송 후 파일 삭제
+					// 삭제할 필요가 있을까 고민 필요.. 계속 쓸테니..
+					File file = new File(fileName);
+					if(file.exists()) {
+						file.delete();
+					}
 				}
 			} catch (Exception e) {
 				isExecute=false; // 실행 중지
@@ -158,7 +242,7 @@ public class IncidentAlarmTask implements Runnable {
 			}
 		}
 
-		// 전송
+		// 전송완료 후 기록
 		if(isExecute) {
 			incidentAlarm.setLastErrorMessage("");
 			incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
@@ -185,7 +269,7 @@ public class IncidentAlarmTask implements Runnable {
 	 */
 	private String makeEmailContents(ExecuteQueryDto dto) {
 		String sendEmailContents = "";
-		// 다중 발송인가 확인 필요 <sql> 테그가 있으면 다중 발송이다.
+		// 다중 발송인가 확인 필요 <sql> 테그가 있으면 다중 발송이다. 다중 발송일 경우에는 엑셀 첨부를 지원하지 않는다.
 		if(incidentAlarm.getRunSql().toLowerCase().indexOf("<sql>") >=0) {
 			// 쓰기 테그와 닫기테그가 같은 숫자인지 확인한다.
 			int openTag = StringUtils.countMatches(incidentAlarm.getRunSql(), "<sql>");
@@ -200,7 +284,7 @@ public class IncidentAlarmTask implements Runnable {
 			for(int i=0;i<openTag;i++) {
 				// 해당 테그의 시작과 끝을 뽑아온다.
 				int startIndex=contents.toLowerCase().indexOf("<sql>");
-				int endIndex=contents.toLowerCase().indexOf("</sql>")+6;
+				int endIndex=contents.toLowerCase().indexOf("</sql>") + "</sql>".length();
 				if(startIndex>=0) {
 					String sql = contents.substring(startIndex, endIndex);
 					contents=contents.replace(sql, "#^#"+i);
@@ -220,15 +304,11 @@ public class IncidentAlarmTask implements Runnable {
 			sendEmailContents=contents;
 //			logger.trace(format("{}", "email Send"),sendEmailContents);
 //			throw new IllegalArgumentException("실행중지");
-		} else {
-			dto.setQuery(incidentAlarm.getRunSql());
-			MessageVo vo = dbClientManager.executeQuery(dto);
-			sendEmailContents = generateEmailHtml((List<Map<String, String>>) vo.getContents());
 		}
 		return sendEmailContents;
 	}
 
-	private void sendEmailMessage(String sendEmailContents) {
+	private void sendEmailMessage(String sendEmailContents, String fileName) {
 
 		logger.info(format("{}", "SEND Email"),incidentAlarm.getId());
 		// 메세지 생성
@@ -250,8 +330,6 @@ public class IncidentAlarmTask implements Runnable {
 		// 메일 contents 추가
 		if(StringUtils.isNotBlank(sendEmailContents)){
 			sendMessageBuffer.append(sendEmailContents.replace("\n", "<br/>"));
-		} else {
-			throw new IllegalArgumentException("메일 contets 가 없습니다. 실행 SQL을 확인해주세요");
 		}
 
 		// 전송 대상자 포멧 변경
@@ -273,6 +351,12 @@ public class IncidentAlarmTask implements Runnable {
 				, incidentAlarm.getSubject()
 				, sendMessageBuffer.toString()
 				, null);
+
+		// 파일이 있는 경우
+		if(StringUtils.isNotBlank(fileName)) {
+			vo.setFiles(Arrays.asList(new String[] {fileName}));
+		}
+
 		// 메일 전송
 		try {
 			emailService.sendMessage(vo);

@@ -130,7 +130,8 @@ public class IncidentAlarmTaskTest {
 				"테스트 모니터링",
 				"select 'Y' execute from dual",
 				//"첫번째 SQL 입니다 \r\n <sql>select * from database_info </sql>\r\n 두번째 SQL 입니다 \r\n <sql>select * from member</sql>\r\n 세번째 SQL 입니다 \r\n  <sql>select * from log</sql>",
-				"메일 내용은 이러하다 \r\n <sql> select * from database_info </sql>  \r\n 메일 내용은 이러하다 \r\n <sql> select * from database_info </sql>",
+				//"메일 내용은 이러하다 \r\n <sql> select * from database_info </sql>  \r\n 메일 내용은 이러하다 \r\n <sql> select * from database_info </sql>",
+				"select * from database_info",
 				SendMethod.EMAIL,
 				YN.Y,
 				"*/10 * * * * *",
@@ -156,6 +157,6 @@ public class IncidentAlarmTaskTest {
 		task.run();
 
 		// thread 처리 종료 시간을 벌어 준다.
-		Thread.sleep(10000);
+		Thread.sleep(15000);
 	}
 }
