@@ -73,6 +73,10 @@ public class Database extends Entities {
 	@Length(max = 120)
 	private String schemaName;
 
+	@Column(nullable = true)
+	@Length(max = 120)
+	private String schemaOwner;
+
 	@Column(nullable = false)
 	@Length(max = 60)
 	@NotBlank
@@ -201,6 +205,14 @@ public class Database extends Entities {
 
 	public void setSchemaName(String schemaName) {
 		this.schemaName = schemaName;
+	}
+
+	public String getSchemaOwner() {
+		return schemaOwner;
+	}
+
+	public void setSchemaOwner(String schemaOwner) {
+		this.schemaOwner = schemaOwner;
 	}
 
 	public String getAccount() {

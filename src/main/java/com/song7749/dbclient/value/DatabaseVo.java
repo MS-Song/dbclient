@@ -27,6 +27,9 @@ public class DatabaseVo extends AbstractVo {
 	@ApiModelProperty("Schema(SID)")
 	private String schemaName;
 
+	@ApiModelProperty("Oracle Database Owner")
+	private String schemaOwner;
+
 	@ApiModelProperty("Account")
 	private String account;
 
@@ -108,6 +111,16 @@ public class DatabaseVo extends AbstractVo {
 	public void setSchemaName(String schemaName) {
 		this.schemaName = schemaName;
 	}
+
+	public String getSchemaOwner() {
+		return schemaOwner;
+	}
+
+
+	public void setSchemaOwner(String schemaOwner) {
+		this.schemaOwner = schemaOwner;
+	}
+
 
 	public String getAccount() {
 		return account;

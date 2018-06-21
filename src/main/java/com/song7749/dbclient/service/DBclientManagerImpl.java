@@ -135,6 +135,11 @@ public class DBclientManagerImpl implements DBclientManager {
 			// 오라클의 경우 client, terminal 이름을 변경 한다.
 			if(database.getDriver().equals(DatabaseDriver.ORACLE)){
 				hDataSource.addDataSourceProperty("v$session.program","dbClient");
+				// schema alias 처리
+				if(StringUtils.isNotBlank(database.getSchemaOwner())){
+					hDataSource.setConnectionInitSql("ALTER SESSION SET CURRENT_SCHEMA="+database.getSchemaOwner());
+				}
+
 				try {
 					InetAddress localhost = java.net.InetAddress.getLocalHost();
 					hDataSource.addDataSourceProperty("v$session.terminal",localhost.getHostName());

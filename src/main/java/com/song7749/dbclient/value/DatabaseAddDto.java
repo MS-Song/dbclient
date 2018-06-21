@@ -34,8 +34,13 @@ public class DatabaseAddDto  extends AbstractDto {
 	private String hostAlias;
 
 	@Length(max=120)
+	@NotBlank
 	@ApiModelProperty(value="Database Schema(Mysql), SID(Oracle)..., if embaded database is skip.")
 	private String schemaName;
+
+	@Length(max=120)
+	@ApiModelProperty(value="Oracle 접속 계정과 Database Owner 가 다를 경우에 추가 입력")
+	private String schemaOwner;
 
 	@Length(max=60)
 	@NotBlank
@@ -122,6 +127,14 @@ public class DatabaseAddDto  extends AbstractDto {
 		this.schemaName = schemaName;
 	}
 
+	public String getSchemaOwner() {
+		return schemaOwner;
+	}
+
+
+	public void setSchemaOwner(String schemaOwner) {
+		this.schemaOwner = schemaOwner;
+	}
 
 	public String getAccount() {
 		return account;

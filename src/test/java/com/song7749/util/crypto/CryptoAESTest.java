@@ -11,7 +11,7 @@ public class CryptoAESTest {
 
 	@Test
 	public void testCrypto() {
-		String encrypt = CryptoAES.encrypt("94426dscd");
+		String encrypt = CryptoAES.encrypt("oracle");
 		String decrypt = CryptoAES.decrypt(encrypt);
 		logger.trace(format("before : {} , after : {} ", "CryptoAESTest"),encrypt,decrypt);
 	}

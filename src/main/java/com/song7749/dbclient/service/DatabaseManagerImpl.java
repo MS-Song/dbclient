@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -72,6 +73,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
 	@Validate
 	@Transactional
 	public DatabaseVo addDatabase(DatabaseAddDto dto) {
+		if(StringUtils.isBlank(dto.getSchemaOwner())) {
+			dto.setSchemaOwner(dto.getAccount());
+		}
+
 		return databaseRepository
 				.saveAndFlush(mapper.map(dto, Database.class))
 				.getDatabaseVo(mapper);
@@ -84,6 +89,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
 		Optional<Database> oDatabase = databaseRepository.findById(dto.getId());
 		if(!oDatabase.isPresent()) {
 			throw new IllegalArgumentException("Database 가 존재하지 않습니다.");
+		}
+
+		if(StringUtils.isBlank(dto.getSchemaOwner())) {
+			dto.setSchemaOwner(dto.getAccount());
 		}
 
 		Database database = oDatabase.get();
@@ -100,6 +109,9 @@ public class DatabaseManagerImpl implements DatabaseManager {
 	public Integer addOrModifyDatabaseFasade(List<DatabaseModifyDto> dtos) {
 		List<Database> databases = new ArrayList<Database>();
 		for(DatabaseModifyDto dto : dtos) {
+			if(StringUtils.isBlank(dto.getSchemaOwner())) {
+				dto.setSchemaOwner(dto.getAccount());
+			}
 			// TODO Database 에 대한 조회가 빈번 할 수 있다 ID 기반으로 대량 조회하는 것을 고민해볼 필요가 있다.
 			Optional<Database> oDatabase = databaseRepository.findById(dto.getId());
 			if(oDatabase.isPresent()) {

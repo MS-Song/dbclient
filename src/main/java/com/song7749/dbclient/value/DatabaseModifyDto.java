@@ -27,6 +27,8 @@ public class DatabaseModifyDto  extends AbstractDto {
 
 	private String schemaName;
 
+	private String schemaOwner;
+
 	private String account;
 
 	private String password;
@@ -112,6 +114,15 @@ public class DatabaseModifyDto  extends AbstractDto {
 
 	public void setSchemaName(String schemaName) {
 		this.schemaName = schemaName;
+	}
+
+	public String getSchemaOwner() {
+		return schemaOwner;
+	}
+
+
+	public void setSchemaOwner(String schemaOwner) {
+		this.schemaOwner = schemaOwner;
 	}
 
 
