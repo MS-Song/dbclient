@@ -193,7 +193,7 @@ public class DBclientManagerImpl implements DBclientManager {
 	}
 
 
-	@Cacheable(value="com.song7749.database.cache",key="'selectTableVoList' + #id")
+	@Cacheable(value="com.song7749.database.cache",key="'selectTableVoList' + #dto.id")
 	@Override
 	public List<TableVo> selectTableVoList(ExecuteQueryDto dto) {
 		// database 조회
@@ -279,7 +279,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
-	@Cacheable(value="com.song7749.database.cache",key="'selectViewVoList' + #id")
+	@Cacheable(value="com.song7749.database.cache",key="'selectViewVoList' + #dto.id")
 	@Override
 	public List<ViewVo> selectViewVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -358,7 +358,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
-	@Cacheable(value="com.song7749.database.cache",key="'selectProcedureVoList' + #id")
+	@Cacheable(value="com.song7749.database.cache",key="'selectProcedureVoList' + #dto.id")
 	@Override
 	public List<ProcedureVo> selectProcedureVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -433,7 +433,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
-	@Cacheable(value="com.song7749.database.cache",key="'selectFunctionVoList' + #id")
+	@Cacheable(value="com.song7749.database.cache",key="'selectFunctionVoList' + #dto.id")
 	@Override
 	public List<FunctionVo> selectFunctionVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -507,7 +507,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
-	@Cacheable(value="com.song7749.database.cache",key="'selectTriggerVoList' + #id")
+	@Cacheable(value="com.song7749.database.cache",key="'selectTriggerVoList' + #dto.id")
 	@Override
 	public List<TriggerVo> selectTriggerVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -589,7 +589,7 @@ public class DBclientManagerImpl implements DBclientManager {
 	}
 
 
-	@Cacheable(value="com.song7749.database.cache",key="'selectSequenceVoList' + #id")
+	@Cacheable(value="com.song7749.database.cache",key="'selectSequenceVoList' + #dto.id")
 	@Override
 	public List<SequenceVo> selectSequenceVoList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
@@ -658,7 +658,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		return list;
 	}
 
-	@Cacheable(value="com.song7749.database.cache",key="'selectAllFieldList' + #id")
+	@Cacheable(value="com.song7749.database.cache",key="'selectAllFieldList' + #dto.id")
 	@Override
 	public List<FieldVo> selectAllFieldList(ExecuteQueryDto dto) {
 		Database database = getDatabase(dto.getId());
