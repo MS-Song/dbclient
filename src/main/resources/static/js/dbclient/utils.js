@@ -67,7 +67,14 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 		$$(viewName).refresh();
 		$$(viewName).hideProgress();
 	} else {
-		webix.ajax().get(url,parmeters, function(text,data){
+
+		let promise = null;
+		if(url=="/database/executeQuery"){
+			promise = webix.ajax().post(url,parmeters);
+		} else {
+			promise = webix.ajax().get(url,parmeters);
+		}
+		promise.then(function success(data){
 			if(data.json().httpStatus ==200 && null!=data.json().contents){
 				// 배열인 경우에만 처리한다. response 에 배열은 결과 데이터외에 없다.
 				var obj = null;
@@ -168,6 +175,8 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 			$$(viewName).refresh();
 			// progress 를 닫는다.
     		$$(viewName).hideProgress();
+		}, function error(err){
+			console.log(err.json());
 		});
 	}
 	// 시간 객체 제거 -- 오류가 나도 제거한다.

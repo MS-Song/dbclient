@@ -206,7 +206,8 @@ webix.ready(function(){
 			data:[
 				{id: 1, value: "DBClient", 				icon: "bookmark", 		func: "mvSite('index.html')"},
 				{id: 3, value: "IncidentAlert", 		icon: "bookmark", 		func: "mvSite('/static/incident.html')"},
-				{id: 4, value: "API Development", 		icon: "bookmark", 		func: "mvSite('/static/service_reqest.html')"}
+				{id: 4, value: "SR Data Center", 		icon: "bookmark", 		func: "mvSite('/static/service_reqeust.html')"},
+				{id: 5, value: "API Development", 		icon: "bookmark", 		func: "mvSite('/static/api_development.html')"}
 			],
 			select:true,
 			type:{ height: 30 },
