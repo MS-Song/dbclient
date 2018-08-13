@@ -164,7 +164,7 @@ public enum DatabaseDriver {
 			// validate query
 			"select 1 from dual",
 			// table list
-			"SELECT T1.TABLE_NAME TABLE_NAME,T2.COMMENTS TABLE_COMMENT FROM ALL_TABLES T1, DBA_TAB_COMMENTS T2 WHERE T2.TABLE_NAME(+) = T1.TABLE_NAME and T1.OWNER=T2.OWNER and T1.OWNER=upper('{schemaOwner}') order by TABLE_NAME asc",
+			"SELECT T1.TABLE_NAME TABLE_NAME,T2.COMMENTS TABLE_COMMENT FROM ALL_TABLES T1, ALL_TAB_COMMENTS T2 WHERE T2.TABLE_NAME(+) = T1.TABLE_NAME and T1.OWNER=T2.OWNER and T1.OWNER=upper('{schemaOwner}') order by TABLE_NAME asc",
 			// field list
 			"SELECT a.COLUMN_ID,a.COLUMN_NAME,a.NULLABLE,decode(b.CONSTRAINT_TYPE,null,'NO','YES') COLUMN_KEY,a.DATA_TYPE,a.DATA_LENGTH,'' CHARACTER_SET,a.DATA_SCALE EXTRA,a.DATA_DEFAULT DEFAULT_VALUE,c.COMMENTS COMMENTS FROM ALL_TAB_COLUMNS a, ( SELECT a.TABLE_NAME,a.COLUMN_NAME,b.CONSTRAINT_TYPE FROM ALL_CONS_COLUMNS a, ALL_CONSTRAINTS b WHERE a.TABLE_NAME = b.TABLE_NAME AND a.CONSTRAINT_NAME = b.CONSTRAINT_NAME AND b.CONSTRAINT_TYPE='P') b, ALL_COL_COMMENTS c  WHERE a.TABLE_NAME = b.TABLE_NAME (+) AND a.COLUMN_NAME = b.COLUMN_NAME (+) AND a.TABLE_NAME = c.TABLE_NAME (+) AND a.COLUMN_NAME = c.COLUMN_NAME (+) AND a.OWNER=c.OWNER AND a.OWNER=upper('{schemaOwner}') AND a.TABLE_NAME = '{name}' ORDER BY a.COLUMN_ID",
 			// index list
@@ -205,7 +205,7 @@ public enum DatabaseDriver {
 			// kill process
 			"alter system kill session '{id}'",
 			// create table query
-			"select dbms_metadata.get_ddl( 'TABLE', '{name}', '{schemaOwner}' ) as CREATE_TALBE from dual",
+			"select dbms_metadata.get_ddl( 'TABLE', upper('{name}'), upper('{schemaOwner}') ) as CREATE_TALBE from dual",
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"SELECT UTC.TABLE_NAME AS TABLE_NAME, UTC.COLUMN_NAME AS COLUMN_NAME, UCC.COMMENTS AS COLUMN_COMMENT FROM ALL_TAB_COLUMNS UTC , ALL_COL_COMMENTS UCC WHERE UTC.TABLE_NAME = UCC.TABLE_NAME (+) AND UTC.COLUMN_NAME = UCC.COLUMN_NAME (+) AND UTC.OWNER=upper('{schemaOwner}')",
 			// 한정자 추가
