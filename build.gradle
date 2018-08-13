@@ -69,7 +69,7 @@ dependencies {
 }
 
 // Server Profile - local / dev / production
-final String DEFAULT_PROFILE = 'local'
+final String DEFAULT_PROFILE = 'mariadb'
 allprojects {
 	if (!project.hasProperty('profile') || !profile) {
 		ext.profile = DEFAULT_PROFILE

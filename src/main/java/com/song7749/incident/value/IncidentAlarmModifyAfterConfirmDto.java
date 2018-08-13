@@ -31,7 +31,7 @@ public class IncidentAlarmModifyAfterConfirmDto extends AbstractDto {
 
 	@ApiModelProperty(required=true,position=2,value="알람 감지 SQL || Y가 리턴되도록 작성, EX) SELECT 'Y' as enable FROM dual")
 	@NotBlank
-	@Length(max = 4000)
+	@Length(max = 12000)
 	private String beforeSql;
 
 	@ApiModelProperty(required=true,position=3,value="본문내용 || 실행 SQL은 표형식 입니다. 상단에 표기할 메세지를 기록하세요. EX) 안녕하세요 XXX 입니다.등")
@@ -74,7 +74,7 @@ public class IncidentAlarmModifyAfterConfirmDto extends AbstractDto {
 	 * @param sendMemberIds
 	 */
 	public IncidentAlarmModifyAfterConfirmDto(@NotNull Long id,
-			@NotBlank @Length(max = 120) String subject, @NotBlank @Length(max = 4000) String beforeSql,
+			@NotBlank @Length(max = 120) String subject, @NotBlank @Length(max = 12000) String beforeSql,
 			@NotNull YN enableYN, @NotBlank String schedule, @NotNull Long databaseId,
 			@NotNull List<Long> sendMemberIds) {
 		this.id = id;

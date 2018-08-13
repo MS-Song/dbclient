@@ -3,6 +3,7 @@ package com.song7749.incident.domain;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -37,13 +38,15 @@ public class LogIncidentAlarm extends Log {
 	@Column(nullable = false, updatable = false)
 	private Long incidentAlarmId;
 
+	@Lob
 	@NotBlank
-	@Size(max=4000)
+	@Size(max=12000)
 	@Column(name="befor_info", nullable = false, updatable = false)
 	private String before;
 
+	//@Lob
 	@NotBlank
-	@Size(max=4000)
+	@Size(max=12000)
 	@Column(name="after_info", nullable = false, updatable = false)
 	private String after;
 

@@ -3,6 +3,7 @@ package com.song7749.log.domain;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -57,9 +58,10 @@ public class LogQuery extends Log{
 	@NotBlank
 	private String account;
 
+	@Lob
 	@Column(nullable=false, updatable=false)
 	@NotBlank
-	@Size(max=4000)
+	@Size(max=12000)
 	private String query;
 
 	public LogQuery() {}
@@ -75,7 +77,7 @@ public class LogQuery extends Log{
 	 */
 	public LogQuery(@NotBlank @Size(min = 4, max = 20) String loginId, @NotBlank Long databaseId, @NotBlank String host,
 			@NotBlank String hostAlias, @NotBlank String schemaName, @NotBlank String account,
-			@NotBlank @Size(max = 4000) String query) {
+			@NotBlank @Size(max = 12000) String query) {
 		this.loginId = loginId;
 		this.databaseId = databaseId;
 		this.host = host;

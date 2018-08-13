@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -56,9 +57,10 @@ public class MemberSaveQuery extends Entities {
 	@Size(min = 4)
 	private String memo;
 
+	@Lob
 	@Column
 	@NotBlank
-	@Size(min = 10, max=4000)
+	@Size(min = 10, max=12000)
 	private String query;
 
 	@Column(nullable = false, updatable = false)

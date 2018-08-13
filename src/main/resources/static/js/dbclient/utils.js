@@ -68,6 +68,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 		$$(viewName).hideProgress();
 	} else {
 
+		// 상황에 따라 Method 를 변경하기 위해 Promis 객체로 분기 한다.
 		let promise = null;
 		if(url=="/database/executeQuery"){
 			promise = webix.ajax().post(url,parmeters);

@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -70,17 +71,19 @@ public class IncidentAlarm  extends Entities {
 	@Column(nullable = false)
 	private String subject;
 
+	@Lob
 	@NotBlank
-	@Length(max = 4000)
+	@Length(max = 12000)
 	@Column(nullable = false)
 	private String beforeSql;
 
+	@Lob
 	@NotBlank
-	@Length(max = 4000)
+	@Length(max = 12000)
 	@Column(nullable = false)
 	private String runSql;
 
-	@Length(max = 1000)
+	@Length(max = 4000)
 	@Column(nullable = true)
 	private String sendMessage;
 
