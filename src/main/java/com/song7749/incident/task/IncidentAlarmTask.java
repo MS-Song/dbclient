@@ -328,9 +328,11 @@ public class IncidentAlarmTask implements Runnable {
 					contents=contents.replace(sql, "#^#"+i);
 //					logger.trace(format("{}", "email replace sql"),sql);
 //					logger.trace(format("{}", "email replace contents"),contents);
-					sqlMap.put("#^#"+i, sql.toLowerCase().replace("<sql>", "").replace("</sql>", ""));
+					sqlMap.put("#^#"+i, sql.replaceAll("(?i)<sql>", "").replaceAll("(?i)</sql>", ""));
 				}
 			}
+
+			logger.trace(format("{}", "SQL Query Map"),sqlMap);
 
 			// 쿼리를 실행해서 html 을 생성 한다.
 			for(String key : sqlMap.keySet()) {

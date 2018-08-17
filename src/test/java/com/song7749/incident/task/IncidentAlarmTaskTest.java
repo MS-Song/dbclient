@@ -1,5 +1,7 @@
 package com.song7749.incident.task;
 
+import static com.song7749.util.LogMessageFormatter.format;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,6 +33,7 @@ import com.song7749.dbclient.service.DBclientManagerImpl;
 import com.song7749.dbclient.type.AuthType;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
+import com.song7749.dbclient.value.ExecuteQueryDto;
 import com.song7749.incident.domain.IncidentAlarm;
 import com.song7749.incident.repository.IncidentAlarmRepository;
 import com.song7749.mail.domain.MailConfig;
@@ -44,6 +49,8 @@ import com.song7749.mail.service.EmailService;
 	,"com.song7749.mail"
 	,"com.song7749.log"})
 public class IncidentAlarmTaskTest {
+
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	MemberRepository memberRepository;
@@ -85,15 +92,26 @@ public class IncidentAlarmTaskTest {
 			, AuthType.ADMIN);
 
 
+//	Database database = new Database(
+//			"jdbc:h2:file:~/incidentAlertTest",
+//			"DB Client Local TEST H2 Database",
+//			"PUBLIC",
+//			"sa",
+//			"",
+//			DatabaseDriver.H2,
+//			Charset.UTF8,
+//			"");
+
 	Database database = new Database(
-			"jdbc:h2:file:~/incidentAlertTest",
-			"DB Client Local TEST H2 Database",
-			"PUBLIC",
-			"sa",
-			"",
-			DatabaseDriver.H2,
-			Charset.UTF8,
-			"");
+		"local-dev"
+		, "oracle-local"
+		, "XE"
+		, "SONG7749"
+		, "12345678"
+		, DatabaseDriver.ORACLE
+		, Charset.UTF8
+		, "1521"
+		, null);
 
 	List<Member> members = new ArrayList<Member>();
 
@@ -126,12 +144,30 @@ public class IncidentAlarmTaskTest {
 
 	@Test
 	public void testRun() throws Exception {
+		logger.trace(format("{}", "Log Message"),database);
+		logger.trace(format("{}", "Log Message"),((DBclientManagerImpl)dbClientManager).getDataSourceMap());
+		logger.trace(format("{}", "Log Message"),dbClientManager.getConnection(database).getSchema());
+
+
+		ExecuteQueryDto dto = new ExecuteQueryDto();
+		dto.setId(database.getId());
+		dto.setUsePLSQL(false);
+		dto.setUseLimit(false);
+		dto.setHtmlAllow(false);
+		dto.setLoginId(member.getLoginId());
+		dto.setIp("0.0.0.0");
+		dto.setQuery("select * from tab");
+		dbClientManager.executeQuery(dto);
+
+
 		IncidentAlarm incidentAlarm = new IncidentAlarm(
 				"테스트 모니터링",
 				"select 'Y' execute from dual",
 				//"첫번째 SQL 입니다 \r\n <sql>select * from database_info </sql>\r\n 두번째 SQL 입니다 \r\n <sql>select * from member</sql>\r\n 세번째 SQL 입니다 \r\n  <sql>select * from log</sql>",
 				//"메일 내용은 이러하다 \r\n <sql> select * from database_info </sql>  \r\n 메일 내용은 이러하다 \r\n <sql> select * from database_info </sql>",
-				"select * from database_info",
+				//"<sql>  SELECT A.MENU_ID, SUBSTR(MAX(SYS_CONNECT_BY_PATH(A.MENU_NM, '>')), 2) MENU_NM FROM SYS_MENUINFO A  WHERE USE_YN = 'Y' AND MENUURL_TXT IS NOT NULL AND UPMENU_ID <> '00000' CONNECT BY PRIOR A.MENU_ID = A.UPMENU_ID START WITH A.UPMENU_ID = '00000' GROUP BY A.MENU_ID </sql>",
+				//"SELECT A.MENU_ID, SUBSTR(MAX(SYS_CONNECT_BY_PATH(A.MENU_NM, '>')), 2) MENU_NM FROM SYS_MENUINFO A  WHERE USE_YN = 'Y' AND MENUURL_TXT IS NOT NULL AND UPMENU_ID <> '00000' CONNECT BY PRIOR A.MENU_ID = A.UPMENU_ID START WITH A.UPMENU_ID = '00000' GROUP BY A.MENU_ID",
+				"SELECT T1.TABLE_NAME TABLE_NAME,T2.COMMENTS TABLE_COMMENT FROM ALL_TABLES T1, ALL_TAB_COMMENTS T2 WHERE T2.TABLE_NAME(+) = T1.TABLE_NAME and T1.OWNER=T2.OWNER and T1.OWNER=upper('SONG7749') order by TABLE_NAME asc",
 				SendMethod.EMAIL,
 				YN.Y,
 				"*/10 * * * * *",
@@ -157,6 +193,6 @@ public class IncidentAlarmTaskTest {
 		task.run();
 
 		// thread 처리 종료 시간을 벌어 준다.
-		Thread.sleep(15000);
+		Thread.sleep(30000);
 	}
 }

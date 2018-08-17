@@ -697,11 +697,27 @@ public class DBclientManagerImpl implements DBclientManager {
 
 		// row 에 영향이 있는 쿼리
 		if(isAffected){
-			try{
-				vo.setRowCount(executeWriteQuery(getConnection(database),dto));
+			// 대량의 입력이 필요한 경우 여러번 실행 되도록 변경 한다. -- PLSQL 이 아니고, ; 가 여러개 들어간 경우에만 해당한다.
+			if(!dto.isUsePLSQL() && StringUtils.countMatches(dto.getQuery(), ";") > 1) {
+				int affectedRows = 0;
+				String queries[] = dto.getQuery().split(";");
+				for(String sql : queries) {
+					dto.setQuery(sql);
+					try{
+						affectedRows = executeWriteQuery(getConnection(database),dto);
+					} catch (SQLException e) {
+						throw new IllegalArgumentException(e.getMessage());
+					}
+				}
+				vo.setRowCount(affectedRows);
 				vo.setMessage("실행이 완료되었습니다");
-			} catch (SQLException e) {
-				throw new IllegalArgumentException(e.getMessage());
+			} else {
+				try{
+					vo.setRowCount(executeWriteQuery(getConnection(database),dto));
+					vo.setMessage("실행이 완료되었습니다");
+				} catch (SQLException e) {
+					throw new IllegalArgumentException(e.getMessage());
+				}
 			}
 		} else { // 그 외 조회성 쿼리
 			List<Map<String, String>> list = null;
