@@ -5,7 +5,6 @@ import static com.song7749.util.LogMessageFormatter.format;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +43,6 @@ public class CSVFileDataManagerImpl implements CSVFileDataManager{
 			// TODO - 파일을 저장 한 뒤에 비동기로 처리 하는 부분에 대한 고민이 필요하다.
 			try {
 		    		Database database = dbclientManager.getDatabase(databaseId);
-		    		Connection connection = dbclientManager.getConnection(database);
 					ExecuteQueryDto dto = new ExecuteQueryDto(database.getId(), session.getLogin().getLoginId());
 					dto.setIp("CVS UPLOAD");
 					dto.setAutoCommit(true);
@@ -82,11 +80,11 @@ public class CSVFileDataManagerImpl implements CSVFileDataManager{
 		    		InputStream is = file.getInputStream();
 					BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		    		String line = null;
-
+		    		String[] column = null;
 					int loop=0;
 					while ((line = br.readLine()) != null) {
 			    		String[] values = line.split(",");
-				    	if(loop==0) {
+			    		if(loop==0) {
 				    		// 테이블을 생성할 것인지?
 				    		if(isCreateTable) {
 				    			createTableSql= "create table " + tableName  + "( ";
@@ -100,17 +98,26 @@ public class CSVFileDataManagerImpl implements CSVFileDataManager{
 
 								dto.setQuery(createTableSql);
 								dbclientManager.executeQuery(dto);
-				    		}
-				    		// insert 하기 위해 insert 구문 생성
 
-				    		insertSql="insert into " + tableName ;
+					    		// insert 하기 위해 insert 구문 생성
+					    		insertSql="insert into " + tableName ;
+					    		// values column 생성
+					    		column= new String[values.length];
+				    			for(int i=0; i<values.length;i++) {
+				    				column[i] = values[i].replaceAll("[^A-Za-z0-9]","");
+				    			}
+				    		}
 				    	} else {
-				    		insertValues.add(insertSql + " values('" + String.join("','",values) + "')");
+				    		// 필드를 기준으로 없는 데이터는 생성하여 넣는다.
+				    		String[] insertColumn = new String[values.length];
+			    			for(int i=0; i<values.length;i++) {
+			    				insertColumn[i] = column[i];
+			    			}
+			    			insertValues.add(insertSql + " ( " + String.join(",",insertColumn) + " ) " + "values('" + String.join("','",values) + "')");
 				    	}
 				    	loop++;
 				    }
 					// insert 작업 시작
-					logger.trace(format("{}", "CSV update save SQL"),insertValues);
 					count=insertValues.size();
 
 					String query="";
@@ -119,6 +126,7 @@ public class CSVFileDataManagerImpl implements CSVFileDataManager{
 					}
 					dto.setQuery(query);
 					dbclientManager.executeQuery(dto);
+
 			} catch (Exception e) {
 				throw new IllegalArgumentException("CSV 파일 저장 실패. 파일 내용을 확인해주세요\n" + e.getMessage());
 			}
