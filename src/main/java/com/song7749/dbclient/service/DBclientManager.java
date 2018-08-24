@@ -211,4 +211,10 @@ public interface DBclientManager {
 	 */
 	void killQuery(ExecuteQueryDto dto);
 
+	/**
+	 * Database ID 를 이용해서 Database 객체 조회
+	 * @param databaseId
+	 * @return
+	 */
+	Database getDatabase(Long databaseId);
 }

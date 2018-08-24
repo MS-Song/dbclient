@@ -1038,6 +1038,15 @@ var database_query_cell = [{
 							}}
 						},
 					    {
+							id:"database_csv_file_upload",
+							view:"button",
+							value:"csv upload",
+							tooltip:"CSV 파일을 업로드하여 Database Data 생성, 단축키:Ctrl+9",
+							on:{"onItemClick":function(){
+								csvFileUploadForm();
+							}}
+						},
+					    {
 							id:"database_query_button_kill_execute",
 							view:"button",
 							value:"Stop",
@@ -1467,12 +1476,18 @@ webix.ui({
 				nowDateString += nowDate.getDate();
 				nowDateString += nowDate.getMinutes();
 				nowDateString += nowDate.getMilliseconds();
-				webix.toExcel($$("database_result_list_view"), 
-					{ 
-						header: false,
-						filename: "dbClient"+nowDateString,
-					}
-				);
+
+				// view 의 column 을 가져온다.
+				let viewClumns = $$("database_result_list_view").config.columns;
+				// excel column 을 재 생성
+				let columns = {};
+				for(var i=0;i<viewClumns.length;i++){
+					columns[viewClumns[i].id] = {header:viewClumns[i].id};
+				}
+				webix.toExcel($$("database_result_list_view"),{ 
+					columns:columns,
+					filename: "dbClient"+nowDateString
+				});
 				break;
 			}
 
@@ -1611,4 +1626,139 @@ var findEditorContents = function(){
 	var editorValue = webix.storage.local.get("dbclient_local_editor_save_"+PLSQL);
 	if(null!=editorValue && ""!=editorValue)
 		$$("database_query_input").setValue(editorValue.unescapeHtml());
+};
+
+/**
+ * CSV File Upload Form
+ */
+
+var csvFileUploadForm = function(){
+	if($$("csv_file_upload_popup")==undefined){
+		// file upload status bar template 
+		webix.type(webix.ui.list, {
+			name:"myUploader",
+			template:function(f,type){
+				var html = "<div class='overall'><div class='name'>"+f.name+"</div>";
+				html += "<div class='remove_file'><span style='color:#AAA' class='cancel_icon'></span></div>";
+				html += "<div class='status'>";
+				html += "<div class='progress "+f.status+"' style='width:"+(f.status == 'transfer'||f.status=="server"?f.percent+"%": "0px")+"'></div>";
+				html += "<div class='message "+ f.status+"'>"+type.status(f)+"</div>";
+				html +=	 "</div>";
+				html += "<div class='size'>"+ f.sizetext+"</div></div>";
+				return html;
+			 },
+			status:function(f){
+				var messages = {
+					server: "Done",
+					error: "Error",
+					client: "Ready",
+					transfer:  f.percent+"%"
+				};
+				return messages[f.status]
+			},
+			on_click:{
+				"remove_file":function(ev, id){
+					$$(this.config.uploader).files.remove(id);
+				}
+			},
+			height: 35
+		});
+		
+		webix.ui({
+	        view:"window",
+	        id:"csv_file_upload_popup",
+	        autowidth:true,
+	        position:"center",
+	        modal:true,
+	        head:{
+	        	cols:[
+	  		        {
+	  		        	view:"button",value:"파일 업로드 닫기" , click:function(){
+	  		        		$$("csv_file_upload_popup").hide();
+	  		        	},hotkey: "esc"
+	  		        }
+	        	]
+	        },
+	        body:{
+	        	maxWidth:400,
+				view:"form", 
+				id:"csv_file_upload_form",
+				elements:[
+					{ 
+						id: "csv_file_upload_name", 
+						view:"text", 
+						label:"테이블명칭", 
+						labelWidth:130,
+						labelPosition:"left", 
+						name:"tableName"
+					},
+					{
+						id:"csv_file_upload_method",
+						view:"combo",
+						name:"isCreateTable",
+						label:"테이블 생성여부", 
+						labelWidth:130,
+						labelPosition:"left", 
+						value:"true",
+						options:["true","false"]
+					},
+					{ view:"button", label:"데이터 업로드", type:"form", 
+						click:function(){
+							if(undefined==$$("csv_file_uploader").files.getFirstId()){
+								webix.message({ type:"error", text:"선택된 파일이 없습니다. 파일을 선택 하세요"});
+								return;
+							}
+							
+							if($$("csv_file_uploader").isUploaded()){
+								webix.message({ type:"error", text:"파일이 이미 사용되었습니다. 파을을 다시 선택 하세요"});
+								return;
+							}	
+							
+							if(undefined==database.id){
+								webix.message({ type:"error", text:"선택된 데이터베이스가 없습니다. 데이터베이스를 선택하세요"});
+								return;
+							}
+
+							if($$("csv_file_upload_name").getValue() == ""){
+								webix.message({ type:"error", text:"생성하려는 테이블 명칭이 없습니다. 테이블 명칭을 작성하세요"});
+								return;
+							}
+							$$("csv_file_uploader").config.formData={
+								databaseId:database.id,
+								tableName:$$("csv_file_upload_name").getValue(),
+								isCreateTable:$$("csv_file_upload_method").getValue()
+							}
+							
+							$$("csv_file_uploader").send(function(res){
+								if(res.httpStatus==200){
+									webix.message(res.message + res.rowCount + " 개 데이터가 생성되었습니다.");	
+								} else {
+									webix.message({ type:"error", text:res.message});
+								}
+								
+								
+							});
+						}
+					},
+					{
+						view:"uploader", 
+						upload:"/attachment/addCSVUploadCreateData",
+						id:"csv_file_uploader", 
+						value:"CSV 파일 선택", 
+						link:"csv_upload_list", 
+						accept:" .csv ",
+						multiple:false,
+						autosend:false
+					},
+					{ 
+						view:"list", 
+						scroll:false, 
+						id:"csv_upload_list", 
+						type:"myUploader"
+					}
+				]
+	        }
+	    });
+	} 
+	$$("csv_file_upload_popup").show();
 };

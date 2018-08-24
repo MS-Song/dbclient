@@ -702,11 +702,13 @@ public class DBclientManagerImpl implements DBclientManager {
 				int affectedRows = 0;
 				String queries[] = dto.getQuery().split(";");
 				for(String sql : queries) {
-					dto.setQuery(sql);
-					try{
-						affectedRows = executeWriteQuery(getConnection(database),dto);
-					} catch (SQLException e) {
-						throw new IllegalArgumentException(e.getMessage());
+					if(StringUtils.isNotEmpty(sql)) {
+						dto.setQuery(sql);
+						try{
+							affectedRows = executeWriteQuery(getConnection(database),dto);
+						} catch (SQLException e) {
+							throw new IllegalArgumentException(e.getMessage() + sql);
+						}
 					}
 				}
 				vo.setRowCount(affectedRows);
@@ -901,6 +903,7 @@ public class DBclientManagerImpl implements DBclientManager {
 	 * @return
 	 * @throws SQLException
 	 */
+	@SuppressWarnings("unused")
 	private List<Map<String,String>> executeCallableQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
 		logger.debug(format("{} ","Try Callable Excute Query"),dto.getQuery());
 
@@ -1070,7 +1073,8 @@ public class DBclientManagerImpl implements DBclientManager {
 		rs=null;
 	}
 
-	private Database getDatabase(Long databaseId) {
+	@Override
+	public Database getDatabase(Long databaseId) {
 		Optional<Database> oDatabase = databaseRepository.findById(databaseId);
 		if(!oDatabase.isPresent()) {
 			throw new IllegalArgumentException("Database Id 에 해당하는 Database 가 없습니다.");

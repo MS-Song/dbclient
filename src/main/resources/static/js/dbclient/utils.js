@@ -568,7 +568,7 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 				view:"textarea",
 				label:leftDescription, 
 				labelWidth:150,
-				height:90,
+				height:140,
 				adjust:true,
 				name:param.name,
 				readonly:true,

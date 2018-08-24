@@ -85,9 +85,7 @@ public class CommonConfigServiceImpl implements CommonConfigService{
 	@Transactional(readOnly=true)
 	@Override
 	public MailConfigVo findMailConfig() {
-		// TODO Auto-generated method stub
 		List<MailConfig> list = mailConfigRepository.findAll();
-		MailConfig config = null;
 		if(!CollectionUtils.isEmpty(list)) {
 			return  mapper.map(list.get(0), MailConfigVo.class);
 		} else {

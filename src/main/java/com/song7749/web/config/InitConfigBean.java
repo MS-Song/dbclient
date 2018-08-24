@@ -143,7 +143,6 @@ public class InitConfigBean {
 				DatabaseName=hikariCP.getConnection().getMetaData().getDatabaseProductName();
 				logger.trace(format("{}", "Database Name"),DatabaseName);
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				logger.error(format("{}", "Database Name Fail"),DatabaseName);
 			}
 

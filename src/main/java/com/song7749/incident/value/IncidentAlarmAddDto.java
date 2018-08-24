@@ -35,7 +35,7 @@ public class IncidentAlarmAddDto extends AbstractDto {
 	@Length(max = 4000)
 	private String sendMessage;
 
-	@ApiModelProperty(required=true,position=4,value="알람 내역 SQL ||담당자에게 전송할 내용을 생성하는 SQL.<br>&ltsql&gt SELECT * FROM XX &lt/sql&gt<br>&ltsql&gt 테그가 없으면 1Query")
+	@ApiModelProperty(required=true,position=4,value="알람 내역 SQL ||담당자에게 전송할 내용을 생성하는 SQL.<br>&ltsql&gt SELECT * FROM XX &lt/sql&gt<br>&ltsql&gt 테그가 없으면 Excel 발송")
 	@NotBlank
 	@Length(max = 12000)
 	private String runSql;
