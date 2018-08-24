@@ -22,6 +22,7 @@
 * Query 결과 엑셀 다운로드 지원
 * Auto Commit on/off 기능
 * Auto Limit on/off 기능
+* CSV 파일 업로드 및 TEMP 테이블 생성기능 추가 - 데이터 마이그레이션 기능
 
 # 구동 환경 
 * SpringBoot 2.0 으로 기동되며 java8 이상에서 작동 합니다.  
