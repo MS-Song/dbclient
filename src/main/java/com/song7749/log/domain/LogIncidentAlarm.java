@@ -1,4 +1,4 @@
-package com.song7749.incident.domain;
+package com.song7749.log.domain;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.song7749.log.domain.Log;
 import com.song7749.log.type.LogType;
 
 /**

@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 import org.modelmapper.ModelMapper;
 
 import com.song7749.base.AbstractDto;
-import com.song7749.incident.domain.LogIncidentAlarm;
+import com.song7749.log.domain.LogIncidentAlarm;
 
 public class LogIncidentAlaramAddDto extends AbstractDto {
 
