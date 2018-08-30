@@ -1,4 +1,4 @@
-package com.song7749.dbclient.repository;
+package com.song7749.log.repository;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.song7749.log.domain.LogLogin;
 import com.song7749.log.domain.LogQuery;
+import com.song7749.log.repository.LogRepository;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest

@@ -14,8 +14,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.song7749.dbclient.repository.LogRepository;
 import com.song7749.log.domain.Log;
+import com.song7749.log.repository.LogRepository;
 import com.song7749.log.value.LogIncidentAlaramAddDto;
 import com.song7749.log.value.LogLoginAddDto;
 import com.song7749.log.value.LogQueryAddDto;

@@ -1,4 +1,4 @@
-package com.song7749.dbclient.repository;
+package com.song7749.log.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.song7749.dbclient.repository.LogRepository;
+import com.song7749.log.repository.LogRepository;
 import com.song7749.log.value.LogIncidentAlaramAddDto;
 import com.song7749.log.value.LogLoginAddDto;
 import com.song7749.log.value.LogQueryAddDto;
