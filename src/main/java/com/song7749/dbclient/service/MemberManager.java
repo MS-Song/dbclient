@@ -3,13 +3,13 @@ package com.song7749.dbclient.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.song7749.dbclient.type.MemberModifyByAdminDto;
 import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.dbclient.value.MemberAddDto;
 import com.song7749.dbclient.value.MemberDatabaseAddOrModifyDto;
 import com.song7749.dbclient.value.MemberDatabaseFindDto;
 import com.song7749.dbclient.value.MemberDatabaseVo;
 import com.song7749.dbclient.value.MemberFindDto;
+import com.song7749.dbclient.value.MemberModifyByAdminDto;
 import com.song7749.dbclient.value.MemberModifyDto;
 import com.song7749.dbclient.value.MemberSaveQueryAddDto;
 import com.song7749.dbclient.value.MemberSaveQueryFindDto;

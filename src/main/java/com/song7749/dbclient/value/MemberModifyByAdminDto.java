@@ -1,6 +1,6 @@
-package com.song7749.dbclient.type;
+package com.song7749.dbclient.value;
 
-import com.song7749.dbclient.value.MemberModifyDto;
+import com.song7749.dbclient.type.AuthType;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
