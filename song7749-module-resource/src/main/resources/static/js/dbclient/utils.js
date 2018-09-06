@@ -71,6 +71,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 		// 상황에 따라 Method 를 변경하기 위해 Promis 객체로 분기 한다.
 		let promise = null;
 		if(url=="/database/executeQuery"){
+			parmeters.query = encodeURIComponent(parmeters.query); 
 			promise = webix.ajax().post(url,parmeters);
 		} else {
 			promise = webix.ajax().get(url,parmeters);
@@ -158,13 +159,14 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
     			} else {
 					reslutPrintError(data.json().message);
     			}
+    			
     			$$("database_query_execute_info").refresh();
     			//쿼리 로그 기록
     			var time = new Date();
     			$$("database_query_log_view").data.add({
     				seq:$$("database_query_log_view").data.order.length+1,
     				date:time.getHours()+'시 '+time.getMinutes()+'분 '+time.getSeconds()+'초 <br/>'+time.getFullYear()+'년 '+(time.getMonth()+1)+'월 '+time.getDate()+'일',
-    				query:$$(viewName).config.query,
+    				query:decodeURIComponent($$(viewName).config.query),
     				reTry:"",
     				favorities:""
     			},$$("database_query_log_view").data.order.length+1);

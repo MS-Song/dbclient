@@ -1,5 +1,7 @@
 package com.song7749.web.dbclient;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -277,11 +279,13 @@ public class DatabaseSchemaController {
 	@Login({AuthType.NORMAL,AuthType.ADMIN})
 	public MessageVo executeQuery(
 			HttpServletRequest request, HttpServletResponse response,
-			@Valid @ModelAttribute ExecuteQueryDto dto){
+			@Valid @ModelAttribute ExecuteQueryDto dto) throws UnsupportedEncodingException {
 
 		if(null!=dto.getQuery() && dto.getQuery().length()<1){
 			throw new IllegalArgumentException("입력된 쿼리가 없습니다. 쿼리 입력후에 실행하시기 바랍니다.");
 		}
+		dto.setQuery(URLDecoder.decode(dto.getQuery(), "UTF-8"));
+		//logger.trace(format("{}", "DECODE URL ENCODE"),dto.getQuery());
 
 		dto.setLoginId(session.getLogin().getLoginId());
 		dto.setIp(request.getRemoteAddr());
@@ -295,10 +299,14 @@ public class DatabaseSchemaController {
 	@Login({AuthType.NORMAL,AuthType.ADMIN})
 	public MessageVo killExecuteQuery(
 			HttpServletRequest request, HttpServletResponse response,
-			@Valid @ModelAttribute ExecuteQueryDto dto){
+			@Valid @ModelAttribute ExecuteQueryDto dto) throws UnsupportedEncodingException {
 
 		dto.setLoginId(session.getLogin().getLoginId());
 		dto.setIp(request.getRemoteAddr());
+
+		dto.setQuery(URLDecoder.decode(dto.getQuery(), "UTF-8"));
+		//logger.trace(format("{}", "DECODE URL ENCODE"),dto.getQuery());
+
 		dbclientManager.killQuery(dto);
 		return new MessageVo(HttpStatus.OK.value(), "쿼리가 중지되었습니다.");
 	}

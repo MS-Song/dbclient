@@ -124,6 +124,7 @@ public class IncidentAlarmTask implements Runnable {
 				incidentAlarm.setLastErrorMessage(e.getMessage());
 				incidentAlarmRepository.saveAndFlush(incidentAlarm);
 			}
+			return ;
 		}
 
 
@@ -137,23 +138,34 @@ public class IncidentAlarmTask implements Runnable {
 		// 전송 해야하는 상태인가 확인 한다.
 		if(isExecute) {
 			dto.setQuery(incidentAlarm.getBeforeSql());
-
+			int count=0;
 			try {
 				MessageVo vo = dbClientManager.executeQuery(dto);
 				List<Map<String,String>> contents = (List<Map<String, String>>) vo.getContents();
 				if(null!=contents && contents.size()>0) {
 					for(String  key : contents.get(0).keySet()) {
 						if("Y".equals(contents.get(0).get(key))){
-							isExecute=true;
+							count++;
 							break;
 						}
+					}
+					// 실행할 수 없는 상태
+					if(count==0) {
+						isExecute=false; // 실행 중지
+						logger.error("감지 SQL 에서 N을 발생하여 실행이 중단 됩니다.");
+						incidentAlarm.setLastErrorMessage("감지 SQL 에서 N을 발생하여 실행이 중단 됩니다.");
+						incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
+						incidentAlarmRepository.saveAndFlush(incidentAlarm);
 					}
 				} else {
 					throw new IllegalArgumentException("before sql 이 올바르지 않습니다. SQL : " + incidentAlarm.getBeforeSql());
 				}
 			} catch (Exception e) {
 				isExecute=false; // 실행 중지
+				logger.error(e.getMessage());
 				incidentAlarm.setLastErrorMessage(e.getMessage());
+				incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
+				incidentAlarmRepository.saveAndFlush(incidentAlarm);
 			}
 		}
 
@@ -267,21 +279,25 @@ public class IncidentAlarmTask implements Runnable {
 					sendEmailMessage(emailContents, fileName);
 					// 메일 전송 후 파일 삭제
 					// 삭제할 필요가 있을까 고민 필요.. 계속 쓸테니..
-					File file = new File(fileName);
-					if(file.exists()) {
-						file.delete();
+					if(null!=fileName) {
+						File file = new File(fileName);
+						if(file.exists()) {
+							file.delete();
+						}
 					}
 				}
 			} catch (Exception e) {
 				isExecute=false; // 실행 중지
 				logger.error(e.getMessage());
 				incidentAlarm.setLastErrorMessage(e.getMessage());
+				incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
 				incidentAlarmRepository.saveAndFlush(incidentAlarm);
 			}
 		}
 
 		// 전송완료 후 기록
 		if(isExecute) {
+			logger.trace(format("{}", "TASK Complete Write"),incidentAlarm.getId());
 			incidentAlarm.setLastErrorMessage("");
 			incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
 			incidentAlarmRepository.saveAndFlush(incidentAlarm);
@@ -297,6 +313,9 @@ public class IncidentAlarmTask implements Runnable {
 			template.convertAndSend("/topic/runAlarms", sendMessage);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
+			incidentAlarm.setLastErrorMessage(e.getMessage());
+			incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
+			incidentAlarmRepository.saveAndFlush(incidentAlarm);
 		}
 	}
 
@@ -310,8 +329,8 @@ public class IncidentAlarmTask implements Runnable {
 		// 다중 발송인가 확인 필요 <sql> 테그가 있으면 다중 발송이다. 다중 발송일 경우에는 엑셀 첨부를 지원하지 않는다.
 		if(incidentAlarm.getRunSql().toLowerCase().indexOf("<sql>") >=0) {
 			// 쓰기 테그와 닫기테그가 같은 숫자인지 확인한다.
-			int openTag = StringUtils.countMatches(incidentAlarm.getRunSql(), "<sql>");
-			int closeTag = StringUtils.countMatches(incidentAlarm.getRunSql(), "</sql>");
+			int openTag = StringUtils.countMatches(incidentAlarm.getRunSql().toLowerCase(), "<sql>");
+			int closeTag = StringUtils.countMatches(incidentAlarm.getRunSql().toLowerCase(), "</sql>");
 			if(openTag != closeTag) {
 				throw new IllegalArgumentException("SQL 테그의 열기테그와 닫기 테그의 숫자가 일치하지 않습니다");
 			}
@@ -342,7 +361,7 @@ public class IncidentAlarmTask implements Runnable {
 				contents=contents.replace(key, html);
 			}
 			sendEmailContents=contents;
-//			logger.trace(format("{}", "email Send"),sendEmailContents);
+			logger.trace(format("{}", "Alaram Send Email Contents"),sendEmailContents);
 //			throw new IllegalArgumentException("실행중지");
 		}
 		return sendEmailContents;
@@ -369,6 +388,7 @@ public class IncidentAlarmTask implements Runnable {
 
 		// 메일 contents 추가
 		if(StringUtils.isNotBlank(sendEmailContents)){
+			logger.trace(format("{}", "Alarm Send Contents"),sendEmailContents);
 			sendMessageBuffer.append(sendEmailContents.replace("\n", "<br/>"));
 		}
 
@@ -403,6 +423,8 @@ public class IncidentAlarmTask implements Runnable {
 		} catch (MessagingException e) {
 			logger.error(e.getMessage());
 			incidentAlarm.setLastErrorMessage(e.getMessage());
+			incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
+			incidentAlarmRepository.saveAndFlush(incidentAlarm);
 		}
 	}
 

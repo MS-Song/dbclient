@@ -1394,7 +1394,7 @@ var executeQuery = function (isNextData,resultView){
 		resultView.config.offset 	= 	executeQueryParams.offset;
 		resultView.config.page		=	1;
 		resultView.config.isDataLoading=false;
-		$$("database_query_server_return").setValue(resultView.config.query);
+		$$("database_query_server_return").setValue(decodeURIComponent(resultView.config.query));
 	}
 }
 
@@ -1502,6 +1502,7 @@ webix.ready(function(){
 
 //실행중인 쿼리 중단
 var killExecuteQuery = function (){
+	executeQueryParams.query = encodeURIComponent(executeQueryParams.query);
 	webix.ajax().post("/database/killExecuteQuery",executeQueryParams, 
 		function(text,data){
 			if(data.json().httpStatus ==200){

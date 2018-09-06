@@ -55,7 +55,7 @@ import com.song7749.member.value.MemberVo;
 */
 @Profile("!test")
 @Component
-public class InitConfigBean {
+public class InitDBclientConfigBean {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
