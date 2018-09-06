@@ -1,0 +1,7 @@
+bootJar { enabled = false }
+jar { enabled = true }
+
+dependencies {
+ 	compile project(':song7749-module-common')
+ 	testCompile project(':song7749-module-test')
+}

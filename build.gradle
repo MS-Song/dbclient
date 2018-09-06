@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.0.1.RELEASE'
+		springBootVersion = '2.0.4.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -14,72 +14,70 @@ buildscript {
 
 buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'no' }
 
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+	
+	group = 'com.song7749'
+	sourceCompatibility = 1.8
 
-group = 'com.song7749'
-version = '1.0-SNAPSHOT'
-mainClassName = 'com.song7749.Application'
-sourceCompatibility = 1.8
-
-repositories {
-	mavenCentral()
-	maven { url "https://repo.spring.io/milestone" }
-	maven { url "https://repo.spring.io/snapshot" }
-	maven { url "https://code.lds.org/nexus/content/groups/main-repo" }
-}
-
-configurations {
-	providedRuntime
-}
-
-dependencies {
-	compile('org.springframework.boot:spring-boot-starter-aop')
-	compile('org.springframework.boot:spring-boot-starter-cache')
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-mail')
-	compile('org.springframework.boot:spring-boot-starter-validation')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile('org.springframework.boot:spring-boot-starter-websocket')
-	compile("org.springframework.boot:spring-boot-devtools")
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
-	compile('org.apache.commons:commons-lang3')
-	compile('org.codehaus.castor:castor:1.2'){ 
-        exclude group: 'commons-logging', module: 'commons-logging'
-    }
-    compile('io.springfox:springfox-swagger2:2.8.0')
-    compile('io.springfox:springfox-swagger-ui:2.8.0')
-    compile('org.modelmapper:modelmapper:1.1.2')
-	compile('javax.xml.bind:jaxb-api:2.2.11')
-	compile('net.sf.ehcache:ehcache:2.10.3')
-	compile("com.nimbusds:nimbus-jose-jwt:5.9")
-	compile("org.apache.poi:poi:3.17")
-    compile('mysql:mysql-connector-java')
-	compile('org.mariadb.jdbc:mariadb-java-client:2.2.3')
-	compile('com.oracle:ojdbc6:11.2.0.3')
-	compile('com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8')
-	compile('com.h2database:h2')
-	compile('org.webjars:sockjs-client:1.1.2')
-	compile('org.webjars:stomp-websocket:2.3.1')
-	compile('org.webjars:webjars-locator:0.30')
-}
-
-// Server Profile - local / dev / production
-final String DEFAULT_PROFILE = 'local'
-allprojects {
-	if (!project.hasProperty('profile') || !profile) {
-		ext.profile = DEFAULT_PROFILE
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+		maven { url "https://code.lds.org/nexus/content/groups/main-repo" }
 	}
 
-	sourceSets {
-		main {
-			resources {
-				srcDir "src/main/resources-${profile}"
-			}
-		}
+	task initSourceFolders {
+	    sourceSets*.java.srcDirs*.each {
+	        if( !it.exists() ) {
+	            it.mkdirs()
+	        }
+	    }
+	 
+	    sourceSets*.resources.srcDirs*.each {
+	        if( !it.exists() ) {
+	            it.mkdirs()
+	        }
+	    }
+	}
+
+	configurations {
+		providedRuntime
+	}
+	
+	dependencies {
+		compile('org.springframework.boot:spring-boot-starter-aop')
+		compile('org.springframework.boot:spring-boot-starter-cache')
+		compile('org.springframework.boot:spring-boot-starter-data-jpa')
+		compile('org.springframework.boot:spring-boot-starter-mail')
+		compile('org.springframework.boot:spring-boot-starter-validation')
+		compile('org.springframework.boot:spring-boot-starter-web')
+		compile('org.springframework.boot:spring-boot-starter-websocket')
+		compile("org.springframework.boot:spring-boot-devtools")
+		testCompile('org.springframework.boot:spring-boot-starter-test')
+		testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
+		compile('org.apache.commons:commons-lang3')
+		compile('org.codehaus.castor:castor:1.2'){ 
+	        exclude group: 'commons-logging', module: 'commons-logging'
+	    }
+	    compile('io.springfox:springfox-swagger2:2.8.0')
+	    compile('io.springfox:springfox-swagger-ui:2.8.0')
+	    compile('org.modelmapper:modelmapper:1.1.2')
+		compile('javax.xml.bind:jaxb-api:2.2.11')
+		compile('net.sf.ehcache:ehcache:2.10.3')
+		compile("com.nimbusds:nimbus-jose-jwt:5.9")
+		compile("org.apache.poi:poi:3.17")
+	    compile('mysql:mysql-connector-java')
+		compile('org.mariadb.jdbc:mariadb-java-client:2.2.3')
+		compile('com.oracle:ojdbc6:11.2.0.3')
+		compile('com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8')
+		compile('com.h2database:h2')
+		compile('org.webjars:sockjs-client:1.1.2')
+		compile('org.webjars:stomp-websocket:2.3.1')
+		compile('org.webjars:webjars-locator:0.30')
 	}
 }

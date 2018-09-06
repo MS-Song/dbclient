@@ -1,0 +1,15 @@
+bootJar { enabled = true }
+jar { enabled = true }
+
+apply plugin: 'application'
+mainClassName = 'com.song7749.ApplicationDBClient'
+
+dependencies {
+	compile project(':song7749-module-member')
+	compile project(':song7749-module-mail')
+	compile project(':song7749-module-common')
+	compile project(':song7749-module-utils')
+	compile project(':song7749-module-web')
+	compile project(':song7749-module-resource')
+	compile project(':song7749-module-test')
+}
