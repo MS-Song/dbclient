@@ -38,6 +38,11 @@ public class DatabaseFindDto extends AbstractDto {
 	@ApiModelProperty("Database host")
 	private String host;
 
+	/**
+	 * Database 의 실행을 차단 했기 때문에 일부 기능에서 리스트를 조회하는 기능을 켠다.
+	 */
+	@ApiModelProperty(hidden=true)
+	private boolean accessAll=false;
 
 	public DatabaseFindDto() {}
 
@@ -98,5 +103,13 @@ public class DatabaseFindDto extends AbstractDto {
 
 	public void setIds(List<Long> ids) {
 		this.ids = ids;
+	}
+
+	public boolean isAccessAll() {
+		return accessAll;
+	}
+
+	public void setAccessAll(boolean accessAll) {
+		this.accessAll = accessAll;
 	}
 }

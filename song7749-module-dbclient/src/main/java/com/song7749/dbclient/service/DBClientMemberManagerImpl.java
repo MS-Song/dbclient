@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -252,5 +253,24 @@ public class DBClientMemberManagerImpl implements DBClientMemberManager {
 				}
 			}
 		);
+	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public boolean isAccessPossibleDatabase(Long loginId, Long databaseId) {
+		// 회원이 해당 DB의 권한이 있는지 검증 한다.
+		boolean isAccess = false;
+		// 회원의 데이터 베이스 조회
+		Page<DatabaseVo> dv = findDatabaseListByMemberAllow(
+			new MemberDatabaseFindDto(loginId), PageRequest.of(0, 500));
+
+		// 권한 확인
+		for(DatabaseVo vo : dv.getContent()) {
+			if(vo.getId().equals(databaseId)) {
+				isAccess=true;
+				break;
+			}
+		}
+		return isAccess;
 	}
 }

@@ -1,7 +1,9 @@
 // 사용 가능한 데이터베이스 로딩
 var useDatabaseOptions = [];
+var useAllDatabaseOptions = [];
 var useDatabaseOptionsCreator = function(){
-	webix.ajax().get("/database/list",function(text,data){
+	// 사용자 접근 가능 Database
+	webix.ajax().get("/database/list",{accessAll:false},function(text,data){
 		if(data.json().httpStatus ==200 
 				&& null!=data.json().contents){	
 			var obj = data.json().contents.content;
@@ -20,9 +22,30 @@ var useDatabaseOptionsCreator = function(){
 			webix.message({ type:"error", text:data.json().message});
 		}
 	});
+	// 전체 데이터베이스 --> 승인 이후에 사용함
+	webix.ajax().get("/database/list",{accessAll:true},function(text,data){
+		if(data.json().httpStatus ==200 
+				&& null!=data.json().contents){	
+			var obj = data.json().contents.content;
+			// 기본값 입력
+			useAllDatabaseOptions.push({
+				id:"",
+				value:'database 를 선택 하세요'
+			});
+			$.each(obj,function(index,db){
+				useAllDatabaseOptions.push({
+					id:db.id,
+					value:db.hostAlias+' ['+db.account+"@"+db.host+':'+db.port+']'
+				});
+			});
+		} else {
+			webix.message({ type:"error", text:data.json().message});
+		}
+	});
+
+	
 }
 useDatabaseOptionsCreator();
-
 
 // 검색 화면
 var search_form_creator = function(){
@@ -202,7 +225,10 @@ var incident_alarm_form_creator = function(alarmItem){
 					} ,hotkey: "esc"
 				},{
 					view:"button", value:"등록", click:function(){// 등록
-						webix.ajax().post(path, $$("incident_alarm_form").getValues(), function(text,data){
+						let addAlaramParameter = $$("incident_alarm_form").getValues();
+						addAlaramParameter.beforeSql = window.btoa(encodeURIComponent(addAlaramParameter.beforeSql));
+						addAlaramParameter.runSql = window.btoa(encodeURIComponent(addAlaramParameter.runSql));
+						webix.ajax().post(path, addAlaramParameter, function(text,data){
 							if(data.json().httpStatus==200){
 								webix.message(data.json().message);
 								$$("incident_alarm_popup").hide();
@@ -252,9 +278,9 @@ var incident_alarm_form_creator = function(alarmItem){
 				// 수정 대상 필드를 찾는다.
 				let modifyParam = null;
 				$.each(pModify,function(cIndex,modify){
-					let isModifyParam = param.name!='id' && param.name==modify.name;								// 파라메터가
-					isModifyParam = isModifyParam || (param.name=='sendMemberVos' && modify.name=='sendMemberIds'); // 또는
-					isModifyParam = isModifyParam || (param.name=='databaseVo' && modify.name=='databaseId');		// 또는
+					let isModifyParam = param.name!='id' && param.name==modify.name;								
+					isModifyParam = isModifyParam || (param.name=='sendMemberVos' && modify.name=='sendMemberIds'); 
+					isModifyParam = isModifyParam || (param.name=='databaseVo' && modify.name=='databaseId'  && alarmItem.confirmYN!="Y");
 					if(isModifyParam){
 						modifyParam = modify;
 					}
@@ -304,7 +330,10 @@ var incident_alarm_form_creator = function(alarmItem){
 		// 수정 버튼
 		let modifyButton ={
 			view:"button", value:"수정", click:function(){// 수정
-				webix.ajax().put(path, $$("incident_alarm_form").getValues(), function(text,data){
+				let modifyAlaramParameter = $$("incident_alarm_form").getValues();
+				modifyAlaramParameter.beforeSql = window.btoa(encodeURIComponent(modifyAlaramParameter.beforeSql));
+				modifyAlaramParameter.runSql = window.btoa(encodeURIComponent(modifyAlaramParameter.runSql));
+				webix.ajax().put(path, modifyAlaramParameter, function(text,data){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("incident_alarm_popup").hide();
@@ -319,7 +348,7 @@ var incident_alarm_form_creator = function(alarmItem){
 		// 승인 버튼
 		let confirmButton={
 			view:"button", value:"승인", click:function(){// 승인
-				webix.ajax().put('/alarm/confirm', {id : alarmItem.id}, function(text,data){
+				webix.ajax().put('/alarm/confirm', {id : alarmItem.id, confirmYN:"Y"}, function(text,data){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("incident_alarm_popup").hide();
@@ -330,17 +359,33 @@ var incident_alarm_form_creator = function(alarmItem){
 				});
 			}
 		}
-		
+
+		// 승인 취소
+		let confirmCancelButton={
+			view:"button", value:"승인취소", click:function(){
+				webix.ajax().put('/alarm/confirm', {id : alarmItem.id, confirmYN:"N"}, function(text,data){
+					if(data.json().httpStatus==200){
+						webix.message(data.json().message);
+						$$("incident_alarm_popup").hide();
+						incident_alarm_list_create();
+					} else {
+						webix.message({ type:"error", text:data.json().message });
+					}
+				});
+			}
+		}
+
 		// 테스트 실행 및 즉시 실행
 		if(alarmItem.confirmYN == "Y"){
 			elementsList.push({cols:[runTest,runNow]});
 		} else {
 			elementsList.push({cols:[runTest,{}]});
 		}
-		// 승인 버튼 노출
-		if(alarmItem.confirmYN != "Y" && member.authType=='ADMIN'){
-			elementsList.push({cols:[cancelButton,modifyButton,confirmButton]});
-		} else {
+		if(alarmItem.confirmYN != "Y" && member.authType=='ADMIN'){ 				// 승인 버튼 노출
+			elementsList.push({cols:[cancelButton,modifyButton,confirmButton]});	
+		} else if(alarmItem.confirmYN == "Y" && member.authType=='ADMIN'){			// 승인 취소 버튼
+			elementsList.push({cols:[cancelButton,modifyButton,confirmCancelButton]});
+		}  else {																	// 일반 수정
 			elementsList.push({cols:[cancelButton,modifyButton]});
 		}
 

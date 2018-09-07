@@ -83,4 +83,12 @@ public interface DBClientMemberManager {
 	 */
 	Page<DatabaseVo> findDatabaseListByMemberAllow(MemberDatabaseFindDto dto, Pageable page);
 
+	/**
+	 * 회원이 해당 Database 에 접근 가능한가 확인
+	 * @param loginId
+	 * @param DatabaseId
+	 * @return 접근 가능하면 true 를  리턴함
+	 */
+	boolean isAccessPossibleDatabase(Long loginId, Long DatabaseId);
+
 }

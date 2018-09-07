@@ -1394,7 +1394,7 @@ var executeQuery = function (isNextData,resultView){
 		resultView.config.offset 	= 	executeQueryParams.offset;
 		resultView.config.page		=	1;
 		resultView.config.isDataLoading=false;
-		$$("database_query_server_return").setValue(decodeURIComponent(resultView.config.query));
+		$$("database_query_server_return").setValue(decodeURIComponent(window.atob(resultView.config.query)));
 	}
 }
 
@@ -1502,7 +1502,7 @@ webix.ready(function(){
 
 //실행중인 쿼리 중단
 var killExecuteQuery = function (){
-	executeQueryParams.query = encodeURIComponent(executeQueryParams.query);
+	executeQueryParams.query = window.btoa(encodeURIComponent(executeQueryParams.query));
 	webix.ajax().post("/database/killExecuteQuery",executeQueryParams, 
 		function(text,data){
 			if(data.json().httpStatus ==200){
@@ -1543,6 +1543,7 @@ var add_favority_query_form = {
 					var params = this.getFormView().getValues();
 					params.databaseId = database.id;
 					params.memberId = member.id;
+					params.query=window.btoa(encodeURIComponent(params.query));
 					webix.ajax().post("/member/addMemberSaveQuery", params, function(text,data){
 							if(data.json().httpStatus ==200){
 								webix.message(data.json().message);

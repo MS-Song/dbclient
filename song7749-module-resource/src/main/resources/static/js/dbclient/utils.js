@@ -71,7 +71,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
 		// 상황에 따라 Method 를 변경하기 위해 Promis 객체로 분기 한다.
 		let promise = null;
 		if(url=="/database/executeQuery"){
-			parmeters.query = encodeURIComponent(parmeters.query); 
+			parmeters.query = window.btoa(encodeURIComponent(parmeters.query)); 
 			promise = webix.ajax().post(url,parmeters);
 		} else {
 			promise = webix.ajax().get(url,parmeters);
@@ -166,7 +166,7 @@ var getDataParseView = function(url,parmeters,viewName,isCreateHeader,isCache,is
     			$$("database_query_log_view").data.add({
     				seq:$$("database_query_log_view").data.order.length+1,
     				date:time.getHours()+'시 '+time.getMinutes()+'분 '+time.getSeconds()+'초 <br/>'+time.getFullYear()+'년 '+(time.getMonth()+1)+'월 '+time.getDate()+'일',
-    				query:decodeURIComponent($$(viewName).config.query),
+    				query:decodeURIComponent(window.atob($$(viewName).config.query)),
     				reTry:"",
     				favorities:""
     			},$$("database_query_log_view").data.order.length+1);
@@ -537,12 +537,14 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 		};		
 	} else if (param.name.toLowerCase().indexOf("databaseid") >= 0
 				|| param.name.toLowerCase().indexOf('databasevo')>= 0){
+		let setDatabaseOptions = isDisable ? useAllDatabaseOptions : useDatabaseOptions;
+		
 		viewElement={
 				view:"select", 
 				label:leftDescription, 
 				labelWidth:150,
 				adjust:true,
-				options:useDatabaseOptions,
+				options:setDatabaseOptions,
 				name:'databaseId',
 				disabled:isDisable
 		};				

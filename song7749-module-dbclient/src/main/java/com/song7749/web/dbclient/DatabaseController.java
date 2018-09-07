@@ -108,9 +108,14 @@ public class DatabaseController {
 			@PageableDefault(page=0, size=100, direction=Direction.DESC, sort="id")
 			Pageable page){
 
+
+		logger.trace(format("{}", "Database List Log"),dto);
 		// 권한 확인 후에 관리자가 아니면 database 확인 후 조회 하도록 처리 한다.
 		// 일반 회원인 경우 회원의 권한이 있는 DB만 조회 가능 하다
-		if(session.getLogin().getAuthType().equals(AuthType.NORMAL)){
+		// 권한이 없는 경우에는 쿼리의 실행을 차단 했음으로, 리스트 조회를 강제로 할 수 있게 처리 함.
+		if(dto.isAccessAll()==false
+				&& session.getLogin().getAuthType().equals(AuthType.NORMAL)){
+
 			return dbClientMemberManager.findDatabaseListByMemberAllow(
 					new MemberDatabaseFindDto(
 							session.getLogin().getId()), page);

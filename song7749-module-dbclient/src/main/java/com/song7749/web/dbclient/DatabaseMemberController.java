@@ -1,9 +1,16 @@
 package com.song7749.web.dbclient;
 
+import static com.song7749.util.LogMessageFormatter.format;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.castor.util.Base64Decoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,10 +115,19 @@ public class DatabaseMemberController {
 	@Login({AuthType.NORMAL,AuthType.ADMIN})
 	public MessageVo addMemberSaveQuery(
 			HttpServletRequest request, HttpServletResponse response,
-			@Valid @ModelAttribute MemberSaveQueryAddDto dto){
+			@Valid @ModelAttribute MemberSaveQueryAddDto dto) throws UnsupportedEncodingException{
 
 		// 본인 확인
 		if(session.getLogin().getId().equals(dto.getMemberId())){
+
+			dto.setQuery(
+					URLDecoder.decode(
+						new String(
+							Base64Decoder.decode(dto.getQuery())
+							,Charset.forName("UTF-8"))
+					, "UTF-8"));
+			logger.debug(format("{}", "DECODE URL QUERY"),dto.getQuery());
+
 			return new MessageVo(HttpStatus.OK.value()
 					, 1
 					, dbClientMemberManager.addMemberSaveQuery(dto)

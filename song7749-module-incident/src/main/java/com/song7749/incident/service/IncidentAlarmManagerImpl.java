@@ -229,7 +229,10 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 			logger.error("알람 로그 기록 실패 ID:" + modifySource.getId());
 		}
 		// confirm 이후에 수정되면 스케줄러를 수정한다.
-		if(YN.Y.equals(ia.getConfirmYN())) addOrModifyTasks(ia);
+//		if(YN.Y.equals(ia.getConfirmYN()))
+		// 수정이 일어나면 무조건 스케줄을 정리 한다.
+		addOrModifyTasks(ia);
+
 		return mapper.map(ia, IncidentAlarmVo.class);
 	}
 
@@ -246,12 +249,15 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 			throw new IllegalArgumentException("알람정보가 일치하지 않습니다. id="+dto.getId());
 		}
 
+		// 객체 변환 전에 DTO 의 confirm 값을 별도 보관 한다.
+		YN confirm = dto.getConfirmYN();
 		// 객체 형변환
 		mapper.map(dto, ia);
+
 		Optional<Member> oMember = memberRepository.findById(dto.getConfirmMemberId());
 		if(oMember.isPresent()) {
 			ia.setConfirmMember(oMember.get());
-			ia.setConfirmYN(YN.Y);
+			ia.setConfirmYN(confirm);
 			ia.setConfirmDate(new Date(System.currentTimeMillis()));
 		} else {
 			throw new IllegalArgumentException("등록회원 정보가 일치하지 않습니다. memberId="+dto.getConfirmMemberId());
@@ -263,7 +269,7 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 
 		try {
 			StringBuffer after = new StringBuffer();
-			after.append("confirm:Y");
+			after.append("confirm:"+dto.getConfirmYN());
 			if(null!=loginSession && null!=loginSession.getLogin()) {
 				after.append(", modifyId : " + 	loginSession.getLogin().getLoginId());
 			}

@@ -11,7 +11,8 @@ spring:
   # profile active
   profiles:
     active:
-    - local 
+#    - local
+    - mariadb 
   # banner
   banner:
     charset: utf-8

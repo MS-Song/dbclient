@@ -1,7 +1,10 @@
 package com.song7749.web.dbclient;
 
+import static com.song7749.util.LogMessageFormatter.format;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.castor.util.Base64Decoder;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.song7749.common.MessageVo;
+import com.song7749.dbclient.service.DBClientMemberManager;
 import com.song7749.dbclient.service.DBclientManager;
 import com.song7749.dbclient.service.DatabaseManager;
 import com.song7749.dbclient.value.DatabaseDdlVo;
@@ -55,6 +60,9 @@ public class DatabaseSchemaController {
 
 	@Autowired
 	DBclientManager dbclientManager;
+
+	@Autowired
+	DBClientMemberManager dbClientMemberManager;
 
 	@Autowired
 	LoginSession session;
@@ -284,8 +292,22 @@ public class DatabaseSchemaController {
 		if(null!=dto.getQuery() && dto.getQuery().length()<1){
 			throw new IllegalArgumentException("입력된 쿼리가 없습니다. 쿼리 입력후에 실행하시기 바랍니다.");
 		}
-		dto.setQuery(URLDecoder.decode(dto.getQuery(), "UTF-8"));
-		//logger.trace(format("{}", "DECODE URL ENCODE"),dto.getQuery());
+
+		// 회원이 해당 DB의 권한이 있는지 검증 한다.
+		if(session.getLogin().getAuthType().equals(AuthType.NORMAL)){
+			// 권한이 없을 경우 실행 실패
+			if(!dbClientMemberManager.isAccessPossibleDatabase(session.getLogin().getId(), dto.getId())){
+				throw new IllegalArgumentException("데이터베이스에 권한이 없습니다.");
+			}
+		}
+
+		dto.setQuery(
+			URLDecoder.decode(
+				new String(
+					Base64Decoder.decode(dto.getQuery())
+					,Charset.forName("UTF-8"))
+			, "UTF-8"));
+		logger.debug(format("{}", "DECODE URL QUERY"),dto.getQuery());
 
 		dto.setLoginId(session.getLogin().getLoginId());
 		dto.setIp(request.getRemoteAddr());
@@ -301,11 +323,24 @@ public class DatabaseSchemaController {
 			HttpServletRequest request, HttpServletResponse response,
 			@Valid @ModelAttribute ExecuteQueryDto dto) throws UnsupportedEncodingException {
 
+		// 회원이 해당 DB의 권한이 있는지 검증 한다.
+		if(session.getLogin().getAuthType().equals(AuthType.NORMAL)){
+			// 권한이 없을 경우 실행 실패
+			if(!dbClientMemberManager.isAccessPossibleDatabase(session.getLogin().getId(), dto.getId())){
+				throw new IllegalArgumentException("데이터베이스에 권한이 없습니다.");
+			}
+		}
+
 		dto.setLoginId(session.getLogin().getLoginId());
 		dto.setIp(request.getRemoteAddr());
 
-		dto.setQuery(URLDecoder.decode(dto.getQuery(), "UTF-8"));
-		//logger.trace(format("{}", "DECODE URL ENCODE"),dto.getQuery());
+		dto.setQuery(
+				URLDecoder.decode(
+					new String(
+						Base64Decoder.decode(dto.getQuery())
+						,Charset.forName("UTF-8"))
+				, "UTF-8"));
+		logger.debug(format("{}", "DECODE URL QUERY"),dto.getQuery());
 
 		dbclientManager.killQuery(dto);
 		return new MessageVo(HttpStatus.OK.value(), "쿼리가 중지되었습니다.");

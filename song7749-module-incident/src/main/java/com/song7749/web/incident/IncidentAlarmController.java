@@ -1,5 +1,10 @@
 package com.song7749.web.incident;
 
+import static com.song7749.util.LogMessageFormatter.format;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.castor.util.Base64Decoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.song7749.common.MessageVo;
+import com.song7749.common.YN;
 import com.song7749.common.exception.AuthorityUserException;
 import com.song7749.common.exception.NotDataFoundException;
 import com.song7749.incident.service.IncidentAlarmManager;
@@ -81,10 +88,27 @@ public class IncidentAlarmController {
 	public MessageVo addIncidentAlarm(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@Valid @ModelAttribute IncidentAlarmAddDto dto){
+			@Valid @ModelAttribute IncidentAlarmAddDto dto) throws UnsupportedEncodingException{
 
 		// 인증 정보 추가
 		dto.setMemberId(session.getLogin().getId());
+
+		dto.setBeforeSql(
+				URLDecoder.decode(
+					new String(
+						Base64Decoder.decode(dto.getBeforeSql())
+						,Charset.forName("UTF-8"))
+				, "UTF-8"));
+		logger.debug(format("{}", "DECODE URL BEFORE SQL"),dto.getBeforeSql());
+
+		dto.setRunSql(
+				URLDecoder.decode(
+					new String(
+						Base64Decoder.decode(dto.getRunSql())
+						,Charset.forName("UTF-8"))
+				, "UTF-8"));
+		logger.debug(format("{}", "DECODE URL RUN SQL"),dto.getRunSql());
+
 		return new MessageVo(HttpStatus.OK.value(), 1
 				, incidentAlarmManager.addIncidentAlarm(dto), "알람 등록이 완료되었습니다.");
 	}
@@ -97,7 +121,7 @@ public class IncidentAlarmController {
 	public MessageVo modifyBeforeConfirm(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@Valid @ModelAttribute IncidentAlarmModifyBeforeConfirmDto dto){
+			@Valid @ModelAttribute IncidentAlarmModifyBeforeConfirmDto dto) throws UnsupportedEncodingException{
 
 		// 관리자
 		boolean modifyAble = AuthType.ADMIN.equals(session.getLogin().getAuthType());
@@ -110,6 +134,22 @@ public class IncidentAlarmController {
 			modifyAble = modifyAble || vo.isPresent();
 		}
 		if(modifyAble) {
+			dto.setBeforeSql(
+					URLDecoder.decode(
+						new String(
+							Base64Decoder.decode(dto.getBeforeSql())
+							,Charset.forName("UTF-8"))
+					, "UTF-8"));
+			logger.debug(format("{}", "DECODE URL BEFORE SQL"),dto.getBeforeSql());
+
+			dto.setRunSql(
+					URLDecoder.decode(
+						new String(
+							Base64Decoder.decode(dto.getRunSql())
+							,Charset.forName("UTF-8"))
+					, "UTF-8"));
+			logger.debug(format("{}", "DECODE URL RUN SQL"),dto.getRunSql());
+
 			return new MessageVo(HttpStatus.OK.value(), 1
 					, incidentAlarmManager.modifyIncidentAlarm(dto), "알람 수정이 완료되었습니다.");
 		} else {
@@ -129,7 +169,7 @@ public class IncidentAlarmController {
 			// 로그인 세션 ID
 			dto.setConfirmMemberId(session.getLogin().getId());
 			return new MessageVo(HttpStatus.OK.value(), 1
-					, incidentAlarmManager.confirmIncidentAlarm(dto), "알람 승인이 완료되었습니다.");
+					, incidentAlarmManager.confirmIncidentAlarm(dto), dto.getConfirmYN().equals(YN.Y) ? "알람 승인이 완료되었습니다." : "알람 승인이 취소되었습니다.");
 	}
 
 	@ApiOperation(value = "알람 즉시 실행"
@@ -170,7 +210,7 @@ public class IncidentAlarmController {
 	public MessageVo modifyAfterConfirm(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@Valid @ModelAttribute IncidentAlarmModifyAfterConfirmDto dto){
+			@Valid @ModelAttribute IncidentAlarmModifyAfterConfirmDto dto) throws UnsupportedEncodingException{
 
 		// 관리자
 		boolean modifyAble = AuthType.ADMIN.equals(session.getLogin().getAuthType());
@@ -182,6 +222,14 @@ public class IncidentAlarmController {
 			modifyAble = modifyAble || vo.isPresent();
 		}
 		if(modifyAble) {
+			dto.setBeforeSql(
+					URLDecoder.decode(
+						new String(
+							Base64Decoder.decode(dto.getBeforeSql())
+							,Charset.forName("UTF-8"))
+					, "UTF-8"));
+			logger.debug(format("{}", "DECODE URL BEFORE SQL"),dto.getBeforeSql());
+
 			return new MessageVo(HttpStatus.OK.value(), 1
 					, incidentAlarmManager.modifyIncidentAlarm(dto), "알람 수정이 완료되었습니다.");
 		} else {

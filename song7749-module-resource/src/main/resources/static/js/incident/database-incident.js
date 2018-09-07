@@ -345,6 +345,7 @@ var getQueryString = function(){
 
 //실행중인 쿼리 중단
 var killExecuteQuery = function (){
+	executeQueryParams.query = window.btoa(encodeURIComponent(executeQueryParams.query));
 	webix.ajax().post("/database/killExecuteQuery",{executeQueryParams}, 
 		function(text,data){
 			if(data.json().httpStatus ==200){
