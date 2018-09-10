@@ -59,6 +59,12 @@ public interface IncidentAlarmManager {
 
 
 	/**
+	 * 사건 알람을 승인 요청 한다.
+	 * @param dto
+	 * @return
+	 */
+	void confirmRequest(IncidentAlarmConfirmDto dto);
+	/**
 	 * 사건 알람을 승인 한다.
 	 * @param dto
 	 * @return

@@ -192,6 +192,7 @@ var incident_alarm_popup = function(alarmItem){
 	// form 생성
 	incident_alarm_form_creator(alarmItem);
 }
+
 /**
  * 알람 팝업 elements 생성
  */
@@ -345,6 +346,21 @@ var incident_alarm_form_creator = function(alarmItem){
 			}
 		} 
 
+		// 승인 요청
+		let confirmRequestButton={
+			view:"button", value:"승인요청", click:function(){// 승인요청
+				webix.ajax().put('/alarm/confirmRequest', {id : alarmItem.id}, function(text,data){
+					if(data.json().httpStatus==200){
+						webix.message(data.json().message);
+						$$("incident_alarm_popup").hide();
+						incident_alarm_list_create();
+					} else {
+						webix.message({ type:"error", text:data.json().message });
+					}
+				});
+			}
+		}
+		
 		// 승인 버튼
 		let confirmButton={
 			view:"button", value:"승인", click:function(){// 승인
@@ -381,11 +397,14 @@ var incident_alarm_form_creator = function(alarmItem){
 		} else {
 			elementsList.push({cols:[runTest,{}]});
 		}
-		if(alarmItem.confirmYN != "Y" && member.authType=='ADMIN'){ 				// 승인 버튼 노출
+		
+		if(alarmItem.confirmYN != "Y" && member.authType=='ADMIN') { 					// 승인 버튼 노출
 			elementsList.push({cols:[cancelButton,modifyButton,confirmButton]});	
-		} else if(alarmItem.confirmYN == "Y" && member.authType=='ADMIN'){			// 승인 취소 버튼
+		} else if(alarmItem.confirmYN == "Y" && member.authType=='ADMIN') {				// 승인 취소 버튼
 			elementsList.push({cols:[cancelButton,modifyButton,confirmCancelButton]});
-		}  else {																	// 일반 수정
+		}  else if(alarmItem.confirmYN != "Y") {										// 승인 전 승인 요청 버튼
+			elementsList.push({cols:[cancelButton,modifyButton,confirmRequestButton]});
+		}  else {																		// 승인 후 수정
 			elementsList.push({cols:[cancelButton,modifyButton]});
 		}
 
@@ -538,3 +557,20 @@ var crontabSchedulePopup = function(view,value){
 	    }
 	}).show();
 };
+
+// confirm 메일을 통해 진입할 경우
+var confirmPopupLazyLoading = function(){
+	if(null==member || undefined==member || undefined==member.authType){
+		setTimeout(() => {confirmPopupLazyLoading()}, 100);		
+	} else {
+		incident_alarm_popup({"id":getParam("id"),"confirmYN":null});
+	}
+}
+
+webix.ready(function(){
+	// 승인을 위해 호출한 것으로 간주하고, 승인하도록 처리 해 준다.
+	if(getParam("id") > 0){
+		confirmPopupLazyLoading();
+	}
+});
+

@@ -157,6 +157,22 @@ public class IncidentAlarmController {
 		}
 	}
 
+	@ApiOperation(value = "알람 승인 요청"
+			,notes = "등록된 알람을 승인 요청 한다.<br/> 관리자로 등록된 모든 회원에게 승인 요청 메일이 발송된다."
+			,response=MessageVo.class)
+	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@PutMapping("/confirmRequest")
+	public MessageVo confirmRequest(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@Valid @ModelAttribute IncidentAlarmConfirmDto dto){
+			// 로그인 세션 ID
+			dto.setConfirmMemberId(session.getLogin().getId());
+			// 승인 요청 실행
+			incidentAlarmManager.confirmRequest(dto);
+			return new MessageVo(HttpStatus.OK.value(), 1, "승인이 요청 되었습니다.");
+	}
+
 	@ApiOperation(value = "알람 승인"
 			,notes = "등록된 알람을 승인한다."
 			,response=MessageVo.class)

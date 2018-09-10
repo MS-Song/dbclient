@@ -181,30 +181,40 @@ var member_list_popup = function(view,multi){
 
 //회원 리스트 Loading
 var loadMemberList = function(view){
-	// 이미 있는 내용은 모두 지운다 
 	webix.ajax().get("/member/list", $$("member_list_search_form").getValues(), function(text,data){
 
 		if(data.json().httpStatus == 200 
 				&& null!=data.json().contents){
+			// 페이지 초기화
 			$$("member_list_page").config.size=data.json().contents.size;
 			$$("member_list_page").config.count=data.json().contents.totalElements;
 			$$("member_list_page").refresh();
 
+			// 지우기 전에 오른쪽에 있는 객체를 미리 저장한다.
+			var selectedMembers = $$("member_list_view").getValue();
+			
+			// 이미 있는 내용은 모두 지운다
 			$$("member_list_view").$$("left").clearAll();
     		$$("member_list_view").parse(convertMemberList(data.json().contents.content));
 
     		// 이미 선택된 회원을 조회해서 right 에 넣는다.
     		if(""!=$$(view).getValue().trim()
     				&& $$(view).getValue().trim().length>0){
-    			$$("member_list_view").setValue($$(view).getValue());
+
+    			// 이미 선택된 회원이 없을 경우에는 넘겨받은 값을 사용, 있는 경우에는 있는값을 넣는다.
+    			if(undefined==selectedMembers || ""==selectedMembers){
+    				$$("member_list_view").setValue($$(view).getValue());	
+    			} else { // 이미 선택된 회원들을 오른쪽에 넣는다.
+    				$$("member_list_view").setValue(selectedMembers);
+    			}
     			// 조회된 개수가 다를 경우에는 다른 페이지에 있는 회원이다. (ID 를 추가로 가져와서 셋팅한다)
     			var values = $$(view).getValue().split(",");
     			if(values.length != $$("member_list_view").$$("right").serialize().length){
     				// ID 를 추가로 가져온다.
-
     				webix.ajax().get("/member/list", {ids:$$(view).getValue()} , function(text,data){
     					if(data.json().httpStatus == 200 
     							&& null!=data.json().contents){
+    						console.log(data.json().contents.content);
     						$$("member_list_view").parse(convertMemberList(data.json().contents.content));    					
     					}
     				});

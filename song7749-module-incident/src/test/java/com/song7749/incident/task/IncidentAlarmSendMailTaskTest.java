@@ -36,7 +36,7 @@ import com.song7749.member.domain.Member;
 import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.type.AuthType;
 
-public class IncidentAlarmTaskTest extends UnitTest {
+public class IncidentAlarmSendMailTaskTest extends UnitTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -143,7 +143,7 @@ public class IncidentAlarmTaskTest extends UnitTest {
 				//"메일 내용은 이러하다 \r\n <sql> select * from database_info </sql>  \r\n 메일 내용은 이러하다 \r\n <sql> select * from database_info </sql>",
 				//"<sql>  SELECT A.MENU_ID, SUBSTR(MAX(SYS_CONNECT_BY_PATH(A.MENU_NM, '>')), 2) MENU_NM FROM SYS_MENUINFO A  WHERE USE_YN = 'Y' AND MENUURL_TXT IS NOT NULL AND UPMENU_ID <> '00000' CONNECT BY PRIOR A.MENU_ID = A.UPMENU_ID START WITH A.UPMENU_ID = '00000' GROUP BY A.MENU_ID </sql>",
 				//"SELECT A.MENU_ID, SUBSTR(MAX(SYS_CONNECT_BY_PATH(A.MENU_NM, '>')), 2) MENU_NM FROM SYS_MENUINFO A  WHERE USE_YN = 'Y' AND MENUURL_TXT IS NOT NULL AND UPMENU_ID <> '00000' CONNECT BY PRIOR A.MENU_ID = A.UPMENU_ID START WITH A.UPMENU_ID = '00000' GROUP BY A.MENU_ID",
-				"SELECT T1.TABLE_NAME TABLE_NAME,T2.COMMENTS TABLE_COMMENT FROM ALL_TABLES T1, ALL_TAB_COMMENTS T2 WHERE T2.TABLE_NAME(+) = T1.TABLE_NAME and T1.OWNER=T2.OWNER and T1.OWNER=upper('SONG7749') order by TABLE_NAME asc",
+				"<sql>select * from database_info </sql>",
 				SendMethod.EMAIL,
 				YN.Y,
 				"*/10 * * * * *",
@@ -158,7 +158,7 @@ public class IncidentAlarmTaskTest extends UnitTest {
 
 		incidentAlarmRepository.saveAndFlush(incidentAlarm);
 
-		IncidentAlarmTask task = new IncidentAlarmTask(
+		IncidentAlarmSendMailTask task = new IncidentAlarmSendMailTask(
 				dbClientManager,
 				incidentAlarm,
 				incidentAlarmRepository,
@@ -169,6 +169,6 @@ public class IncidentAlarmTaskTest extends UnitTest {
 		task.run();
 
 		// thread 처리 종료 시간을 벌어 준다.
-		Thread.sleep(30000);
+		Thread.sleep(5000);
 	}
 }

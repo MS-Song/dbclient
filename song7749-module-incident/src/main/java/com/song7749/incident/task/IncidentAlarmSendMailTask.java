@@ -62,7 +62,7 @@ import com.song7749.member.domain.Member;
 * @since 2018. 5. 13.
 */
 @SuppressWarnings("unchecked")
-public class IncidentAlarmTask implements Runnable {
+public class IncidentAlarmSendMailTask implements Runnable {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -78,7 +78,7 @@ public class IncidentAlarmTask implements Runnable {
 
 	ModelMapper mapper;
 
-	public IncidentAlarmTask(DBclientManager dbClientManager
+	public IncidentAlarmSendMailTask(DBclientManager dbClientManager
 			, IncidentAlarm incidentAlarm
 			, IncidentAlarmRepository incidentAlarmRepository
 			, EmailService emailService
@@ -357,6 +357,7 @@ public class IncidentAlarmTask implements Runnable {
 			for(String key : sqlMap.keySet()) {
 				dto.setQuery(sqlMap.get(key));
 				MessageVo vo = dbClientManager.executeQuery(dto);
+				logger.trace(format("{}", "Alarm Send Email VO"),vo);
 				String html = generateEmailHtml((List<Map<String, String>>) vo.getContents());
 				contents=contents.replace(key, html);
 			}
@@ -444,15 +445,17 @@ public class IncidentAlarmTask implements Runnable {
 					}
 					sendMessageBuffer.append("</tr>");
 					sendMessageBuffer.append("</thead>");
-				} else {
-					sendMessageBuffer.append("<tr>");
-					for(String head : contents.get(i).keySet()) {
-						sendMessageBuffer.append("<td class=\"tg-us36\">");
-						sendMessageBuffer.append(contents.get(i).get(head));
-						sendMessageBuffer.append("</td>");
-					}
-					sendMessageBuffer.append("</tr>");
 				}
+
+				if(i>0) sendMessageBuffer.append("<tbody>");
+				sendMessageBuffer.append("<tr>");
+				for(String head : contents.get(i).keySet()) {
+					sendMessageBuffer.append("<td class=\"tg-us36\">");
+					sendMessageBuffer.append(contents.get(i).get(head));
+					sendMessageBuffer.append("</td>");
+				}
+				sendMessageBuffer.append("</tr>");
+				if(i>0) sendMessageBuffer.append("</tbody>");
 			}
 			sendMessageBuffer.append("</table>");
 		} else {

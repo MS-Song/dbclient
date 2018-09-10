@@ -674,3 +674,16 @@ var formatDate = function (date) {
 	 if(hour_gap>=24) 	hour_gap=0;
 	 return day_gap + "일 " + hour_gap + "시 " + min_gap + "분 " + sec_gap + "초";
  }
+ 
+ // 파라메터 정보가 저장될 오브젝트
+ var getParam = function(key){
+	var _parammap = {};
+	document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, 
+		function () {
+			function decode(s) {
+				return decodeURIComponent(s.split("+").join(" "));
+			}
+			_parammap[decode(arguments[1])] = decode(arguments[2]);
+	});
+	return _parammap[key];
+ };

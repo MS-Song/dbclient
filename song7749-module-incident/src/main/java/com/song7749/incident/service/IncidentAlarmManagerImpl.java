@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
@@ -40,7 +42,8 @@ import com.song7749.dbclient.service.DBclientManager;
 import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.incident.domain.IncidentAlarm;
 import com.song7749.incident.repository.IncidentAlarmRepository;
-import com.song7749.incident.task.IncidentAlarmTask;
+import com.song7749.incident.task.IncidentAlarmConfirmRequestTask;
+import com.song7749.incident.task.IncidentAlarmSendMailTask;
 import com.song7749.incident.value.IncidentAlarmAddDto;
 import com.song7749.incident.value.IncidentAlarmConfirmDto;
 import com.song7749.incident.value.IncidentAlarmDetailVo;
@@ -54,6 +57,8 @@ import com.song7749.mail.service.EmailService;
 import com.song7749.member.domain.Member;
 import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.service.LoginSession;
+import com.song7749.member.type.AuthType;
+import com.song7749.member.value.MemberFindDto;
 import com.song7749.member.value.MemberVo;
 
 @Service
@@ -99,6 +104,9 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 
 	@Value("${app.alarm.scheduler.run}")
 	private boolean isSchedulerRun;
+
+    @Autowired
+    private Environment environment;
 
 	@Validate
 	@Transactional
@@ -234,6 +242,36 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		addOrModifyTasks(ia);
 
 		return mapper.map(ia, IncidentAlarmVo.class);
+	}
+
+	@Validate
+	@Transactional
+	@Override
+	public void confirmRequest(IncidentAlarmConfirmDto dto) {
+		// 해당 알람을 조회 한다.
+		Optional<IncidentAlarm> oAlarm = incidentAlarmRepository.findById(dto.getId());
+		IncidentAlarm incidentAlarm = null;
+		if(oAlarm.isPresent()) {
+			incidentAlarm = oAlarm.get();
+		} else {
+			throw new IllegalArgumentException("알람정보가 일치하지 않습니다. id="+dto.getId());
+		}
+
+		// 관리자 회원에게 메일 발송 하기 위해 조회
+		MemberFindDto memberFindDto = new MemberFindDto();
+		memberFindDto.setAuthType(AuthType.ADMIN);
+		Pageable page = PageRequest.of(0, 100);//,Direction.DESC,"id");
+		Page<Member> pMember = memberRepository.findAll(memberFindDto,page);
+
+		// 실행
+		taskScheduler.getScheduledExecutor().execute(
+			new IncidentAlarmConfirmRequestTask(
+					environment
+					, dbClientManager
+					, incidentAlarm
+					, pMember.getContent()
+					, emailService
+					, mapper));
 	}
 
 	@Validate
@@ -378,7 +416,7 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 					&& !incidentAlarm.getSendMembers().isEmpty()) {
 
 				ScheduledFuture<?> future = taskScheduler.schedule(
-						new IncidentAlarmTask(dbClientManager, incidentAlarm,
+						new IncidentAlarmSendMailTask(dbClientManager, incidentAlarm,
 								incidentAlarmRepository, emailService, template, mapper)
 						, new CronTrigger(incidentAlarm.getSchedule()));
 
@@ -457,10 +495,11 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 				}
 				incidentAlarm.setTest(test);
 			}
-			taskScheduler.getScheduledExecutor().execute(new IncidentAlarmTask(dbClientManager, incidentAlarm,
+			taskScheduler.getScheduledExecutor().execute(new IncidentAlarmSendMailTask(dbClientManager, incidentAlarm,
 				incidentAlarmRepository, emailService, template, mapper));
 		} else {
 			throw new IllegalArgumentException("승인되지 않았거나, 실행 가능 상태가 아닙니다. 또는 전달 대상자가 없습니다");
 		}
 	}
+
 }

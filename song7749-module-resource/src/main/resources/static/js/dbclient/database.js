@@ -152,6 +152,7 @@ var select_database_popup=function(){
 // database info cell
 var database_info_cell = [{	 
 		header:"Table",
+		id:"table_list_tab",
 		rows:[{
 			view : "datatable",
 			id:"database_info_table_list_view", 	

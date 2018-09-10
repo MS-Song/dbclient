@@ -1,0 +1,146 @@
+.webix_hint_view.webix_hint_animated .webix_hint_overlay_hole_el {
+  fill: #000;
+  -webkit-transition: fill 0.4s ease-in;
+  -o-transition: fill 0.4s ease-in;
+  transition: fill 0.4s ease-in;
+}
+.webix_hint_view.webix_hint_animated .webix_hint {
+  opacity: 1;
+  -webkit-transition: opacity 0.4s ease-in;
+  -o-transition: opacity 0.4s ease-in;
+  transition: opacity 0.4s ease-in;
+}
+.webix_hint_overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1010;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.6;
+}
+.webix_hint_view svg {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+}
+.webix_hint_overflow {
+  pointer-events: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  min-width: 100%;
+}
+.webix_hint_overflow .webix_window,
+.webix_hint_overflow .webix_popup {
+  pointer-events: all;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+.webix_hint {
+  position: fixed;
+  pointer-events: all;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  display: block;
+  z-index: 1012;
+  width: 310px;
+  border-radius: 2px;
+  background-color: #FFFFFF;
+  padding: 22px 50px 80px 22px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  opacity: 0;
+}
+.webix_hint .webix_hint_label {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 16px;
+  line-height: 24px;
+  margin: -5px 0;
+}
+.webix_hint .webix_hint_title {
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 15px;
+}
+.webix_hint_buttons {
+  position: absolute;
+  bottom: 11px;
+  right: 22px;
+}
+.webix_hint_buttons .webix_hint_button {
+  display: inline-block;
+  pointer-events: all;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+  cursor: pointer;
+  margin: 0 auto;
+  height: 32px;
+  padding: 0px 16px;
+  border: none;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+  text-transform: uppercase;
+}
+.webix_hint_buttons .webix_hint_button.webix_hint_button_next {
+  margin-left: 17px;
+  background-color: #00BFC7;
+  color: #fff;
+}
+.webix_hint_buttons .webix_hint_button.webix_hint_button_next:hover {
+  background-color: #27D6DD;
+}
+.webix_hint_buttons .webix_hint_button.webix_hint_button_prev {
+  color: #0097A7;
+  background-color: #fff;
+}
+.webix_hint_buttons .webix_hint_button.webix_hint_button_prev:hover {
+  background-color: rgba(0, 191, 199, 0.1);
+}
+.webix_hint_buttons .webix_hint_button.webix_hint_button_prev.webix_hint_button_hidden {
+  display: none;
+}
+.webix_hint_progress {
+  position: absolute;
+  bottom: 17px;
+  left: 22px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 14px;
+}
+.webix_hint_button_close {
+  position: absolute;
+  right: 22px;
+  top: 20px;
+  z-index: 1012;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: rgba(0, 0, 0, 0.54);
+  pointer-events: all;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+.webix_hint_button_close:hover {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiIuL2hpbnQuY3NzIiwic291cmNlUm9vdCI6IiJ9*/
