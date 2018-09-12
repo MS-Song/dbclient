@@ -16,16 +16,17 @@ import java.util.Map;
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,8 @@ public class IncidentAlarmSendMailTask implements Runnable {
 
 	@Override
 	public void run() {
-		logger.trace(format("{}", "TASK RUN START"),incidentAlarm.getId());
+		StopWatch watch = StopWatch.createStarted();
+		logger.info(format("{}", "TASK RUN START ID : " + incidentAlarm.getId()),"시작 시간 : "+ watch.getStartTime());
 		Long startTime = System.currentTimeMillis();
 
 		// 실행 상태
@@ -118,6 +120,7 @@ public class IncidentAlarmSendMailTask implements Runnable {
 		// 실행 불가능 상태인 경우에는 에러를 내보낸다.
 		if(isExecute==false) {
 			try {
+				logger.error(format("{}", "TASK RUN ERROR ID : " + incidentAlarm.getId()),"실행 실패. 실행가능 상태가 아니거나, 승인되지 않았거나, 전송대상자 없음.");
 				throw new IllegalArgumentException("실행 실패. 실행가능 상태가 아니거나, 승인되지 않았거나, 전송대상자 없음.");
 			} catch (Exception e) {
 				logger.error(e.getMessage());
@@ -152,12 +155,13 @@ public class IncidentAlarmSendMailTask implements Runnable {
 					// 실행할 수 없는 상태
 					if(count==0) {
 						isExecute=false; // 실행 중지
-						logger.error("감지 SQL 에서 N을 발생하여 실행이 중단 됩니다.");
+						logger.error(format("{}", "TASK RUN ERROR ID : " + incidentAlarm.getId()),"감지 SQL 에서 N을 발생하여 실행이 중단 됩니다");
 						incidentAlarm.setLastErrorMessage("감지 SQL 에서 N을 발생하여 실행이 중단 됩니다.");
 						incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
 						incidentAlarmRepository.saveAndFlush(incidentAlarm);
 					}
 				} else {
+					logger.error(format("{}", "TASK RUN ERROR ID : " + incidentAlarm.getId()),"before sql 이 올바르지 않습니다. SQL : " + incidentAlarm.getBeforeSql());
 					throw new IllegalArgumentException("before sql 이 올바르지 않습니다. SQL : " + incidentAlarm.getBeforeSql());
 				}
 			} catch (Exception e) {
@@ -178,9 +182,11 @@ public class IncidentAlarmSendMailTask implements Runnable {
 					String fileName=null;
 					// 다중 SQL 인 경우에는 컨텐츠 생성.
 					if(incidentAlarm.getRunSql().toLowerCase().indexOf("<sql>") >=0) {
+						logger.info(format("{}", "TASK RUN INFO ID : " + incidentAlarm.getId()),"다중 SQL 로, 메일의 내용으로 발송 됩니다.");
 						emailContents = makeEmailContents(dto);
 					} else { // 싱글 SQL 인 경우
 						// contents 의 길이가 길면 엑셀로 만들어서 첨부해야 한다.
+						logger.info(format("{}", "TASK RUN INFO ID : " + incidentAlarm.getId()),"싱글 SQL 로, 메일의 엑셀로 첨부 됩니다.");
 						dto.setQuery(incidentAlarm.getRunSql());
 						MessageVo vo = dbClientManager.executeQuery(dto);
 						// size 가 긴 경우 엑셀로 만들어서 첨부한다.
@@ -189,13 +195,13 @@ public class IncidentAlarmSendMailTask implements Runnable {
 								&& ((List)vo.getContents()).size() > 0) {
 
 					        // 워크북 생성
-					        HSSFWorkbook workbook = new HSSFWorkbook();
+					        SXSSFWorkbook workbook = new SXSSFWorkbook(100);
 					        // 워크시트 생성
-					        HSSFSheet sheet = workbook.createSheet();
+					        SXSSFSheet sheet = workbook.createSheet();
 					        // 행 생성
-					        HSSFRow row;
+					        SXSSFRow row;
 					        // 쎌 생성
-					        HSSFCell cell;
+					        SXSSFCell cell;
 
 					        //스타일 설정 -- header
 					        CellStyle styleOfColorHeader = workbook.createCellStyle();
@@ -234,7 +240,7 @@ public class IncidentAlarmSendMailTask implements Runnable {
 				        			// 색상 지정
 				        			for(String key : ((Map<String, String>)data).keySet()) {
 				        				cell = row.createCell(mapLoop);
-				        		        cell.setCellValue(key);
+				        		        cell.setCellValue(key == null ? "" : key);
 				        		        cell.setCellStyle(styleOfColorHeader);
 						        		mapLoop++;
 						        	}
@@ -245,20 +251,28 @@ public class IncidentAlarmSendMailTask implements Runnable {
 			        			row = sheet.createRow(listLoop+1);
 			        			for(String key : ((Map<String, String>)data).keySet()) {
 			        				cell = row.createCell(mapLoop);
-				        		    cell.setCellValue((String)data.get(key));
+				        		    cell.setCellValue(null== data.get(key) ? "" : (String)data.get(key));
 			        		        cell.setCellStyle(styleOfColorBody);
-				        		    sheet.autoSizeColumn(mapLoop);
+				        		    //sheet.autoSizeColumn(mapLoop);
 			        				mapLoop++;
 					        	}
 					        	listLoop++;
 					        	mapLoop=0;
+					        	if(logger.isDebugEnabled()) {
+					        		if(listLoop%100==0) {
+										logger.trace(format("{}", "TASK RUN INFO ID : " + incidentAlarm.getId()),"엑셀 파일 생성 중 Line : " + listLoop + "을 생성하였습니다.");
+					        		}
+					        	}
 					        }
-							// 엑셀 파일을 생성하여 저장 한다.
-							fileName=System.getProperty("java.io.tmpdir")+"/"+incidentAlarm.getId() + "mail_contents.xls";
-							File file = new File(fileName);
-							FileOutputStream fos = null;
-							try {
-								fos = new FileOutputStream(file);
+
+							File file = null;
+					        FileOutputStream fos = null;
+					        try {
+						        // 엑셀 파일을 생성하여 저장 한다.
+								logger.trace(format("{}", "TASK RUN INFO ID : " + incidentAlarm.getId()),"엑셀 파일을 생성 합니다.");
+								fileName 	= System.getProperty("java.io.tmpdir")+"/"+incidentAlarm.getId() + "_mail_contents.xlsx";
+								file 		= new File(fileName);
+								fos 		= new FileOutputStream(file);
 								workbook.write(fos);
 							} catch (FileNotFoundException e) {
 								throw e;
@@ -266,6 +280,8 @@ public class IncidentAlarmSendMailTask implements Runnable {
 								throw e;
 							} finally {
 								try {
+									// 디스크 적었던 임시파일을 제거합니다.
+									workbook.dispose();
 									if(workbook!=null) workbook.close();
 									if(fos!=null) fos.close();
 								} catch (IOException e) {
@@ -288,7 +304,7 @@ public class IncidentAlarmSendMailTask implements Runnable {
 				}
 			} catch (Exception e) {
 				isExecute=false; // 실행 중지
-				logger.error(e.getMessage());
+				logger.error(format("{}", "TASK RUN ERROR ID : " + incidentAlarm.getId()),e.getMessage());
 				incidentAlarm.setLastErrorMessage(e.getMessage());
 				incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
 				incidentAlarmRepository.saveAndFlush(incidentAlarm);
@@ -302,8 +318,6 @@ public class IncidentAlarmSendMailTask implements Runnable {
 			incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
 			incidentAlarmRepository.saveAndFlush(incidentAlarm);
 		}
-		logger.trace(format("{}", "TASK RUN END"),incidentAlarm.getId());
-
 		try {
 			WebSocketMessageVo sendMessage = new WebSocketMessageVo();
 			sendMessage.setHttpStatus(isExecute ? HttpStatus.OK.value() : HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -312,11 +326,14 @@ public class IncidentAlarmSendMailTask implements Runnable {
 			sendMessage.setProcessTime(System.currentTimeMillis()-startTime);
 			template.convertAndSend("/topic/runAlarms", sendMessage);
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error(format("{}", "TASK RUN ERROR ID : " + incidentAlarm.getId()),e.getMessage());
 			incidentAlarm.setLastErrorMessage(e.getMessage());
 			incidentAlarm.setLastRunDate(new Date(System.currentTimeMillis()));
 			incidentAlarmRepository.saveAndFlush(incidentAlarm);
 		}
+
+		watch.stop();
+		logger.info(format("{}", "TASK RUN END ID : " + incidentAlarm.getId()),"종료 시간 : "+ watch.getTime());
 	}
 
 	/**

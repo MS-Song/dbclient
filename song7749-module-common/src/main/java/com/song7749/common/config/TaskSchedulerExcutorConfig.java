@@ -16,15 +16,17 @@ public class TaskSchedulerExcutorConfig {
 	@Bean
 	public TaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(10);
-		executor.setMaxPoolSize(20);
+		executor.setCorePoolSize(50);
+		executor.setMaxPoolSize(100);
 		executor.setQueueCapacity(30);
+		executor.setAwaitTerminationSeconds(60*60);	// 최대 1시간 실행
 		return executor;
 	}
 
 	@Bean
 	public ThreadPoolTaskScheduler taskScheduler() {
 		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+		scheduler.setPoolSize(50);
 		return scheduler;
 	}
 }
