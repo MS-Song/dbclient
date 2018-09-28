@@ -2,3 +2,4 @@
 /bin/*
 /.gradle
 /.settings/*
+/gradle.properties

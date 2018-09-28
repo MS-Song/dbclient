@@ -108,17 +108,17 @@ public class IncidentAlarm  extends Entities {
 	@CreationTimestamp
 	@Column(nullable = true)
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 
 	@Column(nullable = true)
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date confirmDate;
 
 	@Column(nullable = true)
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastRunDate;
 
 	@Column(nullable = true)

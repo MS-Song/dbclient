@@ -1,8 +1,10 @@
+apply plugin: 'application'
+mainClassName = 'com.song7749.ApplicationIncidentAlarm'
 bootJar { enabled = true }
 jar { enabled = true }
 
-apply plugin: 'application'
-mainClassName = 'com.song7749.ApplicationIncidentAlarm'
+//apply plugin: 'war'
+//war { baseName = 'ROOT'}
 
 dependencies {
 	compile project(':song7749-module-dbclient')

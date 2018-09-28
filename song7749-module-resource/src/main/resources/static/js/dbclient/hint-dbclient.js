@@ -38,7 +38,7 @@ var dbclientHint = {
 };
 webix.ready(function(){
 	// hint 추가
-	//webix.storage.local.put("dbclient_hint_on","true");
+//	webix.storage.local.put("dbclient_hint_on","true");
 //	let dbclient_hint_on = webix.storage.local.get("dbclient_hint_on");
 //	if(dbclient_hint_on!="false"){
 //		setTimeout(() => {webix.ui(dbclientHint).start()}, 1000);		

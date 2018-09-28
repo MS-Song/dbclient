@@ -40,7 +40,7 @@ public abstract class Log extends Entities{
 	@Column(nullable=false, updatable=false)
 	@CreationTimestamp
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date date;
 
 	public Log() {}

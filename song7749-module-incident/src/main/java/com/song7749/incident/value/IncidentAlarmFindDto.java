@@ -56,32 +56,32 @@ public class IncidentAlarmFindDto extends AbstractDto implements Specification<I
 	private String schedule;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@ApiModelProperty(value="알람 등록일 검색 시작",position=9)
 	private Date fromCreateDate;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@ApiModelProperty(value="알람 등록일 검색 종료",position=10)
 	private Date toCreateDate;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@ApiModelProperty(value="알람 승인일 검색 시작",position=11)
 	private Date fromConfirmDate;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@ApiModelProperty(value="알람 승인일 검색 종료",position=12)
 	private Date toConfirmDate;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@ApiModelProperty(value="알람 마지막 실행일 검색 시작",position=13)
 	private Date fromLastRunDate;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@ApiModelProperty(value="알람 마지막 실행일 검색 종료",position=14)
 	private Date toLastRunDate;
 
