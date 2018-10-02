@@ -115,6 +115,14 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		// crontab 검증
 		validateCrontabExpression(dto.getSchedule());
 
+		// SQL 에 ; 가 포함되어 있으면 제거 한다.
+		if(null!=dto.getBeforeSql()) {
+			dto.setBeforeSql(dto.getBeforeSql().replace(";", ""));
+		}
+		if(null!=dto.getRunSql()) {
+			dto.setRunSql(dto.getRunSql().replace(";", ""));
+		}
+
 		// 객체 형변환
 		IncidentAlarm ia = mapper.map(dto, IncidentAlarm.class);
 
@@ -147,6 +155,15 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	@Transactional
 	@Override
 	public IncidentAlarmVo modifyIncidentAlarm(IncidentAlarmModifyBeforeConfirmDto dto) {
+
+		// SQL 에 ; 가 포함되어 있으면 제거 한다.
+		if(null!=dto.getBeforeSql()) {
+			dto.setBeforeSql(dto.getBeforeSql().replace(";", ""));
+		}
+		if(null!=dto.getRunSql()) {
+			dto.setRunSql(dto.getRunSql().replace(";", ""));
+		}
+
 		// 객체 형변환
 		IncidentAlarm ia = mapper.map(dto, IncidentAlarm.class);
 
@@ -170,6 +187,12 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 	@Transactional
 	@Override
 	public IncidentAlarmVo modifyIncidentAlarm(IncidentAlarmModifyAfterConfirmDto dto) {
+
+		// SQL 에 ; 가 포함되어 있으면 제거 한다.
+		if(null!=dto.getBeforeSql()) {
+			dto.setBeforeSql(dto.getBeforeSql().replace(";", ""));
+		}
+
 		// 객체 형변환
 		IncidentAlarm ia = mapper.map(dto, IncidentAlarm.class);
 
