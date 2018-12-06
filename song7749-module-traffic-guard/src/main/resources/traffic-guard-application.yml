@@ -1,0 +1,181 @@
+##############################################################################
+# 공통 실행 환경 
+##############################################################################
+# server define
+server:
+  port: 9099
+
+# spring config 
+spring:
+  # profile active
+  profiles:
+    active:
+    - local 
+
+  # banner
+  banner:
+    charset: utf-8
+    location: classpath:config/traffice-guard-banner.txt
+  # cache 
+  cache:
+    ehcache:
+      config: classpath:ehcache/ehcache.xml
+  
+  # datasource    
+  datasource:
+    url:  jdbc:h2:file:~/traffic-guard  
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+    databaseName: DB Client Local Database
+    schemaName: PUBLIC
+    host: jdbc:h2:file:~/traffic-guard
+    port: 
+ # 스프링 영속성을 Controller 까지 확대. http://kingbbode.tistory.com/27 참고 바람
+  jpa: 
+    open-in-view: true
+
+##############################################################################
+# local 추가 환경 
+##############################################################################
+
+---
+spring:
+  # profile 설정
+  profiles: local
+  # 기초 데이터 로딩
+#  datasource:
+#    data:
+#    - classpath:./initDatabase.sql
+  # jpa 추가 설정
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate : 
+        format_sql: true
+        use_sql_comments: true
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+    remote:
+      restart:
+        enabled: false        
+
+        
+##############################################################################
+# dev 추가 환경 
+##############################################################################
+
+---
+spring:
+  # profile 설정
+  profiles: dev
+  # jpa 추가 설정
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate : 
+        format_sql: true
+        use_sql_comments: true
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
+    remote:
+      restart:
+        enabled: false        
+        
+        
+##############################################################################
+# stage 추가 환경 
+##############################################################################
+
+---
+spring:
+  # profile 설정
+  profiles: stage
+  # jpa 추가 설정
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate : 
+        format_sql: false
+        use_sql_comments: false
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
+    remote:
+      restart:
+        enabled: false        
+        
+##############################################################################
+# production 추가 환경 
+##############################################################################
+
+---
+spring:
+  # profile 설정
+  profiles: production
+  # jpa 추가 설정
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate : 
+        format_sql: false
+        use_sql_comments: false
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
+    remote:
+      restart:
+        enabled: false
+        
+        
+##############################################################################
+# mariadb 추가 환경 
+##############################################################################
+
+---
+spring:
+  # profile 설정
+  profiles: mariadb
+  # datasource    
+  datasource:
+    url: jdbc:mariadb://local-dev:4306/traffic?autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding=UTF8&useSSL=false  
+    username: dbclient
+    password: 12345678
+    driver-class-name: org.mariadb.jdbc.Driver
+    databaseName: DB Client Local Database
+    schemaName: dbClient
+    host: local-dev
+    port: 4306
+  # jpa 추가 설정
+  jpa:
+    hibernate:
+      ddl-auto: none
+#      ddl-auto: validate
+#      ddl-auto: update
+    properties:
+      hibernate : 
+        format_sql: false
+        use_sql_comments: false
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
+    remote:
+      restart:
+        enabled: false
+   

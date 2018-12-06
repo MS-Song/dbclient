@@ -38,9 +38,8 @@ import com.song7749.member.value.MemberVo;
  * Class Name : InitConfigBean.java
  * Description : App 실행 시 사전에 처리해야 하는 작업들을 정의 함.
  *
- * 1. Root 유저 등록
- * 2. Local - H2 DB 에 대한 내용 확인
- * 3. 테스트 Data 입력 -- 서비스 배포시에는 삭제 필요
+ * 1. Local - H2 DB 에 대한 내용 확인
+ * 2. 테스트 Data 입력 -- 서비스 배포시에는 삭제 필요
 *
 *
 *  Modification Information
@@ -106,7 +105,7 @@ public class InitDBclientConfigBean {
 	@Transactional
 	@PostConstruct
     public void init(){
-
+		// TODO - member 에서 root 유저 입력을 하기 때문에 삭제 필요할듯
 		// root 회원에 대한 입력
 		Member member = new Member(
 				"root@test.com"
@@ -176,7 +175,7 @@ public class InitDBclientConfigBean {
 			// db 를 pool map 객체에 넣는다.
 			Map<Database, DataSource> map = ((DBclientManagerImpl)dbClientManager).getDataSourceMap();
 			map.put(db, hikariCP);
-			logger.info(format("{}", "H2 Database Add Complete"),map);
+			logger.info(format("{}", "DBClient Database Add Complete"),map);
 
 
 			if("H2".endsWith(DatabaseName)) {
