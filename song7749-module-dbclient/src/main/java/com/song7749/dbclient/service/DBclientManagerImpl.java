@@ -213,10 +213,17 @@ public class DBclientManagerImpl implements DBclientManager {
 
 		int seq=0;
 		for(Map<String,String> map:resultList){
-			list.add(new TableVo(
-				++seq,
-				map.get("TABLE_NAME"),
-				map.get("TABLE_COMMENT")));
+			if("monetdb".equals(database.getDriver().getDbms())){
+				list.add(new TableVo(
+						++seq,
+						map.get("table_name"),
+						map.get("table_comment")));
+			} else {
+				list.add(new TableVo(
+						++seq,
+						map.get("TABLE_NAME"),
+						map.get("TABLE_COMMENT")));
+			}
 		}
 		return list;
 	}
@@ -235,19 +242,36 @@ public class DBclientManagerImpl implements DBclientManager {
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
+		logger.trace(format("{}", "Log Message"),resultList);
+
 		for(Map<String,String> map:resultList){
-			list.add(new FieldVo(
-				database.getName(),
-				map.get("COLUMN_ID"),
-				map.get("COLUMN_NAME"),
-				map.get("NULLABLE"),
-				map.get("COLUMN_KEY"),
-				map.get("DATA_TYPE"),
-				map.get("DATA_LENGTH"),
-				map.get("CHARACTER_SET"),
-				map.get("EXTRA"),
-				map.get("DEFAULT_VALUE"),
-				map.get("COMMENTS")));
+			if("monetdb".equals(database.getDriver().getDbms())){
+				list.add(new FieldVo(
+					database.getName(),
+					map.get("column_id"),
+					map.get("column_name"),
+					map.get("nullable"),
+					map.get("column_key"),
+					map.get("data_type"),
+					map.get("data_length"),
+					map.get("character_set"),
+					map.get("extra"),
+					map.get("default_value"),
+					map.get("comments")));
+			} else {
+				list.add(new FieldVo(
+					database.getName(),
+					map.get("COLUMN_ID"),
+					map.get("COLUMN_NAME"),
+					map.get("NULLABLE"),
+					map.get("COLUMN_KEY"),
+					map.get("DATA_TYPE"),
+					map.get("DATA_LENGTH"),
+					map.get("CHARACTER_SET"),
+					map.get("EXTRA"),
+					map.get("DEFAULT_VALUE"),
+					map.get("COMMENTS")));
+			}
 		}
 		return list;
 	}
@@ -267,15 +291,27 @@ public class DBclientManagerImpl implements DBclientManager {
 		}
 
 		for(Map<String,String> map:resultList){
-			list.add(new IndexVo(
-				map.get("OWNER") ,
-				map.get("INDEX_NAME") ,
-				map.get("INDEX_TYPE"),
-				map.get("COLUMN_NAME"),
-				map.get("COLUMN_POSITION"),
-				map.get("CARDINALITY"),
-				map.get("UNIQUENESS"),
-				map.get("DESCEND")));
+			if("monetdb".equals(database.getDriver().getDbms())){
+				list.add(new IndexVo(
+					map.get("owner") ,
+					map.get("index_name") ,
+					map.get("index_type"),
+					map.get("column_name"),
+					map.get("column_position"),
+					map.get("cardinality"),
+					map.get("uniqueness"),
+					map.get("descend")));
+			} else {
+				list.add(new IndexVo(
+					map.get("OWNER") ,
+					map.get("INDEX_NAME") ,
+					map.get("INDEX_TYPE"),
+					map.get("COLUMN_NAME"),
+					map.get("COLUMN_POSITION"),
+					map.get("CARDINALITY"),
+					map.get("UNIQUENESS"),
+					map.get("DESCEND")));
+			}
 		}
 		return list;
 	}
@@ -610,7 +646,7 @@ public class DBclientManagerImpl implements DBclientManager {
 			list.add(new SequenceVo(
 					++seq,
 					map.get("NAME"),
-					map.get("LAST_VALUE"),
+					map.get("CURRENT_VALUE"),
 					map.get("MIN_VALUE"),
 					map.get("MAX_VALUE"),
 					map.get("INCREMENT_BY")));
@@ -681,6 +717,7 @@ public class DBclientManagerImpl implements DBclientManager {
 	}
 
 	@Override
+	//@Cacheable(value="com.song7749.database.cache",key="'executeQuery' + #dto.id + #dto.loginId + #dto.query", condition="#dto.useCache==true")
 	public MessageVo executeQuery(ExecuteQueryDto dto) {
 		Long startTime = System.currentTimeMillis();
 		Database database = getDatabase(dto.getId());
@@ -822,7 +859,7 @@ public class DBclientManagerImpl implements DBclientManager {
 	 * @return
 	 * @throws SQLException
 	 */
-	private List<Map<String,String>> executeReadQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
+	public List<Map<String,String>> executeReadQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
 		logger.debug(format("{}","Try Read Excute Query"),dto.getQuery());
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -848,6 +885,7 @@ public class DBclientManagerImpl implements DBclientManager {
 			}
 
 		} catch (SQLException e) {
+			conn.rollback();
 			throw e;
 		} finally {
 			try {
@@ -871,7 +909,7 @@ public class DBclientManagerImpl implements DBclientManager {
 	 * @return
 	 * @throws SQLException
 	 */
-	private int executeWriteQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
+	public int executeWriteQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
 		logger.debug(format("{} ","Try Write Excute Query"),dto.getQuery());
 
 		PreparedStatement ps = null;
@@ -882,6 +920,7 @@ public class DBclientManagerImpl implements DBclientManager {
 			ps = conn.prepareStatement(dto.getQuery());
 			affectedRows = ps.executeUpdate();
 		} catch (SQLException e) {
+			conn.rollback();
 			throw e;
 		} finally {
 			try {
@@ -905,7 +944,7 @@ public class DBclientManagerImpl implements DBclientManager {
 	 * @throws SQLException
 	 */
 	@SuppressWarnings("unused")
-	private List<Map<String,String>> executeCallableQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
+	public List<Map<String,String>> executeCallableQuery(Connection conn, ExecuteQueryDto dto) throws SQLException{
 		logger.debug(format("{} ","Try Callable Excute Query"),dto.getQuery());
 
 		CallableStatement cs = null;
@@ -917,6 +956,7 @@ public class DBclientManagerImpl implements DBclientManager {
 			cs.getMetaData();
 
 		} catch (SQLException e) {
+			conn.rollback();
 			throw e;
 		} finally {
 			try {

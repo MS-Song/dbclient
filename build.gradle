@@ -29,6 +29,7 @@ subprojects {
 		maven { url "https://repo.spring.io/snapshot" }
 		maven { url "https://repo.spring.io/milestone" }
 		maven { url "https://code.lds.org/nexus/content/groups/main-repo" }
+		maven { url "https://repo.clojars.org" }
 	}
 
 	task initSourceFolders {
@@ -76,6 +77,7 @@ subprojects {
 		compile('org.mariadb.jdbc:mariadb-java-client:2.2.3')
 		compile('com.oracle:ojdbc6:11.2.0.3')
 		compile('com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8')
+		compile('monetdb:monetdb-jdbc:2.28')
 		compile('com.h2database:h2')
 		compile('org.webjars:sockjs-client:1.1.2')
 		compile('org.webjars:stomp-websocket:2.3.1')

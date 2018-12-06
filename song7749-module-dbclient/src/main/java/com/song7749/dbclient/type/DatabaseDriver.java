@@ -79,7 +79,7 @@ public enum DatabaseDriver {
 			// trigger source
 			"show create trigger {name}",
 			// sequence list
-			"SELECT c.table_name as NAME, t.AUTO_INCREMENT as LAST_VALUE, '1' as MIN_VALUE, COLUMN_TYPE as MAX_VALUE, '1' as INCREMENT_BY from information_schema.columns c join information_schema.tables t on(c.table_schema=t.table_schema and c.table_name=t.table_name) where c.table_schema='{schemaName}' and c.extra='auto_increment'",
+			"SELECT c.table_name as NAME, t.AUTO_INCREMENT as CURRENT_VALUE, '1' as MIN_VALUE, COLUMN_TYPE as MAX_VALUE, '1' as INCREMENT_BY from information_schema.columns c join information_schema.tables t on(c.table_schema=t.table_schema and c.table_name=t.table_name) where c.table_schema='{schemaName}' and c.extra='auto_increment'",
 			// sequence detail
 			"SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA='{schemaName}' AND TABLE_TYPE='BASE TABLE'  AND TABLE_NAME='{name}'",
 			// process list
@@ -137,7 +137,7 @@ public enum DatabaseDriver {
 			// trigger source
 			"show create trigger {name}",
 			// sequence list
-			"SELECT c.table_name as NAME, t.AUTO_INCREMENT as LAST_VALUE, '1' as MIN_VALUE, COLUMN_TYPE as MAX_VALUE, '1' as INCREMENT_BY from information_schema.columns c join information_schema.tables t on(c.table_schema=t.table_schema and c.table_name=t.table_name) where c.table_schema='{schemaName}' and c.extra='auto_increment'",
+			"SELECT c.table_name as NAME, t.AUTO_INCREMENT as CURRENT_VALUE, '1' as MIN_VALUE, COLUMN_TYPE as MAX_VALUE, '1' as INCREMENT_BY from information_schema.columns c join information_schema.tables t on(c.table_schema=t.table_schema and c.table_name=t.table_name) where c.table_schema='{schemaName}' and c.extra='auto_increment'",
 			// sequence detail
 			"SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA='{schemaName}' AND TABLE_TYPE='BASE TABLE'  AND TABLE_NAME='{name}'",
 			// process list
@@ -197,7 +197,7 @@ public enum DatabaseDriver {
 			// trigger source
 			"SELECT TRIGGER_NAME as NAME, TRIGGER_TYPE, TRIGGERING_EVENT, TABLE_OWNER, BASE_OBJECT_TYPE, TABLE_NAME, COLUMN_NAME, REFERENCING_NAMES, WHEN_CLAUSE, STATUS, DESCRIPTION, ACTION_TYPE, TRIGGER_BODY as TEXT, CROSSEDITION, BEFORE_STATEMENT, BEFORE_ROW, AFTER_ROW,AFTER_STATEMENT, INSTEAD_OF_ROW, FIRE_ONCE, APPLY_SERVER_ONLY from all_triggers where OWNER=upper('{schemaOwner}') AND TRIGGER_NAME=upper('{name}')",
 			//sequence list
-			"SELECT SEQUENCE_NAME as NAME, LAST_NUMBER as LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from all_sequences where SEQUENCE_OWNER=upper('{schemaOwner}') order by NAME asc",
+			"SELECT SEQUENCE_NAME as NAME, LAST_NUMBER as CURRENT_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT_BY from all_sequences where SEQUENCE_OWNER=upper('{schemaOwner}') order by NAME asc",
 			// sequence detail
 			"SELECT OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, DATA_OBJECT_ID, OBJECT_TYPE, CREATED, LAST_DDL_TIME, TIMESTAMP, STATUS, TEMPORARY, GENERATED, SECONDARY, NAMESPACE, EDITION_NAME from all_objects uo where uo.OWNER=upper('{schemaOwner}') AND uo.OBJECT_NAME = upper('{name}')",
 			// process list
@@ -315,7 +315,7 @@ public enum DatabaseDriver {
 			// trigger source
 			"SELECT TRIGGER_NAME NAME, SQL TEXT FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA='{schemaName}' AND TRIGGER_NAME='{name}'",
 			// sequence list
-			"SELECT ID, SEQUENCE_NAME NAME, CURRENT_VALUE LAST_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT INCREMENT_BY FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_SCHEMA='{schemaName}'",
+			"SELECT ID, SEQUENCE_NAME NAME, CURRENT_VALUE, MIN_VALUE, MAX_VALUE, INCREMENT INCREMENT_BY FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_SCHEMA='{schemaName}'",
 			// sequence detail
 			"SELECT * FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_SCHEMA='{schemaName}' AND SEQUENCE_NAME='{name}'",
 			// process list
@@ -328,6 +328,65 @@ public enum DatabaseDriver {
 			"SELECT TABLE_NAME, COLUMN_NAME, REMARKS COLUMN_COMMENT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='{schemaName}'",
 			// 한정자 추가
 			"{sqlBody} \n Limit {start},{end}",
+			// Affected Row 를 발생시키는 명령어
+			"insert,update,delete,create,drop,truncate,alter,kill,comment on"),
+
+	@ApiModelProperty
+	MONETDB(
+			// dbms
+			"monetdb",
+			// driverName
+			"nl.cwi.monetdb.jdbc.MonetDriver",
+			// url
+			"jdbc:monetdb://{host}:{port}/{schemaName}?so_timeout=7000&treat_clob_as_varchar=true",
+			// validate query
+			"select '1'",
+			// table list
+			"select name TABLE_NAME, '' TABLE_COMMENT from sys.tables where schema_id=(select id from sys.schemas where name='{schemaName}') order by name",
+			// field list
+			"select id COLUMN_ID, name COLUMN_NAME, null NULLABLE, '' COLUMN_KEY, type DATA_TYPE, type_digits DATA_LENGTH, ''  CHARACTER_SET, '' EXTRA, '' DEFAULT_VALUE, '' COMMENTS from sys.columns where table_id=(select id from sys.tables where schema_id=(select id from sys.schemas where name='{schemaName}') and name='{name}')",
+			// index list
+			null,
+			// explain
+			null,
+			// view list
+			null,
+			// view detail
+			null,
+			// view source
+			null,
+			// procedure list
+			null,
+			// procedure detail
+			null,
+			// procedure source
+			null,
+			// function list
+			null,
+			// function detail
+			null,
+			// function source
+			null,
+			// trigger list
+			null,
+			// trigger detail
+			null,
+			// trigger source
+			null,
+			// sequence list
+			null,
+			// sequence detail
+			null,
+			// process list
+			null,
+			// kill connection
+			null,
+			// create table query
+			null,
+			// 자동완성용 테이블/필드 전체 리스트 조회
+			null,
+			// 한정자 추가
+			"{sqlBody} \n Limit {end} OFFSET {start}",
 			// Affected Row 를 발생시키는 명령어
 			"insert,update,delete,create,drop,truncate,alter,kill,comment on");
 

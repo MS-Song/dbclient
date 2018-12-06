@@ -61,6 +61,7 @@ public class DatabaseManagerImplTest extends UnitTest {
 
 	@Mock
 	LoginSession loginSession;
+
 	@Mock
 	MemberRepository memberRepository;
 

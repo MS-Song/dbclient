@@ -5,10 +5,9 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.boot.jdbc.DatabaseDriver;
-
 import com.song7749.common.AbstractDto;
 import com.song7749.dbclient.type.Charset;
+import com.song7749.dbclient.type.DatabaseDriver;
 
 import io.swagger.annotations.ApiModel;
 

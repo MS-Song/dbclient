@@ -13,6 +13,6 @@ public class CryptoAESTest {
 	public void testCrypto() {
 		String encrypt = CryptoAES.encrypt("oracle");
 		String decrypt = CryptoAES.decrypt(encrypt);
-		logger.trace(format("before : {} , after : {} ", "CryptoAESTest"),encrypt,decrypt);
+		logger.debug(format("before : {} , after : {} ", "CryptoAESTest"),encrypt,decrypt);
 	}
 }
