@@ -17,7 +17,7 @@ import com.song7749.common.Entities;
 
 @Entity
 @DynamicUpdate(true)
-class TrafficGuard  extends Entities {
+public class TrafficGuard  extends Entities {
 
 	private static final long serialVersionUID = -1763518466960503595L;
 

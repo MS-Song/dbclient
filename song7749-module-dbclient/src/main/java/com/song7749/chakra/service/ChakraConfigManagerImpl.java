@@ -175,6 +175,7 @@ public class ChakraConfigManagerImpl implements ChakraConfigManager {
 
 			// 샤크라 데이터를 FieldVo 형식으로 가공 한다.
 			List<FieldVo> chakraVoList = new ArrayList<FieldVo>();
+			@SuppressWarnings("unchecked")
 			List<Map<String,String>> chakraList = (List<Map<String,String>>)chakraMappingData.getContents();
 
 			for(Map<String,String> data : chakraList) {
