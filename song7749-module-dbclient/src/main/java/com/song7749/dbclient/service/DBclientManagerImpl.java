@@ -731,6 +731,7 @@ public class DBclientManagerImpl implements DBclientManager {
 
 
 		// 개인정보에 대한 처리 -- 개인 정보가 포함되면 실행을 중단 시킨다.
+		// -- 개인정보 허용해야 할 사용자가 있다.... 어떻게 처리할 지 고민이 필요하다.
 		validatePrivacyPolicy(database,dto.getQuery());
 
 		// row 에 영향이 있는 쿼리

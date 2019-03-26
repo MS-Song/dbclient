@@ -108,7 +108,7 @@ var adminDatabaseListPopup = function(){
 			$$("admin_database_list_view").config.columns[loop+2].id = "database_privacy_policy_popup";
 			$$("admin_database_list_view").config.columns[loop+2].header = "개인정보";
 			$$("admin_database_list_view").config.columns[loop+2].adjust = true;
-			$$("admin_database_list_view").config.columns[loop+2].template='<input type="button" value="수동정의" style="width:60px;" onClick="adminDatabasePrivacyPolicyPopup(#id#);"/> <input type="button" value="chakra" style="width:60px;" onClick="adminDatabasePrivacyPolicyPopupByChakra(#id#);"/>',
+			$$("admin_database_list_view").config.columns[loop+2].template='<input type="button" value="수동정의" style="width:60px;" onClick="adminDatabasePrivacyPolicyPopup(#id#);"/>',
 			
 			// 관리자 메뉴 추가 종료
 			$$("admin_database_list_view").refreshColumns();
@@ -444,28 +444,6 @@ var convertDatabasePrivacyPolicy = function(data,databaseId){
 		}
 	});
 }
-
-
-//개인정보 정의  팝업 - chakra 자동화
-var adminDatabasePrivacyPolicyPopupByChakra = function(databaseId){
-	webix.ui({
-        view:"window",
-        id:"admin_database_privacy_policy_popup_chakra",
-        width:1000,
-        position:"center",
-        modal:true,
-        head:{
-        	view:"button",value:"데이터베이스 개인정보정의 닫기" , click:function(){
-        		$$("admin_database_privacy_policy_popup_chakra").hide();
-        	},hotkey: "esc"
-    	},
-        body:{
-
-        	
-        }
-	}).show();;
-}
-
 
 // 회원 리스트 팝업
 var adminMemberListPopup = function(){
