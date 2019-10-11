@@ -12,7 +12,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ import com.song7749.member.domain.Member;
 import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.type.AuthType;
 
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IncidentAlarmRepositoryTest extends UnitTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());

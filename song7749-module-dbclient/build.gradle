@@ -4,6 +4,8 @@ jar { enabled = true }
 apply plugin: 'application'
 mainClassName = 'com.song7749.ApplicationDBClient'
 
+test { useJUnit {} }
+
 dependencies {
 	compile project(':song7749-module-member')
 	compile project(':song7749-module-mail')
@@ -11,5 +13,5 @@ dependencies {
 	compile project(':song7749-module-utils')
 	compile project(':song7749-module-web')
 	compile project(':song7749-module-resource')
-	testCompile project(':song7749-module-test')
+	testCompile project(':song7749-module-test').sourceSets.test.output
 }

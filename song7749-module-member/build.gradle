@@ -1,10 +1,12 @@
 bootJar { enabled = false }
 jar { enabled = true }
 
+test { useJUnit {} }
+
 dependencies {
 	compile project(':song7749-module-common')
 	compile project(':song7749-module-utils')
 	compile project(':song7749-module-web')
 	compile project(':song7749-module-log')
-	testCompile project(':song7749-module-test')
+	testCompile project(':song7749-module-test').sourceSets.test.output
 }

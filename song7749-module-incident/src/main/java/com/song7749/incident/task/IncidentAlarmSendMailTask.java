@@ -233,7 +233,7 @@ public class IncidentAlarmSendMailTask implements Runnable {
 					        // 엑셀 생성 시작
 					        int listLoop=0;
 					        int mapLoop=0;
-					        for(Map data : (List<Map<String, String>>)vo.getContents()) {
+					        for(Map<?, ?> data : (List<Map<String, String>>)vo.getContents()) {
 					        	// 첫번째 loop 인 경우에는 header 를 만든다.
 					        	if(listLoop==0) {
 				        			row = sheet.createRow(listLoop);

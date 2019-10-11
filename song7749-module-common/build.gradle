@@ -1,6 +1,9 @@
 bootJar { enabled = false }
 jar { enabled = true }
 
+
+test { useJUnit {} }
+
 dependencies {
 	compile project(':song7749-module-utils')
 }

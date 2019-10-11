@@ -76,6 +76,9 @@ public class CSVFileDataManagerImpl implements CSVFileDataManager{
 		    		case H2 :
 		    			columnType=" varchar(2000) ";
 		    			break;
+					default:
+						columnType=" varchar(1000) ";
+						break;
 		    		}
 
 		    		InputStream is = file.getInputStream();

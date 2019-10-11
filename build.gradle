@@ -12,7 +12,8 @@ buildscript {
 	}
 }
 
-//buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'no' }
+buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'no' }
+
 
 subprojects {
 	apply plugin: 'java'
@@ -22,6 +23,9 @@ subprojects {
 	
 	group = 'com.song7749'
 	sourceCompatibility = 1.8
+
+
+	test { useJUnit {} }
 
 	repositories {
 		mavenLocal()
