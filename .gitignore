@@ -4,3 +4,8 @@
 /.settings/*
 /gradle.properties
 /.classpath
+/gradle
+gradlew
+gradlew.bat
+out/
+.idea/
