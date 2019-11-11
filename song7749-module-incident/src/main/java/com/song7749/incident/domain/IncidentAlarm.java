@@ -57,7 +57,7 @@ import com.song7749.member.domain.Member;
 @Entity
 @SelectBeforeUpdate(true)
 @DynamicUpdate(true)
-public class IncidentAlarm  extends Entities {
+public class IncidentAlarm extends Entities {
 
 	private static final long serialVersionUID = 2059247726910761027L;
 

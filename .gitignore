@@ -9,3 +9,5 @@ gradlew
 gradlew.bat
 out/
 .idea/
+/web/index.jsp
+/web/WEB-INF/
