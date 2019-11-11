@@ -9,3 +9,4 @@ gradlew
 gradlew.bat
 out/
 .idea/
+/web/WEB-INF/applicationContext.xml
