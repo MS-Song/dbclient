@@ -1,0 +1,137 @@
+<application>
+  <component name="ProjectJdkTable">
+    <jdk version="2">
+      <name value="11" />
+      <type value="JavaSDK" />
+      <version value="java version &quot;11.0.2&quot;" />
+      <homePath value="$APPLICATION_HOME_DIR$/jdk/Contents/Home" />
+      <roots>
+        <annotationsPath>
+          <root type="composite">
+            <root url="jar://$APPLICATION_HOME_DIR$/lib/jdkAnnotations.jar!/" type="simple" />
+          </root>
+        </annotationsPath>
+        <classPath>
+          <root type="composite">
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.base" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.compiler" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.datatransfer" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.desktop" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.instrument" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.logging" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.management" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.management.rmi" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.naming" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.net.http" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.prefs" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.rmi" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.scripting" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.se" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.security.jgss" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.security.sasl" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.smartcardio" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.sql" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.sql.rowset" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.transaction.xa" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.xml" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/java.xml.crypto" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/javafx.base" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/javafx.controls" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/javafx.fxml" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/javafx.graphics" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/javafx.media" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/javafx.swing" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/javafx.web" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.accessibility" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.aot" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.attach" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.charsets" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.compiler" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.crypto.cryptoki" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.crypto.ec" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.dynalink" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.httpserver" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.internal.ed" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.internal.jvmstat" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.internal.le" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.internal.vm.ci" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.internal.vm.compiler" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.internal.vm.compiler.management" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.jdi" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.jdwp.agent" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.jfr" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.jsobject" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.localedata" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.management" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.management.agent" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.management.jfr" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.naming.dns" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.naming.rmi" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.net" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.pack" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.scripting.nashorn" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.scripting.nashorn.shell" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.sctp" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.security.auth" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.security.jgss" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.unsupported" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.xml.dom" type="simple" />
+            <root url="jrt:///Applications/IntelliJ IDEA.app/Contents/jdk/Contents/Home!/jdk.zipfs" type="simple" />
+          </root>
+        </classPath>
+        <javadocPath>
+          <root type="composite" />
+        </javadocPath>
+        <sourcePath>
+          <root type="composite" />
+        </sourcePath>
+      </roots>
+      <additional />
+    </jdk>
+    <jdk version="2">
+      <name value="1.8" />
+      <type value="JavaSDK" />
+      <version value="java version &quot;1.8.0_222&quot;" />
+      <homePath value="/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home" />
+      <roots>
+        <annotationsPath>
+          <root type="composite">
+            <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/jdkAnnotations.jar!/" type="simple" />
+          </root>
+        </annotationsPath>
+        <classPath>
+          <root type="composite">
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/charsets.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/ext/cldrdata.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/ext/dnsns.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/ext/jaccess.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/ext/localedata.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/ext/nashorn.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/ext/sunec.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/ext/zipfs.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/jce.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/jsse.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/management-agent.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/resources.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/lib/rt.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/lib/dt.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/lib/jconsole.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/lib/sa-jdi.jar!/" type="simple" />
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/lib/tools.jar!/" type="simple" />
+          </root>
+        </classPath>
+        <javadocPath>
+          <root type="composite" />
+        </javadocPath>
+        <sourcePath>
+          <root type="composite">
+            <root url="jar:///Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/src.zip!/" type="simple" />
+          </root>
+        </sourcePath>
+      </roots>
+      <additional />
+    </jdk>
+  </component>
+</application>

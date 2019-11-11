@@ -1,0 +1,12 @@
+<scheme name="_@user_Darcula" version="142" parent_scheme="Darcula">
+  <option name="FONT_SCALE" value="1.0" />
+  <metaInfo>
+    <property name="created">2019-11-06T09:44:32</property>
+    <property name="ide">idea</property>
+    <property name="ideVersion">2019.1.4.0.0</property>
+    <property name="modified">2019-11-06T10:18:11</property>
+    <property name="originalScheme">Darcula</property>
+  </metaInfo>
+  <option name="CONSOLE_FONT_NAME" value="Menlo" />
+  <option name="CONSOLE_LINE_SPACING" value="1.0" />
+</scheme>
