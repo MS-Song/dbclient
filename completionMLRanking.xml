@@ -1,0 +1,10 @@
+<application>
+  <component name="CompletionMLRankingSettings">
+    <option name="rankingEnabled" value="true" />
+    <option name="enabledLanguages">
+      <set>
+        <option value="java" />
+      </set>
+    </option>
+  </component>
+</application>
