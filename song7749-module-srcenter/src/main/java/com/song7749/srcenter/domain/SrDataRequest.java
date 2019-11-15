@@ -5,7 +5,6 @@ import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.member.domain.Member;
 import com.song7749.srcenter.type.DownloadLimitType;
-import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SelectBeforeUpdate;
@@ -131,7 +130,7 @@ public class SrDataRequest extends Entities {
     @NotNull
     @ManyToMany(targetEntity=Member.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "allow_member_id", nullable = false, insertable = true, updatable = true)
-    private java.util.List<Member> srDataAllowMembers;
+    private List<Member> srDataAllowMembers;
 
     /**
      * 기본 생성자

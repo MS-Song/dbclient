@@ -86,10 +86,11 @@ public class SrDataRequestVo extends AbstractVo {
     @ApiModelProperty(value="SQL 조건", position = 18, dataType = "SrDataConditionVo")
     private List<SrDataConditionVo> srDataConditionVos;
 
+    private List<Long> srDataAllowMemberIds;
 
     public SrDataRequestVo() { }
 
-    public SrDataRequestVo(Long id, String subject, String runSql, Integer downloadLimit, Integer downloadCount, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, YN enableYN, YN confirmYN, Date createDate, Date confirmDate, Date lastRunDate, String lastErrorMessage, Database database, Member resistMember, Member confirmMember, List<SrDataConditionVo> srDataConditionVos) {
+    public SrDataRequestVo(Long id, String subject, String runSql, Integer downloadLimit, Integer downloadCount, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, YN enableYN, YN confirmYN, Date createDate, Date confirmDate, Date lastRunDate, String lastErrorMessage, Database database, Member resistMember, Member confirmMember, List<SrDataConditionVo> srDataConditionVos, List<Long> srDataAllowMemberIds) {
         this.id = id;
         this.subject = subject;
         this.runSql = runSql;
@@ -108,6 +109,7 @@ public class SrDataRequestVo extends AbstractVo {
         this.resistMember = resistMember;
         this.confirmMember = confirmMember;
         this.srDataConditionVos = srDataConditionVos;
+        this.srDataAllowMemberIds = srDataAllowMemberIds;
     }
 
     public Long getId() {
@@ -252,5 +254,13 @@ public class SrDataRequestVo extends AbstractVo {
 
     public void setSrDataConditionVos(List<SrDataConditionVo> srDataConditionVos) {
         this.srDataConditionVos = srDataConditionVos;
+    }
+
+    public List<Long> getSrDataAllowMemberIds() {
+        return srDataAllowMemberIds;
+    }
+
+    public void setSrDataAllowMemberIds(List<Long> srDataAllowMemberIds) {
+        this.srDataAllowMemberIds = srDataAllowMemberIds;
     }
 }

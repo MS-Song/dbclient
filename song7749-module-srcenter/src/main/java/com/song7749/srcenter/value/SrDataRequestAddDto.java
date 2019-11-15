@@ -3,16 +3,15 @@ package com.song7749.srcenter.value;
 import com.song7749.common.AbstractDto;
 import com.song7749.srcenter.type.DataType;
 import com.song7749.srcenter.type.DownloadLimitType;
-import com.sun.tools.javac.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <pre>
@@ -78,10 +77,12 @@ public class SrDataRequestAddDto extends AbstractDto {
     @ApiModelProperty(value="SQL 조건 변수의 값", required=true,position=8,hidden=true)
     private List<String> conditionValue;
 
+    @ApiModelProperty(value="SQL 조건 변수의 값", required=true,position=8,hidden=true)
+    private List<Long> srDataAllowMemberIds;
+
     public SrDataRequestAddDto() {}
 
-    public SrDataRequestAddDto(boolean useCache, String apiAuthkey, @NotNull @Size(min = 8, max = 200) String subject, @NotNull @Size(min = 8, max = 12000) String runSql, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, @NotNull Long databaseId, Long memberId, List<String> conditionName, List<String> conditionKey, List<DataType> conditionType, List<String> conditionValue) {
-        super(useCache, apiAuthkey);
+    public SrDataRequestAddDto(@NotNull @Size(min = 8, max = 200) String subject, @NotNull @Size(min = 8, max = 12000) String runSql, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, @NotNull Long databaseId, Long memberId, List<String> conditionName, List<String> conditionKey, List<DataType> conditionType, List<String> conditionValue, List<Long> srDataAllowMemberIds) {
         this.subject = subject;
         this.runSql = runSql;
         this.downloadLimit = downloadLimit;
@@ -94,6 +95,7 @@ public class SrDataRequestAddDto extends AbstractDto {
         this.conditionKey = conditionKey;
         this.conditionType = conditionType;
         this.conditionValue = conditionValue;
+        this.srDataAllowMemberIds = srDataAllowMemberIds;
     }
 
     public String getSubject() {
@@ -190,5 +192,13 @@ public class SrDataRequestAddDto extends AbstractDto {
 
     public void setConditionValue(List<String> conditionValue) {
         this.conditionValue = conditionValue;
+    }
+
+    public List<Long> getSrDataAllowMemberIds() {
+        return srDataAllowMemberIds;
+    }
+
+    public void setSrDataAllowMemberIds(List<Long> srDataAllowMemberIds) {
+        this.srDataAllowMemberIds = srDataAllowMemberIds;
     }
 }
