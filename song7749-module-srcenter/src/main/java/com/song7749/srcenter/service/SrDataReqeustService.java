@@ -1,8 +1,11 @@
 package com.song7749.srcenter.service;
 
+import com.song7749.common.MessageVo;
 import com.song7749.srcenter.value.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * <pre>
@@ -62,4 +65,17 @@ public interface SrDataReqeustService {
      */
     Page<SrDataRequestVo> find(SrDataRequestFindDto dto, Pageable page);
 
+    /**
+     * 단일 객체 검색
+     * @param dto
+     * @return
+     */
+    SrDataRequestVo find(SrDataRequestFindDto dto);
+
+    /**
+     * 저장되어 있는 request 를 실행한다.
+     * @param dto
+     * @return
+     */
+    MessageVo runSql(SrDataRequestRunDto dto, HttpServletRequest request);
 }

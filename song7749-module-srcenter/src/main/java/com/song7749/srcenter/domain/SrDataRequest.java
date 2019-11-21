@@ -3,20 +3,28 @@ package com.song7749.srcenter.domain;
 import com.song7749.common.Entities;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
+import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.member.domain.Member;
+import com.song7749.member.value.MemberVo;
 import com.song7749.srcenter.type.DownloadLimitType;
+import com.song7749.srcenter.value.SrDataConditionVo;
+import com.song7749.srcenter.value.SrDataRequestVo;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SelectBeforeUpdate;
 import org.hibernate.validator.constraints.Length;
+import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static org.hibernate.internal.util.collections.ArrayHelper.toList;
 
 /**
  * <pre>
@@ -306,12 +314,35 @@ public class SrDataRequest extends Entities {
         this.srDataConditions = srDataConditions;
     }
 
-    public java.util.List<Member> getSrDataAllowMembers() {
+    public List<Member> getSrDataAllowMembers() {
         return srDataAllowMembers;
     }
 
     public void setSrDataAllowMembers(java.util.List<Member> srDataAllowMembers) {
         this.srDataAllowMembers = srDataAllowMembers;
+    }
+
+    public SrDataRequestVo getSrDataRequestVo(ModelMapper mapper){
+        // VO 로 변환
+        SrDataRequestVo vo = mapper.map(this, SrDataRequestVo.class);
+        // 회원 객체 변환
+        if(null!=this.getResistMember())    vo.setResistMemberVo(mapper.map(this.getResistMember(), MemberVo.class));
+        if(null!=this.getConfirmMember())   vo.setConfirmMemberVo(mapper.map(this.getConfirmMember(),MemberVo.class));
+        // 데이터베이스 객체 변환
+        if(null!=this.getDatabase())        vo.setDatabaseVo(mapper.map(this.getDatabase(), DatabaseVo.class));
+        // 검색 조건 변환
+        List<SrDataConditionVo> conditioVos = new ArrayList<>();
+        for (SrDataCondition sdr : this.getSrDataConditions()) {
+            conditioVos.add(sdr.getSrDataConditionVo(mapper));
+        }
+        vo.setSrDataConditionVos(conditioVos);
+        // 승인 회원 리스트
+        List<Long> memberIds = new ArrayList<>();
+        for(Member m : this.getSrDataAllowMembers()){
+            memberIds.add(m.getId());
+        }
+        vo.setSrDataAllowMemberIds(memberIds);
+        return vo;
     }
 
     @Override

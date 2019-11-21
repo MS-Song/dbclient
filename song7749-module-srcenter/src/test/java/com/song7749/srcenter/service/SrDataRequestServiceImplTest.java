@@ -11,20 +11,20 @@ import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.type.AuthType;
 import com.song7749.srcenter.type.DataType;
 import com.song7749.srcenter.type.DownloadLimitType;
-import com.song7749.srcenter.value.SrDataRequestAddDto;
+import com.song7749.srcenter.value.*;
+
+import java.util.Arrays;
 import java.util.List;
 
-import com.song7749.srcenter.value.SrDataRequestModifyBeforeConfirmDto;
-import com.song7749.srcenter.value.SrDataRequestVo;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import sun.util.calendar.LocalGregorianCalendar;
 
 import java.util.ArrayList;
@@ -75,9 +75,11 @@ public class SrDataRequestServiceImplTest extends UnitTest {
             , "");
 
     List<String> names = new ArrayList<>();
+    List<String> whereSqls = new ArrayList<>();
     List<String> keys  = new ArrayList<>();
     List<String> values = new ArrayList<>();
     List<DataType> types = new ArrayList<>();
+    List<YN> requireds = new ArrayList<>();
     List<Long> srDataAlowMemberIds = new ArrayList<>();
 
     SrDataRequestVo vo = null;
@@ -86,11 +88,12 @@ public class SrDataRequestServiceImplTest extends UnitTest {
     public void setUp() throws Exception {
         memberRepository.saveAndFlush(member);
         databaseRepository.saveAndFlush(database);
-
+        whereSqls.add("and a={key}");
         names.add("검색");
         keys.add("변수명");
         values.add("값");
         types.add(DataType.DATE);
+        requireds.add(YN.Y);
         srDataAlowMemberIds.add(new Long(member.getId()));
     }
 
@@ -102,6 +105,11 @@ public class SrDataRequestServiceImplTest extends UnitTest {
     public void allTests(){
         add();
         modifyBeforeConfirm();
+        confirm();
+        modifyAfterConfirm();
+        testFindOne();
+        testFindAll();
+        removeRequest();
     }
 
     public void add() {
@@ -115,10 +123,12 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 new Date(),
                 database.getId(),
                 member.getId(),
+                whereSqls,
                 names,
                 keys,
                 types,
                 values,
+                requireds,
                 srDataAlowMemberIds);
 
         // when
@@ -129,12 +139,16 @@ public class SrDataRequestServiceImplTest extends UnitTest {
 
     }
 
+
+    @Ignore
     public void modifyBeforeConfirm(){
         // give
+        whereSqls.add("and b={key2}");
         names.add("검색2");
-        keys.add("${조건2}");
-        types.add(DataType.NUMBER);
-        values.add("2000-01-01");
+        keys.add("변수명2");
+        values.add("값2");
+        types.add(DataType.DATE);
+        requireds.add(YN.Y);
         srDataAlowMemberIds.add(member.getId());
         SrDataRequestModifyBeforeConfirmDto beforeDto = new SrDataRequestModifyBeforeConfirmDto(
                 vo.getId(),
@@ -146,10 +160,12 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 new Date(),
                 new Date(),
                 database.getId(),
+                whereSqls,
                 names ,
                 keys,
                 types,
                 values,
+                requireds,
                 srDataAlowMemberIds);
 
         // when
@@ -157,5 +173,109 @@ public class SrDataRequestServiceImplTest extends UnitTest {
 
         // then
         assertThat(vo.getSubject(),equalTo(beforeDto.getSubject()));
+        assertThat(vo.getSrDataConditionVos().size(),equalTo(beforeDto.getConditionName().size()));
     }
- }
+
+
+    @Ignore
+    public void modifyAfterConfirm(){
+        // give
+
+        SrDataRequestModifyAfterConfirmDto dto = new SrDataRequestModifyAfterConfirmDto(
+                vo.getId(),
+                "테스트코드테스트코드테스트코드테스트코드테스트코드테스트코드테스트코드",
+                YN.N,
+                0,
+                DownloadLimitType.MONTHLY,
+                new Date(),
+                new Date(),
+                database.getId(),
+                Arrays.asList(new Long(member.getId())));
+
+        // when
+        vo = srDataReqeustService.modify(dto);
+
+        // then
+        assertThat(vo.getSubject(),equalTo(dto.getSubject()));
+        assertThat(vo.getDownloadLimitType(),equalTo(dto.getDownloadLimitType()));
+
+
+    }
+
+    @Ignore
+    public void confirm(){
+        // give
+        SrDataRequestConfirmDto dto = new SrDataRequestConfirmDto(
+                vo.getId(),
+                YN.Y,
+                new Date(),
+                member.getId());
+
+        // when
+        srDataReqeustService.confirm(dto);
+
+        //then
+        assertTrue(true);
+    }
+
+    @Ignore
+    public void removeRequest(){
+        // give
+        SrDataRequestRemoveDto dto = new SrDataRequestRemoveDto(vo.getId(), vo.getResistMemberVo().getId());
+        // when
+        srDataReqeustService.remove(dto);
+        // then
+        assertTrue(true);
+    }
+
+    @Ignore
+    public void testFindAll() {
+        // give
+        Pageable page = PageRequest.of(0, 10);//,Direction.DESC,"id");
+
+        SrDataRequestFindDto dto = new SrDataRequestFindDto();
+        dto.setId(vo.getId());
+        dto.setSubject(vo.getSubject());
+        dto.setRunSql(vo.getRunSql());
+        dto.setEnableYN(vo.getEnableYN());
+        dto.setConfirmYN(vo.getConfirmYN());
+        dto.setFromCreateDate(vo.getCreateDate());
+        dto.setToCreateDate(vo.getCreateDate());
+        dto.setFromConfirmDate(vo.getConfirmDate());
+        dto.setToConfirmDate(vo.getConfirmDate());
+        dto.setFromLastRunDate(vo.getLastRunDate());
+        dto.setToLastRunDate(vo.getLastRunDate());
+        dto.setLastErrorMessage(vo.getLastErrorMessage());
+        dto.setDatabaseId(vo.getDatabaseVo().getId());
+        dto.setResistMemberId(vo.getResistMemberVo().getId());
+        dto.setConfirmMemberId(vo.getConfirmMemberVo().getId());
+        dto.setSrDataAllowMemberIds(vo.getSrDataAllowMemberIds());
+
+        // when
+        Page<SrDataRequestVo> srDataRequestVos = srDataReqeustService.find(dto, page);
+        // then
+        assertThat(srDataRequestVos.getContent().size(),equalTo(1));
+
+        //logger.info("{}", srDataRequestVos.getContent());
+    }
+
+    @Ignore
+    public void testFindOne() {
+        // give
+        SrDataRequestFindDto dto = new SrDataRequestFindDto(vo.getId());
+        // when
+        SrDataRequestVo vo = srDataReqeustService.find(dto);
+        // then
+        assertThat(vo.getId(),equalTo(dto.getId()));
+    }
+
+    @Test
+    public void runSql() {
+        // give
+
+        // when
+
+        // then
+
+    }
+}

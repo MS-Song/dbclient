@@ -102,7 +102,7 @@ public class SrDataRequestRepositoryTest extends UnitTest {
                 members);
 
         List<SrDataCondition> srDataConditions = new ArrayList<SrDataCondition>();
-        srDataConditions.add(new SrDataCondition("검색", "search", DataType.STRING, "검색어", sdr));
+        srDataConditions.add(new SrDataCondition("and a=b", "검색", "a", DataType.DATE, "b", YN.Y, sdr));
 
         // 자식 객체 추가
         sdr.setSrDataConditions(srDataConditions);

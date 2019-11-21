@@ -3,13 +3,15 @@ package com.song7749.srcenter.value;
 import com.song7749.common.AbstractVo;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
+import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.member.domain.Member;
+import com.song7749.member.value.MemberVo;
 import com.song7749.srcenter.type.DownloadLimitType;
-import com.sun.tools.javac.util.List;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * <pre>
@@ -74,14 +76,14 @@ public class SrDataRequestVo extends AbstractVo {
     @ApiModelProperty(value="마지막 에러메세지", position = 14, dataType = "String")
     private String lastErrorMessage;
 
-    @ApiModelProperty(value="Database", position = 15, dataType = "Database")
-    private Database database;
+    @ApiModelProperty(value="Database", position = 15, dataType = "DatabaseVo")
+    private DatabaseVo databaseVo;
 
-    @ApiModelProperty(value="등록자", position = 16, dataType = "Member")
-    private Member resistMember;
+    @ApiModelProperty(value="등록자", position = 16, dataType = "MemberVo")
+    private MemberVo resistMemberVo;
 
-    @ApiModelProperty(value="승인자", position = 17, dataType = "Member")
-    private Member confirmMember;
+    @ApiModelProperty(value="승인자", position = 17, dataType = "MemberVo")
+    private MemberVo confirmMemberVo;
 
     @ApiModelProperty(value="SQL 조건", position = 18, dataType = "SrDataConditionVo")
     private List<SrDataConditionVo> srDataConditionVos;
@@ -90,7 +92,7 @@ public class SrDataRequestVo extends AbstractVo {
 
     public SrDataRequestVo() { }
 
-    public SrDataRequestVo(Long id, String subject, String runSql, Integer downloadLimit, Integer downloadCount, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, YN enableYN, YN confirmYN, Date createDate, Date confirmDate, Date lastRunDate, String lastErrorMessage, Database database, Member resistMember, Member confirmMember, List<SrDataConditionVo> srDataConditionVos, List<Long> srDataAllowMemberIds) {
+    public SrDataRequestVo(Long id, String subject, String runSql, Integer downloadLimit, Integer downloadCount, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, YN enableYN, YN confirmYN, Date createDate, Date confirmDate, Date lastRunDate, String lastErrorMessage, DatabaseVo databaseVo, MemberVo resistMemberVo, MemberVo confirmMemberVo, List<SrDataConditionVo> srDataConditionVos, List<Long> srDataAllowMemberIds) {
         this.id = id;
         this.subject = subject;
         this.runSql = runSql;
@@ -105,9 +107,9 @@ public class SrDataRequestVo extends AbstractVo {
         this.confirmDate = confirmDate;
         this.lastRunDate = lastRunDate;
         this.lastErrorMessage = lastErrorMessage;
-        this.database = database;
-        this.resistMember = resistMember;
-        this.confirmMember = confirmMember;
+        this.databaseVo = databaseVo;
+        this.resistMemberVo = resistMemberVo;
+        this.confirmMemberVo = confirmMemberVo;
         this.srDataConditionVos = srDataConditionVos;
         this.srDataAllowMemberIds = srDataAllowMemberIds;
     }
@@ -224,28 +226,28 @@ public class SrDataRequestVo extends AbstractVo {
         this.lastErrorMessage = lastErrorMessage;
     }
 
-    public Database getDatabase() {
-        return database;
+    public DatabaseVo getDatabaseVo() {
+        return databaseVo;
     }
 
-    public void setDatabase(Database database) {
-        this.database = database;
+    public void setDatabaseVo(DatabaseVo databaseVo) {
+        this.databaseVo = databaseVo;
     }
 
-    public Member getResistMember() {
-        return resistMember;
+    public MemberVo getResistMemberVo() {
+        return resistMemberVo;
     }
 
-    public void setResistMember(Member resistMember) {
-        this.resistMember = resistMember;
+    public void setResistMemberVo(MemberVo resistMemberVo) {
+        this.resistMemberVo = resistMemberVo;
     }
 
-    public Member getConfirmMember() {
-        return confirmMember;
+    public MemberVo getConfirmMemberVo() {
+        return confirmMemberVo;
     }
 
-    public void setConfirmMember(Member confirmMember) {
-        this.confirmMember = confirmMember;
+    public void setConfirmMemberVo(MemberVo confirmMemberVo) {
+        this.confirmMemberVo = confirmMemberVo;
     }
 
     public List<SrDataConditionVo> getSrDataConditionVos() {

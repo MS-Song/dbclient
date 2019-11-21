@@ -1,0 +1,104 @@
+package com.song7749;
+
+import com.song7749.common.MessageVo;
+import com.song7749.member.annotation.Login;
+import com.song7749.member.service.LoginSession;
+import com.song7749.member.type.AuthType;
+import com.song7749.srcenter.service.SrDataReqeustService;
+import com.song7749.srcenter.value.SrDataRequestAddDto;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.castor.util.Base64Decoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.ArrayList;
+
+import static com.song7749.util.LogMessageFormatter.format;
+
+/**
+ * <pre>
+ * Class Name : SrDataRequestController
+ * Description : SrDataRequest 처리 컨트롤러
+ *
+ *
+ *  Modification Information
+ *  Modify Date 		Modifier				Comment
+ *  -----------------------------------------------
+ *  21/11/2019		song7749@gmail.com		    NEW
+ *
+ * </pre>
+ *
+ * @author song7749@gmail.com
+ * @since 21/11/2019
+ */
+
+@Api(tags="SR Data Request 관리 및 실행 기능")
+@RestController
+@RequestMapping("/srDataRequest")
+public class SrDataRequestController {
+
+
+    Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    LoginSession session;
+
+    @Autowired
+    SrDataReqeustService srDataReqeustService;
+
+    @ApiOperation(value = "Sr Data 등록"
+            ,notes = "Sr Data Request 를 등록 한다. "
+            ,response=MessageVo.class)
+    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @PostMapping("/add")
+    public MessageVo add(HttpServletRequest request,
+                         HttpServletResponse response,
+                         @Valid @ModelAttribute SrDataRequestAddDto dto) throws UnsupportedEncodingException {
+
+        // 인증 정보 추가
+        dto.setMemberId(session.getLogin().getId());
+
+        // SQL 데이터 가공
+        dto.setRunSql(
+            URLDecoder.decode(
+                new String(
+                    Base64Decoder.decode(dto.getRunSql())
+                        , Charset.forName("UTF-8"))
+                    , "UTF-8")
+        );
+        logger.debug(format("{}", "DECODE URL RUN SQL"),dto.getRunSql());
+
+        // where 절 가공
+        if(!CollectionUtils.isEmpty(dto.getConditionWhereSql())){
+            // 새로운 배열에 담는다.
+            List<String> unwrapList = new ArrayList<String>();
+            // 인코딩된 정보를 디코드 한다.
+            for(String s : dto.getConditionWhereSql()){
+                unwrapList.add(
+                    URLDecoder.decode(
+                        new String(
+                            Base64Decoder.decode(s)
+                            , Charset.forName("UTF-8"))
+                        , "UTF-8")
+                );
+            }
+            dto.setConditionWhereSql(unwrapList);
+        }
+
+        return null;
+    }
+}
