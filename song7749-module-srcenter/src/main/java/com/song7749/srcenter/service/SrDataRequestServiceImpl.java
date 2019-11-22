@@ -105,7 +105,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         for(int i=0;i<dto.getConditionKey().size();i++){
             String key = dto.getConditionKey().get(i);
             String whereSql = dto.getConditionWhereSql().get(i);
-            String value = (!CollectionUtils.isEmpty(dto.getConditionValue())) ? dto.getConditionValue().get(i) : null;
+            String value = dto.getConditionValue().get(i);
             String name = dto.getConditionName().get(i);
             DataType type = dto.getConditionType().get(i);
             YN required = dto.getConditionRequired().get(i);
@@ -139,6 +139,11 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         SrDataRequest sdr = optionalSrDataRequest.get();
         mapper.map(dto, sdr);
 
+        // 작성자 본인이 아니면 수정을 차단 한다.
+//        if(!sdr.getResistMember().getId().equals(dto.getMemberId())){
+//            throw new IllegalArgumentException("작성자 본인만 수정 가능 합니다.");
+//        }
+
         // 허용된 회원 정보 조회
         List<Member> srDataAllowMembers = memberRepository.findAllById(dto.getSrDataAllowMemberIds());
         if(CollectionUtils.isEmpty(srDataAllowMembers)) {
@@ -151,7 +156,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         for(int i=0;i<dto.getConditionKey().size();i++){
             String key = dto.getConditionKey().get(i);
             String whereSql = dto.getConditionWhereSql().get(i);
-            String value = (!CollectionUtils.isEmpty(dto.getConditionValue())) ? dto.getConditionValue().get(i) : null;
+            String value = dto.getConditionValue().get(i);
             String name = dto.getConditionName().get(i);
             DataType type = dto.getConditionType().get(i);
             YN required = dto.getConditionRequired().get(i);
@@ -321,14 +326,10 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         for(Field f :  dto.getClass().getDeclaredFields()){
             // condition 으로 시작하는 필드만 대상이다.
             String message = "SQL Condition 데이터를 가져올 수 없습니다. null 또는 파라메터 개수가 맞지 않습니다. " + f.getName();
-            if(f.getName().startsWith("condition") && !f.getName().startsWith("conditionValue")){
+            if(f.getName().startsWith("condition")){
                 try {
                     // private 멤버를 잠시 읽기 가능하도록 변경
                     f.setAccessible(true);
-                    if(null==f.get(dto)){
-                        throw new IllegalArgumentException(message);
-                    }
-
                     boolean ckeckLoop = loop!=0;
                     boolean checkSize = f.get(dto) instanceof List;
                     checkSize = checkSize && beforeLength != ((List)f.get(dto)).size();

@@ -13,6 +13,8 @@ import com.song7749.member.value.MemberModifyByAdminDto;
 import com.song7749.member.value.MemberModifyDto;
 import com.song7749.member.value.MemberVo;
 import com.song7749.web.ControllerTest;
+import org.castor.util.Base64Decoder;
+import org.castor.util.Base64Encoder;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -24,10 +26,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import javax.servlet.http.Cookie;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.castor.util.Base64Encoder.encode;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
@@ -109,22 +114,23 @@ public class SrDataRequestControllerTest extends ControllerTest {
     public void add() throws Exception{
         drb=post("/srDataRequest/add").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("subject",               "제목입니다제목입니다제목입니다제목입니다제목입니다")
-                .param("runSql",                "select * from member where 1=1 ")
+                .param("runSql",                 URLEncoder.encode(new String(encode("select * from member where 1=1 ".getBytes(String.valueOf(Charset.UTF8)))), "UTF-8"))
                 .param("downloadLimit",         "0")
                 .param("downloadLimitType",     "HOURLY")
                 .param("downloadStartDate",     "2019-12-31")
                 .param("downloadEndDate",       "2020-12-31")
                 .param("databaseId",            dv.getId().toString())
                 .param("memberId",              vo.getId().toString())
-                .param("conditionWhereSql",     " AND member_id={member_id}")
-                .param("conditionName",         "회원번호")
-                .param("conditionKey",          "{member_id}")
-                .param("conditionType",         "DATE")
-                //.param("conditionValue",        "2017-12-12")
-                .param("conditionRequired",     "Y")
-                .param("srDataAllowMemberIds",  vo.getId().toString())
+                .param("conditionWhereSql",     URLEncoder.encode(new String(encode("AND member_id={member_id}".getBytes(String.valueOf(Charset.UTF8)))), "UTF-8"), URLEncoder.encode(new String(encode("AND name={name}".getBytes(String.valueOf(Charset.UTF8)))), "UTF-8"))
+                .param("conditionName",         "회원번호","상명")
+                .param("conditionKey",          "{member_id}","{name}")
+                .param("conditionType",         "STRING","STRING")
+                .param("conditionValue",        "","")
+                .param("conditionRequired",     "Y","Y")
+                .param("srDataAllowMemberIds",  vo.getId().toString(),vo.getId().toString(),vo.getId().toString())
 
         ;
+
 
         // 로그인 cookie 정보 추가
         drb.cookie(cookie);
@@ -142,7 +148,8 @@ public class SrDataRequestControllerTest extends ControllerTest {
         assertThat(responseObject.get("rowCount"), notNullValue());
         assertThat(responseObject.get("message"), equalTo("SR Data Request 등록이 완료되었습니다."));
         assertThat(responseObject.get("contents"), notNullValue());
-
-
     }
+
+
+
 }

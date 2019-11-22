@@ -71,9 +71,12 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
     @ApiModelProperty(required=false, position=13, value="사용허용자 || 해당 기능의 사용이 허용된 사용자 선택")
     private List<Long> srDataAllowMemberIds;
 
+    @ApiModelProperty(required=true, position=8, hidden=true, value="수정자 ID")
+    private Long memberId;
+
     public SrDataRequestModifyAfterConfirmDto() {}
 
-    public SrDataRequestModifyAfterConfirmDto(@NotNull Long id, @Size(min = 8, max = 200) String subject, YN enableYN, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, @NotNull Long databaseId, List<Long> srDataAllowMemberIds) {
+    public SrDataRequestModifyAfterConfirmDto(@NotNull Long id, @Size(min = 8, max = 200) String subject, YN enableYN, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, @NotNull Long databaseId, List<Long> srDataAllowMemberIds, Long memberId) {
         this.id = id;
         this.subject = subject;
         this.enableYN = enableYN;
@@ -83,6 +86,7 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
         this.downloadEndDate = downloadEndDate;
         this.databaseId = databaseId;
         this.srDataAllowMemberIds = srDataAllowMemberIds;
+        this.memberId = memberId;
     }
 
     public Long getId() {
@@ -155,5 +159,13 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
 
     public void setSrDataAllowMemberIds(List<Long> srDataAllowMemberIds) {
         this.srDataAllowMemberIds = srDataAllowMemberIds;
+    }
+
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
     }
 }

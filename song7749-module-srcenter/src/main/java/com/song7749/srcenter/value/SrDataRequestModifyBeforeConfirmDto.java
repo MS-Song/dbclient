@@ -92,10 +92,12 @@ public class SrDataRequestModifyBeforeConfirmDto extends AbstractDto {
     @ApiModelProperty(required=true, position=13, value="사용허용자 || 해당 기능의 사용이 허용된 사용자 선택")
     private List<Long> srDataAllowMemberIds;
 
+    @ApiModelProperty(required=true, position=8, hidden=true, value="수정자 ID")
+    private Long memberId;
 
     public SrDataRequestModifyBeforeConfirmDto() { }
 
-    public SrDataRequestModifyBeforeConfirmDto(@NotNull Long id, @Size(min = 8, max = 200) String subject, @Size(min = 8, max = 12000) String runSql, YN enableYN, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, @NotNull Long databaseId, List<String> conditionWhereSql, List<String> conditionName, List<String> conditionKey, List<DataType> conditionType, List<String> conditionValue, List<YN> conditionRequired, List<Long> srDataAllowMemberIds) {
+    public SrDataRequestModifyBeforeConfirmDto(@NotNull Long id, @Size(min = 8, max = 200) String subject, @Size(min = 8, max = 12000) String runSql, YN enableYN, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, @NotNull Long databaseId, List<String> conditionWhereSql, List<String> conditionName, List<String> conditionKey, List<DataType> conditionType, List<String> conditionValue, List<YN> conditionRequired, List<Long> srDataAllowMemberIds, Long memberId) {
         this.id = id;
         this.subject = subject;
         this.runSql = runSql;
@@ -112,6 +114,7 @@ public class SrDataRequestModifyBeforeConfirmDto extends AbstractDto {
         this.conditionValue = conditionValue;
         this.conditionRequired = conditionRequired;
         this.srDataAllowMemberIds = srDataAllowMemberIds;
+        this.memberId = memberId;
     }
 
     public Long getId() {
@@ -240,5 +243,13 @@ public class SrDataRequestModifyBeforeConfirmDto extends AbstractDto {
 
     public void setSrDataAllowMemberIds(List<Long> srDataAllowMemberIds) {
         this.srDataAllowMemberIds = srDataAllowMemberIds;
+    }
+
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
     }
 }

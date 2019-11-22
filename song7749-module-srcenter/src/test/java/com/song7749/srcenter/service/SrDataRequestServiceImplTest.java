@@ -166,7 +166,8 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 types,
                 values,
                 requireds,
-                srDataAlowMemberIds);
+                srDataAlowMemberIds,
+                member.getId());
 
         // when
         vo = srDataReqeustService.modify(beforeDto);
@@ -190,7 +191,8 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 new Date(),
                 new Date(),
                 database.getId(),
-                Arrays.asList(new Long(member.getId())));
+                Arrays.asList(new Long(member.getId())),
+                member.getId());
 
         // when
         vo = srDataReqeustService.modify(dto);
@@ -267,15 +269,5 @@ public class SrDataRequestServiceImplTest extends UnitTest {
         SrDataRequestVo vo = srDataReqeustService.find(dto);
         // then
         assertThat(vo.getId(),equalTo(dto.getId()));
-    }
-
-    @Test
-    public void runSql() {
-        // give
-
-        // when
-
-        // then
-
     }
 }

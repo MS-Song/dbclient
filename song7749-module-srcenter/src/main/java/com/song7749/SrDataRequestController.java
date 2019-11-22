@@ -6,6 +6,8 @@ import com.song7749.member.service.LoginSession;
 import com.song7749.member.type.AuthType;
 import com.song7749.srcenter.service.SrDataReqeustService;
 import com.song7749.srcenter.value.SrDataRequestAddDto;
+import com.song7749.srcenter.value.SrDataRequestModifyAfterConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestModifyBeforeConfirmDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.castor.util.Base64Decoder;
@@ -14,10 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -102,5 +101,47 @@ public class SrDataRequestController {
 
         return new MessageVo(HttpStatus.OK.value(), 1
                 , srDataReqeustService.add(dto), "SR Data Request 등록이 완료되었습니다.");
+    }
+
+    @ApiOperation(value = "Sr Data 승인 전 수정"
+            ,notes = "Sr Data Request 승인 전에 수정하는 기능 "
+            ,response=MessageVo.class)
+    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @PutMapping("/modifyBeforeConfirm")
+    public MessageVo modifyBeforeConfirm(HttpServletRequest request,
+                                         HttpServletResponse response,
+                                         @Valid @ModelAttribute SrDataRequestModifyBeforeConfirmDto dto) throws UnsupportedEncodingException {
+
+        // 인증 정보 추가
+        dto.setMemberId(session.getLogin().getId());
+
+        // SQL 데이터 가공
+        dto.setRunSql(
+                URLDecoder.decode(
+                        new String(
+                                Base64Decoder.decode(dto.getRunSql())
+                                , Charset.forName("UTF-8"))
+                        , "UTF-8")
+        );
+        logger.debug(format("{}", "DECODE URL RUN SQL"),dto.getRunSql());
+
+        // where 절 가공
+        if(!CollectionUtils.isEmpty(dto.getConditionWhereSql())){
+            // 새로운 배열에 담는다.
+            List<String> unwrapList = new ArrayList<String>();
+            // 인코딩된 정보를 디코드 한다.
+            for(String s : dto.getConditionWhereSql()){
+                unwrapList.add(
+                        URLDecoder.decode(
+                                new String(
+                                        Base64Decoder.decode(s)
+                                        , Charset.forName("UTF-8"))
+                                , "UTF-8")
+                );
+            }
+            dto.setConditionWhereSql(unwrapList);
+        }
+        return new MessageVo(HttpStatus.OK.value(), 1
+                , srDataReqeustService.modify(dto), "SR Data Request 수정이 완료되었습니다.");
     }
 }
