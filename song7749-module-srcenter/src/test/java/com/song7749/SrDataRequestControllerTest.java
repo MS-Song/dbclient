@@ -120,7 +120,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
                 .param("conditionName",         "회원번호")
                 .param("conditionKey",          "{member_id}")
                 .param("conditionType",         "DATE")
-                .param("conditionValue",        "2017-12-12")
+                //.param("conditionValue",        "2017-12-12")
                 .param("conditionRequired",     "Y")
                 .param("srDataAllowMemberIds",  vo.getId().toString())
 

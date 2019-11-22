@@ -105,7 +105,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         for(int i=0;i<dto.getConditionKey().size();i++){
             String key = dto.getConditionKey().get(i);
             String whereSql = dto.getConditionWhereSql().get(i);
-            String value = dto.getConditionValue().get(i);
+            String value = (!CollectionUtils.isEmpty(dto.getConditionValue())) ? dto.getConditionValue().get(i) : null;
             String name = dto.getConditionName().get(i);
             DataType type = dto.getConditionType().get(i);
             YN required = dto.getConditionRequired().get(i);
@@ -151,7 +151,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         for(int i=0;i<dto.getConditionKey().size();i++){
             String key = dto.getConditionKey().get(i);
             String whereSql = dto.getConditionWhereSql().get(i);
-            String value = dto.getConditionValue().get(i);
+            String value = (!CollectionUtils.isEmpty(dto.getConditionValue())) ? dto.getConditionValue().get(i) : null;
             String name = dto.getConditionName().get(i);
             DataType type = dto.getConditionType().get(i);
             YN required = dto.getConditionRequired().get(i);
@@ -321,7 +321,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         for(Field f :  dto.getClass().getDeclaredFields()){
             // condition 으로 시작하는 필드만 대상이다.
             String message = "SQL Condition 데이터를 가져올 수 없습니다. null 또는 파라메터 개수가 맞지 않습니다. " + f.getName();
-            if(f.getName().startsWith("condition")){
+            if(f.getName().startsWith("condition") && !f.getName().startsWith("conditionValue")){
                 try {
                     // private 멤버를 잠시 읽기 가능하도록 변경
                     f.setAccessible(true);

@@ -64,7 +64,7 @@ public class SrDataCondition extends Entities {
     private DataType type;
 
     @Length(max = 200)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String value;
 
     @NotNull
