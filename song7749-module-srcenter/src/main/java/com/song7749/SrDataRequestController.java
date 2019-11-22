@@ -12,6 +12,7 @@ import org.castor.util.Base64Decoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -99,6 +100,7 @@ public class SrDataRequestController {
             dto.setConditionWhereSql(unwrapList);
         }
 
-        return null;
+        return new MessageVo(HttpStatus.OK.value(), 1
+                , srDataReqeustService.add(dto), "SR Data Request 등록이 완료되었습니다.");
     }
 }

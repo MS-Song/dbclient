@@ -4,4 +4,5 @@ public enum DataType {
     NUMBER,
     STRING,
     DATE
+
 }
