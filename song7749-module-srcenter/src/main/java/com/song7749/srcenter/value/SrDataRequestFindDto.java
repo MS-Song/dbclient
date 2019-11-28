@@ -59,32 +59,32 @@ public class SrDataRequestFindDto extends AbstractDto implements Specification<S
     @ApiModelProperty(required = false, position = 10, dataType = "YN", value="승인여부 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
     private YN confirmYN;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
     @ApiModelProperty(value="등록일 검색 시작",position=11)
     private Date fromCreateDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
     @ApiModelProperty(value="등록일 검색 종료",position=12)
     private Date toCreateDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
     @ApiModelProperty(value="승인일 검색 시작",position=13)
     private Date fromConfirmDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
     @ApiModelProperty(value="승인일 검색 종료",position=14)
     private Date toConfirmDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
     @ApiModelProperty(value="마지막 실행일 검색 시작",position=15)
     private Date fromLastRunDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
     @ApiModelProperty(value="마지막 실행일 검색 종료",position=16)
     private Date toLastRunDate;

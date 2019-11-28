@@ -5,15 +5,18 @@ import com.song7749.member.annotation.Login;
 import com.song7749.member.service.LoginSession;
 import com.song7749.member.type.AuthType;
 import com.song7749.srcenter.service.SrDataReqeustService;
-import com.song7749.srcenter.value.SrDataRequestAddDto;
-import com.song7749.srcenter.value.SrDataRequestModifyAfterConfirmDto;
-import com.song7749.srcenter.value.SrDataRequestModifyBeforeConfirmDto;
+import com.song7749.srcenter.value.*;
+import com.song7749.util.LogMessageFormatter;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.castor.util.Base64Decoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -141,7 +144,94 @@ public class SrDataRequestController {
             }
             dto.setConditionWhereSql(unwrapList);
         }
+
         return new MessageVo(HttpStatus.OK.value(), 1
                 , srDataReqeustService.modify(dto), "SR Data Request 수정이 완료되었습니다.");
+    }
+
+    @ApiOperation(value = "Sr Data 승인"
+            ,notes = "Sr Data Request 승인 기능 "
+            ,response=MessageVo.class)
+    @Login({AuthType.ADMIN})
+    @PutMapping("/confirm")
+    public MessageVo confirm(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        @Valid @ModelAttribute SrDataRequestConfirmDto dto) throws UnsupportedEncodingException {
+
+        // 인증 정보 추가
+        dto.setConfirmMemberId(session.getLogin().getId());
+        srDataReqeustService.confirm(dto);
+        return new MessageVo(HttpStatus.OK.value(),"SR data Request 승인이 완료 되었습니다.");
+    }
+
+
+    @ApiOperation(value = "Sr Data 승인 후 수정"
+            ,notes = "Sr Data Request 승인 후에 수정하는 기능 "
+            ,response=MessageVo.class)
+    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @PutMapping("/modifyAfterConfirm")
+    public MessageVo modifyAfterConfirm(HttpServletRequest request,
+                                         HttpServletResponse response,
+                                         @Valid @ModelAttribute SrDataRequestModifyAfterConfirmDto dto) throws UnsupportedEncodingException {
+
+        // 인증 정보 추가
+        dto.setMemberId(session.getLogin().getId());
+
+        return new MessageVo(HttpStatus.OK.value(), 1
+                , srDataReqeustService.modify(dto), "SR Data Request 수정이 완료되었습니다.");
+    }
+
+    @ApiOperation(value = "Sr Data 삭제"
+            ,notes = "Sr Data Request 승인 삭제 "
+            ,response=MessageVo.class)
+    @Login({AuthType.ADMIN})
+    @DeleteMapping("/remove")
+    public MessageVo remove(HttpServletRequest request,
+                            HttpServletResponse response,
+                            @Valid @ModelAttribute SrDataRequestRemoveDto dto) throws UnsupportedEncodingException {
+
+        // 인증 정보 추가
+        dto.setRemoveMemberId(session.getLogin().getId());
+        srDataReqeustService.remove(dto);
+        return new MessageVo(HttpStatus.OK.value(),"SR data Request 삭제가 완료 되었습니다.");
+    }
+
+    @ApiOperation(value = "SR Data Request List 조회"
+            ,notes = "등록된 SR Data Request 리스트를 조회 한다."
+            ,response=SrDataRequestVo.class)
+    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @GetMapping("/list")
+    public Page<SrDataRequestVo> list(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @Valid @ModelAttribute SrDataRequestFindDto dto,
+            @PageableDefault(page=0, size=20, direction= Sort.Direction.DESC, sort="id") Pageable page){
+
+        return srDataReqeustService.find(dto,page);
+    }
+
+    @ApiOperation(value = "SR Data Request 단일 조회"
+            ,notes = "등록된 SR Data Request 단일 항목을 조회 한다."
+            ,response=SrDataRequestVo.class)
+    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @GetMapping("/one")
+    public MessageVo one(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @Valid @ModelAttribute SrDataRequestFindDto dto){
+        return new MessageVo(HttpStatus.OK.value(),srDataReqeustService.find(dto));
+    }
+
+    @ApiOperation(value = "SR Data Request 실행"
+            ,notes = "SR Data Request 를 실행 한다."
+            ,response=MessageVo.class)
+    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @PutMapping("/runNow")
+    public MessageVo run(HttpServletRequest request,
+                         HttpServletResponse response,
+                         @Valid @ModelAttribute SrDataRequestRunDto dto){
+
+        dto.setRunMemberId(session.getLogin().getId());
+        return srDataReqeustService.runSql(dto,request);
     }
 }

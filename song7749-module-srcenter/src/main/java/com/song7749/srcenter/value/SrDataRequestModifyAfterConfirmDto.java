@@ -54,12 +54,12 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
     @ApiModelProperty(required = false, position = 4, dataType = "DownloadLimitType", value="다운로드 제한 타입 || 다운로드 제한을 월/주/일/시 로 설정, 타입을 정하지 않으면 해당 기능의 전체 카운트로 셋팅됨 ")
     private DownloadLimitType downloadLimitType;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
     @ApiModelProperty(required = false, position = 5, dataType = "Date", value="다운로드 가능 시작 일시")
     private Date downloadStartDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
     @ApiModelProperty(required = false, position = 6, dataType = "Date", value="다운로드 가능 종료 일시")
     private Date downloadEndDate;
