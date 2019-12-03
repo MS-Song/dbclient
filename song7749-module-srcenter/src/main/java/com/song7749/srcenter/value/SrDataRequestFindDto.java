@@ -9,6 +9,7 @@ import com.song7749.srcenter.type.DataType;
 import com.song7749.srcenter.type.DownloadLimitType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.castor.util.Base64Decoder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
@@ -18,8 +19,13 @@ import javax.persistence.TemporalType;
 import javax.persistence.criteria.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
+
+import static com.song7749.util.LogMessageFormatter.format;
 
 /**
  * <pre>
@@ -273,8 +279,22 @@ public class SrDataRequestFindDto extends AbstractDto implements Specification<S
         }
 
         if(!StringUtils.isEmpty(runSql)) {
+
+            // SQL 데이터는 방화벽에서 xss 로 차단됨으로, 디코드해서 사용해야 한다.
+            String convRunSQL=null;
+            try {
+                convRunSQL =
+                        URLDecoder.decode(
+                                new String(
+                                        Base64Decoder.decode(runSql)
+                                        , Charset.forName("UTF-8"))
+                                , "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalArgumentException("run SQL 의 복호화 실패!! 관리자에게 문의 하세요");
+            }
+
             p.getExpressions()
-                    .add(cb.like(root.<String>get("runSql"),  "%" + runSql + "%"));
+                    .add(cb.like(root.<String>get("runSql"),  "%" + convRunSQL + "%"));
         }
 
         if(null!=enableYN) {

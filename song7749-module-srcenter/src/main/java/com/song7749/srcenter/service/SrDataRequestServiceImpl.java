@@ -275,7 +275,8 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         // 쿼리 문자열을 조건으로 변경 한다.
         for(SrDataCondition sdc : srDataRequest.getSrDataConditions()){
             // servlet request 에서 원하는 value 를 찾아 설정 한다.
-            String value = request.getParameter(sdc.getKey());
+            String key = sdc.getKey().replace("{", "").replace("}", "");
+            String value = request.getParameter(key);
 
             // 필수값 이고, Value 가 없을 경우에는 Exception 발생.
             if(sdc.getRequired().equals(YN.Y) && StringUtils.isBlank(value)){
@@ -283,9 +284,9 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
             }
             // value 가 입력된 경우에만 where 를 추가 한다.
             if(StringUtils.isNotBlank(value)){
-                // 현재 SQL 구문에 Where 포함 값을 추가 한다. (key 변경을 해서 넣는다.)
+                // 현재 SQL 구문에 Where 포함 값을 추가 한다.
                 sql+= " " + sdc.getWhereSql();
-                sql = StringUtils.replacePatten("\\{"+ sdc.getKey().toLowerCase()+"\\}",value, sql.toLowerCase());
+                sql = StringUtils.replacePatten("\\{"+ key.toLowerCase()+"\\}",value, sql.toLowerCase());
             }
         }
 

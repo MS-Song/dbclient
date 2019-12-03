@@ -226,11 +226,12 @@ public class SrDataRequestController {
             ,notes = "SR Data Request 를 실행 한다."
             ,response=MessageVo.class)
     @Login({AuthType.NORMAL,AuthType.ADMIN})
-    @PutMapping("/runNow")
+    @GetMapping("/runNow")
     public MessageVo run(HttpServletRequest request,
                          HttpServletResponse response,
                          @Valid @ModelAttribute SrDataRequestRunDto dto){
 
+        // 세션 정보 입력
         dto.setRunMemberId(session.getLogin().getId());
         return srDataReqeustService.runSql(dto,request);
     }
