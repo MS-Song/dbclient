@@ -375,5 +375,4 @@ public class SrDataRequestControllerTest extends ControllerTest {
         assertThat(responseObject.get("rowCount"), equalTo(1));
         assertThat(responseObject.get("contents"), notNullValue());
     }
-
 }
