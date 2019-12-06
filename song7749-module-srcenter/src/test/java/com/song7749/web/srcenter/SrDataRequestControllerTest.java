@@ -1,4 +1,4 @@
-package com.song7749;
+package com.song7749.web.srcenter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.song7749.dbclient.domain.Database;

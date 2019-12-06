@@ -18,6 +18,7 @@ public class ApplicationSRdataCenter {
 			.properties("spring.config.location="
 					+ "classpath:/mvc-application.yml"
 					+ ",classpath:/dbclient-application.yml"
+					+ ",classpath:/incident-application.yml"
 					+ ",classpath:/srcenter-application.yml")
 			.run(args);
 	}

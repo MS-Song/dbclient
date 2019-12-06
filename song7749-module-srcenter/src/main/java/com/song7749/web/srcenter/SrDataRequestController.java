@@ -1,4 +1,4 @@
-package com.song7749;
+package com.song7749.web.srcenter;
 
 import com.song7749.common.MessageVo;
 import com.song7749.member.annotation.Login;
