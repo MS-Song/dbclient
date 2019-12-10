@@ -76,6 +76,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
 
     List<String> names = new ArrayList<>();
     List<String> whereSqls = new ArrayList<>();
+    List<String> whereSqlKeys = new ArrayList<>();
     List<String> keys  = new ArrayList<>();
     List<String> values = new ArrayList<>();
     List<DataType> types = new ArrayList<>();
@@ -88,7 +89,8 @@ public class SrDataRequestServiceImplTest extends UnitTest {
     public void setUp() throws Exception {
         memberRepository.saveAndFlush(member);
         databaseRepository.saveAndFlush(database);
-        whereSqls.add("and a={key}");
+        whereSqls.add("and a=#{key}");
+        whereSqlKeys.add("${Key}");
         names.add("검색");
         keys.add("변수명");
         values.add("값");
@@ -124,6 +126,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 database.getId(),
                 member.getId(),
                 whereSqls,
+                whereSqlKeys,
                 names,
                 keys,
                 types,
@@ -143,7 +146,8 @@ public class SrDataRequestServiceImplTest extends UnitTest {
     @Ignore
     public void modifyBeforeConfirm(){
         // give
-        whereSqls.add("and b={key2}");
+        whereSqls.add("and b=#{key2}");
+        whereSqlKeys.add("${Key}");
         names.add("검색2");
         keys.add("변수명2");
         values.add("값2");
@@ -161,6 +165,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 new Date(),
                 database.getId(),
                 whereSqls,
+                whereSqlKeys,
                 names ,
                 keys,
                 types,

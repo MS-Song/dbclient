@@ -49,6 +49,10 @@ public class SrDataCondition extends Entities {
     private String whereSql;
 
     @NotBlank
+    @Column(nullable = false)
+    private String whereSqlKey;
+
+    @NotBlank
     @Length(max = 200)
     @Column(nullable = false)
     private String name;
@@ -81,8 +85,9 @@ public class SrDataCondition extends Entities {
      */
     public SrDataCondition() {   }
 
-    public SrDataCondition(@NotBlank @Length(max = 2000) String whereSql, @NotBlank @Length(max = 200) String name, @NotBlank @Length(max = 200) String key, @NotBlank DataType type, @Length(max = 200) String value, YN required, SrDataRequest srDataRequest) {
+    public SrDataCondition(@NotBlank @Length(max = 2000) String whereSql, @NotBlank String whereSqlKey, @NotBlank @Length(max = 200) String name, @NotBlank @Length(max = 200) String key, @NotNull DataType type, @Length(max = 200) String value, @NotNull YN required, SrDataRequest srDataRequest) {
         this.whereSql = whereSql;
+        this.whereSqlKey = whereSqlKey;
         this.name = name;
         this.key = key;
         this.type = type;
@@ -105,6 +110,14 @@ public class SrDataCondition extends Entities {
 
     public void setWhereSql(String whereSql) {
         this.whereSql = whereSql;
+    }
+
+    public String getWhereSqlKey() {
+        return whereSqlKey;
+    }
+
+    public void setWhereSqlKey(String whereSqlKey) {
+        this.whereSqlKey = whereSqlKey;
     }
 
     public String getName() {

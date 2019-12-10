@@ -6,7 +6,9 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.StringJoiner;
 
+import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -17,6 +19,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +34,7 @@ public class ValidateJpaAop {
 	 * validator 설정
 	 */
 	@Autowired
+	@Qualifier("localValidatorFactoryBean")
 	protected Validator validatorFactoryBean;
 
     @Pointcut("this(org.springframework.data.repository.Repository)")
@@ -123,7 +127,7 @@ public class ValidateJpaAop {
 
 		try {
 			return joinPoint.proceed();
-		} catch (javax.validation.ConstraintViolationException e) {
+		} catch (ConstraintViolationException e) {
 			throw new IllegalArgumentException(e.getConstraintViolations().iterator().next().getPropertyPath() + " 은(는)(=) " + e.getConstraintViolations().iterator().next().getMessage());
 		}
 	}

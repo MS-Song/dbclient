@@ -15,7 +15,7 @@ webix.ready(function(){
 							$$("menu").hide();
 					}
 				},
-				{ id:"logo", view: "label", label: "Incident Alert"},
+				{ id:"logo", view: "label", label: "SR Data Center"},
 				{ id:"toolbar_cache_remove"},
 				{ id:"menu_right_icon", view: "icon", icon: "bars", click: function(){
 						if( $$("menu_right").config.hidden) 
@@ -31,12 +31,12 @@ webix.ready(function(){
 				view:"accordion",
 				cols:[
 					{ 
-						id:"incident_alarm_search",	
-						header:"Search Task Scheduler", 
+						id:"sr_data_request_search",	
+						header:"Search SR Data Request",
 						width:450, 
 						body:{
 							view:"form",
-							id:"incident_alarm_search_form",
+							id:"sr_data_request_search_form",
 							animate:false,
 							elements: [],
 							scroll:true,
@@ -45,12 +45,12 @@ webix.ready(function(){
 					},
 					{ view:"resizer", id:"screen_heighter"},
 					{
-						id:"incident_alarm_job",	
+						id:"sr_data_request_job",	
 						margin:5,
 						body:{ 
 							rows:[{
 								cols:[{},{
-									id:"incident_alarm_list_page",
+									id:"sr_data_request_list_page",
 									view: 'pager',
 									template: '{common.first()} {common.prev()} {common.pages()} {common.next()} {common.last()}',
 									master:false,
@@ -59,23 +59,23 @@ webix.ready(function(){
 									count: 1000,
 									align:'center',
 									on: { onItemClick: function(id, e, node) {
-										    $$('incident_alarm_search_page').setValue(id*1 + 1);
-										    incident_alarm_list_create();
+										    $$('sr_data_request_search_page').setValue(id*1 + 1);
+										    sr_data_request_list_create();
 									}}
 								},{
-									id:"incident_alarm_job_add_button",
+									id:"sr_data_request_job_add_button",
 									view:"button",
-									value:"알람 신규 등록",
+									value:"신규 등록",
 									width:150,
 									click:function(){
-										incident_alarm_popup();
+										sr_data_request_popup();
 									}
 								},{
 									
 								}]
 							},{
 								view : "datatable", 
-								id:"incident_alarm_list_view", 						
+								id:"sr_data_request_list_view", 						
 								columns:[],	
 								data:[],
 								tooltip:true,
@@ -85,20 +85,20 @@ webix.ready(function(){
 								multiselect:true,
 								clipboard:"selection",
 								on:{"onItemClick":function(){
-									incident_alarm_popup(this.getSelectedItem());
+									sr_data_request_popup(this.getSelectedItem());
 								}}
 							}] // end rows
 						} // end body	
 					},
 					{ view:"resizer", id:"screen_heighter"},
 					{ 
-						id:"incident_alarm_run_tab",	
-						header:"Alarm Task Run Log", 
+						id:"sr_data_request_run_tab",	
+						header:"SR Data Task Run Log",
 						collapsed:false,
 						width:400, 
 						body:{
 							view:"datatable",
-							id:"incident_alarm_run_log", 	
+							id:"sr_data_request_run_log", 	
 							columns:[
 				        		{id:"status", 				header:"실행",	adjust:true},
 								{id:"id", 					header:"ID",	adjust:true},
@@ -113,7 +113,7 @@ webix.ready(function(){
 							scroll:true,
 							clipboard:"selection",
 							on:{"onItemClick":function(){
-								incident_alarm_popup(this.getSelectedItem());
+								sr_data_request_popup(this.getSelectedItem());
 							}}
 						}
 					}

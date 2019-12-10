@@ -9,8 +9,8 @@ var adminMenuLazyLoading = function(){
     			$$("menu").getBody().data.add({id: 5, value: null, 				icon: null, 			func: null},						4);
     			$$("menu").getBody().data.add({id: 6, value: " 관리자 메뉴", 		icon: "cog", 			func: null},						5);
         		$$("menu").getBody().data.add({id: 7, value: " Database 관리", 	icon: "database", 		func: "adminDatabaseListPopup"},	6);
-        		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 			icon: "user", 			func: "adminMemberListPopup"},		7);
-        		$$("menu").getBody().data.add({id: 9, value: " 메일서버 설정", 		icon: "send",			func: "adminConfigMailServerPopup"},8);       		
+        		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 		icon: "user", 			func: "adminMemberListPopup"},		7);
+        		$$("menu").getBody().data.add({id: 9, value: " 메일서버 설정", 	icon: "send",			func: "adminConfigMailServerPopup"},8);
         		$$("menu").getBody().data.add({id: 10,value: " 관리자 메세지 전송", 	icon: "mail-reply",		func: "adminSendMessagePopup"},		9);
     		}
 		}
@@ -617,16 +617,16 @@ var adminModifyMemberPopup = function(memberId){
         				});
         			}}
         		]},
-        		{ id:"id", 						view:"text", 	type:"hidden",		height:0,		name:"id"										},
-        		{ id:"loginId", 				view:"text", 	label:'로그인ID', 	labelWidth:100, name:"loginId",	 		readonly:true			},
-        		{ id:"password", 				view:"text", 	label:'패스워드', 		labelWidth:100, name:"password",		type:"password"			},
+        		{ id:"id", 						view:"text", 	type:"hidden",		height:0,		name:"id"											},
+        		{ id:"loginId", 				view:"text", 	label:'로그인ID', 	labelWidth:100, name:"loginId",	 			readonly:true			},
+        		{ id:"password", 				view:"text", 	label:'패스워드', 	labelWidth:100, name:"password",			type:"password"			},
         		{ id:"password_repeat",			view:"text", 	label:'패스워드 재입력', labelWidth:100, name:"password_repeat",	type:"password"			},
-        		{ id:"teamName", 				view:"text", 	label:'팀명', 		labelWidth:100, name:"teamName" 								},
-        		{ id:"name", 					view:"text", 	label:'성명', 		labelWidth:100, name:"name" 									},
-        		{ id:"mobileNumber",			view:"text", 	label:'핸드폰 번호',	labelWidth:100, name:"mobileNumber" 							},
-        		{ id:"passwordQuestion", 		view:"text", 	label:'비밀번호질문', 	labelWidth:100, name:"passwordQuestion" 						},
-        		{ id:"passwordAnswer", 			view:"text", 	label:'비밀번호답변', 	labelWidth:100, name:"passwordAnswer" 							},
-        		{ id:"authType", 				view:"select",	label:'회원 권한', 		labelWidth:100, name:"authType",		options:authtypeList 	},
+        		{ id:"teamName", 				view:"text", 	label:'팀명', 		labelWidth:100, name:"teamName" 									},
+        		{ id:"name", 					view:"text", 	label:'성명', 		labelWidth:100, name:"name" 										},
+        		{ id:"mobileNumber",			view:"text", 	label:'핸드폰 번호',	labelWidth:100, name:"mobileNumber" 								},
+        		{ id:"passwordQuestion", 		view:"text", 	label:'비밀번호질문', 	labelWidth:100, name:"passwordQuestion" 							},
+        		{ id:"passwordAnswer", 			view:"text", 	label:'비밀번호답변', 	labelWidth:100, name:"passwordAnswer" 								},
+        		{ id:"authType", 				view:"select",	label:'회원 권한', 	labelWidth:100, name:"authType",			options:authtypeList 	},
         		{
                 	id:"select_database_use_member_database_view",
                 	view:"datatable",
@@ -645,7 +645,7 @@ var adminModifyMemberPopup = function(memberId){
 	    			select:"row",
 	    			resizeColumn:true,
 	    			autowidth:true,
-	    			autoheight:true,
+	    			height:300,
 					scroll:"y",
 	    			data:[],
 	    			on:{

@@ -29,33 +29,37 @@ import javax.validation.constraints.NotNull;
 public class SrDataConditionVo extends AbstractVo {
     private static final long serialVersionUID = 5819461541350812217L;
 
-    @ApiModelProperty(dataType = "Long", value="검색 조건 ID")
+    @ApiModelProperty(dataType = "Long", value = "검색 조건 ID")
     private Long id;
 
-    @ApiModelProperty(dataType = "String", value="where")
+    @ApiModelProperty(dataType = "String", value = "where")
     private String whereSql;
 
-    @ApiModelProperty(dataType = "String", value="검색 조건 명")
+    @ApiModelProperty(dataType = "String", value = "whereKey")
+    private String whereSqlKey;
+
+    @ApiModelProperty(dataType = "String", value = "검색 조건 명")
     private String name;
 
-    @ApiModelProperty(dataType = "String", value="검색 조건 변수 명")
+    @ApiModelProperty(dataType = "String", value = "검색 조건 변수 명")
     private String key;
 
-    @ApiModelProperty(dataType = "DataType", value="데이터 타입")
+    @ApiModelProperty(dataType = "DataType", value = "데이터 타입")
     private DataType type;
 
-    @ApiModelProperty(dataType = "String", value="검색 조건 기본 값")
+    @ApiModelProperty(dataType = "String", value = "검색 조건 기본 값")
     private String value;
 
-    @ApiModelProperty(dataType = "String", value="필수값 여부")
+    @ApiModelProperty(dataType = "String", value = "필수값 여부")
     private YN required;
 
     public SrDataConditionVo() {
     }
 
-    public SrDataConditionVo(Long id, String whereSql, String name, String key, DataType type, String value, YN required) {
+    public SrDataConditionVo(Long id, String whereSql, String whereSqlKey, String name, String key, DataType type, String value, YN required) {
         this.id = id;
         this.whereSql = whereSql;
+        this.whereSqlKey = whereSqlKey;
         this.name = name;
         this.key = key;
         this.type = type;
@@ -77,6 +81,14 @@ public class SrDataConditionVo extends AbstractVo {
 
     public void setWhereSql(String whereSql) {
         this.whereSql = whereSql;
+    }
+
+    public String getWhereSqlKey() {
+        return whereSqlKey;
+    }
+
+    public void setWhereSqlKey(String whereSqlKey) {
+        this.whereSqlKey = whereSqlKey;
     }
 
     public String getName() {

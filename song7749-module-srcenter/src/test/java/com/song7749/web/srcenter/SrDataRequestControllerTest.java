@@ -27,6 +27,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,11 +38,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import javax.servlet.http.Cookie;
+import javax.sql.DataSource;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.song7749.util.LogMessageFormatter.format;
 import static org.castor.util.Base64Encoder.encode;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -51,6 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 public class SrDataRequestControllerTest extends ControllerTest {
 
     Logger logger = LoggerFactory.getLogger(getClass());
@@ -83,15 +88,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
             , "123-123-1234");
 
     // 테스트를 위한 DB 등록
-    Database database = new Database(
-            "jdbc:h2:file:~/dbclient",
-            "DB CLIENT DB",
-            "PUBLIC",
-            "sa",
-            "",
-            DatabaseDriver.H2,
-            Charset.UTF8,
-            "");
+    Database database;
 
     MemberVo vo;
     Cookie cookie;
@@ -99,6 +96,16 @@ public class SrDataRequestControllerTest extends ControllerTest {
 
     @Before
    public void setup() throws Exception{
+        database = new Database(
+                "jdbc:h2:file:~/dbclient_test",
+                "DB CLIENT DB",
+                "PUBLIC",
+                "sa",
+                "",
+                DatabaseDriver.H2,
+                Charset.UTF8,
+                "");
+
         // 테스트를 위한 회원 등록
         vo = memberManager.addMemeber(dto);
         // 테스트를 위한 database 등록
@@ -150,6 +157,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
                 .param("databaseId",            database.getId().toString())
                 .param("memberId",              vo.getId().toString())
                 .param("conditionWhereSql",     conditionWhereSqls[0],conditionWhereSqls[1])
+                .param("conditionWhereSqlKey",  "{SQL1}","{SQL2}")
                 .param("conditionName",         "회원번호","상명")
                 .param("conditionKey",          "{member_id}","{name}")
                 .param("conditionType",         "STRING","STRING")
@@ -181,13 +189,13 @@ public class SrDataRequestControllerTest extends ControllerTest {
        Pageable page = PageRequest.of(0, 10);
        Page<SrDataRequestVo> voPages = srDataReqeustService.find(new SrDataRequestFindDto(), page);
        srDataRequestVo = voPages.getContent().get(0);
-       logger.info(LogMessageFormatter.format("{}", "SrDAtaRequestVo Print"), voPages.getContent().get(0));
+       logger.info(format("{}", "SrDAtaRequestVo Print"), voPages.getContent().get(0));
 
     }
 
     public void modifyBeforeConfirm() throws Exception {
 
-        String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 and 1=1 ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
+        String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 {SQL1} {SQL2} {SQL3}","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
         String[] conditionWhereSqls = {
                 new String(encode(URLEncoder.encode("AND member_id='{member_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
                 new String(encode(URLEncoder.encode("AND login_id='{login_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
@@ -205,11 +213,12 @@ public class SrDataRequestControllerTest extends ControllerTest {
                 .param("databaseId",            database.getId().toString())
                 .param("memberId",              vo.getId().toString())
                 .param("conditionWhereSql",     conditionWhereSqls[0],conditionWhereSqls[1],conditionWhereSqls[2])
+                .param("conditionWhereSqlKey",  "{SQL1}","{SQL2}","{SQL3}")
                 .param("conditionName",         "회원번호","로그인ID","성명")
                 .param("conditionKey",          "{member_id}","{login_id}","{name}")
                 .param("conditionType",         "STRING","STRING","STRING")
                 .param("conditionValue",        "","","")
-                .param("conditionRequired",     "Y","Y","Y")
+                .param("conditionRequired",     "Y","Y","N")
                 .param("srDataAllowMemberIds",  vo.getId().toString(),vo.getId().toString(),vo.getId().toString())
         ;
 
@@ -290,7 +299,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
 
 
     public void list() throws Exception {
-        String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 and 1=1 ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
+        String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
         drb=get("/srDataRequest/list").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("id",                    srDataRequestVo.getId().toString())
                 .param("subject",               "상품 데이터 추출 일자별")
@@ -351,11 +360,12 @@ public class SrDataRequestControllerTest extends ControllerTest {
     }
 
     public void runNow() throws Exception {
+
         drb=get("/srDataRequest/runNow").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
-                .param("id",                    srDataRequestVo.getId().toString())
-                .param("member_id",         "8")
-                .param("login_id",            "song0002@test.com")
-                .param("name",                "testMember2")
+                .param("id",                  srDataRequestVo.getId().toString())
+                .param("member_id",           vo.getId().toString())
+                .param("login_id",            vo.getLoginId())
+                .param("name",                vo.getName())
         ;
 
         // 로그인 cookie 정보 추가
@@ -369,10 +379,33 @@ public class SrDataRequestControllerTest extends ControllerTest {
 
         responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
 
-        logger.info(LogMessageFormatter.format("{}", "SR Data Request run now Contents"), responseObject);
+        logger.info(format("{}", "SR Data Request run now Contents"), responseObject);
         // then
-        assertThat(responseObject.get("httpStatus"), equalTo(200));
-        assertThat(responseObject.get("rowCount"), equalTo(1));
-        assertThat(responseObject.get("contents"), notNullValue());
+        assertThat(responseObject.get("httpStatus"), equalTo(204));
+//        assertThat(responseObject.get("rowCount"), equalTo(1));
+//        assertThat(responseObject.get("contents"), notNullValue());
+
+
+        drb=get("/srDataRequest/runNow").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
+                .param("id",                  srDataRequestVo.getId().toString())
+                .param("member_id",           vo.getId().toString())
+                .param("login_id",            vo.getLoginId())
+        ;
+
+        // 로그인 cookie 정보 추가
+        drb.cookie(cookie);
+
+        // when
+        result = mvc.perform(drb)
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+        logger.info(format("{}", "SR Data Request run now Contents"), responseObject);
+        // then
+        assertThat(responseObject.get("httpStatus"), equalTo(204));
+
     }
 }

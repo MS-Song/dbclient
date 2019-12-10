@@ -130,13 +130,13 @@ public class InitDBclientConfigBean {
 		logger.info(format("{}", "Database Datasource"),hikariCP);
 		if(null!=hikariCP) {
 			// 데이터베이스 드라이버 명칭을 검색 한다.
-			String DatabaseName = null;
+			String databaseName = null;
 
 			try {
-				DatabaseName=hikariCP.getConnection().getMetaData().getDatabaseProductName();
-				logger.trace(format("{}", "Database Name"),DatabaseName);
+				databaseName=hikariCP.getConnection().getMetaData().getDatabaseProductName();
+				logger.trace(format("{}", "Database Name"),databaseName);
 			} catch (SQLException e) {
-				logger.error(format("{}", "Database Name Fail"),DatabaseName);
+				logger.error(format("{}", "Database Name Fail"),databaseName);
 			}
 
 			if(logger.isTraceEnabled()) {
@@ -178,7 +178,7 @@ public class InitDBclientConfigBean {
 			logger.info(format("{}", "DBClient Database Add Complete"),map);
 
 
-			if("H2".endsWith(DatabaseName)) {
+			if("H2".endsWith(databaseName)) {
 				// comment 입력
 				String[] comments = {
 						 "COMMENT ON TABLE DATABASE_INFO IS 'Database 연결 정보'"

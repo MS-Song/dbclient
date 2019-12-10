@@ -1,5 +1,6 @@
 package com.song7749.srcenter.value;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.song7749.common.AbstractVo;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
@@ -9,7 +10,10 @@ import com.song7749.member.value.MemberVo;
 import com.song7749.srcenter.type.DownloadLimitType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.List;
 
@@ -34,28 +38,30 @@ import java.util.List;
 public class SrDataRequestVo extends AbstractVo {
     private static final long serialVersionUID = -1230258023827961792L;
 
-    @ApiModelProperty(value="No", position = 1, dataType = "INT")
+    @ApiModelProperty(value="번호", position = 1, dataType = "INT")
     private Long id;
 
     @ApiModelProperty(value="제목", position = 2, dataType = "String")
     private String subject;
 
-    @ApiModelProperty(value="Run SQL", position = 3, dataType = "String")
+    @ApiModelProperty(value="Run SQL", position = 3, dataType = "String", hidden = true)
     private String runSql;
 
-    @ApiModelProperty(value="다운로드 제한", position = 4, dataType = "INT")
+    @ApiModelProperty(value="다운로드 제한", position = 4, dataType = "INT", hidden = true)
     private Integer downloadLimit;
 
-    @ApiModelProperty(value="다운로드 회수", position = 5, dataType = "INT")
+    @ApiModelProperty(value="다운로드 회수", position = 5, dataType = "INT", hidden = true)
     private Integer downloadCount;
 
-    @ApiModelProperty(value="다운로드 제한 기간", position = 6, dataType = "DownloadLimitType")
+    @ApiModelProperty(value="다운로드 제한 기간", position = 6, dataType = "DownloadLimitType", hidden = true)
     private DownloadLimitType downloadLimitType;
 
-    @ApiModelProperty(value="다운로드 가능 기간", position = 7, dataType = "Date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+    @ApiModelProperty(value="다운로드 가능 기간", position = 7, dataType = "Date", hidden = true)
     private Date downloadStartDate;
 
-    @ApiModelProperty(value="다운로드 가능 기간", position = 8, dataType = "Date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+    @ApiModelProperty(value="다운로드 가능 기간", position = 8, dataType = "Date", hidden = true)
     private Date downloadEndDate;
 
     @ApiModelProperty(value="동작성태", position = 9, dataType = "YN")
@@ -64,30 +70,34 @@ public class SrDataRequestVo extends AbstractVo {
     @ApiModelProperty(value="승인상태", position = 10, dataType = "YN")
     private YN confirmYN;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     @ApiModelProperty(value="생성일", position = 11, dataType = "Date")
     private Date createDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     @ApiModelProperty(value="승인일", position = 12, dataType = "Date")
     private Date confirmDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     @ApiModelProperty(value="마지막 실행일", position = 13, dataType = "Date")
     private Date lastRunDate;
 
     @ApiModelProperty(value="마지막 에러메세지", position = 14, dataType = "String")
     private String lastErrorMessage;
 
-    @ApiModelProperty(value="Database", position = 15, dataType = "DatabaseVo")
+    @ApiModelProperty(value="Database", position = 15, dataType = "DatabaseVo", hidden = true)
     private DatabaseVo databaseVo;
 
-    @ApiModelProperty(value="등록자", position = 16, dataType = "MemberVo")
+    @ApiModelProperty(value="등록자", position = 16, dataType = "MemberVo", hidden = true)
     private MemberVo resistMemberVo;
 
-    @ApiModelProperty(value="승인자", position = 17, dataType = "MemberVo")
+    @ApiModelProperty(value="승인자", position = 17, dataType = "MemberVo", hidden = true)
     private MemberVo confirmMemberVo;
 
-    @ApiModelProperty(value="SQL 조건", position = 18, dataType = "SrDataConditionVo")
+    @ApiModelProperty(value="SQL 조건", position = 18, dataType = "SrDataConditionVo", hidden = true)
     private List<SrDataConditionVo> srDataConditionVos;
 
+    @ApiModelProperty(value="허용된 사용자", position = 16, dataType = "MemberVo", hidden = true)
     private List<Long> srDataAllowMemberIds;
 
     public SrDataRequestVo() { }

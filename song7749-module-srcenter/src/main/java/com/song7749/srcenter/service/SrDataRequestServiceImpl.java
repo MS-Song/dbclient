@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,8 +70,9 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
     @Autowired
     private DBclientManager dbClientManager;
 
-    @Override
     @Validate(nullable = false)
+    @Transactional
+    @Override
     public SrDataRequestVo add(SrDataRequestAddDto dto) {
 
         // 파라메터 검증
@@ -105,11 +107,12 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         for(int i=0;i<dto.getConditionKey().size();i++){
             String key = dto.getConditionKey().get(i);
             String whereSql = dto.getConditionWhereSql().get(i);
+            String whereSqlKey = dto.getConditionWhereSqlKey().get(i);
             String value = dto.getConditionValue().get(i);
             String name = dto.getConditionName().get(i);
             DataType type = dto.getConditionType().get(i);
             YN required = dto.getConditionRequired().get(i);
-            conditions.add(new SrDataCondition(whereSql, name, key, type, value, required, sdr));
+            conditions.add(new SrDataCondition(whereSql, whereSqlKey, name, key, type, value, required, sdr));
         }
         // condition 저장
         sdr.setSrDataConditions(conditions);
@@ -124,6 +127,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                 .getSrDataRequestVo(mapper);
     }
 
+    @Transactional
     @Override
     public SrDataRequestVo modify(SrDataRequestModifyBeforeConfirmDto dto) {
         // 파라메터 검증
@@ -156,11 +160,12 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         for(int i=0;i<dto.getConditionKey().size();i++){
             String key = dto.getConditionKey().get(i);
             String whereSql = dto.getConditionWhereSql().get(i);
+            String whereSqlKey = dto.getConditionWhereSqlKey().get(i);
             String value = dto.getConditionValue().get(i);
             String name = dto.getConditionName().get(i);
             DataType type = dto.getConditionType().get(i);
             YN required = dto.getConditionRequired().get(i);
-            conditions.add(new SrDataCondition(whereSql, name, key, type, value, required, sdr));
+            conditions.add(new SrDataCondition(whereSql, whereSqlKey, name, key, type, value, required, sdr));
         }
         // condition 저장
         sdr.setSrDataConditions(conditions);
@@ -173,6 +178,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                 .getSrDataRequestVo(mapper);
     }
 
+    @Transactional
     @Override
     public SrDataRequestVo modify(SrDataRequestModifyAfterConfirmDto dto) {
         // 기 입력된 데이터를 로딩
@@ -197,6 +203,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                 .getSrDataRequestVo(mapper);
     }
 
+    @Transactional
     @Override
     public void confirm(SrDataRequestConfirmDto dto) {
         // 기 입력된 데이터를 로딩
@@ -223,6 +230,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         srDataRequestRepository.saveAndFlush(sdr);
     }
 
+    @Transactional
     @Override
     public void remove(SrDataRequestRemoveDto dto) {
         // 기 입력된 데이터를 로딩
@@ -240,6 +248,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         srDataRequestRepository.delete(optionalSrDataRequest.get());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<SrDataRequestVo> find(SrDataRequestFindDto dto, Pageable page) {
         Page<SrDataRequest> pages = srDataRequestRepository.findAll(dto, page);
@@ -251,6 +260,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         });
     }
 
+    @Transactional(readOnly = true)
     @Override
     public SrDataRequestVo find(SrDataRequestFindDto dto) {
         Optional<SrDataRequest> oSrDataRequest = srDataRequestRepository.findById(dto.getId());
@@ -260,6 +270,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         return oSrDataRequest.get().getSrDataRequestVo(mapper);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public MessageVo runSql(SrDataRequestRunDto dto, HttpServletRequest request) {
         // 대상 요청을 조회 한다.
@@ -274,19 +285,26 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
 
         // 쿼리 문자열을 조건으로 변경 한다.
         for(SrDataCondition sdc : srDataRequest.getSrDataConditions()){
-            // servlet request 에서 원하는 value 를 찾아 설정 한다.
+            // whereKey 를 치환 한다.
+            String whereSqlKey = sdc.getWhereSqlKey().replace("{", "").replace("}", "");
+            // 값에 해당하는 키를 찾는다.
             String key = sdc.getKey().replace("{", "").replace("}", "");
+            // 서블릿에서 해당 값이 있는지 찾는다.
             String value = request.getParameter(key);
 
             // 필수값 이고, Value 가 없을 경우에는 Exception 발생.
             if(sdc.getRequired().equals(YN.Y) && StringUtils.isBlank(value)){
                 throw new IllegalArgumentException(sdc.getName() + " 조건이 입력되지 않았습니다. 조건을 입력해 주세요");
             }
+
             // value 가 입력된 경우에만 where 를 추가 한다.
             if(StringUtils.isNotBlank(value)){
-                // 현재 SQL 구문에 Where 포함 값을 추가 한다.
-                sql+= " " + sdc.getWhereSql();
+                // where 를 해당 위치로 치환 한다.
+                sql = StringUtils.replacePatten("\\{"+ whereSqlKey.toLowerCase()+"\\}",sdc.getWhereSql().toLowerCase(), sql.toLowerCase());
+                // value 를 치환한다.
                 sql = StringUtils.replacePatten("\\{"+ key.toLowerCase()+"\\}",value, sql.toLowerCase());
+            } else { // value 가 추가되지 않을 경우에는 whereKey 를 제거 한다.
+                sql = StringUtils.replacePatten("\\{"+ whereSqlKey.toLowerCase()+"\\}","", sql.toLowerCase());
             }
         }
 
@@ -318,6 +336,10 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         }
 
         return dbClientManager.executeQuery(excuteDto);
+    }
+
+    private void generateSql(){
+
     }
 
     private void conditionValidate(Object dto){

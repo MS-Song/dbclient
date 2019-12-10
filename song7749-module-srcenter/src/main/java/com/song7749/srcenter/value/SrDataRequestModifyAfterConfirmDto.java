@@ -42,7 +42,7 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
     private Long id;
 
     @Size(min=8,max=200)
-    @ApiModelProperty(required = false, position = 2, dataType = "String", value="SQL || 실행할 SQL 을 작성하고 검색 조건에 매치되는 파라메터를 ${변수명} 형식으로 입력")
+    @ApiModelProperty(required = true, position = 2, dataType = "String", value="제목 || 최대한 현업 담당자와 커뮤니케이션이 원활하도록 작성 EX) [서비스명] 구체적인 내용 ")
     private String subject;
 
     @ApiModelProperty(required = false, position = 3, dataType = "String", value="작동여부 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
