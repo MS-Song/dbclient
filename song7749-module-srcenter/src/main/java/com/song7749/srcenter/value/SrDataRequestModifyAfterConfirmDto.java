@@ -45,7 +45,7 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
     @ApiModelProperty(required = true, position = 2, dataType = "String", value="제목 || 최대한 현업 담당자와 커뮤니케이션이 원활하도록 작성 EX) [서비스명] 구체적인 내용 ")
     private String subject;
 
-    @ApiModelProperty(required = false, position = 3, dataType = "String", value="작동여부 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
+    @ApiModelProperty(required = false, position = 3, dataType = "String", value="동작상태 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
     private YN enableYN;
 
     @ApiModelProperty(required = false, position = 3, dataType = "String", value="다운로드 제한 숫자 || 월/주/일/시간 당 다운로드 허용 횟수")
@@ -68,7 +68,7 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
     @ApiModelProperty(required = true, position = 7, dataType = "Date", value="데이터베이스 선택")
     private Long databaseId;
 
-    @ApiModelProperty(required=false, position=13, value="사용허용자 || 해당 기능의 사용이 허용된 사용자 선택")
+    @ApiModelProperty(required=false, position=13, value="허용 사용자 || 해당 기능의 사용이 허용된 사용자 선택")
     private List<Long> srDataAllowMemberIds;
 
     @ApiModelProperty(required=true, position=8, hidden=true, value="수정자 ID")

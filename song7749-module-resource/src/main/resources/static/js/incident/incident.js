@@ -1,7 +1,7 @@
 // 사용 가능한 데이터베이스 로딩
-var useDatabaseOptions = [];
-var useAllDatabaseOptions = [];
-var useDatabaseOptionsCreator = function(){
+let useDatabaseOptions = [];
+let useAllDatabaseOptions = [];
+let useDatabaseOptionsCreator = function(){
 	// 사용자 접근 가능 Database
 	webix.ajax().get("/database/list",{accessAll:false},function(text,data){
 		if(data.json().httpStatus ==200 
@@ -74,7 +74,7 @@ var search_form_creator = function(){
 	
 	elementsList.push({
 		cols:[{
-			id:"incident_alarm_search_rest",
+			id:"incident_alarm_search_reset",
 			view:"button",
 			value:"리셋",
 			on:{"onItemClick":function(){

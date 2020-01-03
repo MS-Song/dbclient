@@ -12,6 +12,6 @@ dependencies {
 	compile project(':song7749-module-common')
 	compile project(':song7749-module-utils')
 	compile project(':song7749-module-web')
-	compile project(':song7749-module-resource').sourceSets
+	compile project(':song7749-module-resource')
 	testCompile project(':song7749-module-test').sourceSets.test.output
 }

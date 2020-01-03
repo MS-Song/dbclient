@@ -1,7 +1,7 @@
 // 사용 가능한 데이터베이스 로딩
-var useDatabaseOptions = [];
-var useAllDatabaseOptions = [];
-var useDatabaseOptionsCreator = function(){
+let useDatabaseOptions = [];
+let useAllDatabaseOptions = [];
+let useDatabaseOptionsCreator = function(){
 
 	// 사용자 접근 가능 Database
 	webix.ajax().get("/database/list",{accessAll:false},function(text,data){
@@ -24,7 +24,7 @@ var useDatabaseOptionsCreator = function(){
 		}
 	});
 
-	// 전체 데이터베이스 --> 승인 이후에 사용함
+	// 전체 데이터베이스 --> 관리자만 사용 가능함
 	webix.ajax().get("/database/list",{accessAll:true},function(text,data){
 		if(data.json().httpStatus ==200 
 				&& null!=data.json().contents){	
@@ -44,8 +44,6 @@ var useDatabaseOptionsCreator = function(){
 			webix.message({ type:"error", text:data.json().message});
 		}
 	});
-
-	
 }
 useDatabaseOptionsCreator();
 
@@ -53,18 +51,18 @@ useDatabaseOptionsCreator();
 var search_form_creator = function(){
 	// 검색 조건 doc 로딩
 	let searchParams = swaggerApiDocs.paths['/srDataRequest/list'].get.parameters;
-	let elementsList = [];
+	let elementList = [];
 
 	// 검색 조건 로딩
 	$.each(searchParams,function(index,param){
 		// 제외 문자열
 		if($.inArray(param.name,excludeParams) == -1) {
-			elementsList.push(getFromView(param,false,false));
+			elementList.push(createWebForm(param,false,false));
 		}
 	});
 	
 	// 페이지 element 추가
-	elementsList.push({ 
+	elementList.push({
 		id:"sr_data_request_search_page",
 		view:"text", 	
 		name:"page",
@@ -74,9 +72,9 @@ var search_form_creator = function(){
 		width:0,
 	});
 	
-	elementsList.push({
+	elementList.push({
 		cols:[{
-			id:"sr_data_request_search_rest",
+			id:"sr_data_request_search_reset",
 			view:"button",
 			value:"리셋",
 			on:{"onItemClick":function(){
@@ -84,6 +82,7 @@ var search_form_creator = function(){
 			}}
 		}, {
 			id:"sr_data_request_search_form_commit",
+
 			view:"button",
 			value:"검색",
 			on:{"onItemClick":function(){
@@ -97,13 +96,13 @@ var search_form_creator = function(){
 	});	
 
 	// eleements 추가
-	for(let index in elementsList){
-		$$("sr_data_request_search_form").addView(elementsList[index]);
+	for(let index in elementList){
+		$$("sr_data_request_search_form").addView(elementList[index]);
 	}
 }
 
 /**
- * 알람 리스트
+ *  리스트
  */
 var sr_data_request_list_create = function(){
 	// 리스트에서 표시할 데이터를 가져온다.
@@ -157,38 +156,45 @@ var swaggerlazyLoading = function(){
 	} else {
 		// 검색창 호출
 		search_form_creator();
-		// 알람 리스트 조회 호출
+		//  리스트 조회 호출
 		sr_data_request_list_create();
 	}
 }
 
 // 항목 로딩
 webix.ready(function(){
-	// 검색창과, 알람 리스트 지연 호출
+	// 검색창과,  리스트 지연 호출
 	swaggerlazyLoading();
 });
 
 
 /**
- * 알람 등록 팝업
+ * 등록 팝업
  */
-var sr_data_request_popup = function(requestItem){
+let sr_data_request_popup = function(requestItem){
 	webix.ui({
 	    view:"window",
 	    id:"sr_data_request_popup",
-		width:950,
-		autoheight:true,
-		minHeight:400,
+		width:'100%',
+		height:'100%',
 	    position:"center",
 	    modal:true,
 	    head:(undefined==requestItem ? "ADD" : "Modify")+" SR Data Request",
-	    body:{
-	    	id:"sr_data_request_form",
-	    	view:"form",
-	    	borderless:true,
-	    	elements: [],
-	    	scroll:"y",
-	    }
+	    body:{ cols:[
+	    	{
+				id:"sr_data_request_form_left",
+				view:"form",
+				borderless:true,
+				elements: []
+			},
+			{
+				id:"sr_data_request_form_right",
+				view:"form",
+				borderless:true,
+				elements: [],
+				scroll:"y"
+			},
+		]},
 	}).show();
 
 	// form 생성
@@ -196,12 +202,81 @@ var sr_data_request_popup = function(requestItem){
 }
 
 /**
- * 알람 팝업 elements 생성
+ * 팝업 elements 생성
  */
 var sr_data_request_form_creator = function(requestItem){
-	let path='';
-	let formParams=[];
-	let elementsList = [];
+	let path='';							// swagger path
+	let formParams=[];						// swagger form parameters
+	let elementList = [];					// request from elements
+	let dynamicElements = [];				// dynamic form elements
+
+	// buttons
+	let buttonCancel = { // 취소
+		view:"button", value:"취소", click:function() {
+			$$("sr_data_request_popup").hide();
+		} ,hotkey: "esc"
+	};
+
+	let buttonAddConditions = { // 조건 추가
+		view:"button", value:"조건 추가 >> ", click:function() {
+			$$("sr_data_request_form_right").addView({
+				view:"fieldset",
+				label:"SQL Condition Info",
+				body:{cols:[
+						{
+							rows: webix.copy(dynamicElements)
+						},
+						{
+							width:50,
+							view:"button",
+							value:"삭제", click:function() {
+								let removeID = this.getParentView().getParentView().config.id;
+								$$("sr_data_request_form_right").removeView(removeID);
+							}
+						}]
+				}
+			});
+		}
+	};
+
+	let buttonResist = { // 등록
+		view:"button", value:"등록", click:function(){
+			// 왼쪽 뷰의 데이터 정리
+			let addLeftParameter = $$("sr_data_request_form_left").getValues();
+			addLeftParameter.runSql = window.btoa(encodeURIComponent(addLeftParameter.runSql));
+
+			// 오른쪽 폼은 멀티플 데이터 이다.
+			let addRightParameter = $$("sr_data_request_form_right").getValues();
+			$.each(addRightParameter,function(name){
+				let paramViews = $$("sr_data_request_form_right").queryView({name:name},'all')
+				let values = []
+				$.each(paramViews,function(index){
+					let currentValue = "";
+					// sql 은 인코딩 처리 한다.
+					if(name=="conditionWhereSql"){
+						currentValue = window.btoa(encodeURIComponent(this.getValue()));
+					} else {
+						currentValue = this.getValue();
+					}
+					// 원본 값이 undefined 인 경우에는 공백으로 전송 한다.
+					values.push(this.getValue() == "undefined" ? "" : currentValue);
+				});
+				addLeftParameter[name] = values.join(",");
+			});
+
+			webix.ajax().post(path, addLeftParameter, function(text,data){
+				if(data.json().httpStatus==200){
+					webix.message(data.json().message);
+					$$("sr_data_request_popup").hide();
+					sr_data_request_list_create();
+				} else {
+					webix.message({ type:"error", text:data.json().message });
+				}
+			});
+		}
+	};
+
+
 
 	if(undefined==requestItem){ // 신규 등록
 		// path 기록
@@ -212,57 +287,53 @@ var sr_data_request_form_creator = function(requestItem){
 		$.each(formParams,function(index,param){
 			// 제외 문자열
 			if($.inArray(param.name,excludeParams) == -1) {
+				// console.log(param);
 				// DB 선택을 맨 위로
 				if(param.name.toLowerCase().indexOf("databaseid") >=0){
-					elementsList.unshift(getFromView(param,true,false));
-				} else {
-					elementsList.push(getFromView(param,true,false));
+					elementList.unshift(createWebForm(param,true,false));
+				}
+				// 배열이면서, 컨디션인 경우에만..
+				else if(param.type=="array" && param.name.toLowerCase().indexOf("condition") >= 0){
+					dynamicElements.push(createWebForm(param,true,false));
+				}
+				// 그 외
+				else {
+					elementList.push(createWebForm(param,true,false));
 				}
 			}
 		});
-		// 신규 등록 버튼 추가
-		elementsList.push({
-			cols:[{
-					view:"button", value:"취소", click:function() { // 취소
-						$$("sr_data_request_popup").hide();	
-					} ,hotkey: "esc"
-				},{
-					view:"button", value:"등록", click:function(){// 등록
-						let addAlaramParameter = $$("sr_data_request_form").getValues();
-						addAlaramParameter.runSql = window.btoa(encodeURIComponent(addAlaramParameter.runSql));
-						webix.ajax().post(path, addAlaramParameter, function(text,data){
-							if(data.json().httpStatus==200){
-								webix.message(data.json().message);
-								$$("sr_data_request_popup").hide();
-								sr_data_request_list_create();
-							} else {
-								webix.message({ type:"error", text:data.json().message });
-							}
-						});
-					}
-				}
-			] // end cols
+		// 구역 구분
+		elementList.unshift({ template:"SR Request INFO", type:"section"});
+
+		// 버튼 추가
+		elementList.push({
+			cols:[buttonCancel,buttonResist,buttonAddConditions]
 		});
-		
-		// eleements 추가
-		for(let index in elementsList){
-			$$("sr_data_request_form").addView(elementsList[index]);	
+
+		// elements left 추가
+		for(let index in elementList){
+			$$("sr_data_request_form_left").addView(elementList[index]);
 		}
 
 	} else { // 수정
-		// console.log(requestItem);
-		// detail parameter 설정
-		let pDetailVo=swaggerApiDocs.definitions['SR DATA REQUEST MODEL'].properties;
+		// 객체 모델
+		let pSrRequest=swaggerApiDocs.definitions['SR DATA REQUEST MODEL'].properties;
+		let pSrRequestCondition=swaggerApiDocs.definitions['SR Data Request 검색 조건'].properties;
+
+		console.log(pSrRequest);
+		console.log(pSrRequestCondition);
+
 		// parameter 형식으로 변경 한다.
 		let pDetail = [];
-		$.each(pDetailVo, function(name,value){
+
+		$.each(pSrRequest, function(name,value){
 			pDetail.push({
 				name:name,
 				description:value.description,
 			});
 		});
 		
-		// moidfy able parameter 설정
+		// modify able parameter 설정
 		let pModify={};
 		// confirm 상태 확인하여 수정범위 지정
 		if(requestItem.confirmYN == "Y"){
@@ -289,24 +360,17 @@ var sr_data_request_form_creator = function(requestItem){
 				});
 
 				if(null!=modifyParam){
-					elementsList.push(getFromView(modifyParam,true,false));	
+					elementList.push(createWebForm(modifyParam,true,false));
 				} else {
-					elementsList.push(getFromView(param,true,true));
+					elementList.push(createWebForm(param,true,true));
 				}
 			}
 		});
 		
-		// 취소 버튼
-		let cancelButton={
-			view:"button", value:"취소", click:function() { // 취소
-				$$("sr_data_request_popup").hide();	
-			} ,hotkey: "esc"
-		}
-
 		// 즉시 실행 버튼
 		let runNow = {
-			view:"button", value:"즉시 실행-전체구성원에게 메일 발송", click:function(){
-				webix.ajax().put('/alarm/runNow',{id:requestItem.id,test:"false"}, function(text,data){
+			view:"button", value:"즉시 실행", click:function(){
+				webix.ajax().put('/srDataRequest/runNow',{id:requestItem.id,test:"false"}, function(text,data){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 					} else {
@@ -318,8 +382,8 @@ var sr_data_request_form_creator = function(requestItem){
 		
 		// 테스트 실행 
 		let runTest = {
-			view:"button", value:"테스트 실행-본인에게만 메일 발송", click:function(){
-				webix.ajax().put('/alarm/runNow',{id:requestItem.id,test:"true"}, function(text,data){
+			view:"button", value:"SQL 생성 테스트", click:function(){
+				webix.ajax().put('/srDataRequest/runNow',{id:requestItem.id,test:"true"}, function(text,data){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 					} else {
@@ -350,7 +414,7 @@ var sr_data_request_form_creator = function(requestItem){
 		// 승인 요청
 		let confirmRequestButton={
 			view:"button", value:"승인요청", click:function(){// 승인요청
-				webix.ajax().put('/alarm/confirmRequest', {id : requestItem.id}, function(text,data){
+				webix.ajax().put('/srDataRequest/confirmRequest', {id : requestItem.id}, function(text,data){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("sr_data_request_popup").hide();
@@ -365,7 +429,7 @@ var sr_data_request_form_creator = function(requestItem){
 		// 승인 버튼
 		let confirmButton={
 			view:"button", value:"승인", click:function(){// 승인
-				webix.ajax().put('/alarm/confirm', {id : requestItem.id, confirmYN:"Y"}, function(text,data){
+				webix.ajax().put('/srDataRequest/confirm', {id : requestItem.id, confirmYN:"Y"}, function(text,data){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("sr_data_request_popup").hide();
@@ -380,7 +444,7 @@ var sr_data_request_form_creator = function(requestItem){
 		// 승인 취소
 		let confirmCancelButton={
 			view:"button", value:"승인취소", click:function(){
-				webix.ajax().put('/alarm/confirm', {id : requestItem.id, confirmYN:"N"}, function(text,data){
+				webix.ajax().put('/srDataRequest/confirm', {id : requestItem.id, confirmYN:"N"}, function(text,data){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("sr_data_request_popup").hide();
@@ -394,24 +458,24 @@ var sr_data_request_form_creator = function(requestItem){
 
 		// 테스트 실행 및 즉시 실행
 		if(requestItem.confirmYN == "Y"){
-			elementsList.push({cols:[runTest,runNow]});
+			elementList.push({cols:[runTest,runNow]});
 		} else {
-			elementsList.push({cols:[runTest,{}]});
+			elementList.push({cols:[runTest,{}]});
 		}
 		
 		if(requestItem.confirmYN != "Y" && member.authType=='ADMIN') { 					// 승인 버튼 노출
-			elementsList.push({cols:[cancelButton,modifyButton,confirmButton]});	
-		} else if(requestItem.confirmYN == "Y" && member.authType=='ADMIN') {				// 승인 취소 버튼
-			elementsList.push({cols:[cancelButton,modifyButton,confirmCancelButton]});
+			elementList.push({cols:[buttonCancel,modifyButton,confirmButton]});
+		} else if(requestItem.confirmYN == "Y" && member.authType=='ADMIN') {			// 승인 취소 버튼
+			elementList.push({cols:[buttonCancel,modifyButton,confirmCancelButton]});
 		}  else if(requestItem.confirmYN != "Y") {										// 승인 전 승인 요청 버튼
-			elementsList.push({cols:[cancelButton,modifyButton,confirmRequestButton]});
+			elementList.push({cols:[buttonCancel,modifyButton,confirmRequestButton]});
 		}  else {																		// 승인 후 수정
-			elementsList.push({cols:[cancelButton,modifyButton]});
+			elementList.push({cols:[buttonCancel,modifyButton]});
 		}
 
 		// eleements 추가
-		for(let index in elementsList){
-			$$("sr_data_request_form").addView(elementsList[index]);	
+		for(let index in elementList){
+			$$("sr_data_request_form_left").addView(elementList[index]);
 		}
 
 		// run log 에서 온 경우에는 Id가 다르다. -- UI 상의 문제로 변경 처리 
@@ -422,7 +486,7 @@ var sr_data_request_form_creator = function(requestItem){
 			alarmId=requestItem.id;
 		}
 		// 대상 데이터를 로딩
-		webix.ajax().get('/alarm/detail', {id:alarmId}, function(text,data){
+		webix.ajax().get('/srDataRequest/one', {id:alarmId}, function(text,data){
 			if(data.json().httpStatus==200){
 				// 설정 값
 				let values = {};
@@ -455,108 +519,6 @@ var sr_data_request_form_creator = function(requestItem){
 			}
 		});
 	}
-};
-
-/**
- * crontab schedule 확인
- */
-var crontabSchedulePopup = function(view,value){
-	webix.ui({
-	    view:"window",
-	    id:"crontab_schedule_popup",
-		width:600,
-		minHeight:500,
-		autoheight:true,
-	    position:"center",
-	    modal:true,
-	    head:{
-			id:"crontab_schedule_cansel", 	
-			view:"button", 
-			label:'Crontab 점검 팝업 닫기', 
-			click:function(){
-			    $$("crontab_schedule_popup").hide();
-			},hotkey: "esc"
-		},
-	    body:{
-	    	id:"crontab_schedule_form",
-	    	view:"form",
-	    	borderless:true,
-	    	elements: [{
-	    		rows:[{
-			    	id:"crontab_generator_url",
-			    	view: "label",
-					label: "<a href='https://www.freeformatter.com/cron-expression-generator-quartz.html' target='_blank'>crontab expression 생성기</a> (년을 제외하세요)",
-					height:25,
-					adjust:true
-	    			},{
-	    			cols:[{
-	    				id:"crontab_schedule_expression",
-	    				view:"text", 	
-	    				label:'schedule', 			
-	    				name:"schedule",
-	    				value:value,
-	    				placeholder:"* */10 * * * *",
-	    				width:250,
-	    				on:{"onKeyPress":function(key,e){// 실행
-	    					// enter 를 입력하면, 점검을 시작 한다.
-	    					if(key==13){
-	    						 $$("crontab_schedule_validate_button").callEvent("onItemClick");
-	    					}
-	    				}}
-	    			},{
-	    				id:"crontab_schedule_validate_button", 	
-	    				view:"button", 
-	    				label:'점검', 
-	    				click:function(){
-	    					webix.ajax().get("/alarm/nextSchedule",this.getFormView().getValues(),function(text,data){
-	    						if(data.json().httpStatus ==200 
-	    								&& null!=data.json().contents){	
-	    							let beforeDate = null;
-	    							
-	    							$$("crontab_schedule_list").clearAll();
-	    							$.each(data.json().contents, function(key,value){
-	    								// 시간차 구하기
-	    								let gap = "";
-	    								let runDate = new Date(value);
-	    								if(beforeDate != null){
-	    									gap = gapDate(beforeDate,runDate);
-	    								}
-	    								
-		    							$$("crontab_schedule_list").add({
-		    								"crontab_schedule_next" : formatDate(runDate)
-		    								,"crontab_schedule_gap" : gap});	    
-		    							// 이전 시간 값 설정
-		    							beforeDate=runDate;
-	    							})
-	    						} else {
-	    							webix.message({ type:"error", text:data.json().message });
-	    						}
-	    					});
-	    				}
-	    			},{
-	    				id:"crontab_schedule_accept", 	
-	    				view:"button", 
-	    				label:'적용', 
-	    				click:function(){
-    					    $$(view).setValue($$("crontab_schedule_expression").getValue());
-    					    $$("crontab_schedule_popup").hide();
-	    				}
-	    			}] // end cols
-	    		},{
-		        	id:"crontab_schedule_list",
-		        	view:"datatable",
-					tooltip:true,
-					select:"row",
-					resizeColumn:true,
-					columns:[
-						{ id:"crontab_schedule_next",	header:"다음 Crontab Schedule 리스트", width:300},
-						{ id:"crontab_schedule_gap",	header:"시간 간격", 					width:200},
-            		],
-					data:[]
-	    		}]// end rows;
-	    	}] // end elements
-	    }
-	}).show();
 };
 
 // confirm 메일을 통해 진입할 경우

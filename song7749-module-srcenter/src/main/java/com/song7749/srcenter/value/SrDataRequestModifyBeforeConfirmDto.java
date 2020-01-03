@@ -45,10 +45,10 @@ public class SrDataRequestModifyBeforeConfirmDto extends AbstractDto {
     private String subject;
 
     @Size(min=8,max=12000)
-    @ApiModelProperty(required = true, position = 2, dataType = "String", value="SQL || 실행할 SQL 을 작성하고 검색 조건에 매치되는 파라메터를 {변수명} 형식으로 입력")
+    @ApiModelProperty(required = true, position = 2, dataType = "String", value="runSQL || 실행할 SQL 을 작성하고 검색 조건에 매치되는 파라메터를 {변수명} 형식으로 입력")
     private String runSql;
 
-    @ApiModelProperty(required = false, position = 3, dataType = "YN", value="작동여부 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
+    @ApiModelProperty(required = false, position = 3, dataType = "YN", value="동작여부 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
     private YN enableYN;
 
     @ApiModelProperty(required = false, position = 3, dataType = "String", value="다운로드 제한 숫자 || 월/주/일/시간 당 다운로드 허용 횟수")
@@ -92,7 +92,7 @@ public class SrDataRequestModifyBeforeConfirmDto extends AbstractDto {
     @ApiModelProperty(required=true, position=14, value="SQL 조건 변수의 값 || where 에 바인딩 될 값 - 실행자가 검색 조건으로 입력")
     private List<YN> conditionRequired;
 
-    @ApiModelProperty(required=true, position=15, value="사용허용자 || 해당 기능의 사용이 허용된 사용자 선택")
+    @ApiModelProperty(required=true, position=15, value="허용 사용자 || 해당 기능의 사용이 허용된 사용자 선택")
     private List<Long> srDataAllowMemberIds;
 
     @ApiModelProperty(required=true, position=16, hidden=true, value="수정자 ID")

@@ -93,7 +93,7 @@ public class SrDataRequestRepositoryTest extends UnitTest {
                 "select 1 from dual",
                 0,
                 0,
-                DownloadLimitType.Daily,
+                DownloadLimitType.DAILY,
                 new Date(),
                 new Date(),
                 YN.Y,

@@ -130,7 +130,6 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 names,
                 keys,
                 types,
-                values,
                 requireds,
                 srDataAlowMemberIds);
 

@@ -13,8 +13,10 @@ import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.service.MemberManager;
 import com.song7749.member.type.AuthType;
 import com.song7749.member.value.MemberVo;
+import com.song7749.srcenter.domain.SrDataCondition;
 import com.song7749.srcenter.domain.SrDataRequest;
 import com.song7749.srcenter.repository.SrDataRequestRepository;
+import com.song7749.srcenter.type.DataType;
 import com.song7749.srcenter.type.DownloadLimitType;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -83,16 +85,26 @@ public class InitSRdataRequestConfigBean {
 
 		SrDataRequest sdr  = new SrDataRequest(
 				"[샘플] SR data Request 의 샘플 데이터 입니다. 확인 후에 사용 방법을 익히세요",
-				"select 1 from dual",
+				"select * from database where 1=1 {whereDatabaseId} {whereHost} {wherePort}",
 				0,
 				0,
-				DownloadLimitType.Daily,
+				DownloadLimitType.DAILY,
 				new Date(),
 				new Date(),
 				YN.Y,
 				currentDatabase,
 				members.get(0),
 				members);
+
+		List<SrDataCondition> conditions = Arrays.asList(new SrDataCondition[]{
+				new SrDataCondition("and datebase_id={database_id}", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.NUMBER, null, YN.Y, sdr),
+				new SrDataCondition("and host={host}", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr),
+				new SrDataCondition("and port={port}", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.Y, sdr),
+
+		});
+
+		sdr.setSrDataConditions(conditions);
+
 		srDataRequestRepository.saveAndFlush(sdr);
     }
 }

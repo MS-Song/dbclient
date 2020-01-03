@@ -7,6 +7,7 @@ import com.song7749.member.type.AuthType;
 import com.song7749.srcenter.service.SrDataReqeustService;
 import com.song7749.srcenter.value.*;
 import com.song7749.util.LogMessageFormatter;
+import com.song7749.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.castor.util.Base64Decoder;
@@ -93,6 +94,10 @@ public class SrDataRequestController {
             List<String> unwrapList = new ArrayList<String>();
             // 인코딩된 정보를 디코드 한다.
             for(String s : dto.getConditionWhereSql()){
+                // 데이터가 없을 경우 예외 처리
+                if(StringUtils.isBlank(s)){
+                    throw new IllegalArgumentException("Where 구문이 없습니다. Where 조건을 입력하시기 바랍니다. ");
+                }
                 unwrapList.add(
                     URLDecoder.decode(
                         new String(
@@ -110,7 +115,7 @@ public class SrDataRequestController {
 
     @ApiOperation(value = "Sr Data 승인 전 수정"
             ,notes = "Sr Data Request 승인 전에 수정하는 기능 "
-            ,response=MessageVo.class)
+            ,response=SrDataRequestModifyBeforeConfirmDto.class)
     @Login({AuthType.NORMAL,AuthType.ADMIN})
     @PutMapping("/modifyBeforeConfirm")
     public MessageVo modifyBeforeConfirm(HttpServletRequest request,

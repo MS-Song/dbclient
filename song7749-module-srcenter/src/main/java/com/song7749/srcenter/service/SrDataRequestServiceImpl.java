@@ -108,11 +108,10 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
             String key = dto.getConditionKey().get(i);
             String whereSql = dto.getConditionWhereSql().get(i);
             String whereSqlKey = dto.getConditionWhereSqlKey().get(i);
-            String value = dto.getConditionValue().get(i);
             String name = dto.getConditionName().get(i);
             DataType type = dto.getConditionType().get(i);
             YN required = dto.getConditionRequired().get(i);
-            conditions.add(new SrDataCondition(whereSql, whereSqlKey, name, key, type, value, required, sdr));
+            conditions.add(new SrDataCondition(whereSql, whereSqlKey, name, key, type, null, required, sdr));
         }
         // condition 저장
         sdr.setSrDataConditions(conditions);

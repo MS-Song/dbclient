@@ -538,7 +538,7 @@ var getFromView = function(param,isRightDescription=false,isDisable=false){
 	} else if (param.name.toLowerCase().indexOf("databaseid") >= 0
 				|| param.name.toLowerCase().indexOf('databasevo')>= 0){
 		let setDatabaseOptions = isDisable ? useAllDatabaseOptions : useDatabaseOptions;
-		
+
 		viewElement={
 				view:"select", 
 				label:leftDescription, 

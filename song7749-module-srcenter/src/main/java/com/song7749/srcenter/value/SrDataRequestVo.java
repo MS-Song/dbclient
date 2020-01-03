@@ -64,7 +64,7 @@ public class SrDataRequestVo extends AbstractVo {
     @ApiModelProperty(value="다운로드 가능 기간", position = 8, dataType = "Date", hidden = true)
     private Date downloadEndDate;
 
-    @ApiModelProperty(value="동작성태", position = 9, dataType = "YN")
+    @ApiModelProperty(value="동작상태", position = 9, dataType = "YN")
     private YN enableYN;
 
     @ApiModelProperty(value="승인상태", position = 10, dataType = "YN")
@@ -85,19 +85,19 @@ public class SrDataRequestVo extends AbstractVo {
     @ApiModelProperty(value="마지막 에러메세지", position = 14, dataType = "String")
     private String lastErrorMessage;
 
-    @ApiModelProperty(value="Database", position = 15, dataType = "DatabaseVo", hidden = true)
+    @ApiModelProperty(value="Database", position = 15, dataType = "DatabaseVo")
     private DatabaseVo databaseVo;
 
-    @ApiModelProperty(value="등록자", position = 16, dataType = "MemberVo", hidden = true)
+    @ApiModelProperty(value="등록자", position = 16, dataType = "MemberVo")
     private MemberVo resistMemberVo;
 
-    @ApiModelProperty(value="승인자", position = 17, dataType = "MemberVo", hidden = true)
+    @ApiModelProperty(value="승인자", position = 17, dataType = "MemberVo")
     private MemberVo confirmMemberVo;
 
-    @ApiModelProperty(value="SQL 조건", position = 18, dataType = "SrDataConditionVo", hidden = true)
+    @ApiModelProperty(value="SQL 조건", position = 18, dataType = "SrDataConditionVo")
     private List<SrDataConditionVo> srDataConditionVos;
 
-    @ApiModelProperty(value="허용된 사용자", position = 16, dataType = "MemberVo", hidden = true)
+    @ApiModelProperty(value="허용된 사용자", position = 16, dataType = "MemberVo")
     private List<Long> srDataAllowMemberIds;
 
     public SrDataRequestVo() { }

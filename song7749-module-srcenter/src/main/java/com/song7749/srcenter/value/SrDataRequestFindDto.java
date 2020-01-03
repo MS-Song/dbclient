@@ -51,26 +51,26 @@ public class SrDataRequestFindDto extends AbstractDto implements Specification<S
     @ApiModelProperty(required = false, position = 1, dataType = "Long", value="ID")
     private Long id;
 
-    @ApiModelProperty(required = false, position = 2, dataType = "String", value="제목 || 최대한 현업 담당자와 커뮤니케이션이 원활하도록 작성 EX) [서비스명] 구체적인 내용 ")
+    @ApiModelProperty(required = false, position = 2, dataType = "String", value="제목")
     private String subject;
 
-    @ApiModelProperty(required = false, position = 3, dataType = "String", value="SQL || 실행할 SQL 을 작성하고 검색 조건에 매치되는 파라메터를 ${변수명} 형식으로 입력")
+    @ApiModelProperty(required = false, position = 3, dataType = "String", value="runSQL")
     private String runSql;
 
-    @ApiModelProperty(required = false, position = 9, dataType = "YN", value="작동여부 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
+    @ApiModelProperty(required = false, position = 9, dataType = "YN", value="동작상태")
     private YN enableYN;
 
-    @ApiModelProperty(required = false, position = 10, dataType = "YN", value="승인여부 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
+    @ApiModelProperty(required = false, position = 10, dataType = "YN", value="승인상태")
     private YN confirmYN;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
-    @ApiModelProperty(value="등록일 검색 시작",position=11)
+    @ApiModelProperty(value="생성일 검색 시작",position=11)
     private Date fromCreateDate;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
-    @ApiModelProperty(value="등록일 검색 종료",position=12)
+    @ApiModelProperty(value="생성일 검색 종료",position=12)
     private Date toCreateDate;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -105,7 +105,7 @@ public class SrDataRequestFindDto extends AbstractDto implements Specification<S
     @ApiModelProperty(required=false, position=20, dataType = "Integer", value="승인자 ID")
     private Long confirmMemberId;
 
-    @ApiModelProperty(required=false, position=21, value="사용허용자 || 해당 기능의 사용이 허용된 사용자 선택")
+    @ApiModelProperty(required=false, position=21, value="허용 사용자자")
     private List<Long> srDataAllowMemberIds;
 
     public SrDataRequestFindDto() {

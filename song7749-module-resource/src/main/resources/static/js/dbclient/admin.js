@@ -482,7 +482,25 @@ var adminMemberListPopup = function(){
     						if(key==13) loadAdminMemberList();
     					}}
     				},
-    				{ 
+					{
+						id:"member_search_name",
+						view:"text",
+						placeholder:'name search',
+						name:"name",
+						on:{"onKeyPress":function(key,e){// 검색 실행
+								if(key==13) loadAdminMemberList();
+						}}
+					},
+					{
+						id:"member_search_team_name",
+						view:"text",
+						placeholder:'team name search',
+						name:"teamName",
+						on:{"onKeyPress":function(key,e){// 검색 실행
+								if(key==13) loadAdminMemberList();
+							}}
+					},
+					{
     					id:"admin_search_authType",	
     					view:"select",  	
     					name:"authType",

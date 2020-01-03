@@ -19,8 +19,11 @@ package com.song7749.srcenter.type;
 public enum DownloadLimitType {
     MONTHLY("월간"),
     WEEKLY("주간"),
-    Daily("일간"),
-    HOURLY("시간당");
+    DAILY("일간"),
+    HOURLY("시간당"),
+    MINUTELY("분당"),
+    MINUTELY5("5 분당"),
+    MINUTELY10("10 분당");
 
     private String desc;
 
