@@ -82,18 +82,21 @@ public class SrDataRequestAddDto extends AbstractDto {
     @ApiModelProperty( required=true, position=12, value="SQL 조건 변수명 || where 에 바인딩 시킬 변수명 EX) {keyName} ")
     private List<String> conditionKey;
 
-    @ApiModelProperty( required=true, position=13, value="SQL 데이터 타입 || where 에 바인딩 시킬 변수의 타입 EX) Date")
+    @ApiModelProperty( required=true, position=13, value="SQL 데이터 타입 || where 에 바인딩 시킬 변수의 타입  String, Number, Date <br /> Array 는 selectBox 형태로 키^값 형태로 넣는다. EX) 남현점^100|금천점^200, ... <br /> SQL 은 키, 값의 형태로 작성한다. EX) select store_nm key, store_id value from store_info")
     private List<DataType> conditionType;
 
     @ApiModelProperty(required=true, position=15, value="SQL 조건 필수 여부 || 필수가 아닌 경우에 값이 없으면, WHERE 구문을 제외하고, 필수이며 값이 없으면 에러 발생")
     private List<YN> conditionRequired;
 
-    @ApiModelProperty(required=true, position=16, value="허용 사용자 || 해당 기능의 사용이 허용된 사용자 선택")
+    @ApiModelProperty(required=false, position=16, value="SQL 조건 값 정의 || 사용자에게 검색창에 노출할 값을 정의 Array/SQL 타입의 경우, 단일 값인 경우 등")
+    private List<String> conditionValue;
+
+    @ApiModelProperty(required=true, position=17, value="허용 사용자 || 해당 기능의 사용이 허용된 사용자 선택")
     private List<Long> srDataAllowMemberIds;
 
     public SrDataRequestAddDto() {}
 
-    public SrDataRequestAddDto(@NotNull @Size(min = 8, max = 200) String subject, @NotNull @Size(min = 8, max = 12000) String runSql, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, @NotNull Long databaseId, Long memberId, List<String> conditionWhereSql, List<String> conditionWhereSqlKey, List<String> conditionName, List<String> conditionKey, List<DataType> conditionType, List<YN> conditionRequired, List<Long> srDataAllowMemberIds) {
+    public SrDataRequestAddDto(@NotNull @Size(min = 8, max = 200) String subject, @NotNull @Size(min = 8, max = 12000) String runSql, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, @NotNull Long databaseId, Long memberId, List<String> conditionWhereSql, List<String> conditionWhereSqlKey, List<String> conditionName, List<String> conditionKey, List<DataType> conditionType, List<YN> conditionRequired, List<String> conditionValue, List<Long> srDataAllowMemberIds) {
         this.subject = subject;
         this.runSql = runSql;
         this.downloadLimit = downloadLimit;
@@ -108,6 +111,7 @@ public class SrDataRequestAddDto extends AbstractDto {
         this.conditionKey = conditionKey;
         this.conditionType = conditionType;
         this.conditionRequired = conditionRequired;
+        this.conditionValue = conditionValue;
         this.srDataAllowMemberIds = srDataAllowMemberIds;
     }
 
@@ -221,6 +225,14 @@ public class SrDataRequestAddDto extends AbstractDto {
 
     public void setConditionRequired(List<YN> conditionRequired) {
         this.conditionRequired = conditionRequired;
+    }
+
+    public List<String> getConditionValue() {
+        return conditionValue;
+    }
+
+    public void setConditionValue(List<String> conditionValue) {
+        this.conditionValue = conditionValue;
     }
 
     public List<Long> getSrDataAllowMemberIds() {

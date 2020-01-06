@@ -38,7 +38,7 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
     private static final long serialVersionUID = 5898888028458247099L;
 
     @NotNull
-    @ApiModelProperty(required = true, position = 1, dataType = "Long", value="ID")
+    @ApiModelProperty(required = true, position = 1, dataType = "Long", value="번호")
     private Long id;
 
     @Size(min=8,max=200)
@@ -64,10 +64,6 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
     @ApiModelProperty(required = false, position = 6, dataType = "Date", value="다운로드 가능 종료 일시")
     private Date downloadEndDate;
 
-    @NotNull
-    @ApiModelProperty(required = true, position = 7, dataType = "Date", value="데이터베이스 선택")
-    private Long databaseId;
-
     @ApiModelProperty(required=false, position=13, value="허용 사용자 || 해당 기능의 사용이 허용된 사용자 선택")
     private List<Long> srDataAllowMemberIds;
 
@@ -76,7 +72,7 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
 
     public SrDataRequestModifyAfterConfirmDto() {}
 
-    public SrDataRequestModifyAfterConfirmDto(@NotNull Long id, @Size(min = 8, max = 200) String subject, YN enableYN, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, @NotNull Long databaseId, List<Long> srDataAllowMemberIds, Long memberId) {
+    public SrDataRequestModifyAfterConfirmDto(@NotNull Long id, @Size(min = 8, max = 200) String subject, YN enableYN, Integer downloadLimit, DownloadLimitType downloadLimitType, Date downloadStartDate, Date downloadEndDate, List<Long> srDataAllowMemberIds, Long memberId) {
         this.id = id;
         this.subject = subject;
         this.enableYN = enableYN;
@@ -84,7 +80,6 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
         this.downloadLimitType = downloadLimitType;
         this.downloadStartDate = downloadStartDate;
         this.downloadEndDate = downloadEndDate;
-        this.databaseId = databaseId;
         this.srDataAllowMemberIds = srDataAllowMemberIds;
         this.memberId = memberId;
     }
@@ -143,14 +138,6 @@ public class SrDataRequestModifyAfterConfirmDto extends AbstractDto {
 
     public void setDownloadEndDate(Date downloadEndDate) {
         this.downloadEndDate = downloadEndDate;
-    }
-
-    public Long getDatabaseId() {
-        return databaseId;
-    }
-
-    public void setDatabaseId(Long databaseId) {
-        this.databaseId = databaseId;
     }
 
     public List<Long> getSrDataAllowMemberIds() {

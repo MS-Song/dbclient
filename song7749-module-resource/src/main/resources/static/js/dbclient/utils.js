@@ -1,14 +1,29 @@
+
+// http request 에서 제외시킬 파라메터 목록
+let excludeParams = ["useCache","apiAuthkey","page","size","sort"];
+
 // swagger 정의를 가져온다.
-var swaggerApiDocs = null;
-var getSwaggerApiDocs = function(){
+let swaggerApiDocs = null;
+let getSwaggerApiDocs = function(){
 	if(null==swaggerApiDocs){
 		webix.ajax().get("/v2/api-docs",function(text,data){
 			swaggerApiDocs=data.json();
 		});
 	}
 };
-// swagger doc 로딩
+
 getSwaggerApiDocs();
+
+let getSwaggerApiDocsLazyLoading = function(){
+	if(null==swaggerApiDocs){
+		setTimeout(() => {getSwaggerApiDocsLazyLoading()}, 100);
+	} else {
+		getSwaggerApiDocs();
+	}
+}
+webix.ready(function(){
+	getSwaggerApiDocsLazyLoading();
+});
 
 
 /**
@@ -488,10 +503,6 @@ var mvSite = function(src) {
 /**
  * form view 를 생성 한다. 
  */
-/**
- * 제외 시켜야 하는 파라메터
- */
-var excludeParams = ["useCache","apiAuthkey","page","size","sort"];
 var getFromView = function(param,isRightDescription=false,isDisable=false){
 	// 제외 되는 파라메터 인 경우 null을 리턴한다.
 	if($.inArray(param.name,excludeParams) != -1) {

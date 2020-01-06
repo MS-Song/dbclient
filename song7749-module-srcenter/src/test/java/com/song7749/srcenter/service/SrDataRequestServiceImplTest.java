@@ -131,6 +131,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 keys,
                 types,
                 requireds,
+                values,
                 srDataAlowMemberIds);
 
         // when
@@ -194,7 +195,6 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 DownloadLimitType.MONTHLY,
                 new Date(),
                 new Date(),
-                database.getId(),
                 Arrays.asList(new Long(member.getId())),
                 member.getId());
 

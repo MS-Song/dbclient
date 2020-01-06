@@ -5,9 +5,6 @@
  * @param isDescription
  * @param isDisable
 */
-
-
-var excludeParams = ["useCache","apiAuthkey","page","size","sort"];
 let createWebForm = function(param,isDescription=false,isDisable=false){
 
     // 제외 되는 파라메터 인 경우 null을 리턴한다.
@@ -54,7 +51,7 @@ let createWebForm = function(param,isDescription=false,isDisable=false){
             name:param.name,
             disabled:isDisable
         };
-    } else if (param.name.toLowerCase().indexOf("databaseid") >= 0){
+    } else if (param.name.toLowerCase().indexOf("database") >= 0){
         let setDatabaseOptions = isDisable ? useAllDatabaseOptions : useDatabaseOptions;
         viewElement={
             view:"select",

@@ -82,7 +82,6 @@ webix.ready(function(){
 								select:"row",
 								resizeColumn:true,
 								scroll:true,
-								multiselect:true,
 								clipboard:"selection",
 								on:{"onItemClick":function(){
 									sr_data_request_popup(this.getSelectedItem());

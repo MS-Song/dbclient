@@ -132,7 +132,7 @@ public class SrDataRequest extends Entities {
     private Member confirmMember;
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "srDataRequest")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "srDataRequest", orphanRemoval = true)
     private List<SrDataCondition> srDataConditions;
 
     @NotNull
@@ -330,6 +330,7 @@ public class SrDataRequest extends Entities {
         if(null!=this.getConfirmMember())   vo.setConfirmMemberVo(mapper.map(this.getConfirmMember(),MemberVo.class));
         // 데이터베이스 객체 변환
         if(null!=this.getDatabase())        vo.setDatabaseVo(mapper.map(this.getDatabase(), DatabaseVo.class));
+
         // 검색 조건 변환
         List<SrDataConditionVo> conditioVos = new ArrayList<>();
         for (SrDataCondition sdr : this.getSrDataConditions()) {

@@ -109,9 +109,10 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
             String whereSql = dto.getConditionWhereSql().get(i);
             String whereSqlKey = dto.getConditionWhereSqlKey().get(i);
             String name = dto.getConditionName().get(i);
+            String value = dto.getConditionValue().get(i);
             DataType type = dto.getConditionType().get(i);
             YN required = dto.getConditionRequired().get(i);
-            conditions.add(new SrDataCondition(whereSql, whereSqlKey, name, key, type, null, required, sdr));
+            conditions.add(new SrDataCondition(whereSql, whereSqlKey, name, key, type, value, required, sdr));
         }
         // condition 저장
         sdr.setSrDataConditions(conditions);
@@ -154,6 +155,9 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         }
         sdr.setSrDataAllowMembers(srDataAllowMembers);
 
+        // 기존 입력 condition 을 모두 제거 한다.
+        sdr.getSrDataConditions().clear();
+
         // SQL condition 을 만든다.
         List<SrDataCondition> conditions = new ArrayList<SrDataCondition>();
         for(int i=0;i<dto.getConditionKey().size();i++){
@@ -166,8 +170,8 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
             YN required = dto.getConditionRequired().get(i);
             conditions.add(new SrDataCondition(whereSql, whereSqlKey, name, key, type, value, required, sdr));
         }
-        // condition 저장
-        sdr.setSrDataConditions(conditions);
+        // condition 저장 - set 을 할 경우 영속성 오류가 발생하니, addAll 을 통해 객체 참조를 유지 한다.
+        sdr.getSrDataConditions().addAll(conditions);
 
         // 기본값 설정
         sdr.setConfirmYN(YN.N);
@@ -355,6 +359,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                     boolean ckeckLoop = loop!=0;
                     boolean checkSize = f.get(dto) instanceof List;
                     checkSize = checkSize && beforeLength != ((List)f.get(dto)).size();
+
                     logger.debug("check size  before : {}, check size after : {}", beforeLength, ((List)f.get(dto)).size());
 
                     if(ckeckLoop && checkSize){

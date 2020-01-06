@@ -77,11 +77,11 @@ public class InitSRdataRequestConfigBean {
 		List<Database> databases = databaseRepository.findAll();
 		Database currentDatabase = null;
 		for(Database d : databases ){
-			if(d.getDriver().equals(DatabaseDriver.H2)){
-				currentDatabase=d;
-				break;
-			}
+			currentDatabase=d;
+			break;
 		}
+
+		logger.debug("Sr Data Request Sample Database : {}", currentDatabase);
 
 		SrDataRequest sdr  = new SrDataRequest(
 				"[샘플] SR data Request 의 샘플 데이터 입니다. 확인 후에 사용 방법을 익히세요",

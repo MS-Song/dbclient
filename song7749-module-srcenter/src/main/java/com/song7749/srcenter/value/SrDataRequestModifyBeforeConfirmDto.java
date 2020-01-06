@@ -37,65 +37,65 @@ public class SrDataRequestModifyBeforeConfirmDto extends AbstractDto {
     private static final long serialVersionUID = 4902108636402278902L;
 
     @NotNull
-    @ApiModelProperty(required = true, position = 1, dataType = "Long", value="ID")
-    private Long id;
+    @ApiModelProperty(required = true, position = 1, dataType = "Long", value="번호")
+    private Long id; // 필수값이긴 하나, 수정을 못하도록 처리하고, 파라메터로는 받기 위함.
 
     @Size(min=8,max=200)
-    @ApiModelProperty(required = true, position = 1, dataType = "String", value="제목 || 최대한 현업 담당자와 커뮤니케이션이 원활하도록 작성 EX) [서비스명] 구체적인 내용 ")
+    @ApiModelProperty(required = true, position = 2, dataType = "String", value="제목 || 최대한 현업 담당자와 커뮤니케이션이 원활하도록 작성 EX) [서비스명] 구체적인 내용 ")
     private String subject;
 
     @Size(min=8,max=12000)
-    @ApiModelProperty(required = true, position = 2, dataType = "String", value="runSQL || 실행할 SQL 을 작성하고 검색 조건에 매치되는 파라메터를 {변수명} 형식으로 입력")
+    @ApiModelProperty(required = true, position = 3, dataType = "String", value="runSQL || 실행할 SQL 을 작성하고 검색 조건에 매치되는 파라메터를 {변수명} 형식으로 입력")
     private String runSql;
 
-    @ApiModelProperty(required = false, position = 3, dataType = "YN", value="동작여부 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
+    @ApiModelProperty(required = false, position = 4, dataType = "YN", value="동작여부 || 동장여부와 승인여부가 결합되어 사용 가능 상태로 표기됨")
     private YN enableYN;
 
-    @ApiModelProperty(required = false, position = 3, dataType = "String", value="다운로드 제한 숫자 || 월/주/일/시간 당 다운로드 허용 횟수")
+    @ApiModelProperty(required = false, position = 5, dataType = "String", value="다운로드 제한 숫자 || 월/주/일/시간 당 다운로드 허용 횟수")
     private Integer downloadLimit;
 
-    @ApiModelProperty(required = false, position = 4, dataType = "DownloadLimitType", value="다운로드 제한 타입 || 다운로드 제한을 월/주/일/시 로 설정, 타입을 정하지 않으면 해당 기능의 전체 카운트로 셋팅됨 ")
+    @ApiModelProperty(required = false, position = 6, dataType = "DownloadLimitType", value="다운로드 제한 타입 || 다운로드 제한을 월/주/일/시 로 설정, 타입을 정하지 않으면 해당 기능의 전체 카운트로 셋팅됨 ")
     private DownloadLimitType downloadLimitType;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
-    @ApiModelProperty(required = false, position = 5, dataType = "Date", value="다운로드 가능 시작 일시")
+    @ApiModelProperty(required = false, position = 7, dataType = "Date", value="다운로드 가능 시작 일시")
     private Date downloadStartDate;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
-    @ApiModelProperty(required = false, position = 6, dataType = "Date", value="다운로드 가능 종료 일시")
+    @ApiModelProperty(required = false, position = 8, dataType = "Date", value="다운로드 가능 종료 일시")
     private Date downloadEndDate;
 
     @NotNull
-    @ApiModelProperty(required = true, position = 7, dataType = "Date", value="데이터베이스 선택")
+    @ApiModelProperty(required = true, position = 9, dataType = "Date", value="데이터베이스 선택")
     private Long databaseId;
 
-    @ApiModelProperty(required=true, position=8, value="Where 구문 || where 절 생성  EX) 상품명 : ANd b.xxxx={keyName}")
+    @ApiModelProperty(required=true, position=10, value="Where 구문 || where 절 생성  EX) 상품명 : AND b.xxxx={keyName}")
     private List<String> conditionWhereSql;
 
-    @ApiModelProperty(required=true, position=9, value="Where 구문 의 키 || where 절 자체를 {SQL 키로 입력}  AND A={B}  ==> {WHERE1} 로 치환 ")
+    @ApiModelProperty(required=true, position=11, value="Where 구문 의 키 || where 절 자체를 {SQL 키로 입력}  AND A={B}  ==> {WHERE1} 로 치환 ")
     private List<String> conditionWhereSqlKey;
 
-    @ApiModelProperty(required=true, position=10, value="검색 조건 명 || where 에 해당하는 검색 조건의 명칭 EX) 상품명 : ")
+    @ApiModelProperty(required=true, position=12, value="검색 조건 명 || where 에 해당하는 검색 조건의 명칭 EX) 상품명 : ")
     private List<String> conditionName;
 
-    @ApiModelProperty( required=true, position=11, value="SQL 조건 변수명 || where 에 바인딩 시킬 변수명 EX) {keyName} ")
+    @ApiModelProperty( required=true, position=13, value="SQL 조건 변수명 || where 에 바인딩 시킬 변수명 EX) {keyName} ")
     private List<String> conditionKey;
 
-    @ApiModelProperty( required=true, position=12, value="SQL 데이터 타입 || where 에 바인딩 시킬 변수의 타입 EX) Date")
+    @ApiModelProperty( required=true, position=14, value="SQL 데이터 타입 || where 에 바인딩 시킬 변수의 타입  String, Number, Date <br /> Array 는 selectBox 형태로 키^값 형태로 넣는다. EX) 남현점^100|금천점^200, ... <br /> SQL 은 키, 값의 형태로 작성한다. EX) select store_nm key, store_id value from store_info")
     private List<DataType> conditionType;
 
-    @ApiModelProperty(required=true, position=13, value="SQL 조건 변수의 값 || where 에 바인딩 될 값 - 실행자가 검색 조건으로 입력")
-    private List<String> conditionValue;
-
-    @ApiModelProperty(required=true, position=14, value="SQL 조건 변수의 값 || where 에 바인딩 될 값 - 실행자가 검색 조건으로 입력")
+    @ApiModelProperty(required=true, position=15, value="SQL 조건 필수 여부 || 필수가 아닌 경우에 값이 없으면, WHERE 구문을 제외하고, 필수이며 값이 없으면 에러 발생")
     private List<YN> conditionRequired;
 
-    @ApiModelProperty(required=true, position=15, value="허용 사용자 || 해당 기능의 사용이 허용된 사용자 선택")
+    @ApiModelProperty(required=false, position=16, value="SQL 조건 값 정의 || 사용자에게 검색창에 노출할 값을 정의 Array/SQL 타입의 경우, 단일 값인 경우 등")
+    private List<String> conditionValue;
+
+    @ApiModelProperty(required=true, position=17, value="허용 사용자 || 해당 기능의 사용이 허용된 사용자 선택")
     private List<Long> srDataAllowMemberIds;
 
-    @ApiModelProperty(required=true, position=16, hidden=true, value="수정자 ID")
+    @ApiModelProperty(required=true, position=18, hidden=true, value="수정자 ID")
     private Long memberId;
 
     public SrDataRequestModifyBeforeConfirmDto() { }

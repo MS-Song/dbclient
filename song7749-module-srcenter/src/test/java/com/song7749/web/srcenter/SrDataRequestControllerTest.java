@@ -273,7 +273,6 @@ public class SrDataRequestControllerTest extends ControllerTest {
                 .param("downloadLimitType",     "HOURLY")
                 .param("downloadStartDate",     "2019-12-31")
                 .param("downloadEndDate",       "2020-12-31")
-                .param("databaseId",            database.getId().toString())
                 .param("memberId",              vo.getId().toString())
                 .param("srDataAllowMemberIds",  vo.getId().toString(),vo.getId().toString(),vo.getId().toString())
         ;
