@@ -10,7 +10,7 @@ var adminMenuLazyLoading = function(){
     			$$("menu").getBody().data.add({id: 6, value: " 관리자 메뉴", 		icon: "cog", 			func: null},						5);
         		$$("menu").getBody().data.add({id: 7, value: " Database 관리", 	icon: "database", 		func: "adminDatabaseListPopup"},	6);
         		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 		icon: "user", 			func: "adminMemberListPopup"},		7);
-        		$$("menu").getBody().data.add({id: 9, value: " 메일서버 설정", 	icon: "send",			func: "adminConfigMailServerPopup"},8);
+        		$$("menu").getBody().data.add({id: 9, value: " 메일서버 설정", 		icon: "send",			func: "adminConfigMailServerPopup"},8);
         		$$("menu").getBody().data.add({id: 10,value: " 관리자 메세지 전송", 	icon: "mail-reply",		func: "adminSendMessagePopup"},		9);
     		}
 		}
@@ -98,17 +98,17 @@ var adminDatabaseListPopup = function(){
 			$$("admin_database_list_view").config.columns[loop].id = "modify_database";
 			$$("admin_database_list_view").config.columns[loop].header = "수정";
 			$$("admin_database_list_view").config.columns[loop].adjust = true;
-			$$("admin_database_list_view").config.columns[loop].template='<input type="button" value="수정" style="width:40px;" onClick="adminModifyDatabasePopup(#id#);"/>',
+			$$("admin_database_list_view").config.columns[loop].template='<input type="button" value="수정" class=".webixtype_base" onClick="adminModifyDatabasePopup(#id#);"/>',
 			$$("admin_database_list_view").config.columns[loop+1]={};
 			$$("admin_database_list_view").config.columns[loop+1].id = "delete_database";
 			$$("admin_database_list_view").config.columns[loop+1].header = "삭제";
 			$$("admin_database_list_view").config.columns[loop+1].adjust = true;
-			$$("admin_database_list_view").config.columns[loop+1].template='<input type="button" value="삭제" style="width:40px;" onClick="adminDeleteDatabase(#id#);"/>',
+			$$("admin_database_list_view").config.columns[loop+1].template='<input type="button" value="삭제" class=".webixtype_base" onClick="adminDeleteDatabase(#id#);"/>',
 			$$("admin_database_list_view").config.columns[loop+2]={};
 			$$("admin_database_list_view").config.columns[loop+2].id = "database_privacy_policy_popup";
 			$$("admin_database_list_view").config.columns[loop+2].header = "개인정보";
 			$$("admin_database_list_view").config.columns[loop+2].adjust = true;
-			$$("admin_database_list_view").config.columns[loop+2].template='<input type="button" value="수동정의" style="width:60px;" onClick="adminDatabasePrivacyPolicyPopup(#id#);"/>',
+			$$("admin_database_list_view").config.columns[loop+2].template='<input type="button" value="수동정의" class=".webixtype_base" onClick="adminDatabasePrivacyPolicyPopup(#id#);"/>',
 			
 			// 관리자 메뉴 추가 종료
 			$$("admin_database_list_view").refreshColumns();
@@ -139,20 +139,20 @@ var adminAddDatabasePopup=function(){
 			view:"form",
 			borderless:true,
 			elements: [
-				{ id:"host", 		view:"text", 	label:'host', 			name:"host", 		},
+				{ id:"host", 		view:"text", 	label:'host', 			name:"host", 		labelWidth:120},
 				{ view:"label", 	label:'Mysql/Oracle/Mssql = IP 또는 Domain, H2/SQLite = JDBC URL 입력'},
 				{ view:"label", 	label:'예시) 127.0.0.1 OR db.song7749.com OR jdbc:h2:file:~/xxx'},
-				{ id:"hostAlias", 	view:"text", 	label:'hostAlias', 		name:"hostAlias" 	},
+				{ id:"hostAlias", 	view:"text", 	label:'hostAlias', 		name:"hostAlias",	labelWidth:120},
 				{ view:"label", 	label:'local-oracle-test 등 DB 의 별칭을 입력'},
-				{ id:"schemaName", 	view:"text", 	label:'schemaName', 	name:"schemaName" 	},
+				{ id:"schemaName", 	view:"text", 	label:'schemaName', 	name:"schemaName",	labelWidth:120},
 				{ view:"label", 	label:'Mysql/H2 schema, Oracle SID(SERVICE_NAME)'},
-				{ id:"schemaOwner", view:"text", 	label:'schemaOwner', 	name:"schemaOwner" 	},
+				{ id:"schemaOwner", view:"text", 	label:'schemaOwner', 	name:"schemaOwner",	labelWidth:120},
 				{ view:"label", 	label:'Oracle 의 접속 계정과 Database 의 Owner 가 다를 경우에 추가 입력'},
-				{ id:"account", 	view:"text", 	label:'account', 		name:"account" 		},
-				{ id:"password", 	view:"text", 	label:'password', 		name:"password" 	},
-				{ id:"charset", 	view:"select", 	label:'charset', 		name:"charset",		options:charset	},
-        		{ id:"driver",		view:"select",	label:'driver',			name:"driver", 		options:drivers },
-				{ id:"port", 		view:"text", 	label:'port', 			name:"port" 		},
+				{ id:"account", 	view:"text", 	label:'account', 		name:"account",		labelWidth:120},
+				{ id:"password", 	view:"text", 	label:'password', 		name:"password",	labelWidth:120},
+				{ id:"charset", 	view:"select", 	label:'charset', 		name:"charset",		labelWidth:120,		options:charset	},
+        		{ id:"driver",		view:"select",	label:'driver',			name:"driver", 		labelWidth:120,		options:drivers },
+				{ id:"port", 		view:"text", 	label:'port', 			name:"port",		labelWidth:120},
 				{ view:"label", 	label:'port는 Embeded Database의 경우 생략'},
 				{
 					cols:[
@@ -194,7 +194,7 @@ var adminModifyDatabasePopup = function(id){
 	webix.ui({
 	    view:"window",
 	    id:"admin_modify_database_popup",
-	    width:400,
+	    width:500,
 	    position:"center",
 	    modal:true,
 	    head:{
@@ -208,20 +208,20 @@ var adminModifyDatabasePopup = function(id){
 			borderless:true,
 			elements: [
 				{ id:"id", 				view:"text", 	type:"hidden",			name:"id",			height:0		},
-				{ id:"host", 			view:"text", 	label:'host', 			name:"host" 		},
-				{ view:"label", 	label:'Mysql/Oracle/Mssql = IP 또는 Domain, H2/SQLite = JDBC URL 입력'},
-				{ view:"label", 	label:'예시) 127.0.0.1 OR db.song7749.com OR jdbc:h2:file:~/xxx'},
-				{ id:"hostAlias", 		view:"text", 	label:'hostAlias', 		name:"hostAlias" 	},
-				{ view:"label", 	label:'local-oracle-test 등 DB 의 별칭을 입력'},				
-				{ id:"schemaName", 		view:"text", 	label:'schemaName', 	name:"schemaName" 	},
-				{ view:"label", 	label:'Mysql/H2 schema, Oracle SID(SERVICE_NAME)'},				
-				{ id:"schemaOwner", view:"text", 	label:'schemaOwner', 	name:"schemaOwner" 		},
-				{ view:"label", 	label:'Oracle 의 접속 계정과 Database 의 Owner 가 다를 경우에 추가 입력'},
-				{ id:"account", 		view:"text", 	label:'account', 		name:"account" 		},
-				{ id:"password", 		view:"text", 	label:'password', 		name:"password" 	},
-				{ id:"driver",			view:"select",	label:'driver',			name:"driver", 		options:drivers },
-				{ id:"charset", 		view:"select", 	label:'charset', 		name:"charset",		options:charset	},
-				{ id:"port", 			view:"text", 	label:'port', 			name:"port" 		},
+				{ id:"host", 			view:"text", 	label:'host', 			name:"host", 		labelWidth:120	},
+				{ view:"label", 		label:'Mysql/Oracle/Mssql = IP 또는 Domain, H2/SQLite = JDBC URL 입력'		},
+				{ view:"label", 		label:'예시) 127.0.0.1 OR db.song7749.com OR jdbc:h2:file:~/xxx'}			,
+				{ id:"hostAlias", 		view:"text", 	label:'hostAlias', 		name:"hostAlias", 	labelWidth:120	},
+				{ view:"label", 		label:'local-oracle-test 등 DB 의 별칭을 입력'									},
+				{ id:"schemaName", 		view:"text", 	label:'schemaName', 	name:"schemaName", 	labelWidth:120	},
+				{ view:"label", 		label:'Mysql/H2 schema, Oracle SID(SERVICE_NAME)'							},
+				{ id:"schemaOwner", 	view:"text", 	label:'schemaOwner', 	name:"schemaOwner", labelWidth:120	},
+				{ view:"label", 		label:'Oracle 의 접속 계정과 Database 의 Owner 가 다를 경우에 추가 입력'},
+				{ id:"account", 		view:"text", 	label:'account', 		name:"account", 	labelWidth:120},
+				{ id:"password", 		view:"text", 	label:'password', 		name:"password", 	labelWidth:120},
+				{ id:"driver",			view:"select",	label:'driver',			name:"driver", 		labelWidth:120,	options:drivers},
+				{ id:"charset", 		view:"select", 	label:'charset', 		name:"charset",		labelWidth:120,	options:charset},
+				{ id:"port", 			view:"text", 	label:'port', 			name:"port", 		labelWidth:120},
 				{ view:"label", 	label:'port는 Embeded Database의 경우 생략'},
 				{
 					cols:[

@@ -247,22 +247,39 @@ public class LoginManagerImpl implements LoginManager{
 
 	/**
 	 * 해당 회원이 접근 가능한 기능인가 검증
-	 * @param member
+	 * @param request
+	 * @param response
 	 * @param login
-	 * @return boolean
+	 * @return
 	 */
 	@Override
 	public boolean isAccese(HttpServletRequest request, HttpServletResponse response, Login login) {
+
+		boolean isAuth = false;
 		// 세션에 있는지 확인
 		if(loginSession.isLogin()
 				&& null != loginSession.getLogin().getAuthType()) {
 
+			// NORMAL - DEVELOPER - ADMIN 순으로 권한 상속
 			for(AuthType at : login.value()){
+				// 권한이 매치되면 그냥 넘어 간다.
 				if(loginSession.getLogin().getAuthType().equals(at)){
 					return true;
+				} else { 	// 매치가 되지 않을 경우 상속으로 처리 되도록 한다.
+					// NORMAL 인 경우 3가지 권한을 모두 허용 한다.
+					if(at.equals(AuthType.NORMAL)){
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.NORMAL);
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.DEVELOPER);
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.ADMIN);
+					}
+					// DEVELOPER 인 경우 2가지 권한만 허용 한다.
+					if(at.equals(AuthType.DEVELOPER)){
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.DEVELOPER);
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.ADMIN);
+					}
 				}
 			}
 		}
-		return false;
+		return isAuth;
 	}
 }

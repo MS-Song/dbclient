@@ -194,7 +194,8 @@ let sr_data_request_popup = function(requestItem){
 				id:"sr_data_request_form_left",
 				view:"form",
 				borderless:true,
-				elements: []
+				elements: [],
+				scroll:"y"
 			},
 			{
 				id:"sr_data_request_form_right",
