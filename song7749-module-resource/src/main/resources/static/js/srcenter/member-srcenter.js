@@ -3,8 +3,7 @@ webix.ready(function(){
 	// 로그인 정보 획득
 	webix.ajax().get("/member/getLogin", function(text,data){
 		// 로그인 정보를 획득한 경우
-		console.log();
-		if(null!= data.json() 
+		if(null!= data.json()
 				&& data.json().httpStatus ==200 
 				&& null!=data.json().contents){	
 			// 로그인 정보 획득 
@@ -13,7 +12,7 @@ webix.ready(function(){
     		$$("menu").getBody().data.remove(1);	
     		$$("menu").getBody().data.add({id: 1, value: member.name+" 님  (수정)", icon: "user", func: "modify_member_popup"},0);
     		$$("menu").getBody().data.add({id: 2, value: " 로그아웃 ", icon: "user", func: "log_out"},1);
-    		
+
        		// 로그인이 된 경우 회원 권한 정보를 로딩 한다.
     		if(authtypeList==null){
     			getMemberAuthTypes();
@@ -24,27 +23,6 @@ webix.ready(function(){
 			errorControll(data.json());
 		}
 	});	
-	
-	// 캐시 삭제 버튼 추가
-	// 캐시 삭제 버튼을 노출 한다.
-	$$("toolbar").addView({id:"toolbar_cache_remove",
-		view:"button", 
-		value:"Refresh Schema" , 
-		type:"form",
-		width:200,
-		align:"right",
-		on:{"onItemClick":function(){// 캐시 삭제 실행 
-			// local storage 의 캐시먼저 
-			webix.storage.local.clear();
-			webix.message("캐시 삭제가 완료 되었습니다.");
-			webix.ajax().get("/database/deleteCache", function(text,data){
-				if(data.json().httpStatus !=200){
-					webix.message({ type:"error", text:data.json().message});
-				}
-			});
-		}}
-	},3);
-
 });
 
 // 회원 검색 

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,8 @@ import com.song7749.member.value.MemberVo;
 * @since 2018. 3. 29.
 */
 @Profile("!test")
-@Component
+@Component("InitDBclientConfigBean")
+@DependsOn("InitMemberConfigBean")	// 회원 정보 입력 후 DB 정보 입력
 public class InitDBclientConfigBean {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -105,27 +107,9 @@ public class InitDBclientConfigBean {
 	@Transactional
 	@PostConstruct
     public void init(){
-		// TODO - member 에서 root 유저 입력을 하기 때문에 삭제 필요할듯
-		// root 회원에 대한 입력
-		Member member = new Member(
-				"root@test.com"
-				, "12345678"
-				, "Password Question?"
-				, "Password Answer?"
-				, "team name"
-				, "your name"
-				, AuthType.ADMIN);
-		Member aleadyMember = memberRepository.findByLoginId("root@test.com");
+		Member member = memberRepository.findByLoginId("root@test.com");
+
 		Database db=null;
-
-		if(null==aleadyMember) {
-			memberRepository.saveAndFlush(member);
-			MemberVo memberVo = memberManager.renewApikeyByAdmin(member.getLoginId());
-			logger.info(format("{}", "first Start Application with root user create"),memberVo);
-		} else {
-			logger.info(format("{}", "root user info"),aleadyMember.getMemberVo(mapper));
-		}
-
 		// h2 dbconnection add
 		logger.info(format("{}", "Database Datasource"),hikariCP);
 		if(null!=hikariCP) {

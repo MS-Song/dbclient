@@ -101,6 +101,8 @@ let search_form_creator = function(){
 	}
 }
 
+
+
 /**
  *  리스트
  */
@@ -108,14 +110,16 @@ let sr_data_request_list_create = function(){
 	// 리스트에서 표시할 데이터를 가져온다.
 	if($$("sr_data_request_list_view").config.columns.length==0){
 		let loop=0;
+		// swagger 의 정보를 읽어서 리스트 생성
 		let fields = swaggerApiDocs.definitions['SR DATA REQUEST MODEL'].properties;
-		console.log(fields);
 		$.each(fields,function(header,obj){
-			$$("sr_data_request_list_view").config.columns[loop]={};
-			$$("sr_data_request_list_view").config.columns[loop].id = header;
-			$$("sr_data_request_list_view").config.columns[loop].header = obj.description;
-			$$("sr_data_request_list_view").config.columns[loop].adjust = true;
-			loop++;
+			if(obj.type=="string" || obj.type=="integer"){
+				$$("sr_data_request_list_view").config.columns[loop]={};
+				$$("sr_data_request_list_view").config.columns[loop].id = header;
+				$$("sr_data_request_list_view").config.columns[loop].header = obj.description;
+				$$("sr_data_request_list_view").config.columns[loop].adjust = true;
+				loop++;
+			}
 		});
 		$$("sr_data_request_list_view").refreshColumns();
 	} // end create header
@@ -149,10 +153,15 @@ let sr_data_request_list_create = function(){
 	});
 };
 
-// 항목 로딩을 지연시키기 위한 처리
-var swaggerlazyLoading = function(){
-	if(null==swaggerApiDocs || useDatabaseOptions.length==0){
-		setTimeout(() => {swaggerlazyLoading()}, 100);		
+// 항목 로딩을 지연시키기 위한 처리 -- 회원 정보까지 조회를 기다린다.
+let swaggerlazyLoading = function(){
+	// 로딩을 기다리는 경우.. swagger data 확인
+	let isLoading = null==swaggerApiDocs || useDatabaseOptions.length==0;
+	// 회원 정보가 로딩
+	isLoading = isLoading || member.name == undefined;
+
+	if(isLoading){
+		setTimeout(() => {swaggerlazyLoading()}, 100);
 	} else {
 		// 검색창 호출
 		search_form_creator();
@@ -204,20 +213,22 @@ let sr_data_request_popup = function(requestItem){
 /**
  * 팝업 elements 생성
  */
-var sr_data_request_form_creator = function(requestItem){
+let sr_data_request_form_creator = function(requestItem){
 	let path='';							// swagger path
 	let formParams=[];						// swagger form parameters
 	let elementList = [];					// request from elements
 	let dynamicElements = [];				// dynamic form elements
 
 	// common buttons
-	let buttonCancel = { // 취소
+	// 취소
+	let buttonCancel = {
 		view:"button", value:"취소", click:function() {
 			$$("sr_data_request_popup").hide();
 		} ,hotkey: "esc"
 	};
 
-	let buttonAddConditions = { // 조건 추가
+	// 조건 추가
+	let buttonAddConditions = {
 		view:"button", value:"조건 추가 >> ", click:function() {
 			addConditions(dynamicElements);
 		}
@@ -290,7 +301,7 @@ var sr_data_request_form_creator = function(requestItem){
 					$.each(paramViews,function(index){
 						let currentValue = "";
 						// sql 은 인코딩 처리 한다.
-						if(name=="conditionWhereSql" || name=="conditionWhereValue"){
+						if(name=="conditionWhereSql" || name=="conditionValue"){
 							currentValue = window.btoa(encodeURIComponent(this.getValue()));
 						} else {
 							currentValue = this.getValue();
@@ -444,13 +455,14 @@ var sr_data_request_form_creator = function(requestItem){
 					$.each(paramViews,function(index){
 						let currentValue = "";
 						// sql 은 인코딩 처리 한다.
-						if(name=="conditionWhereSql" || name=="conditionWhereValue"){
+						if(name=="conditionWhereSql" || name=="conditionValue"){
 							currentValue = window.btoa(encodeURIComponent(this.getValue()));
 						} else {
 							currentValue = this.getValue();
 						}
 						// 원본 값이 undefined 인 경우에는 공백으로 전송 한다.
 						values.push(this.getValue() == "undefined" ? "" : currentValue);
+
 					});
 					addLeftParameter[name] = values.join(",");
 				});
@@ -555,6 +567,9 @@ var sr_data_request_form_creator = function(requestItem){
 			elementList.push({cols:[runTest,{},buttonAddConditions]});
 		}
 
+		// 구역 구분
+		elementList.unshift({ template:"SR Request INFO", type:"section"});
+
 		// elements 추가
 		for(let index in elementList){
 			$$("sr_data_request_form_left").addView(elementList[index]);
@@ -606,12 +621,139 @@ var sr_data_request_form_creator = function(requestItem){
 	}
 };
 
+/**
+ * SR Data 실행 화면 생성
+ */
+
+let sr_data_request_run_popup = function(item){
+	webix.ui({
+		view:"window",
+		id:"sr_data_request_run_popup",
+		width:'100%',
+		height:'100%',
+		position:"center",
+		modal:true,
+		head:"  ",
+		body:{
+			cols:[
+				{
+					id:"sr_data_request_run_search_form",
+					view:"form",
+					borderless:true,
+					elements: [],
+					scroll: "Y",
+					width:350
+				},
+				{ view:"resizer"},
+				{
+					id:"sr_data_request_run_result_list",
+					view:"datatable",
+					borderless:true,
+					scroll: true,
+					data:[],
+					select:true,
+				}
+		]}
+	}).show();
+
+	// form 생성
+	sr_data_request_run_creator(item);
+}
+
+/**
+ * 팝업 elements 생성
+ */
+let sr_data_request_run_creator = function (item){
+
+	let searchFormElements=[];				// 검색 가능 값을 조회 한다.
+
+	// 해당 SR의 검색 가능 값을 조회하여 form 을 생성 한다.
+	webix.ajax().get('/srDataRequest/searchFromCreate', {id:item}, function(text,data){
+		if(data.json().httpStatus==200){
+			let requestObject = data.json().contents;
+			// header 설정
+			$$("sr_data_request_run_popup").getHead().setHTML("[" + requestObject.id + "] " + requestObject.subject);
+			console.log(requestObject);
+			// 임시 객체에 넣는다.
+			let searchFormElements = [];
+			$.each(requestObject.srDataConditionVos,function(index, value){
+				let element = {};
+				element.name 			= value.key.replace("{","").replace("}","");
+				element.discriptions 	= value.name;
+				element.required 		= value.required == 'Y' ? true : false;
+
+				if(value.type == 'ARRAY' || value.type == 'SQL'){
+					element.type 			= 	'select';
+					element.values 			=	[];
+					$.each(value.values,function(index,obj){
+						element.values.push({id:obj.name,value:obj.value});
+					});
+				} else if(value.type == 'DATE') {
+					element.type 			= 	value.type == 'DATE'
+				}
+				searchFormElements.push(createWebForm(element,true,false));
+			});
+			// id 값을 추가로 넣는다.
+			searchFormElements.push(createWebForm({name:'id',type:'hidden',value:requestObject.id},false,false));
+
+			// 검색
+			let buttonSearch = {
+				view:"button",
+				value:"검색",
+				click:function(){
+					getDataParseView('/srDataRequest/runNow',$$("sr_data_request_run_search_form").getValues(),"sr_data_request_run_result_list",true,false,false);
+				}
+			};
+
+			let buttonReset = {
+				view: "button",
+				value: "리셋",
+				on: {
+					"onItemClick": function () {
+						$$("sr_data_request_run_search_form").setValues("");
+					}
+				}
+			};
+
+			searchFormElements.push({cols:[buttonReset,buttonSearch]});
+
+			let buttonCancel = {
+				view:"button", value:"닫기", click:function() {
+					$$("sr_data_request_run_popup").hide();
+				} ,hotkey: "esc"
+			};
+
+			let buttonModify = {
+				view:"button", value:"수정", click:function() {
+					sr_data_request_popup({id:item,"confirmYN":null});
+				}
+			}
+			// 닫기 및 수정 버튼
+			searchFormElements.unshift({cols:[buttonCancel,buttonModify]});
+			// 구역 구분
+			searchFormElements.unshift({ template:"검색 조건", type:"section"});
+
+			// elements 추가
+			for(let index in searchFormElements){
+				$$("sr_data_request_run_search_form").addView(searchFormElements[index]);
+			}
+		} else {
+			webix.message ({ type:"error", text:data.json().message });
+			sr_data_request_popup({id:item});
+			$$("sr_data_request_run_popup").hide();
+		}
+	});
+}
+
+
+
 // confirm 메일을 통해 진입할 경우
 var confirmPopupLazyLoading = function(){
 	if(null==member || undefined==member || undefined==member.authType){
 		setTimeout(() => {confirmPopupLazyLoading()}, 100);		
 	} else {
-		sr_data_request_popup({"id":getParam("id"),"confirmYN":null});
+		//sr_data_request_popup({"id":getParam("id"),"confirmYN":null});
+		sr_data_request_run_popup(getParam("id"));
 	}
 }
 

@@ -23,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +57,8 @@ import static com.song7749.util.LogMessageFormatter.format;
 * @since 2019. 12. 10.
 */
 @Profile("!test")
-@Component
+@Component("InitSRdataRequestConfigBean")
+@DependsOn("InitDBclientConfigBean")		// DB 정보 입력 후 기동
 public class InitSRdataRequestConfigBean {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -77,15 +80,17 @@ public class InitSRdataRequestConfigBean {
 		List<Database> databases = databaseRepository.findAll();
 		Database currentDatabase = null;
 		for(Database d : databases ){
-			currentDatabase=d;
-			break;
+			if(d.getDriver().equals(DatabaseDriver.H2)){
+				currentDatabase=d;
+				break;
+			}
 		}
 
 		logger.debug("Sr Data Request Sample Database : {}", currentDatabase);
 
 		SrDataRequest sdr  = new SrDataRequest(
 				"[샘플] SR data Request 의 샘플 데이터 입니다. 확인 후에 사용 방법을 익히세요",
-				"select * from database where 1=1 {whereDatabaseId} {whereHost} {wherePort}",
+				"select * from database_info where 1=1 {whereDatabaseId} {whereHost} {wherePort}",
 				0,
 				0,
 				DownloadLimitType.DAILY,
@@ -97,7 +102,7 @@ public class InitSRdataRequestConfigBean {
 				members);
 
 		List<SrDataCondition> conditions = Arrays.asList(new SrDataCondition[]{
-				new SrDataCondition("and datebase_id={database_id}", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.NUMBER, null, YN.Y, sdr),
+				new SrDataCondition("and database_id={database_id}", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select database_id as KEY, host as VALUE  from database_info", YN.Y, sdr),
 				new SrDataCondition("and host={host}", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr),
 				new SrDataCondition("and port={port}", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.Y, sdr),
 

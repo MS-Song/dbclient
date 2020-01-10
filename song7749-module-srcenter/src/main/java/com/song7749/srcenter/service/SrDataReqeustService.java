@@ -73,6 +73,13 @@ public interface SrDataReqeustService {
     SrDataRequestVo find(SrDataRequestFindDto dto);
 
     /**
+     * 실행을 위한 검색 조건 생성
+     * @param dto
+     * @return
+     */
+    SrDataRequestVo searchFromCreate(SrDataRequestRunDto dto, HttpServletRequest request);
+
+    /**
      * 저장되어 있는 request 를 실행한다.
      * @param dto
      * @return

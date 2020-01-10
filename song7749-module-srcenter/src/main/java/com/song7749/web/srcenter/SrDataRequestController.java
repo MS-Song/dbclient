@@ -79,71 +79,6 @@ public class SrDataRequestController {
 
         // 인증 정보 추가
         dto.setMemberId(session.getLogin().getId());
-
-        // SQL 디코드
-        dto.setRunSql(
-            URLDecoder.decode(
-                new String(
-                    Base64Decoder.decode(dto.getRunSql())
-                        , Charset.forName("UTF-8"))
-                    , "UTF-8")
-        );
-        logger.debug(format("{}", "DECODE URL RUN SQL"),dto.getRunSql());
-
-        // 1개인 경우 빈객체가 되는 것을 방지하기 위함
-        int conditionSize = 0;
-        // Condition decode
-        if(!CollectionUtils.isEmpty(dto.getConditionWhereSql())){
-            // 새로운 배열에 담는다.
-            List<String> unwrapList = new ArrayList<String>();
-            // 인코딩된 정보를 디코드 한다.
-            for(String s : dto.getConditionWhereSql()){
-                // 데이터가 없을 경우 예외 처리
-                if(StringUtils.isBlank(s)){
-                    throw new IllegalArgumentException("Where 구문이 없습니다. Where 조건을 입력하시기 바랍니다. ");
-                }
-                unwrapList.add(
-                    URLDecoder.decode(
-                        new String(
-                            Base64Decoder.decode(s)
-                            , Charset.forName("UTF-8"))
-                        , "UTF-8")
-                );
-                conditionSize++;
-            }
-            dto.setConditionWhereSql(unwrapList);
-        }
-
-        // (귀찮다.. 전체 인코드/디코드 한다)
-        if(!CollectionUtils.isEmpty(dto.getConditionValue())){
-            // 새로운 배열에 담는다.
-            List<String> unwrapList = new ArrayList<String>();
-            // 인코딩된 정보를 디코드 한다.
-            for(String s : dto.getConditionValue()){
-                // 데이터가 없을 경우 예외 처리
-                if(!StringUtils.isBlank(s)){
-                    unwrapList.add(
-                        URLDecoder.decode(
-                            new String(
-                                Base64Decoder.decode(s)
-                                , Charset.forName("UTF-8"))
-                            , "UTF-8")
-                    );
-                } else {
-                    unwrapList.add(null);
-                }
-            }
-            dto.setConditionValue(unwrapList);
-        }
-
-        // 선택 값은 size 가 1 이고 null 인 경우 생성되지 않아 오류를 유발함으로, 빈 객체를 하나 넣어 준다.
-        if(conditionSize==1){
-            // value
-            if(CollectionUtils.isEmpty(dto.getConditionValue())){
-                dto.setConditionValue(Arrays.asList(new String[]{null}));
-            }
-        }
-
         return new MessageVo(HttpStatus.OK.value(), 1
                 , srDataReqeustService.add(dto), "SR Data Request 등록이 완료되었습니다.");
     }
@@ -159,72 +94,6 @@ public class SrDataRequestController {
 
         // 인증 정보 추가
         dto.setMemberId(session.getLogin().getId());
-
-        // SQL 데이터 가공
-        dto.setRunSql(
-                URLDecoder.decode(
-                        new String(
-                                Base64Decoder.decode(dto.getRunSql())
-                                , Charset.forName("UTF-8"))
-                        , "UTF-8")
-        );
-
-        int conditionSize = 0;
-        // Condition decode
-        if(!CollectionUtils.isEmpty(dto.getConditionWhereSql())){
-            // 새로운 배열에 담는다.
-            List<String> unwrapList = new ArrayList<String>();
-            // 인코딩된 정보를 디코드 한다.
-            for(String s : dto.getConditionWhereSql()){
-                // 데이터가 없을 경우 예외 처리
-                if(StringUtils.isBlank(s)){
-                    throw new IllegalArgumentException("Where 구문이 없습니다. Where 조건을 입력하시기 바랍니다. ");
-                }
-                unwrapList.add(
-                        URLDecoder.decode(
-                                new String(
-                                        Base64Decoder.decode(s)
-                                        , Charset.forName("UTF-8"))
-                                , "UTF-8")
-                );
-                conditionSize++;
-            }
-            dto.setConditionWhereSql(unwrapList);
-        }
-
-        logger.debug("Condition Values : {}",dto.getConditionValue().size());
-
-        // (귀찮다.. 전체 인코드/디코드 한다)
-        if(!CollectionUtils.isEmpty(dto.getConditionValue())){
-            // 새로운 배열에 담는다.
-            List<String> unwrapList = new ArrayList<String>();
-            // 인코딩된 정보를 디코드 한다.
-            for(String s : dto.getConditionValue()){
-                // 데이터가 없을 경우 예외 처리
-                if(!StringUtils.isBlank(s)){
-                    unwrapList.add(
-                        URLDecoder.decode(
-                            new String(
-                                    Base64Decoder.decode(s)
-                                    , Charset.forName("UTF-8"))
-                            , "UTF-8")
-                    );
-                } else {
-                    unwrapList.add(null);
-                }
-            }
-            dto.setConditionValue(unwrapList);
-        }
-
-        // 선택 값은 size 가 1 이고 null 인 경우 생성되지 않아 오류를 유발함으로, 빈 객체를 하나 넣어 준다.
-        if(conditionSize==1){
-            // value
-            if(CollectionUtils.isEmpty(dto.getConditionValue())){
-                dto.setConditionValue(Arrays.asList(new String[]{null}));
-            }
-        }
-
-
         return new MessageVo(HttpStatus.OK.value(), 1
                 , srDataReqeustService.modify(dto), "SR Data Request 수정이 완료되었습니다.");
     }
@@ -301,6 +170,22 @@ public class SrDataRequestController {
             @Valid @ModelAttribute SrDataRequestFindDto dto){
         return new MessageVo(HttpStatus.OK.value(),srDataReqeustService.find(dto));
     }
+
+
+    @ApiOperation(value = "SR Data Request 실행을 위한 검색 조건 조회"
+            ,notes = "등록된 SR Data Request 를 실행을 위한 검색 조건들을 생성하여 전송 "
+            ,response=SrDataRequestVo.class)
+    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @GetMapping("/searchFromCreate")
+    public MessageVo searchFromCreate(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @Valid @ModelAttribute SrDataRequestRunDto dto){
+        // 세션 정보 입력
+        dto.setRunMemberId(session.getLogin().getId());
+        return new MessageVo(HttpStatus.OK.value(),srDataReqeustService.searchFromCreate(dto,request));
+    }
+
 
     @ApiOperation(value = "SR Data Request 실행"
             ,notes = "SR Data Request 를 실행 한다."

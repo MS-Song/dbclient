@@ -94,7 +94,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
     Cookie cookie;
     SrDataRequestVo srDataRequestVo;
 
-    @Before
+   @Before
    public void setup() throws Exception{
         database = new Database(
                 "jdbc:h2:file:~/dbclient_test",
@@ -128,25 +128,36 @@ public class SrDataRequestControllerTest extends ControllerTest {
                 .andReturn();
         // login cookie 생성
         cookie = new Cookie("cipher", result.getResponse().getCookie("cipher").getValue());
+
+        // 테스트 기본 데이터 적재
+        add();
    }
 
-   @Test
+    //@Test
     public void allTests() throws Exception {
-        add();
-        modifyBeforeConfirm();
-        confirm();
-        list();
-        one();
-        modifyAfterConfirm();
-        runNow();
+       add();
+       modifyBeforeConfirm();
+       confirm();
+       list();
+       one();
+       modifyAfterConfirm();
+       runNow();
     }
 
+    @Test
     public void add() throws Exception{
-       String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
+       String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 {SQL1} {SQL2} {SQL3} ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
        String[] conditionWhereSqls = {
                new String(encode(URLEncoder.encode("AND member_id='{member_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
-               new String(encode(URLEncoder.encode("AND name='{name}'","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
+               new String(encode(URLEncoder.encode("AND name='{name}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+               new String(encode(URLEncoder.encode("AND login_id='{login_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
        };
+        String[] conditionValues = {
+                new String(""),
+                new String(encode(URLEncoder.encode("1^송민수|2^송민수","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+                new String(encode(URLEncoder.encode("select member_id as KEY, login_id as VALUE from member","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
+        };
+
         drb=post("/srDataRequest/add").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("subject",               "제목입니다제목입니다제목입니다제목입니다제목입니다")
                 .param("runSql",                 runSQL)
@@ -156,13 +167,13 @@ public class SrDataRequestControllerTest extends ControllerTest {
                 .param("downloadEndDate",       "2020-12-31")
                 .param("databaseId",            database.getId().toString())
                 .param("memberId",              vo.getId().toString())
-                .param("conditionWhereSql",     conditionWhereSqls[0],conditionWhereSqls[1])
-                .param("conditionWhereSqlKey",  "{SQL1}","{SQL2}")
-                .param("conditionName",         "회원번호","상명")
-                .param("conditionKey",          "{member_id}","{name}")
-                .param("conditionType",         "STRING","STRING")
-                .param("conditionValue",        "","")
-                .param("conditionRequired",     "Y","Y")
+                .param("conditionWhereSql",     conditionWhereSqls[0],conditionWhereSqls[1],conditionWhereSqls[2])
+                .param("conditionWhereSqlKey",  "{SQL1}","{SQL2}","{SQL3}")
+                .param("conditionName",         "회원번호","상명","로그인ID")
+                .param("conditionKey",          "{member_id}","{name}","{login_id}")
+                .param("conditionType",         "STRING","ARRAY","SQL")
+                .param("conditionValue",        conditionValues[0],conditionValues[1],conditionValues[2])
+                .param("conditionRequired",     "Y","Y","Y")
                 .param("srDataAllowMemberIds",  vo.getId().toString(),vo.getId().toString(),vo.getId().toString())
         ;
 
@@ -193,13 +204,19 @@ public class SrDataRequestControllerTest extends ControllerTest {
 
     }
 
+    @Test
     public void modifyBeforeConfirm() throws Exception {
 
         String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 {SQL1} {SQL2} {SQL3}","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
         String[] conditionWhereSqls = {
                 new String(encode(URLEncoder.encode("AND member_id='{member_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
-                new String(encode(URLEncoder.encode("AND login_id='{login_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
-                new String(encode(URLEncoder.encode("AND name='{name}'","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
+                new String(encode(URLEncoder.encode("AND name='{name}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+                new String(encode(URLEncoder.encode("AND login_id='{login_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
+        };
+        String[] conditionValues = {
+                new String(""),
+                new String(encode(URLEncoder.encode("1^송민수|2^송민수","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+                new String(encode(URLEncoder.encode("select member_id as KEY, login_id as VALUE from member","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
         };
         drb=put("/srDataRequest/modifyBeforeConfirm").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("id",                    srDataRequestVo.getId().toString())
@@ -214,11 +231,11 @@ public class SrDataRequestControllerTest extends ControllerTest {
                 .param("memberId",              vo.getId().toString())
                 .param("conditionWhereSql",     conditionWhereSqls[0],conditionWhereSqls[1],conditionWhereSqls[2])
                 .param("conditionWhereSqlKey",  "{SQL1}","{SQL2}","{SQL3}")
-                .param("conditionName",         "회원번호","로그인ID","성명")
-                .param("conditionKey",          "{member_id}","{login_id}","{name}")
-                .param("conditionType",         "STRING","STRING","STRING")
-                .param("conditionValue",        "","","")
-                .param("conditionRequired",     "Y","Y","N")
+                .param("conditionName",         "회원번호","상명","로그인ID")
+                .param("conditionKey",          "{member_id}","{name}","{login_id}")
+                .param("conditionType",         "STRING","ARRAY","SQL")
+                .param("conditionValue",        conditionValues[0],conditionValues[1],conditionValues[2])
+                .param("conditionRequired",     "Y","Y","Y")
                 .param("srDataAllowMemberIds",  vo.getId().toString(),vo.getId().toString(),vo.getId().toString())
         ;
 
@@ -241,6 +258,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
         assertThat(responseObject.get("contents"), notNullValue());
     }
 
+    @Test
     public void confirm() throws Exception {
         drb=put("/srDataRequest/confirm").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("id",                    srDataRequestVo.getId().toString())
@@ -263,6 +281,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
         assertThat(responseObject.get("message"), equalTo("SR data Request 승인이 완료 되었습니다."));
     }
 
+    @Test
     public void modifyAfterConfirm() throws Exception {
 
         drb=put("/srDataRequest/modifyAfterConfirm").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
@@ -296,27 +315,27 @@ public class SrDataRequestControllerTest extends ControllerTest {
         assertThat(responseObject.get("contents"), notNullValue());
     }
 
-
+    @Test
     public void list() throws Exception {
         String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
         drb=get("/srDataRequest/list").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("id",                    srDataRequestVo.getId().toString())
-                .param("subject",               "상품 데이터 추출 일자별")
-                .param("runSql",                 runSQL)
-                .param("confirmYN",             "Y")
-                .param("enableYN",              "Y")
-                .param("downloadLimit",         "0")
-                .param("downloadLimitType",     "HOURLY")
-                .param("fromCreateDate",        new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()-60*60*24*2000)))
-                .param("toCreateDate",          new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()+60*60*24*2000)))
-                .param("fromConfirmDate",        new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()-60*60*24*2000)))
-                .param("toConfirmDate",         new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()+60*60*24*2000)))
+//                .param("subject",               "상품 데이터 추출 일자별")
+//                .param("runSql",                 runSQL)
+//                .param("confirmYN",             "Y")
+//                .param("enableYN",              "Y")
+//                .param("downloadLimit",         "0")
+//                .param("downloadLimitType",     "HOURLY")
+//                .param("fromCreateDate",        new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()-60*60*24*2000)))
+//                .param("toCreateDate",          new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()+60*60*24*2000)))
+//                .param("fromConfirmDate",        new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()-60*60*24*2000)))
+//                .param("toConfirmDate",         new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()+60*60*24*2000)))
 //                .param("fromLastRunDate",        new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()-60*60*24*2000)))
 //                .param("toLastRunDate",         new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()+60*60*24*2000)))
-                .param("databaseId",            database.getId().toString())
-                .param("resistMemberId",        vo.getId().toString())
-                .param("confirmMemberId",       vo.getId().toString())
-                .param("srDataAllowMemberIds",  vo.getId().toString(),vo.getId().toString(),vo.getId().toString())
+//                .param("databaseId",            database.getId().toString())
+//                .param("resistMemberId",        vo.getId().toString())
+//                .param("confirmMemberId",       vo.getId().toString())
+//                .param("srDataAllowMemberIds",  vo.getId().toString(),vo.getId().toString(),vo.getId().toString())
         ;
 
 
@@ -337,6 +356,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
         assertThat(responseObject.get("contents"), notNullValue());
     }
 
+    @Test
     public void one() throws Exception {
         drb=get("/srDataRequest/one").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("id",                    srDataRequestVo.getId().toString())
@@ -358,8 +378,33 @@ public class SrDataRequestControllerTest extends ControllerTest {
         assertThat(responseObject.get("contents"), notNullValue());
     }
 
-    public void runNow() throws Exception {
+    @Test
+    public void searchFromCreate() throws Exception {
+        drb=get("/srDataRequest/searchFromCreate").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
+                .param("id",                  srDataRequestVo.getId().toString())
+        ;
 
+        // 로그인 cookie 정보 추가
+        drb.cookie(cookie);
+
+        // when
+        result = mvc.perform(drb)
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
+
+
+
+        // then
+        assertThat(responseObject.get("httpStatus"), equalTo(200));
+//        assertThat(responseObject.get("rowCount"), equalTo(1));
+//        assertThat(responseObject.get("contents"), notNullValue());
+    }
+
+    @Test
+    public void runNow() throws Exception {
         drb=get("/srDataRequest/runNow").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("id",                  srDataRequestVo.getId().toString())
                 .param("member_id",           vo.getId().toString())
@@ -378,33 +423,9 @@ public class SrDataRequestControllerTest extends ControllerTest {
 
         responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
 
-        logger.info(format("{}", "SR Data Request run now Contents"), responseObject);
         // then
         assertThat(responseObject.get("httpStatus"), equalTo(204));
 //        assertThat(responseObject.get("rowCount"), equalTo(1));
 //        assertThat(responseObject.get("contents"), notNullValue());
-
-
-        drb=get("/srDataRequest/runNow").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
-                .param("id",                  srDataRequestVo.getId().toString())
-                .param("member_id",           vo.getId().toString())
-                .param("login_id",            vo.getLoginId())
-        ;
-
-        // 로그인 cookie 정보 추가
-        drb.cookie(cookie);
-
-        // when
-        result = mvc.perform(drb)
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
-
-        responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
-
-        logger.info(format("{}", "SR Data Request run now Contents"), responseObject);
-        // then
-        assertThat(responseObject.get("httpStatus"), equalTo(204));
-
     }
 }

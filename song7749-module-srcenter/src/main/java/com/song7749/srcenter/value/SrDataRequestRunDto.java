@@ -28,11 +28,14 @@ public class SrDataRequestRunDto extends AbstractDto {
     private static final long serialVersionUID = -948753918456264455L;
 
     @NotNull
-    @ApiModelProperty(required = true, position = 1, value="ID",  dataType = "INT")
+    @ApiModelProperty(required = true, position = 1, value="SrDataRequestID",  dataType = "INT")
     private Long id;
 
     @ApiModelProperty(required=false, position=2, hidden = true, value="실행자")
     private Long runMemberId;
+
+    @ApiModelProperty(required=false, position=2, hidden = true, value="실행자 IP ")
+    private String remoteAddress;
 
     @ApiModelProperty(required=false, position=3, value="엑셀다운로드")
     private boolean isExcel;
@@ -46,12 +49,12 @@ public class SrDataRequestRunDto extends AbstractDto {
     @ApiModelProperty(value="Result 수를 지정할 것인가?", hidden = true)
     private boolean useLimit = true;
 
-    public SrDataRequestRunDto() {
-    }
+    public SrDataRequestRunDto() {}
 
-    public SrDataRequestRunDto(@NotNull Long id, Long runMemberId, boolean isExcel, Long limit, Long offset, boolean useLimit) {
+    public SrDataRequestRunDto(@NotNull Long id, Long runMemberId, String remoteAddress, boolean isExcel, Long limit, Long offset, boolean useLimit) {
         this.id = id;
         this.runMemberId = runMemberId;
+        this.remoteAddress = remoteAddress;
         this.isExcel = isExcel;
         this.limit = limit;
         this.offset = offset;
@@ -72,6 +75,14 @@ public class SrDataRequestRunDto extends AbstractDto {
 
     public void setRunMemberId(Long runMemberId) {
         this.runMemberId = runMemberId;
+    }
+
+    public String getRemoteAddress() {
+        return remoteAddress;
+    }
+
+    public void setRemoteAddress(String remoteAddress) {
+        this.remoteAddress = remoteAddress;
     }
 
     public boolean isExcel() {

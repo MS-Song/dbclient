@@ -1,8 +1,11 @@
 package com.song7749.srcenter.value;
 
 import com.song7749.common.AbstractVo;
+import com.song7749.common.Parameter;
 import com.song7749.common.YN;
 import com.song7749.srcenter.type.DataType;
+
+import java.util.List;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -49,6 +52,9 @@ public class SrDataConditionVo extends AbstractVo {
 
     @ApiModelProperty(dataType = "String", value = "검색 조건 기본 값")
     private String value;
+
+    @ApiModelProperty(dataType = "String", value = "검색 조건의 기본 값 설정 (Combo 또는 SQL 인 경우 셋팅함")
+    private List<Parameter> values;
 
     @ApiModelProperty(dataType = "String", value = "필수값 여부")
     private YN required;
@@ -129,5 +135,13 @@ public class SrDataConditionVo extends AbstractVo {
 
     public void setRequired(YN required) {
         this.required = required;
+    }
+
+    public List<Parameter> getValues() {
+        return values;
+    }
+
+    public void setValues(List<Parameter> values) {
+        this.values = values;
     }
 }

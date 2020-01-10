@@ -13,6 +13,8 @@ import com.song7749.srcenter.type.DataType;
 import com.song7749.srcenter.type.DownloadLimitType;
 import com.song7749.srcenter.value.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import sun.util.calendar.LocalGregorianCalendar;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static org.castor.util.Base64Encoder.encode;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
@@ -89,11 +92,11 @@ public class SrDataRequestServiceImplTest extends UnitTest {
     public void setUp() throws Exception {
         memberRepository.saveAndFlush(member);
         databaseRepository.saveAndFlush(database);
-        whereSqls.add("and a=#{key}");
+        whereSqls.add(new String(encode(URLEncoder.encode("and a=#{key}","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
         whereSqlKeys.add("${Key}");
         names.add("검색");
         keys.add("변수명");
-        values.add("값");
+        values.add(new String(encode(URLEncoder.encode("value1","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
         types.add(DataType.DATE);
         requireds.add(YN.Y);
         srDataAlowMemberIds.add(new Long(member.getId()));
@@ -104,7 +107,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
     }
 
     @Test
-    public void allTests(){
+    public void allTests() throws UnsupportedEncodingException {
         add();
         modifyBeforeConfirm();
         confirm();
@@ -114,11 +117,11 @@ public class SrDataRequestServiceImplTest extends UnitTest {
         removeRequest();
     }
 
-    public void add() {
+    public void add() throws UnsupportedEncodingException {
         // give
         SrDataRequestAddDto dto = new SrDataRequestAddDto(
                 "제목입니다제목입니다제목입니다제목입니다",
-                "select 1 from dual",
+                new String(encode(URLEncoder.encode("select sysdate from dual","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
                 0,
                 DownloadLimitType.HOURLY,
                 new Date(),
@@ -144,20 +147,20 @@ public class SrDataRequestServiceImplTest extends UnitTest {
 
 
     @Ignore
-    public void modifyBeforeConfirm(){
+    public void modifyBeforeConfirm() throws UnsupportedEncodingException {
         // give
-        whereSqls.add("and b=#{key2}");
+        whereSqls.add(new String(encode(URLEncoder.encode("and a=#{key2}","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
         whereSqlKeys.add("${Key}");
         names.add("검색2");
         keys.add("변수명2");
-        values.add("값2");
+        values.add(new String(encode(URLEncoder.encode("value2","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
         types.add(DataType.DATE);
         requireds.add(YN.Y);
         srDataAlowMemberIds.add(member.getId());
         SrDataRequestModifyBeforeConfirmDto beforeDto = new SrDataRequestModifyBeforeConfirmDto(
                 vo.getId(),
                 "검색으로변경합니다.검색으로변경합니다.검색으로변경합니다.",
-                "select sysdate from dual",
+                new String(encode(URLEncoder.encode("select sysdate from dual","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
                 YN.Y,
                 0,
                 DownloadLimitType.WEEKLY,
@@ -241,21 +244,21 @@ public class SrDataRequestServiceImplTest extends UnitTest {
 
         SrDataRequestFindDto dto = new SrDataRequestFindDto();
         dto.setId(vo.getId());
-        dto.setSubject(vo.getSubject());
-        dto.setRunSql(vo.getRunSql());
-        dto.setEnableYN(vo.getEnableYN());
-        dto.setConfirmYN(vo.getConfirmYN());
-        dto.setFromCreateDate(vo.getCreateDate());
-        dto.setToCreateDate(vo.getCreateDate());
-        dto.setFromConfirmDate(vo.getConfirmDate());
-        dto.setToConfirmDate(vo.getConfirmDate());
-        dto.setFromLastRunDate(vo.getLastRunDate());
-        dto.setToLastRunDate(vo.getLastRunDate());
-        dto.setLastErrorMessage(vo.getLastErrorMessage());
-        dto.setDatabaseId(vo.getDatabaseVo().getId());
-        dto.setResistMemberId(vo.getResistMemberVo().getId());
-        dto.setConfirmMemberId(vo.getConfirmMemberVo().getId());
-        dto.setSrDataAllowMemberIds(vo.getSrDataAllowMemberIds());
+//        dto.setSubject(vo.getSubject());
+//        dto.setRunSql(vo.getRunSql());
+//        dto.setEnableYN(vo.getEnableYN());
+//        dto.setConfirmYN(vo.getConfirmYN());
+//        dto.setFromCreateDate(vo.getCreateDate());
+//        dto.setToCreateDate(vo.getCreateDate());
+//        dto.setFromConfirmDate(vo.getConfirmDate());
+//        dto.setToConfirmDate(vo.getConfirmDate());
+//        dto.setFromLastRunDate(vo.getLastRunDate());
+//        dto.setToLastRunDate(vo.getLastRunDate());
+//        dto.setLastErrorMessage(vo.getLastErrorMessage());
+//        dto.setDatabaseId(vo.getDatabaseVo().getId());
+//        dto.setResistMemberId(vo.getResistMemberVo().getId());
+//        dto.setConfirmMemberId(vo.getConfirmMemberVo().getId());
+//        dto.setSrDataAllowMemberIds(vo.getSrDataAllowMemberIds());
 
         // when
         Page<SrDataRequestVo> srDataRequestVos = srDataReqeustService.find(dto, page);

@@ -84,37 +84,10 @@ webix.ready(function(){
 								scroll:true,
 								clipboard:"selection",
 								on:{"onItemClick":function(){
-									sr_data_request_popup(this.getSelectedItem());
+									sr_data_request_run_popup(this.getSelectedItem().id);
 								}}
 							}] // end rows
 						} // end body	
-					},
-					{ view:"resizer", id:"screen_heighter"},
-					{ 
-						id:"sr_data_request_run_tab",	
-						header:"SR Data Task Run Log",
-						collapsed:false,
-						width:400, 
-						body:{
-							view:"datatable",
-							id:"sr_data_request_run_log", 	
-							columns:[
-				        		{id:"status", 				header:"실행",	adjust:true},
-								{id:"id", 					header:"ID",	adjust:true},
-				        		{id:"subject", 				header:"제목",	adjust:true},
-				        		{id:"processTime", 			header:"실행시간",	adjust:true},
-				        		{id:"time", 				header:"시간",	adjust:true},
-							],	
-							data:[],
-							tooltip:true,
-							select:"row",
-							resizeColumn:true,
-							scroll:true,
-							clipboard:"selection",
-							on:{"onItemClick":function(){
-								sr_data_request_popup(this.getSelectedItem());
-							}}
-						}
 					}
 				]// end cols
 			},

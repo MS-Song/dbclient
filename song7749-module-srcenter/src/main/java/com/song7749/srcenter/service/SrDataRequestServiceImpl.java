@@ -1,6 +1,7 @@
 package com.song7749.srcenter.service;
 
 import com.song7749.common.MessageVo;
+import com.song7749.common.Parameter;
 import com.song7749.common.YN;
 import com.song7749.common.validate.Validate;
 import com.song7749.dbclient.domain.Database;
@@ -15,11 +16,17 @@ import com.song7749.srcenter.repository.SrDataRequestRepository;
 import com.song7749.srcenter.type.DataType;
 import com.song7749.srcenter.value.*;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import com.song7749.util.StringUtils;
+import oracle.net.aso.e;
+import org.apache.commons.lang3.ArrayUtils;
+import org.castor.util.Base64Decoder;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,8 +82,12 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
     @Override
     public SrDataRequestVo add(SrDataRequestAddDto dto) {
 
+        // request 데이터 선 가공
+
         // 파라메터 검증
         conditionValidate(dto);
+        // SQL 데이터 디코드
+        decodeSQL(dto);
 
         // 회원 정보를 획득
         Optional<Member> oMember = memberRepository.findById(dto.getMemberId());
@@ -94,6 +105,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         if(!oDatabase.isPresent()){
             throw new IllegalArgumentException("Database 정보가 일치하지 않습니다.");
         }
+
         // 모델 mapper 를 사용한 자동매핑 후에 매핑되지 않는 것들을 처리 한다.
         SrDataRequest sdr = mapper.map(dto, SrDataRequest.class);
 
@@ -132,12 +144,15 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
     public SrDataRequestVo modify(SrDataRequestModifyBeforeConfirmDto dto) {
         // 파라메터 검증
         conditionValidate(dto);
+        // SQL 데이터 디코드
+        decodeSQL(dto);
 
         // 기 입력된 데이터를 로딩
         Optional<SrDataRequest> optionalSrDataRequest = srDataRequestRepository.findById(dto.getId());
         if(!optionalSrDataRequest.isPresent()){
             throw new IllegalArgumentException("일치하는 정보가 없습니다.");
         }
+
 
         // 객체 값 복사
         SrDataRequest sdr = optionalSrDataRequest.get();
@@ -154,6 +169,13 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
             throw new IllegalArgumentException("허용된 대상자가 없습니다.");
         }
         sdr.setSrDataAllowMembers(srDataAllowMembers);
+
+        // database 정보 획득
+        Optional<Database> oDatabase = databaseRepository.findById(dto.getDatabaseId());
+        if(!oDatabase.isPresent()){
+            throw new IllegalArgumentException("Database 정보가 일치하지 않습니다.");
+        }
+        sdr.setDatabase(oDatabase.get());
 
         // 기존 입력 condition 을 모두 제거 한다.
         sdr.getSrDataConditions().clear();
@@ -275,6 +297,94 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
 
     @Transactional(readOnly = true)
     @Override
+    public SrDataRequestVo searchFromCreate(SrDataRequestRunDto dto, HttpServletRequest request) {
+        SrDataRequestVo srDataRequestVo = find(new SrDataRequestFindDto(dto.getId()));
+        List<SrDataConditionVo> conditionVos = srDataRequestVo.getSrDataConditionVos();
+
+        for(SrDataConditionVo vo : conditionVos){
+            // 배열 타입의 경우 데이터를 정리해서 넣는다.
+            if(vo.getType().equals(DataType.ARRAY)){
+                // 값이 있어야하고, 파싱이 가능한 상태인 경우에만 입력해야 한다.
+                if(StringUtils.isNotBlank(vo.getValue())){
+                    // 입력 값을 | 로 분리 한다.
+                    String[] values = vo.getValue().split("|");
+                    // 값이 있는 경우
+                    if(ArrayUtils.isNotEmpty(values)){
+                        // 파라메터를 생성 한다.
+                        List<Parameter> parameters = new ArrayList<>();
+                        for(String value : values){
+                            // 값이 있는 경우
+                            if(StringUtils.isNotBlank(value)){
+                                // ^ 로 분리 한다.
+                                String[] param = value.split("^");
+                                if(ArrayUtils.isNotEmpty(param)  && param.length > 1){
+                                    parameters.add(new Parameter(param[0],param[1]));
+                                }
+                            }
+                        }
+                        // 파라메터 셋팅
+                        vo.setValues(parameters);
+                    }
+                }
+            } // 배열 타입 종료
+            // SQL 타입인 경우
+            else if(vo.getType().equals(DataType.SQL)){
+                // 값이 존재 하는 경우에...
+                if(StringUtils.isNotBlank(vo.getValue())){
+
+                    // 실행 회원의 정보 조회
+                    Optional<Member> oMember = memberRepository.findById(dto.getRunMemberId());
+                    if(!oMember.isPresent()){
+                        throw new IllegalArgumentException("실행 회원의 정보를 찾을 수 없습니다.");
+                    }
+
+                    // 최종 결과를 실행 한다.
+                    ExecuteQueryDto excuteDto = new ExecuteQueryDto(srDataRequestVo.getDatabaseVo().getId(), oMember.get().getLoginId());
+                    // DTO 설정
+                    excuteDto.setQuery(vo.getValue());
+                    // 기본값 설정
+                    excuteDto.setUseLimit(false);
+                    excuteDto.setHtmlAllow(false);
+                    excuteDto.setAutoCommit(false);
+                    excuteDto.setUseCache(false);
+                    try{
+                        excuteDto.setIp(request.getRemoteAddr());
+                    } catch (Exception e){
+                        throw new IllegalArgumentException("접속자 IP 획득에 실패 했습니다.");
+                    }
+                    try{
+                        MessageVo message = null;
+                        try{
+                            message = dbClientManager.executeQuery(excuteDto);
+                        } catch(Exception e){
+                            throw new IllegalArgumentException(e.getMessage());
+                        }
+
+                        logger.debug("데이터 조회 결과  : {}",message);
+                        // 데이터가 있는 경우에만..
+                        if(null!=message.getContents()
+                                && message.getContents() instanceof List){
+
+                            List<Map<String,String>> contents = (List<Map<String,String>>)message.getContents();
+
+                            List<Parameter> parameters = new ArrayList<>();
+                            for(Map<String,String> data : contents){
+                                parameters.add(new Parameter(data.get("KEY"), data.get("VALUE")));
+                            }
+                            vo.setValues(parameters);
+                        }
+                    } catch(Exception e){
+                        throw new IllegalArgumentException("Parameter Type SQL 인 경우 Select 구문을 KEY, VALUE 로 입력해야 합니다.(대문자) \n  또는 다음 메세지를 참조하세요 : "+e.getMessage());
+                    }
+                }
+            }
+        }
+
+        return srDataRequestVo;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public MessageVo runSql(SrDataRequestRunDto dto, HttpServletRequest request) {
         // 대상 요청을 조회 한다.
         Optional<SrDataRequest> oSrDataRequest = srDataRequestRepository.findById(dto.getId());
@@ -305,7 +415,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                 // where 를 해당 위치로 치환 한다.
                 sql = StringUtils.replacePatten("\\{"+ whereSqlKey.toLowerCase()+"\\}",sdc.getWhereSql().toLowerCase(), sql.toLowerCase());
                 // value 를 치환한다.
-                sql = StringUtils.replacePatten("\\{"+ key.toLowerCase()+"\\}",value, sql.toLowerCase());
+                sql = StringUtils.replacePatten("\\{"+ key.toLowerCase()+"\\}","'"+value+"'", sql.toLowerCase());
             } else { // value 가 추가되지 않을 경우에는 whereKey 를 제거 한다.
                 sql = StringUtils.replacePatten("\\{"+ whereSqlKey.toLowerCase()+"\\}","", sql.toLowerCase());
             }
@@ -345,6 +455,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
 
     }
 
+
     private void conditionValidate(Object dto){
         // 파라메터에 대한 추가 검증
         int beforeLength = 0, loop=0;
@@ -356,6 +467,15 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                 try {
                     // private 멤버를 잠시 읽기 가능하도록 변경
                     f.setAccessible(true);
+
+                    // value 는 선택 값인데, 1개인 경우 null 로 취급 됨으로, 예외 처리를 진행 한다.
+                    if(beforeLength==1
+                            && f.getName().startsWith("conditionValue")){
+                        if(CollectionUtils.isEmpty((List)f.get(dto))){
+                            ((List)f.get(dto)).add(new String());
+                        };
+                    }
+
                     boolean ckeckLoop = loop!=0;
                     boolean checkSize = f.get(dto) instanceof List;
                     checkSize = checkSize && beforeLength != ((List)f.get(dto)).size();
@@ -373,6 +493,72 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                     throw new IllegalArgumentException(message);
                 }
                 loop++;
+            }
+        }
+    }
+
+    /**
+     * SQL 의 경우 방화벽 이슈로 인해 front 에서 encode 하여 전달 함으로, decode 하여 처리 한다.
+     * @param dto
+     */
+    private void decodeSQL(Object dto) {
+        for(Field f :  dto.getClass().getDeclaredFields()){
+            // 필드를 읽기 가능 상태로 변경 한다.
+            f.setAccessible(true);
+            // 실행 쿼리에 대한 decode
+            if(f.getName().equals("runSql")){
+                try {
+                    // dto 내의 데이터를 획득 한다.
+                    String encode = (String) f.get(dto);
+                    String decode = URLDecoder.decode(
+                            new String(
+                                    Base64Decoder.decode(encode)
+                                    , Charset.forName("UTF-8"))
+                            , "UTF-8");
+                    f.set(dto, decode);
+
+                    logger.debug("encode 대상 데이터 : {}, 변환 완료 데이터 : {}", encode,decode);
+                } catch(Exception e){
+                    throw new IllegalArgumentException(f.getName()+" 데이터가 입력되지 않았습니다. ");
+                }
+            }
+            // condition 인 경우
+            else if(f.getName().equals("conditionWhereSql")
+                    || f.getName().equals("conditionValue")){
+
+                List<String> conditions  = null;
+                try{
+                    conditions  = (List)f.get(dto);
+                } catch(Exception e){
+                    throw new IllegalArgumentException(f.getName()+" 데이터 변환에 문제가 발생 했습니다.");
+                }
+
+                logger.debug("{} 의 encode 대상 데이터 : {}", f.getName(), conditions);
+
+                List<String> decodes = new ArrayList<String>();
+                for(String encode : conditions){
+                    // dto 내의 데이터를 획득 한다.
+                    try {
+                        logger.debug("{} 의 데이터 : {}", f.getName(),encode);
+                        String decode = null;
+                        if(StringUtils.isNotEmpty(encode)){
+                            decode = URLDecoder.decode(
+                                new String(
+                                    Base64Decoder.decode(encode)
+                                    , Charset.forName("UTF-8"))
+                                , "UTF-8");
+                        }
+                        decodes.add(decode);
+                    } catch(Exception e){
+                        throw new IllegalArgumentException(f.getName()+" 데이터가 입력되지 않았습니다. ");
+                    }
+                }
+
+                try {
+                    f.set(dto, decodes);
+                } catch(Exception e){
+                    throw new IllegalArgumentException(f.getName()+" 데이터를 입력에 실패했습니다.");
+                }
             }
         }
     }
