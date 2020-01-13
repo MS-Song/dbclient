@@ -102,9 +102,9 @@ public class InitSRdataRequestConfigBean {
 				members);
 
 		List<SrDataCondition> conditions = Arrays.asList(new SrDataCondition[]{
-				new SrDataCondition("and database_id={database_id}", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select database_id as KEY, host as VALUE  from database_info", YN.Y, sdr),
-				new SrDataCondition("and host={host}", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr),
-				new SrDataCondition("and port={port}", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.Y, sdr),
+				new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as KEY, '- database 선택 -' as VALUE union select database_id as KEY, host as VALUE  from database_info order by key ASC", YN.N, sdr),
+				new SrDataCondition("and host like '%{host}%'", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr),
+				new SrDataCondition("and port='{port}'", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.N, sdr),
 
 		});
 

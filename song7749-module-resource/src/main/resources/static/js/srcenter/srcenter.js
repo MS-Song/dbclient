@@ -181,6 +181,11 @@ webix.ready(function(){
  * 등록 팝업
  */
 let sr_data_request_popup = function(requestItem){
+	// 일반 사용자는 등록을 차단 한다.
+	if(member.authType == '' || member.authType =='NORMAL'){
+		return alert("개발자/관리자 만 등록/수정이 가능 합니다.");
+	}
+
 	webix.ui({
 	    view:"window",
 	    id:"sr_data_request_popup",
@@ -215,6 +220,7 @@ let sr_data_request_popup = function(requestItem){
  * 팝업 elements 생성
  */
 let sr_data_request_form_creator = function(requestItem){
+
 	let path='';							// swagger path
 	let formParams=[];						// swagger form parameters
 	let elementList = [];					// request from elements
@@ -228,14 +234,14 @@ let sr_data_request_form_creator = function(requestItem){
 		} ,hotkey: "esc"
 	};
 
-	// 조건 추가
+	// SQL 조건 추가
 	let buttonAddConditions = {
 		view:"button", value:"조건 추가 >> ", click:function() {
 			addConditions(dynamicElements);
 		}
 	};
 
-	// Conditions 입력 처리
+	// Conditions 폼 생성
 	let addConditions = function(obj) {
 		$$("sr_data_request_form_right").addView({
 			view:"fieldset",
@@ -260,7 +266,6 @@ let sr_data_request_form_creator = function(requestItem){
 			}
 		});
 	};
-
 
 	if(undefined==requestItem){ // 신규 등록
 		// path 기록
@@ -328,12 +333,20 @@ let sr_data_request_form_creator = function(requestItem){
 		// 구역 구분
 		elementList.unshift({ template:"SR Request INFO", type:"section"});
 
-		// 버튼 추가
+		// 등록/취소 조건 추가
 		elementList.push({
 			cols:[buttonCancel,buttonResist]
 		});
+
+		let buttonRunTestAlert = {
+			view:"button", value:"테스트", click:function() {
+				alert("테스트는 등록 후 수정 시 가능 합니다.");
+			}
+		};
+
+		// 조건 추가 및 테스트
 		elementList.push({
-			cols:[{},buttonAddConditions]
+			cols:[buttonRunTestAlert,buttonAddConditions]
 		});
 
 		// elements left 추가
@@ -472,6 +485,7 @@ let sr_data_request_form_creator = function(requestItem){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("sr_data_request_popup").hide();
+						sr_data_request_run_popup(this.getSelectedItem().id);
 						sr_data_request_list_create();
 					} else {
 						webix.message({ type:"error", text:data.json().message });
@@ -480,32 +494,6 @@ let sr_data_request_form_creator = function(requestItem){
 			}
 		}
 
-		// 즉시 실행 버튼
-		let runNow = {
-			view:"button", value:"즉시 실행", click:function(){
-				webix.ajax().put('/srDataRequest/runNow',{id:requestItem.id,test:"false"}, function(text,data){
-					if(data.json().httpStatus==200){
-						webix.message(data.json().message);
-					} else {
-						webix.message({ type:"error", text:data.json().message });
-					}
-				});
-			}
-		}
-
-		// 테스트 실행 
-		let runTest = {
-			view:"button", value:"SQL 생성 테스트", click:function(){
-				webix.ajax().put('/srDataRequest/runNow',{id:requestItem.id,test:"true"}, function(text,data){
-					if(data.json().httpStatus==200){
-						webix.message(data.json().message);
-					} else {
-						webix.message({ type:"error", text:data.json().message });
-					}
-				});
-			}
-		}
-		
 		// 승인 요청
 		let confirmRequestButton={
 			view:"button", value:"승인요청", click:function(){// 승인요청
@@ -562,11 +550,7 @@ let sr_data_request_form_creator = function(requestItem){
 		}
 
 		// SQL 구문 확인, 테스트 실행 등 확인 작업
-		if(requestItem.confirmYN == "Y"){
-			elementList.push({cols:[runTest,runNow,buttonAddConditions]});
-		} else {
-			elementList.push({cols:[runTest,{},buttonAddConditions]});
-		}
+		elementList.push({cols:[{},buttonAddConditions]});
 
 		// 구역 구분
 		elementList.unshift({ template:"SR Request INFO", type:"section"});
@@ -643,16 +627,41 @@ let sr_data_request_run_popup = function(item){
 					borderless:true,
 					elements: [],
 					scroll: "Y",
-					width:350
+					width:350,
+					autoheight:true
 				},
 				{ view:"resizer"},
 				{
-					id:"sr_data_request_run_result_list",
-					view:"datatable",
-					borderless:true,
-					scroll: true,
-					data:[],
-					select:true,
+					view:"accordion",
+					multi:true,
+					rows:[{
+						id:"sr_data_request_run_result_list",
+						view:"datatable",
+						borderless:true,
+						scroll: true,
+						data:[],
+						select:true
+					},
+					{ view:"resizer"},
+					{
+						id:"sr_data_request_run_debug_list",
+						header : "DEBUG",
+						hidden:true,
+						body:{cols:[{
+								view : "textarea",
+								id:"sr_data_request_run_sql_text",
+								label:"SQL DEBUG",
+								labelPosition:"top",
+								adjust:true
+							},{
+								view : "textarea",
+								id:"sr_data_request_run_error_text",
+								label:"Error LOG",
+								labelPosition:"top",
+								adjust:true
+							}
+						]},
+					}]
 				}
 		]}
 	}).show();
@@ -665,8 +674,15 @@ let sr_data_request_run_popup = function(item){
  * 팝업 elements 생성
  */
 let sr_data_request_run_creator = function (item){
+	// 검색 가능 값을 조회 한다.
+	let searchFormElements=[];
 
-	let searchFormElements=[];				// 검색 가능 값을 조회 한다.
+	// 일반 사용자의 경우 디버그 창을 보여주지 않고, 개발자-관리자 에게만 열어 준다.
+	if(member.authType == '' || member.authType =='NORMAL'){
+		$$("sr_data_request_run_debug_list").hide();
+	} else {
+		$$("sr_data_request_run_debug_list").show();
+	}
 
 	// 해당 SR의 검색 가능 값을 조회하여 form 을 생성 한다.
 	webix.ajax().get('/srDataRequest/searchFromCreate', {id:item}, function(text,data){
@@ -674,7 +690,7 @@ let sr_data_request_run_creator = function (item){
 			let requestObject = data.json().contents;
 			// header 설정
 			$$("sr_data_request_run_popup").getHead().setHTML("[" + requestObject.id + "] " + requestObject.subject);
-			console.log(requestObject);
+
 			// 임시 객체에 넣는다.
 			let searchFormElements = [];
 			$.each(requestObject.srDataConditionVos,function(index, value){
@@ -684,27 +700,82 @@ let sr_data_request_run_creator = function (item){
 				element.required 		= value.required == 'Y' ? true : false;
 
 				if(value.type == 'ARRAY' || value.type == 'SQL'){
-					element.type 			= 	'select';
-					element.values 			=	[];
+					element.type 		= 	'select';
+					element.values 		=	[];
+					//console.log(value.values);
 					$.each(value.values,function(index,obj){
-						element.values.push({id:obj.name,value:obj.value});
+						element.values.push({id:obj.name == null ? '' : obj.name , value:obj.value});
 					});
 				} else if(value.type == 'DATE') {
-					element.type 			= 	value.type == 'DATE'
+					element.type 		= 	value.type == 'DATE'
 				}
 				searchFormElements.push(createWebForm(element,true,false));
 			});
 			// id 값을 추가로 넣는다.
 			searchFormElements.push(createWebForm({name:'id',type:'hidden',value:requestObject.id},false,false));
 
+			// 개발자/관라자의 경우 debug 창을 추가로 처리 한다.
+			if($$("sr_data_request_run_debug_list").config.hidden == false){
+				searchFormElements.push(createWebForm({name:"debug",type:"hidden",value:"true"},false,false));
+			}
+
 			// 검색
 			let buttonSearch = {
 				view:"button",
 				value:"검색",
 				click:function(){
-					getDataParseView('/srDataRequest/runNow',$$("sr_data_request_run_search_form").getValues(),"sr_data_request_run_result_list",true,false,false);
-				}
-			};
+					// progress 시작
+					try {
+						$$("sr_data_request_run_result_list").showProgress();
+					} catch (e) {
+						// progress 가 없을 경우 생성 한다음 다시 실행 한다.
+						webix.extend($$("sr_data_request_run_result_list"), webix.ProgressBar);
+						$$("sr_data_request_run_result_list").showProgress();
+					}
+					webix.ajax().get("/srDataRequest/runNow",  $$("sr_data_request_run_search_form").getValues(), function(text,data){
+						// 디버그 모드가 활성화 된 경우 SQL 로그와 Error 로그를 넣는다.
+						if($$("sr_data_request_run_debug_list").config.hidden == false){
+							if(data.json().httpStatus == 200 || data.json().httpStatus == 204){
+								$$("sr_data_request_run_sql_text").setValue(data.json().message);
+							} else {
+								$$("sr_data_request_run_error_text").setValue(data.json().message);
+							}
+						}
+
+						// 데이터가 잘 온 경우 데이터를 파싱하여 처리 한다.
+						if(data.json().httpStatus == 200
+							&& null!=data.json().contents
+							&& null!=data.json().contents.length>0){
+
+							// 기존 헤더를 삭제 한다.
+							$$("sr_data_request_run_result_list").config.columns = [];
+							// 기존 입력 데이터를 삭제 한다.
+							$$("sr_data_request_run_result_list").clearAll();
+							// 헤더 루프 생성
+							let loop=0;
+							// header 생성
+							$.each(data.json().contents[0],function(header,name){
+								$$("sr_data_request_run_result_list").config.columns[loop]={};
+								$$("sr_data_request_run_result_list").config.columns[loop].id = header;
+								$$("sr_data_request_run_result_list").config.columns[loop].header = header;
+								$$("sr_data_request_run_result_list").config.columns[loop].adjust = true;
+								if(!isNaN(this)){
+									$$("sr_data_request_run_result_list").config.columns[loop].sort="int";
+								} else {
+									$$("sr_data_request_run_result_list").config.columns[loop].sort="string";
+								}
+								loop++;
+							});
+							$$("sr_data_request_run_result_list").refreshColumns();
+							$$("sr_data_request_run_result_list").parse(data.json().contents);
+							$$("sr_data_request_run_result_list").refresh();
+						} else {
+							errorControll(data.json());
+						}
+						$$("sr_data_request_run_result_list").hideProgress();
+					}
+				);
+			}};
 
 			let buttonReset = {
 				view: "button",
@@ -718,6 +789,7 @@ let sr_data_request_run_creator = function (item){
 
 			searchFormElements.push({cols:[buttonReset,buttonSearch]});
 
+			//
 			let buttonCancel = {
 				view:"button", value:"닫기", click:function() {
 					$$("sr_data_request_run_popup").hide();
@@ -729,8 +801,14 @@ let sr_data_request_run_creator = function (item){
 					sr_data_request_popup({id:item,"confirmYN":null});
 				}
 			}
-			// 닫기 및 수정 버튼
-			searchFormElements.unshift({cols:[buttonCancel,buttonModify]});
+
+			// 일반 사용자는 닫기만 가능
+			if(member.authType == '' || member.authType =='NORMAL'){
+				searchFormElements.unshift({cols:[buttonCancel,{}]});
+			} else {
+				searchFormElements.unshift({cols:[buttonCancel,buttonModify]});
+			}
+
 			// 구역 구분
 			searchFormElements.unshift({ template:"검색 조건", type:"section"});
 
@@ -739,9 +817,10 @@ let sr_data_request_run_creator = function (item){
 				$$("sr_data_request_run_search_form").addView(searchFormElements[index]);
 			}
 		} else {
+			// 에러가 발생할 경우 수정 폼으로 이동 시킨다. (폼 자체를 열수 없을 경우에 한 함)
 			webix.message ({ type:"error", text:data.json().message });
-			sr_data_request_popup({id:item});
 			$$("sr_data_request_run_popup").hide();
+			sr_data_request_popup({id:item});
 		}
 	});
 }

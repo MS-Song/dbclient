@@ -71,7 +71,7 @@ public class SrDataRequestController {
     @ApiOperation(value = "Sr Data 등록"
             ,notes = "Sr Data Request 를 등록 한다. "
             ,response=MessageVo.class)
-    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @Login({AuthType.DEVELOPER,AuthType.ADMIN})
     @PostMapping("/add")
     public MessageVo add(HttpServletRequest request,
                          HttpServletResponse response,
@@ -86,7 +86,7 @@ public class SrDataRequestController {
     @ApiOperation(value = "Sr Data 승인 전 수정"
             ,notes = "Sr Data Request 승인 전에 수정하는 기능 "
             ,response=SrDataRequestModifyBeforeConfirmDto.class)
-    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @Login({AuthType.DEVELOPER,AuthType.ADMIN})
     @PutMapping("/modifyBeforeConfirm")
     public MessageVo modifyBeforeConfirm(HttpServletRequest request,
                                          HttpServletResponse response,
@@ -117,7 +117,7 @@ public class SrDataRequestController {
     @ApiOperation(value = "Sr Data 승인 후 수정"
             ,notes = "Sr Data Request 승인 후에 수정하는 기능 "
             ,response=MessageVo.class)
-    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @Login({AuthType.DEVELOPER,AuthType.ADMIN})
     @PutMapping("/modifyAfterConfirm")
     public MessageVo modifyAfterConfirm(HttpServletRequest request,
                                          HttpServletResponse response,
@@ -148,7 +148,7 @@ public class SrDataRequestController {
     @ApiOperation(value = "SR Data Request List 조회"
             ,notes = "등록된 SR Data Request 리스트를 조회 한다."
             ,response=SrDataRequestVo.class)
-    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @Login({AuthType.NORMAL,AuthType.DEVELOPER,AuthType.ADMIN})
     @GetMapping("/list")
     public Page<SrDataRequestVo> list(
             HttpServletRequest request,
@@ -162,7 +162,7 @@ public class SrDataRequestController {
     @ApiOperation(value = "SR Data Request 단일 조회"
             ,notes = "등록된 SR Data Request 단일 항목을 조회 한다."
             ,response=SrDataRequestVo.class)
-    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @Login({AuthType.NORMAL,AuthType.DEVELOPER,AuthType.ADMIN})
     @GetMapping("/one")
     public MessageVo one(
             HttpServletRequest request,
@@ -175,7 +175,7 @@ public class SrDataRequestController {
     @ApiOperation(value = "SR Data Request 실행을 위한 검색 조건 조회"
             ,notes = "등록된 SR Data Request 를 실행을 위한 검색 조건들을 생성하여 전송 "
             ,response=SrDataRequestVo.class)
-    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @Login({AuthType.NORMAL,AuthType.DEVELOPER,AuthType.ADMIN})
     @GetMapping("/searchFromCreate")
     public MessageVo searchFromCreate(
             HttpServletRequest request,
@@ -190,7 +190,7 @@ public class SrDataRequestController {
     @ApiOperation(value = "SR Data Request 실행"
             ,notes = "SR Data Request 를 실행 한다."
             ,response=MessageVo.class)
-    @Login({AuthType.NORMAL,AuthType.ADMIN})
+    @Login({AuthType.NORMAL,AuthType.DEVELOPER,AuthType.ADMIN})
     @GetMapping("/runNow")
     public MessageVo run(HttpServletRequest request,
                          HttpServletResponse response,

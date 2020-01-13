@@ -171,6 +171,12 @@ webix.ready(function(){
  * 알람 등록 팝업
  */
 var incident_alarm_popup = function(alarmItem){
+
+	// 일반 사용자는 등록을 차단 한다.
+	if(member.authType == '' || member.authType =='NORMAL'){
+		return alert("개발자만 등록/수정이 가능 합니다.");
+	}
+
 	webix.ui({
 	    view:"window",
 	    id:"incident_alarm_popup",

@@ -111,7 +111,7 @@ public class LoginManagerImpl implements LoginManager{
 	/**
 	 * 로그인 쿠키를 생성한다.
 	 * 	-- 만료 기간 전에 로그인 쿠키 재생성에도 사용된다.
-	 * @param member
+	 * @param lav
 	 * @param request
 	 * @param response
 	 * @return
@@ -260,19 +260,21 @@ public class LoginManagerImpl implements LoginManager{
 		if(loginSession.isLogin()
 				&& null != loginSession.getLogin().getAuthType()) {
 
-			// NORMAL - DEVELOPER - ADMIN 순으로 권한 상속
+			// controller 에 정의되어 있는 로그인 가능 범위
 			for(AuthType at : login.value()){
 				// 권한이 매치되면 그냥 넘어 간다.
 				if(loginSession.getLogin().getAuthType().equals(at)){
 					return true;
-				} else { 	// 매치가 되지 않을 경우 상속으로 처리 되도록 한다.
-					// NORMAL 인 경우 3가지 권한을 모두 허용 한다.
+				}
+				// NORMAL - DEVELOPER - ADMIN 순으로 권한 상속
+				else { 	// 매치가 되지 않을 경우 상속으로 처리 되도록 한다.
+					// NORMAL 접근 가능 기능에는 NORMAL , DEVELOPER, ADMIN 접근 가능
 					if(at.equals(AuthType.NORMAL)){
 						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.NORMAL);
 						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.DEVELOPER);
 						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.ADMIN);
 					}
-					// DEVELOPER 인 경우 2가지 권한만 허용 한다.
+					// DEVELOPER 접근 가능에는 DEVELOPER, ADMIN 접근 가능
 					if(at.equals(AuthType.DEVELOPER)){
 						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.DEVELOPER);
 						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.ADMIN);

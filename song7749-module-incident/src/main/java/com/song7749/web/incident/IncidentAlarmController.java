@@ -83,7 +83,7 @@ public class IncidentAlarmController {
 	@ApiOperation(value = "알람 등록"
 			,notes = "알람을 등록한다."
 			,response=MessageVo.class)
-	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@Login({AuthType.DEVELOPER,AuthType.ADMIN})
 	@PostMapping("/add")
 	public MessageVo addIncidentAlarm(
 			HttpServletRequest request,
@@ -116,7 +116,7 @@ public class IncidentAlarmController {
 	@ApiOperation(value = "알람 승인전 수정"
 			,notes = "알람 승인 전에 수정을 수행 한다."
 			,response=MessageVo.class)
-	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@Login({AuthType.DEVELOPER,AuthType.ADMIN})
 	@PutMapping("/modifyBeforeConfirm")
 	public MessageVo modifyBeforeConfirm(
 			HttpServletRequest request,
@@ -160,7 +160,7 @@ public class IncidentAlarmController {
 	@ApiOperation(value = "알람 승인 요청"
 			,notes = "등록된 알람을 승인 요청 한다.<br/> 관리자로 등록된 모든 회원에게 승인 요청 메일이 발송된다."
 			,response=MessageVo.class)
-	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@Login({AuthType.DEVELOPER,AuthType.ADMIN})
 	@PutMapping("/confirmRequest")
 	public MessageVo confirmRequest(
 			HttpServletRequest request,
@@ -191,7 +191,7 @@ public class IncidentAlarmController {
 	@ApiOperation(value = "알람 즉시 실행"
 			,notes = "알람을 즉시 실행 한다."
 			,response=MessageVo.class)
-	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@Login({AuthType.DEVELOPER,AuthType.ADMIN})
 	@PutMapping("/runNow")
 	public MessageVo runNow(
 			HttpServletRequest request,
@@ -221,7 +221,7 @@ public class IncidentAlarmController {
 	@ApiOperation(value = "알람 승인 후 수정"
 			,notes = "알람 승인 후에 수정을 수행 한다."
 			,response=MessageVo.class)
-	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@Login({AuthType.DEVELOPER,AuthType.ADMIN})
 	@PutMapping("/modifyAfterConfirm")
 	public MessageVo modifyAfterConfirm(
 			HttpServletRequest request,
@@ -256,7 +256,7 @@ public class IncidentAlarmController {
 	@ApiOperation(value = "알람 리스트 조회"
 			,notes = "등록된 알람 리스트를 조회 한다."
 			,response=IncidentAlarmVo.class)
-	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@Login({AuthType.NORMAL,AuthType.DEVELOPER,AuthType.ADMIN})
 	@GetMapping("/list")
 	public Page<IncidentAlarmVo> list(
 			HttpServletRequest request,
@@ -269,7 +269,7 @@ public class IncidentAlarmController {
 	@ApiOperation(value = "알람 상세 조회"
 			,notes = "등록된 알람 상세를 조회 한다."
 			,response=IncidentAlarmDetailVo.class)
-	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@Login({AuthType.DEVELOPER,AuthType.ADMIN})
 	@GetMapping("/detail")
 	public IncidentAlarmDetailVo detail(
 			HttpServletRequest request,
@@ -290,7 +290,7 @@ public class IncidentAlarmController {
 	@ApiOperation(value = "알람 다음 스케줄 조회"
 			,notes = "입력된 crontab expression 을 확인하여 다음 스케줄 리스트를 반환한다."
 			,response=List.class)
-	@Login({AuthType.NORMAL,AuthType.ADMIN})
+	@Login({AuthType.DEVELOPER,AuthType.ADMIN})
 	@GetMapping("/nextSchedule")
 	public List<Date> nextSchedule(
 			HttpServletRequest request,

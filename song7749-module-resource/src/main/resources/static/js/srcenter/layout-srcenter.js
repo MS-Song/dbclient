@@ -49,7 +49,18 @@ webix.ready(function(){
 						margin:5,
 						body:{ 
 							rows:[{
-								cols:[{},{
+								cols:[
+								{
+									id:"sr_data_request_job_add_button",
+									view:"button",
+									value:"신규 등록",
+									width:150,
+									click:function(){
+										sr_data_request_popup();
+									}
+								},
+								{},
+								{
 									id:"sr_data_request_list_page",
 									view: 'pager',
 									template: '{common.first()} {common.prev()} {common.pages()} {common.next()} {common.last()}',
@@ -59,20 +70,12 @@ webix.ready(function(){
 									count: 1000,
 									align:'center',
 									on: { onItemClick: function(id, e, node) {
-										    $$('sr_data_request_search_page').setValue(id*1 + 1);
-										    sr_data_request_list_create();
-									}}
-								},{
-									id:"sr_data_request_job_add_button",
-									view:"button",
-									value:"신규 등록",
-									width:150,
-									click:function(){
-										sr_data_request_popup();
+											$$('sr_data_request_search_page').setValue(id*1 + 1);
+											sr_data_request_list_create();
+										}
 									}
-								},{
-									
-								}]
+								}
+								,{}]
 							},{
 								view : "datatable", 
 								id:"sr_data_request_list_view", 						

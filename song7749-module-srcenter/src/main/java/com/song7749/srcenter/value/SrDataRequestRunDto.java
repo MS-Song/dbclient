@@ -37,11 +37,8 @@ public class SrDataRequestRunDto extends AbstractDto {
     @ApiModelProperty(required=false, position=2, hidden = true, value="실행자 IP ")
     private String remoteAddress;
 
-    @ApiModelProperty(required=false, position=3, value="엑셀다운로드")
-    private boolean isExcel;
-
     @ApiModelProperty(value="최대 조회 개수", hidden = true)
-    private Long limit = 100L;
+    private Long limit = 1000L;
 
     @ApiModelProperty(value="조회 시작 Offset", hidden = true)
     private Long offset = 0L;
@@ -49,16 +46,23 @@ public class SrDataRequestRunDto extends AbstractDto {
     @ApiModelProperty(value="Result 수를 지정할 것인가?", hidden = true)
     private boolean useLimit = true;
 
+    @ApiModelProperty(required=false, position=3, value="엑셀다운로드")
+    private boolean excel;
+
+    @ApiModelProperty(value="DEBUG MODE", hidden = true)
+    private boolean debug = false;
+
     public SrDataRequestRunDto() {}
 
-    public SrDataRequestRunDto(@NotNull Long id, Long runMemberId, String remoteAddress, boolean isExcel, Long limit, Long offset, boolean useLimit) {
+    public SrDataRequestRunDto(@NotNull Long id, Long runMemberId, String remoteAddress, Long limit, Long offset, boolean useLimit, boolean excel, boolean debug) {
         this.id = id;
         this.runMemberId = runMemberId;
         this.remoteAddress = remoteAddress;
-        this.isExcel = isExcel;
         this.limit = limit;
         this.offset = offset;
         this.useLimit = useLimit;
+        this.excel = excel;
+        this.debug = debug;
     }
 
     public Long getId() {
@@ -85,14 +89,6 @@ public class SrDataRequestRunDto extends AbstractDto {
         this.remoteAddress = remoteAddress;
     }
 
-    public boolean isExcel() {
-        return isExcel;
-    }
-
-    public void setExcel(boolean excel) {
-        isExcel = excel;
-    }
-
     public Long getLimit() {
         return limit;
     }
@@ -115,5 +111,21 @@ public class SrDataRequestRunDto extends AbstractDto {
 
     public void setUseLimit(boolean useLimit) {
         this.useLimit = useLimit;
+    }
+
+    public boolean isExcel() {
+        return excel;
+    }
+
+    public void setExcel(boolean excel) {
+        this.excel = excel;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }

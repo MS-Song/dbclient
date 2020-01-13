@@ -71,16 +71,16 @@ public class SrDataRequestModifyBeforeConfirmDto extends AbstractDto {
     @ApiModelProperty(required = true, position = 9, dataType = "Date", value="데이터베이스 선택")
     private Long databaseId;
 
-    @ApiModelProperty(required=true, position=10, value="Where 구문 || where 절 생성  EX) 상품명 : AND b.xxxx={keyName}")
-    private List<String> conditionWhereSql;
-
-    @ApiModelProperty(required=true, position=11, value="Where 구문 의 키 || where 절 자체를 {SQL 키로 입력}  AND A={B}  ==> {WHERE1} 로 치환 ")
+    @ApiModelProperty(required=true, position=10, value="Where 구문의 변수 || where 절 자체를 {SQL 키로 입력}  AND A={B}  ==> {WHERE1} 로 치환 ")
     private List<String> conditionWhereSqlKey;
+
+    @ApiModelProperty(required=true, position=11, value="Where 구문 || where 절 생성  EX) 상품명 : AND b.xxxx={keyName}")
+    private List<String> conditionWhereSql;
 
     @ApiModelProperty(required=true, position=12, value="검색 조건 명 || where 에 해당하는 검색 조건의 명칭 EX) 상품명 : ")
     private List<String> conditionName;
 
-    @ApiModelProperty( required=true, position=13, value="SQL 조건 변수명 || where 에 바인딩 시킬 변수명 EX) {keyName} ")
+    @ApiModelProperty( required=true, position=13, value="SQL 조건 변수 || where 에 바인딩 시킬 변수명 EX) {keyName} ")
     private List<String> conditionKey;
 
     @ApiModelProperty( required=true, position=14, value="SQL 데이터 타입 || where 에 바인딩 시킬 변수의 타입  String, Number, Date <br /> Array 는 selectBox 형태로 키^값 형태로 넣는다. EX) 남현점^100|금천점^200, ... <br /> SQL 은 키, 값의 형태로 작성한다. EX) select store_nm key, store_id value from store_info")

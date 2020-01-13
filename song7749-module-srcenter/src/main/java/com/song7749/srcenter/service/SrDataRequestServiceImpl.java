@@ -415,7 +415,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                 // where 를 해당 위치로 치환 한다.
                 sql = StringUtils.replacePatten("\\{"+ whereSqlKey.toLowerCase()+"\\}",sdc.getWhereSql().toLowerCase(), sql.toLowerCase());
                 // value 를 치환한다.
-                sql = StringUtils.replacePatten("\\{"+ key.toLowerCase()+"\\}","'"+value+"'", sql.toLowerCase());
+                sql = StringUtils.replacePatten("\\{"+ key.toLowerCase()+"\\}",value, sql.toLowerCase());
             } else { // value 가 추가되지 않을 경우에는 whereKey 를 제거 한다.
                 sql = StringUtils.replacePatten("\\{"+ whereSqlKey.toLowerCase()+"\\}","", sql.toLowerCase());
             }
@@ -448,13 +448,12 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
             throw new IllegalArgumentException("접속자 IP 획득에 실패 했습니다.");
         }
 
-        return dbClientManager.executeQuery(excuteDto);
+        MessageVo vo = dbClientManager.executeQuery(excuteDto);
+        if(dto.isDebug()){
+            vo.setMessage(sql);
+        }
+        return vo;
     }
-
-    private void generateSql(){
-
-    }
-
 
     private void conditionValidate(Object dto){
         // 파라메터에 대한 추가 검증

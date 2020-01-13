@@ -26,7 +26,7 @@ webix.ready(function(){
 });
 
 // 회원 검색 
-var member_list_popup = function(view,multi){
+let member_list_popup = function(view,multi){
 	webix.ui({
         view:"window",
         id:"member_list_popup",
@@ -158,7 +158,7 @@ var member_list_popup = function(view,multi){
 };
 
 //회원 리스트 Loading
-var loadMemberList = function(view){
+let loadMemberList = function(view){
 	webix.ajax().get("/member/list", $$("member_list_search_form").getValues(), function(text,data){
 
 		if(data.json().httpStatus == 200 
@@ -186,7 +186,7 @@ var loadMemberList = function(view){
     				$$("member_list_view").setValue(selectedMembers);
     			}
     			// 조회된 개수가 다를 경우에는 다른 페이지에 있는 회원이다. (ID 를 추가로 가져와서 셋팅한다)
-    			var values = $$(view).getValue().split(",");
+    			let values = $$(view).getValue().split(",");
     			if(values.length != $$("member_list_view").$$("right").serialize().length){
     				// ID 를 추가로 가져온다.
     				webix.ajax().get("/member/list", {ids:$$(view).getValue()} , function(text,data){
@@ -205,8 +205,8 @@ var loadMemberList = function(view){
 };
 
 // 회원 객체 변경
-var convertMemberList = function(data){
-	var member_list = [];
+let convertMemberList = function(data){
+	let member_list = [];
 	$.each(data,function(index,obj){
 		member_list.push({id:obj.id, value:"["+obj.loginId + "] "+ "["+obj.teamName + "] " + obj.name });
 	});
