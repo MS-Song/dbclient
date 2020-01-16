@@ -20,7 +20,7 @@ let useDatabaseOptionsCreator = function(){
 				});
 			});
 		} else {
-			webix.message({ type:"error", text:data.json().message});
+			errorControll(data.json());
 		}
 	});
 
@@ -41,7 +41,7 @@ let useDatabaseOptionsCreator = function(){
 				});
 			});
 		} else {
-			webix.message({ type:"error", text:data.json().message});
+			errorControll(data.json());
 		}
 	});
 }
@@ -82,7 +82,6 @@ let search_form_creator = function(){
 			}}
 		}, {
 			id:"sr_data_request_search_form_commit",
-
 			view:"button",
 			value:"검색",
 			on:{"onItemClick":function(){
@@ -146,7 +145,7 @@ let sr_data_request_list_create = function(){
 			$$("sr_data_request_list_view").parse(data.json().contents.content);		
 			$$("sr_data_request_list_view").refresh();
 		} else {
-			webix.message({ type:"error", text:data.json().message });	
+			errorControll(data.json());
 		}
 		// progress 를 닫는다.
 		$$("sr_data_request_list_view").hideProgress();
@@ -254,6 +253,10 @@ let sr_data_request_form_creator = function(requestItem){
 					width:50,
 					view:"button",
 					value:"삭제", click:function() {
+						if("Y" == $$("sr_data_request_form_left").queryView({name:"confirmYN"},'all')[0].getValue()){
+							webix.message({ type:"error", text:"승인이 완료된 데이터는 조건 수정이 불가능 합니다." });
+							return;
+						}
 						let isRemove = confirm("정말 삭제 하시겠습니까?");
 						if(isRemove){
 							let removeID = this.getParentView().getParentView().config.id;
@@ -324,7 +327,7 @@ let sr_data_request_form_creator = function(requestItem){
 						$$("sr_data_request_popup").hide();
 						sr_data_request_list_create();
 					} else {
-						webix.message({ type:"error", text:data.json().message });
+						errorControll(data.json());
 					}
 				});
 			}
@@ -485,10 +488,11 @@ let sr_data_request_form_creator = function(requestItem){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("sr_data_request_popup").hide();
-						sr_data_request_run_popup(this.getSelectedItem().id);
+						$$("sr_data_request_run_popup").hide();
+						sr_data_request_run_popup(requestItem);
 						sr_data_request_list_create();
 					} else {
-						webix.message({ type:"error", text:data.json().message });
+						errorControll(data.json());
 					}
 				});
 			}
@@ -496,19 +500,38 @@ let sr_data_request_form_creator = function(requestItem){
 
 		// 승인 요청
 		let confirmRequestButton={
-			view:"button", value:"승인요청", click:function(){// 승인요청
-				webix.ajax().put('/srDataRequest/confirmRequest', {id : requestItem.id}, function(text,data){
+			view:"button", value:"승인요청", click:function(){
+				webix.ajax().put('/srDataRequest/confirmRequest', {id : requestItem.id, confirmYN:"Y"}, function(text,data){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("sr_data_request_popup").hide();
+						$$("sr_data_request_run_popup").hide();
+						sr_data_request_run_popup(requestItem);
 						sr_data_request_list_create();
 					} else {
-						webix.message({ type:"error", text:data.json().message });
+						errorControll(data.json());
 					}
 				});
 			}
 		}
-		
+
+		// 승인 취소 요청
+		let confirmCancelRequestButton={
+			view:"button", value:"승인취소요청", click:function(){
+				webix.ajax().put('/srDataRequest/confirmRequest', {id : requestItem.id, confirmYN:"N"}, function(text,data){
+					if(data.json().httpStatus==200){
+						webix.message(data.json().message);
+						$$("sr_data_request_popup").hide();
+						$$("sr_data_request_run_popup").hide();
+						sr_data_request_run_popup(requestItem);
+						sr_data_request_list_create();
+					} else {
+						errorControll(data.json());
+					}
+				});
+			}
+		}
+
 		// 승인 버튼
 		let confirmButton={
 			view:"button", value:"승인", click:function(){// 승인
@@ -516,9 +539,11 @@ let sr_data_request_form_creator = function(requestItem){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("sr_data_request_popup").hide();
+						$$("sr_data_request_run_popup").hide();
+						sr_data_request_run_popup(requestItem);
 						sr_data_request_list_create();
 					} else {
-						webix.message({ type:"error", text:data.json().message });
+						errorControll(data.json());
 					}
 				});
 			}
@@ -531,9 +556,11 @@ let sr_data_request_form_creator = function(requestItem){
 					if(data.json().httpStatus==200){
 						webix.message(data.json().message);
 						$$("sr_data_request_popup").hide();
+						$$("sr_data_request_run_popup").hide();
+						sr_data_request_run_popup(requestItem);
 						sr_data_request_list_create();
 					} else {
-						webix.message({ type:"error", text:data.json().message });
+						errorControll(data.json());
 					}
 				});
 			}
@@ -545,8 +572,8 @@ let sr_data_request_form_creator = function(requestItem){
 			elementList.push({cols:[buttonCancel,modifyButton,confirmCancelButton]});
 		}  else if(requestItem.confirmYN != "Y") {										// 승인 전 승인 요청 버튼
 			elementList.push({cols:[buttonCancel,modifyButton,confirmRequestButton]});
-		}  else {																		// 승인 후 수정
-			elementList.push({cols:[buttonCancel,modifyButton]});
+		}  else {																		// 승인 후 수정 및 승인 취소 요청
+			elementList.push({cols:[buttonCancel,modifyButton,confirmCancelRequestButton]});
 		}
 
 		// SQL 구문 확인, 테스트 실행 등 확인 작업
@@ -599,7 +626,7 @@ let sr_data_request_form_creator = function(requestItem){
 				$$("sr_data_request_form_left").setValues(values);
 
 			} else {
-				webix.message({ type:"error", text:data.json().message });
+				errorControll(data.json());
 				$$("sr_data_request_popup").hide();
 			}
 		});
@@ -610,7 +637,7 @@ let sr_data_request_form_creator = function(requestItem){
  * SR Data 실행 화면 생성
  */
 
-let sr_data_request_run_popup = function(item){
+let sr_data_request_run_popup = function(requestItem){
 	webix.ui({
 		view:"window",
 		id:"sr_data_request_run_popup",
@@ -635,6 +662,13 @@ let sr_data_request_run_popup = function(item){
 					view:"accordion",
 					multi:true,
 					rows:[{
+						id:"sr_data_request_run_header",
+						view: "label",
+						label: " ",
+						height:30,
+						adjust:true
+					},
+					{
 						id:"sr_data_request_run_result_list",
 						view:"datatable",
 						borderless:true,
@@ -667,13 +701,13 @@ let sr_data_request_run_popup = function(item){
 	}).show();
 
 	// form 생성
-	sr_data_request_run_creator(item);
+	sr_data_request_run_creator(requestItem);
 }
 
 /**
  * 팝업 elements 생성
  */
-let sr_data_request_run_creator = function (item){
+let sr_data_request_run_creator = function (requestItem){
 	// 검색 가능 값을 조회 한다.
 	let searchFormElements=[];
 
@@ -685,7 +719,7 @@ let sr_data_request_run_creator = function (item){
 	}
 
 	// 해당 SR의 검색 가능 값을 조회하여 form 을 생성 한다.
-	webix.ajax().get('/srDataRequest/searchFromCreate', {id:item}, function(text,data){
+	webix.ajax().get('/srDataRequest/searchFromCreate', {id:requestItem.id}, function(text,data){
 		if(data.json().httpStatus==200){
 			let requestObject = data.json().contents;
 			// header 설정
@@ -695,8 +729,9 @@ let sr_data_request_run_creator = function (item){
 			let searchFormElements = [];
 			$.each(requestObject.srDataConditionVos,function(index, value){
 				let element = {};
+
 				element.name 			= value.key.replace("{","").replace("}","");
-				element.discriptions 	= value.name;
+				element.description 	= value.name;
 				element.required 		= value.required == 'Y' ? true : false;
 
 				if(value.type == 'ARRAY' || value.type == 'SQL'){
@@ -719,6 +754,23 @@ let sr_data_request_run_creator = function (item){
 				searchFormElements.push(createWebForm({name:"debug",type:"hidden",value:"true"},false,false));
 			}
 
+			// 다운로드 가능 기간 및 정보 노출
+			console.log(requestObject);
+			let downloadInfo ="";
+			if(null!=requestObject.downloadStartDate && null!=requestObject.downloadEndDate){
+				downloadInfo+="[ 다운로드가능 기간 : "+ requestObject.downloadStartDate.substring(0,10) + " ~ " + requestObject.downloadEndDate.substring(0,10) + "] ";
+			} else if(null!=requestObject.downloadStartDate){
+				downloadInfo+="[ 다운로드가능 기간 : "+ requestObject.downloadStartDate.substring(0,10) + " 부터 ] ";
+			} else if (null!=requestObject.downloadEndDate){
+				downloadInfo+="[ 다운로드가능 기간 : "+ requestObject.downloadEndDate.substring(0,10) + " 까지 ] ";
+			} else {
+				downloadInfo+="[ 다운로드가능 기간 : 영구 ]";
+			}
+			downloadInfo+=" [Grid 에는 최대 100개 까지 표기 됩니다. 엑셀 다운로드를 사용하세요] "
+
+			$$("sr_data_request_run_header").define("label", downloadInfo);
+			$$("sr_data_request_run_header").refresh();
+
 			// 검색
 			let buttonSearch = {
 				view:"button",
@@ -732,11 +784,24 @@ let sr_data_request_run_creator = function (item){
 						webix.extend($$("sr_data_request_run_result_list"), webix.ProgressBar);
 						$$("sr_data_request_run_result_list").showProgress();
 					}
+
+					// 기존 헤더를 삭제 한다.
+					$$("sr_data_request_run_result_list").config.columns = [];
+					$$("sr_data_request_run_result_list").refreshColumns();
+					// 기존 입력 데이터를 삭제 한다.
+					$$("sr_data_request_run_result_list").clearAll();
+					$$("sr_data_request_run_result_list").refresh();
+
 					webix.ajax().get("/srDataRequest/runNow",  $$("sr_data_request_run_search_form").getValues(), function(text,data){
 						// 디버그 모드가 활성화 된 경우 SQL 로그와 Error 로그를 넣는다.
 						if($$("sr_data_request_run_debug_list").config.hidden == false){
 							if(data.json().httpStatus == 200 || data.json().httpStatus == 204){
 								$$("sr_data_request_run_sql_text").setValue(data.json().message);
+								if(data.json().httpStatus == 204){
+									$$("sr_data_request_run_result_list").config.columns = [];
+									$$("sr_data_request_run_result_list").clearAll();
+									webix.message({ type:"error", text:"조회된 데이터가 없습니다." });
+								}
 							} else {
 								$$("sr_data_request_run_error_text").setValue(data.json().message);
 							}
@@ -746,11 +811,6 @@ let sr_data_request_run_creator = function (item){
 						if(data.json().httpStatus == 200
 							&& null!=data.json().contents
 							&& null!=data.json().contents.length>0){
-
-							// 기존 헤더를 삭제 한다.
-							$$("sr_data_request_run_result_list").config.columns = [];
-							// 기존 입력 데이터를 삭제 한다.
-							$$("sr_data_request_run_result_list").clearAll();
 							// 헤더 루프 생성
 							let loop=0;
 							// header 생성
@@ -789,7 +849,28 @@ let sr_data_request_run_creator = function (item){
 
 			searchFormElements.push({cols:[buttonReset,buttonSearch]});
 
-			//
+			// 엑셀 다운로드 버튼
+			let buttonExcelDownload = {
+				view: "button",
+				value: "엑셀다운로드",
+				click: function () {
+					// 기존 검색 내용이 없을 경우 실행을 하지 않는다.
+					if($$("sr_data_request_run_result_list").config.columns == undefined
+						|| $$("sr_data_request_run_result_list").config.columns.length==0){
+
+						return webix.message({ type:"error", text:"조회된 결과가 없어 엑셀 생성이 불가능 합니다. 검색을 먼저 진행 하세요" });
+					}
+					webix.send(
+						"/srDataRequest/excelDownload",
+						$$("sr_data_request_run_search_form").getValues(),
+						"GET",
+						"_blank"
+					)
+				}
+			};
+
+			searchFormElements.push({cols:[{},buttonExcelDownload]});
+
 			let buttonCancel = {
 				view:"button", value:"닫기", click:function() {
 					$$("sr_data_request_run_popup").hide();
@@ -798,7 +879,7 @@ let sr_data_request_run_creator = function (item){
 
 			let buttonModify = {
 				view:"button", value:"수정", click:function() {
-					sr_data_request_popup({id:item,"confirmYN":null});
+					sr_data_request_popup(requestItem);
 				}
 			}
 
@@ -818,9 +899,9 @@ let sr_data_request_run_creator = function (item){
 			}
 		} else {
 			// 에러가 발생할 경우 수정 폼으로 이동 시킨다. (폼 자체를 열수 없을 경우에 한 함)
-			webix.message ({ type:"error", text:data.json().message });
+			errorControll(data.json());
 			$$("sr_data_request_run_popup").hide();
-			sr_data_request_popup({id:item});
+			sr_data_request_popup(requestItem);
 		}
 	});
 }
@@ -832,8 +913,15 @@ var confirmPopupLazyLoading = function(){
 	if(null==member || undefined==member || undefined==member.authType){
 		setTimeout(() => {confirmPopupLazyLoading()}, 100);		
 	} else {
-		//sr_data_request_popup({"id":getParam("id"),"confirmYN":null});
-		sr_data_request_run_popup(getParam("id"));
+		// URL 을 통해서 진입한 경우에는 confirm 여부의 확인이 필요 하다. (간단 버전 API 제공 필요)
+		webix.ajax().get('/srDataRequest/one', {id:getParam("id")}, function(text,data){
+			if(data.json().httpStatus==200){
+				let params = {id:data.json().contents.id, confirmYN:data.json().contents.confirmYN}
+				sr_data_request_run_popup(params);
+			} else {
+				errorControll(data.json());
+			}
+		});
 	}
 }
 

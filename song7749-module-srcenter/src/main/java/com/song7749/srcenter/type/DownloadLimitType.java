@@ -17,21 +17,25 @@ package com.song7749.srcenter.type;
  * @since 12/11/2019
  */
 public enum DownloadLimitType {
-    MONTHLY("월간"),
-    WEEKLY("주간"),
-    DAILY("일간"),
-    HOURLY("시간당"),
-    MINUTELY("분당"),
-    MINUTELY5("5 분당"),
-    MINUTELY10("10 분당");
+    DAILY("일간", new Long(24*60*60*1000)),
+    HOURLY("시간당", new Long(60*60*1000)),
+    MINUTELY("분당", new Long(60*1000)),
+    MINUTELY5("5 분당", new Long(5*60*1000)),
+    MINUTELY10("10 분당", new Long(10*60*1000));
 
     private String desc;
+    private Long time;
 
-    DownloadLimitType(String desc) {
+    DownloadLimitType(String desc, Long time) {
         this.desc=desc;
+        this.time=time;
     }
 
     public String getDesc() {
         return desc;
+    }
+
+    public Long getTime(){
+        return time;
     }
 }

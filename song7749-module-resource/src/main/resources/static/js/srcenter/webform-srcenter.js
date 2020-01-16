@@ -30,7 +30,6 @@ let createWebForm = function(param,isDescription=false,isDisable=false) {
     // tooltip 에 보여줄 상세한 설명
     let tooltipDescription = isDescription && undefined != discriptions[1] ? discriptions[1] : "";
 
-
     if (param.enum != undefined) {
         viewElement = {
             view: "combo",

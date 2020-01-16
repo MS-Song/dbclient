@@ -166,11 +166,13 @@ public class InitDBclientConfigBean {
 				// comment 입력
 				String[] comments = {
 						 "COMMENT ON TABLE DATABASE_INFO IS 'Database 연결 정보'"
+						,"COMMENT ON TABLE DATABASE_PRIVACY_POLICY IS 'Database 개인정보 정의'"
 						,"COMMENT ON TABLE LOG IS '로그 마스터 정보'"
 						,"COMMENT ON TABLE LOG_LOGIN IS '로그인 로그 정보'"
-						,"COMMENT ON TABLE MEMBER_DATABASE IS '회원과 데이터베이스 간의 연결'"
 						,"COMMENT ON TABLE LOG_QUERY IS '쿼리 실행 로그'"
+						,"COMMENT ON TABLE MEMBER_DATABASE IS '회원과 데이터베이스 간의 연결'"
 						,"COMMENT ON TABLE MEMBER_SAVE_QUERY IS '회원의 저장된 쿼리'"
+						,"COMMENT ON TABLE MEMBER IS '회원'"
 						,"COMMENT ON TABLE MEMBER IS '회원'"
 				};
 				ExecuteQueryDto dto = new ExecuteQueryDto();

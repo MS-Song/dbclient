@@ -109,25 +109,21 @@ public class DatabaseController {
 
 	@GetMapping("/list")
 	@ApiOperation(value = "데이터베이스 정보 조회", response = DatabaseVo.class)
-	@Login({ AuthType.NORMAL, AuthType.ADMIN })
+	@Login({ AuthType.NORMAL, AuthType.DEVELOPER, AuthType.ADMIN })
 	public Page<DatabaseVo> getList(HttpServletRequest request, HttpServletResponse response,
 			@Valid @ModelAttribute DatabaseFindDto dto,
 			@PageableDefault(page=0, size=100, direction=Direction.DESC, sort="id")
 			Pageable page){
-
-
 		logger.trace(format("{}", "Database List Log"),dto);
-		// 권한 확인 후에 관리자가 아니면 database 확인 후 조회 하도록 처리 한다.
-		// 일반 회원인 경우 회원의 권한이 있는 DB만 조회 가능 하다
-		// 권한이 없는 경우에는 쿼리의 실행을 차단 했음으로, 리스트 조회를 강제로 할 수 있게 처리 함.
-		if(dto.isAccessAll()==false
-				&& session.getLogin().getAuthType().equals(AuthType.NORMAL)){
 
+		// 관리자만 전체 DB에 접근 가능하고, 나머지는 속해있는 DB 만 접근 가능하다. -- 정보성 조회의 경우에도 허용함.
+		boolean isAccessAllDatabases = session.getLogin().getAuthType().equals(AuthType.ADMIN) || dto.isAccessAll()==true;
+		if(isAccessAllDatabases){
+			return databaseManager.findDatabaseList(dto, page);
+		} else {
 			return dbClientMemberManager.findDatabaseListByMemberAllow(
 					new MemberDatabaseFindDto(
 							session.getLogin().getId()), page);
-		} else {
-			return databaseManager.findDatabaseList(dto, page);
 		}
 	}
 

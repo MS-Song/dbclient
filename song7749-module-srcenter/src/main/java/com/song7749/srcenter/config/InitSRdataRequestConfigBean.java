@@ -2,7 +2,9 @@ package com.song7749.srcenter.config;
 
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
+import com.song7749.dbclient.domain.MemberDatabase;
 import com.song7749.dbclient.repository.DatabaseRepository;
+import com.song7749.dbclient.repository.MemberDatabaseRepository;
 import com.song7749.dbclient.service.DBclientManager;
 import com.song7749.dbclient.service.DBclientManagerImpl;
 import com.song7749.dbclient.type.Charset;
@@ -56,7 +58,7 @@ import static com.song7749.util.LogMessageFormatter.format;
 * @author song7749@gmail.com
 * @since 2019. 12. 10.
 */
-@Profile("!test")
+@Profile({"local"})
 @Component("InitSRdataRequestConfigBean")
 @DependsOn("InitDBclientConfigBean")		// DB 정보 입력 후 기동
 public class InitSRdataRequestConfigBean {
@@ -70,13 +72,24 @@ public class InitSRdataRequestConfigBean {
 	DatabaseRepository databaseRepository;
 
 	@Autowired
+	MemberDatabaseRepository memberDatabaseRepository;
+
+	@Autowired
 	private SrDataRequestRepository srDataRequestRepository;
 
 	@Transactional
 	@PostConstruct
     public void init(){
-		// DB 에 기초 데이터를 넣는다.
+		// 기초 데이터 입력
 		List<Member> members = memberRepository.findAll();
+		Member currentMember = null;
+		for(Member m : members){
+			if(m.getAuthType().equals(AuthType.DEVELOPER)){
+				currentMember=m;
+				break;
+			}
+		}
+
 		List<Database> databases = databaseRepository.findAll();
 		Database currentDatabase = null;
 		for(Database d : databases ){
@@ -86,14 +99,43 @@ public class InitSRdataRequestConfigBean {
 			}
 		}
 
+		MemberDatabase md = new MemberDatabase();
+		md.setDatabase(currentDatabase);
+		md.setMember(currentMember);
+		memberDatabaseRepository.saveAndFlush(md);
+
 		logger.debug("Sr Data Request Sample Database : {}", currentDatabase);
 
+		// sample 1
 		SrDataRequest sdr  = new SrDataRequest(
-				"[샘플] SR data Request 의 샘플 데이터 입니다. 확인 후에 사용 방법을 익히세요",
+				"[샘플1] SR data Request 의 샘플 데이터 입니다. 확인 후에 사용 방법을 익히세요",
 				"select * from database_info where 1=1 {whereDatabaseId} {whereHost} {wherePort}",
 				0,
 				0,
 				DownloadLimitType.DAILY,
+				null,
+				null,
+				YN.Y,
+				currentDatabase,
+				currentMember,
+				members);
+
+		List<SrDataCondition> conditions = Arrays.asList(
+			new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as KEY, '- database 선택 -' as VALUE union select database_id as KEY, host as VALUE  from database_info order by key ASC", YN.N, sdr),
+			new SrDataCondition("and host like '%{host}%'", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr),
+			new SrDataCondition("and port='{port}'", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.N, sdr)
+		);
+
+		sdr.setSrDataConditions(conditions);
+		srDataRequestRepository.saveAndFlush(sdr);
+
+		// sample 2
+		SrDataRequest sdr2  = new SrDataRequest(
+				"[샘플2] SR data Request 의 샘플 데이터 입니다. 확인 후에 사용 방법을 익히세요",
+				"select * from database_info where 1=1 {whereDatabaseId} {whereHost} {wherePort}",
+				2,
+				0,
+				DownloadLimitType.MINUTELY,
 				new Date(),
 				new Date(),
 				YN.Y,
@@ -101,15 +143,43 @@ public class InitSRdataRequestConfigBean {
 				members.get(0),
 				members);
 
-		List<SrDataCondition> conditions = Arrays.asList(new SrDataCondition[]{
-				new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as KEY, '- database 선택 -' as VALUE union select database_id as KEY, host as VALUE  from database_info order by key ASC", YN.N, sdr),
-				new SrDataCondition("and host like '%{host}%'", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr),
-				new SrDataCondition("and port='{port}'", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.N, sdr),
+		sdr2.setConfirmYN(YN.Y);
+		sdr2.setConfirmMember(members.get(0));
+		sdr2.setConfirmDate(new Date());
 
-		});
+		List<SrDataCondition> conditions2 = Arrays.asList(
+				new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as KEY, '- database 선택 -' as VALUE union select database_id as KEY, host as VALUE  from database_info order by key ASC", YN.N, sdr2),
+				new SrDataCondition("and host like '%{host}%'", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr2),
+				new SrDataCondition("and port='{port}'", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.N, sdr2)
+		);
 
-		sdr.setSrDataConditions(conditions);
 
-		srDataRequestRepository.saveAndFlush(sdr);
-    }
+		sdr2.setSrDataConditions(conditions2);
+		srDataRequestRepository.saveAndFlush(sdr2);
+
+		// sample 3
+		SrDataRequest sdr3  = new SrDataRequest(
+				"[샘플3] SR data Request 의 샘플 데이터 입니다. 확인 후에 사용 방법을 익히세요",
+				"select * from database_info where 1=1 {whereDatabaseId} {whereHost} {wherePort}",
+				0,
+				0,
+				DownloadLimitType.DAILY,
+				new Date(),
+				new Date(),
+				YN.N,
+				currentDatabase,
+				members.get(0),
+				members);
+
+		List<SrDataCondition> conditions3 = Arrays.asList(
+				new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as KEY, '- database 선택 -' as VALUE union select database_id as KEY, host as VALUE  from database_info order by key ASC", YN.N, sdr3),
+				new SrDataCondition("and host like '%{host}%'", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr3),
+				new SrDataCondition("and port='{port}'", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.N, sdr3)
+		);
+
+		sdr3.setSrDataConditions(conditions3);
+		srDataRequestRepository.saveAndFlush(sdr3);
+
+
+	}
 }

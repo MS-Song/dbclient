@@ -62,7 +62,7 @@ var login_form = {
 
 // 로그인 팝업
 var login_popup = function(){
-	if($$("admin_member_list_popup")==undefined){
+	if($$("login_popup")==undefined){
 	    webix.ui({
 	        view:"window",
 	        id:"login_popup",
@@ -72,10 +72,9 @@ var login_popup = function(){
 	        head:"Log In",
 	        body:webix.copy(login_form)
 	    }).show();
-		if($$("menu").isVisible()) $$("menu").hide();
 	    $$("login_id_input").focus();
 	} else {
-		$$("admin_member_list_popup").show();
+		$$("login_popup").show();
 	}
 }
 

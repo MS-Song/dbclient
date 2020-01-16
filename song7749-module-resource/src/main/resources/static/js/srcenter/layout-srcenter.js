@@ -87,7 +87,7 @@ webix.ready(function(){
 								scroll:true,
 								clipboard:"selection",
 								on:{"onItemClick":function(){
-									sr_data_request_run_popup(this.getSelectedItem().id);
+									sr_data_request_run_popup(this.getSelectedItem());
 								}}
 							}] // end rows
 						} // end body	

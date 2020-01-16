@@ -86,4 +86,10 @@ public interface SrDataReqeustService {
      */
     MessageVo runSql(SrDataRequestRunDto dto, HttpServletRequest request);
 
+    /**
+     * Confirm 요청 메일을 발송 한다.
+     * @param dto
+     */
+    void confirmRequest(SrDataRequestConfirmDto dto);
+
 }

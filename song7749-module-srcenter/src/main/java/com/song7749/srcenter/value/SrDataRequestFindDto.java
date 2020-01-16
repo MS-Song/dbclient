@@ -108,14 +108,16 @@ public class SrDataRequestFindDto extends AbstractDto implements Specification<S
     @ApiModelProperty(required=false, position=21, value="허용 사용자자")
     private List<Long> srDataAllowMemberIds;
 
-    public SrDataRequestFindDto() {
-    }
+    @ApiModelProperty(required=false, position=22, hidden = true, value="실행자")
+    private Long runMemberId;
+
+    public SrDataRequestFindDto() {}
 
     public SrDataRequestFindDto(Long id) {
         this.id = id;
     }
 
-    public SrDataRequestFindDto(Long id, @Size(min = 8, max = 200) String subject, @Size(min = 8, max = 12000) String runSql, YN enableYN, YN confirmYN, Date fromCreateDate, Date toCreateDate, Date fromConfirmDate, Date toConfirmDate, Date fromLastRunDate, Date toLastRunDate, String lastErrorMessage, Long databaseId, Long resistMemberId, Long confirmMemberId, List<Long> srDataAllowMemberIds) {
+    public SrDataRequestFindDto(Long id, String subject, String runSql, YN enableYN, YN confirmYN, Date fromCreateDate, Date toCreateDate, Date fromConfirmDate, Date toConfirmDate, Date fromLastRunDate, Date toLastRunDate, String lastErrorMessage, Long databaseId, Long resistMemberId, Long confirmMemberId, List<Long> srDataAllowMemberIds, Long runMemberId) {
         this.id = id;
         this.subject = subject;
         this.runSql = runSql;
@@ -132,6 +134,7 @@ public class SrDataRequestFindDto extends AbstractDto implements Specification<S
         this.resistMemberId = resistMemberId;
         this.confirmMemberId = confirmMemberId;
         this.srDataAllowMemberIds = srDataAllowMemberIds;
+        this.runMemberId = runMemberId;
     }
 
     public Long getId() {
@@ -260,6 +263,14 @@ public class SrDataRequestFindDto extends AbstractDto implements Specification<S
 
     public void setSrDataAllowMemberIds(List<Long> srDataAllowMemberIds) {
         this.srDataAllowMemberIds = srDataAllowMemberIds;
+    }
+
+    public Long getRunMemberId() {
+        return runMemberId;
+    }
+
+    public void setRunMemberId(Long runMemberId) {
+        this.runMemberId = runMemberId;
     }
 
     @Override

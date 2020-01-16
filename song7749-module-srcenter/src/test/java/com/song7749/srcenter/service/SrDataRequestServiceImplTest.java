@@ -8,7 +8,10 @@ import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 import com.song7749.member.domain.Member;
 import com.song7749.member.repository.MemberRepository;
+import com.song7749.member.service.LoginSession;
+import com.song7749.member.service.MemberManager;
 import com.song7749.member.type.AuthType;
+import com.song7749.member.value.LoginAuthVo;
 import com.song7749.srcenter.type.DataType;
 import com.song7749.srcenter.type.DownloadLimitType;
 import com.song7749.srcenter.value.*;
@@ -18,8 +21,11 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 
+import com.song7749.util.ProxyUtils;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 import sun.util.calendar.LocalGregorianCalendar;
 
 import java.util.ArrayList;
@@ -53,6 +60,9 @@ public class SrDataRequestServiceImplTest extends UnitTest {
 
     @Autowired
     ModelMapper mapper;
+
+    @Mock
+    LoginSession loginSession;
 
     /**
      * fixture
@@ -100,13 +110,25 @@ public class SrDataRequestServiceImplTest extends UnitTest {
         types.add(DataType.DATE);
         requireds.add(YN.Y);
         srDataAlowMemberIds.add(new Long(member.getId()));
+
+        // Mock Object 설정을 먼저 하지 않으면, 생성된 객체를 overwrite 하는 문제가 있음.
+        MockitoAnnotations.initMocks(this);
+
+        // login session 에 대한 mock 테스트 설정
+        loginSession = new LoginSession();
+        loginSession.setSesseion(new LoginAuthVo(member.getId(),member.getAuthType()));
+        ReflectionTestUtils.setField(ProxyUtils.unwrapProxy(srDataReqeustService), "loginSession", loginSession);
+
+        // 등록은 선처리 하여, CRUD 가 원활이 구동되도록 처리 한다.
+        add();
     }
 
     @After
     public void tearDown() throws Exception {
     }
 
-    @Test
+//    @Ignore
+//    @Test
     public void allTests() throws UnsupportedEncodingException {
         add();
         modifyBeforeConfirm();
@@ -117,7 +139,9 @@ public class SrDataRequestServiceImplTest extends UnitTest {
         removeRequest();
     }
 
+    @Test
     public void add() throws UnsupportedEncodingException {
+
         // give
         SrDataRequestAddDto dto = new SrDataRequestAddDto(
                 "제목입니다제목입니다제목입니다제목입니다",
@@ -146,7 +170,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
     }
 
 
-    @Ignore
+    @Test
     public void modifyBeforeConfirm() throws UnsupportedEncodingException {
         // give
         whereSqls.add(new String(encode(URLEncoder.encode("and a=#{key2}","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
@@ -163,7 +187,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
                 new String(encode(URLEncoder.encode("select sysdate from dual","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
                 YN.Y,
                 0,
-                DownloadLimitType.WEEKLY,
+                DownloadLimitType.DAILY,
                 new Date(),
                 new Date(),
                 database.getId(),
@@ -186,16 +210,16 @@ public class SrDataRequestServiceImplTest extends UnitTest {
     }
 
 
-    @Ignore
+    @Test
     public void modifyAfterConfirm(){
         // give
-
+        confirm();
         SrDataRequestModifyAfterConfirmDto dto = new SrDataRequestModifyAfterConfirmDto(
                 vo.getId(),
                 "테스트코드테스트코드테스트코드테스트코드테스트코드테스트코드테스트코드",
                 YN.N,
                 0,
-                DownloadLimitType.MONTHLY,
+                DownloadLimitType.DAILY,
                 new Date(),
                 new Date(),
                 Arrays.asList(new Long(member.getId())),
@@ -211,7 +235,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
 
     }
 
-    @Ignore
+    @Test
     public void confirm(){
         // give
         SrDataRequestConfirmDto dto = new SrDataRequestConfirmDto(
@@ -227,7 +251,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
         assertTrue(true);
     }
 
-    @Ignore
+    @Test
     public void removeRequest(){
         // give
         SrDataRequestRemoveDto dto = new SrDataRequestRemoveDto(vo.getId(), vo.getResistMemberVo().getId());
@@ -237,7 +261,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
         assertTrue(true);
     }
 
-    @Ignore
+    @Test
     public void testFindAll() {
         // give
         Pageable page = PageRequest.of(0, 10);//,Direction.DESC,"id");
@@ -268,7 +292,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
         //logger.info("{}", srDataRequestVos.getContent());
     }
 
-    @Ignore
+    @Test
     public void testFindOne() {
         // give
         SrDataRequestFindDto dto = new SrDataRequestFindDto(vo.getId());

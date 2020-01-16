@@ -38,7 +38,7 @@ public class SrDataRequestRunDto extends AbstractDto {
     private String remoteAddress;
 
     @ApiModelProperty(value="최대 조회 개수", hidden = true)
-    private Long limit = 1000L;
+    private Long limit = 100L;
 
     @ApiModelProperty(value="조회 시작 Offset", hidden = true)
     private Long offset = 0L;
