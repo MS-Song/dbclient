@@ -57,6 +57,14 @@ public interface IncidentAlarmManager {
 	 */
 	IncidentAlarmVo modifyIncidentAlarm(IncidentAlarmModifyAfterConfirmDto dto);
 
+	/**
+	 * 사건 알람의 등록자를 변경 한다.
+	 * 담당자 본인만 수정 가능하기에 관리자가 담당자를 변경 가능하도록 처리 한다.
+	 * @param incidentAlarmId
+	 * @param resistMemberId
+	 * @return
+	 */
+	IncidentAlarmVo modifyIncidentAlarm(Long incidentAlarmId,  Long resistMemberId);
 
 	/**
 	 * 사건 알람을 승인 요청 한다.

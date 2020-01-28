@@ -105,7 +105,7 @@ public class SrDataRequestFindDto extends AbstractDto implements Specification<S
     @ApiModelProperty(required=false, position=20, dataType = "Integer", value="승인자 ID")
     private Long confirmMemberId;
 
-    @ApiModelProperty(required=false, position=21, value="허용 사용자자")
+    @ApiModelProperty(required=false, position=21, value="허용 사용자")
     private List<Long> srDataAllowMemberIds;
 
     @ApiModelProperty(required=false, position=22, hidden = true, value="실행자")

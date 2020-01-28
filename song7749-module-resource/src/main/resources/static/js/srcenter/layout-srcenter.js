@@ -97,8 +97,8 @@ webix.ready(function(){
 			{
 				// footer 구성
 		    	id:"footer",
-		    	view: "label",
-				label: "Copyrightⓒ Song7749 Co., Ltd. All Rights Reserved.",
+		    	view: "template",
+				template: "Copyrightⓒ Song7749 Co., Ltd. All Rights Reserved.",
 				height:25,
 				adjust:true
 			}

@@ -755,7 +755,7 @@ let sr_data_request_run_creator = function (requestItem){
 			}
 
 			// 다운로드 가능 기간 및 정보 노출
-			console.log(requestObject);
+			//console.log(requestObject);
 			let downloadInfo ="";
 			if(null!=requestObject.downloadStartDate && null!=requestObject.downloadEndDate){
 				downloadInfo+="[ 다운로드가능 기간 : "+ requestObject.downloadStartDate.substring(0,10) + " ~ " + requestObject.downloadEndDate.substring(0,10) + "] ";
@@ -864,7 +864,7 @@ let sr_data_request_run_creator = function (requestItem){
 						"/srDataRequest/excelDownload",
 						$$("sr_data_request_run_search_form").getValues(),
 						"GET",
-						"_blank"
+						"iframeExcelDownload"
 					)
 				}
 			};
@@ -906,10 +906,8 @@ let sr_data_request_run_creator = function (requestItem){
 	});
 }
 
-
-
 // confirm 메일을 통해 진입할 경우
-var confirmPopupLazyLoading = function(){
+let confirmPopupLazyLoading = function(){
 	if(null==member || undefined==member || undefined==member.authType){
 		setTimeout(() => {confirmPopupLazyLoading()}, 100);		
 	} else {
@@ -931,3 +929,16 @@ webix.ready(function(){
 		confirmPopupLazyLoading();
 	}
 });
+
+// 엑셀이 만들어 지는 동안에는 읽지 못한다.. 기다려야 한다...
+let iframeLoading = function (){
+	try {
+		// text 가 있으면..
+		if($('#iframeExcelDownload').contents().find('pre').text()!=""){
+			let responseMessage = eval("("+$('#iframeExcelDownload').contents().find('pre').text()+")");
+			webix.message({ type:"error", text:responseMessage.message });
+		}
+	} catch(e){
+		// 오류가 있으면 엑셀이다...
+	}
+}

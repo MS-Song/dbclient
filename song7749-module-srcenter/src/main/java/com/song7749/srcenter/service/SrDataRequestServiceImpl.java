@@ -309,10 +309,16 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
     @Transactional(readOnly = true)
     @Override
     public Page<SrDataRequestVo> find(SrDataRequestFindDto dto, Pageable page) {
+        // user 세션 등록
+        dto.setRunMemberId(loginSession.getLogin().getId());
+
         // 일반 사용자의 경우 사용 가능 Y, 승인 Y 값만 조회 가능 하다.
         if(AuthType.NORMAL.equals(loginSession.getLogin().getAuthType())){
             dto.setEnableYN(YN.Y);
             dto.setConfirmYN(YN.Y);
+
+            // 일반 사용자는 허용 사용자를 고정 한다.
+            dto.setSrDataAllowMemberIds(Arrays.asList(dto.getRunMemberId()));
         }
 
         Page<SrDataRequest> pages = srDataRequestRepository.findAll(dto, page);
@@ -327,11 +333,15 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
     @Transactional(readOnly = true)
     @Override
     public SrDataRequestVo find(SrDataRequestFindDto dto) {
+        // user 세션 등록
+        dto.setRunMemberId(loginSession.getLogin().getId());
 
         // 일반 사용자의 경우 사용 가능 Y, 승인 Y 값만 조회 가능 하다.
         if(AuthType.NORMAL.equals(loginSession.getLogin().getAuthType())){
             dto.setEnableYN(YN.Y);
             dto.setConfirmYN(YN.Y);
+            // 일반 사용자는 허용 사용자를 고정 한다.
+            dto.setSrDataAllowMemberIds(Arrays.asList(dto.getRunMemberId()));
         }
 
         Optional<SrDataRequest> oSrDataRequest = srDataRequestRepository.findById(dto.getId());
