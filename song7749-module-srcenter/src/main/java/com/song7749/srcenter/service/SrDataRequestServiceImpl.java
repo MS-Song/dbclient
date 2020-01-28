@@ -266,6 +266,34 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
 
     @Transactional
     @Override
+    public SrDataRequestVo modify(Long srDataRequestId, Long resistMemberId){
+        // 회원 조회
+        Optional<Member> oMember = memberRepository.findById(resistMemberId);
+        if(!oMember.isPresent()){
+            throw new IllegalArgumentException("로그인 상태가 아니거나 일치하는 회원이 존재하지 않습니다.");
+        }
+
+        // SR 조회
+        Optional<SrDataRequest> oSrDataRequest = srDataRequestRepository.findById(srDataRequestId);
+        if(!oSrDataRequest.isPresent()){
+            throw new IllegalArgumentException("일치하는 정보가 없습니다.");
+        }
+
+        // 로그 기록을 위해 기존 정보를 저장
+        SrDataRequest sr = oSrDataRequest.get();
+        Member beforeMember = sr.getResistMember();
+        Member afterMember  = oMember.get();
+
+        // 업데이트
+        sr.setResistMember(afterMember);
+        srDataRequestRepository.saveAndFlush(sr);
+
+        // 로그 기록
+        return sr.getSrDataRequestVo(mapper);
+    };
+
+    @Transactional
+    @Override
     public void confirm(SrDataRequestConfirmDto dto) {
         // 기 입력된 데이터를 로딩
         Optional<SrDataRequest> optionalSrDataRequest = srDataRequestRepository.findById(dto.getId());

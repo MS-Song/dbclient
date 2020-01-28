@@ -129,6 +129,22 @@ public class SrDataRequestController {
                 , srDataReqeustService.modify(dto), "SR Data Request 수정이 완료되었습니다.");
     }
 
+
+    @ApiOperation(value = "Sr Data 등록자 수정"
+            ,notes = "Sr Data 등록자를 수정 한다. - 담당자 변경 등으로 다른 사람이 수정할 경우 처리를 위함, 관리자만 가능함"
+            ,response=MessageVo.class)
+    @Login({AuthType.ADMIN})
+    @PutMapping("/modifyResistMember")
+    public MessageVo modifyResistMember(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam Long srDataRequestId,
+            @RequestParam Long resistMemberId){
+
+        return new MessageVo(HttpStatus.OK.value(), 1
+                , srDataReqeustService.modify(srDataRequestId,resistMemberId), "등록자 수정이 완료 되었습니다.");
+    }
+
     @ApiOperation(value = "Sr Data 삭제"
             ,notes = "Sr Data Request 승인 삭제 "
             ,response=MessageVo.class)
@@ -142,6 +158,8 @@ public class SrDataRequestController {
         srDataReqeustService.remove(dto);
         return new MessageVo(HttpStatus.OK.value(),"SR data Request 삭제가 완료 되었습니다.");
     }
+
+
 
     @ApiOperation(value = "SR Data Request List 조회"
             ,notes = "등록된 SR Data Request 리스트를 조회 한다."

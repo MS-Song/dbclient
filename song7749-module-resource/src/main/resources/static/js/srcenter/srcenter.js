@@ -566,10 +566,17 @@ let sr_data_request_form_creator = function(requestItem){
 			}
 		}
 
+		// 담당자 변경
+		let changeResistMemberButton={
+			view:"button", value:"담당자변경", click:function(){
+				changeResistMember(requestItem.id);
+			}
+		}
+
 		if(requestItem.confirmYN != "Y" && member.authType=='ADMIN') { 					// 승인 버튼 노출
-			elementList.push({cols:[buttonCancel,modifyButton,confirmButton]});
+			elementList.push({cols:[buttonCancel,modifyButton,changeResistMemberButton,confirmButton]});
 		} else if(requestItem.confirmYN == "Y" && member.authType=='ADMIN') {			// 승인 취소 버튼
-			elementList.push({cols:[buttonCancel,modifyButton,confirmCancelButton]});
+			elementList.push({cols:[buttonCancel,modifyButton,changeResistMemberButton,confirmCancelButton]});
 		}  else if(requestItem.confirmYN != "Y") {										// 승인 전 승인 요청 버튼
 			elementList.push({cols:[buttonCancel,modifyButton,confirmRequestButton]});
 		}  else {																		// 승인 후 수정 및 승인 취소 요청
@@ -905,6 +912,77 @@ let sr_data_request_run_creator = function (requestItem){
 		}
 	});
 }
+
+let changeResistMember = function(id){
+	// 일반 사용자는 등록을 차단 한다.
+	if(member.authType != 'ADMIN'){
+		return alert("관리자만 사용 가능 합니다.");
+	}
+
+	// element setup
+	let elements = [];
+	// alarm id
+	elements.push({
+		view:"text",
+		label:"ID",
+		labelWidth:100,
+		adjust:true,
+		name:"srDataRequestId",
+		readonly:true,
+		value:id
+	});
+	// member id
+	elements.push({
+		view:"text",
+		label:"등록회원",
+		labelWidth:100,
+		name:"resistMemberId",
+		readonly:true,
+		on:{"onItemClick":function(view,e){
+				member_list_popup(view,false);
+			}}
+	});
+
+	// 담당자 변경
+	elements.push({
+		cols:[{
+			view:"button", value:"변경", click:function(){
+				webix.ajax().put('/srDataRequest/modifyResistMember',  $$("sr_data_request_change_resist_member_form").getValues(), function(text,data){
+					if(data.json().httpStatus==200){
+						webix.message(data.json().message);
+						$$("sr_data_request_change_resist_member_popup").hide();
+						$$("sr_data_request_popup").hide();
+						sr_data_request_list_create();
+					} else {
+						webix.message({ type:"error", text:data.json().message });
+					}
+				});
+			}
+		},
+			{
+				view:"button", value:"취소", click:function() {
+					$$("sr_data_request_change_resist_member_popup").hide();
+				}
+			}
+		]
+	});
+
+	webix.ui({
+		view:"window",
+		id:"sr_data_request_change_resist_member_popup",
+		width:500,
+		height:400,
+		position:"center",
+		modal:true,
+		head:"담당자 변경 선택",
+		body:{
+			id:"sr_data_request_change_resist_member_form",
+			view:"form",
+			borderless:true,
+			elements:elements
+		}
+	}).show();
+};
 
 // confirm 메일을 통해 진입할 경우
 let confirmPopupLazyLoading = function(){

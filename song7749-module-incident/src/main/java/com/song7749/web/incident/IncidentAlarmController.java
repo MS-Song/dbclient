@@ -263,7 +263,7 @@ public class IncidentAlarmController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			@RequestParam Long incidentAlarmId,
-			@RequestParam Long resistMemberId) throws UnsupportedEncodingException{
+			@RequestParam Long resistMemberId) {
 
 		return new MessageVo(HttpStatus.OK.value(), 1
 				, incidentAlarmManager.modifyIncidentAlarm(incidentAlarmId,resistMemberId), "알람 등록자 수정이 완료 되었습니다.");

@@ -124,7 +124,7 @@ public class SrDataRequest extends Entities {
 
     @NotNull
     @ManyToOne(targetEntity = Member.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "resist_member_id", nullable = false, insertable = true, updatable = false)
+    @JoinColumn(name = "resist_member_id", nullable = false, insertable = true, updatable = true)
     private Member resistMember;
 
     @ManyToOne(targetEntity = Member.class, fetch = FetchType.EAGER)

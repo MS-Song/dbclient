@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 /**
  * <pre>
  * Class Name : SrDataReqeustService
@@ -46,6 +47,15 @@ public interface SrDataReqeustService {
      * @return
      */
     SrDataRequestVo modify(SrDataRequestModifyAfterConfirmDto dto);
+
+    /**
+     * 등록자를 변경 한다.
+     * 담당자 본인만 수정 가능하기에 관리자가 담당자를 변경 가능하도록 처리 한다.
+     * @param srDataRequestId
+     * @param resistMemberId
+     * @return
+     */
+    SrDataRequestVo modify(Long srDataRequestId, Long resistMemberId);
 
     /**
      * 승인 기능
