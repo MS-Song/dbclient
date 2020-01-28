@@ -522,10 +522,10 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
 
         // 다운로드 횟수 제어 기능 -- 엑셀이 아닌 경우 100개가 한계이기에... 엑셀 인 경우에만 제어 할 것인가..?
         if(dto.isExcel()) {
+
             // 회원 정보를 넣는다.
             dto.setRunMemberId(loginSession.getLogin().getId());
             // 선행 작업이 있는지 학인 한다.
-            // 캐시 저장소를 호출 시에 객체가 없을 경우에 1개를 생성 함으로 총 카운트에서 1개를 - 해야 한다.
             List<SrDataRunningInfoCacheVo> list = srDataRequestRunningCacheRepository.get(dto.getId());
 
             // 실행 가능 횟수를 확인 한다.
@@ -535,6 +535,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                 // 진행 중인 작업이 정의 되어 있는 최근 시간 이라면 카운트를 증가 시킨다.
                 logger.debug("SR Running Request 대상 확인 - 실행시간 : {}, 대상시간 : {}",infoVo.getStartTime(),System.currentTimeMillis() - srDataRequest.getDownloadLimitType().getTime());
                 logger.debug("SR Running Request 대상 확인 - 대상 여부 : {}",infoVo.getStartTime() < System.currentTimeMillis() - srDataRequest.getDownloadLimitType().getTime());
+                // 실행 중인  작업들이 현재 시간에서 제한 시간을 뺀 것보다 크면.
                 if (infoVo.getStartTime() > System.currentTimeMillis() - srDataRequest.getDownloadLimitType().getTime()) {
                     count++;
                 }
@@ -544,7 +545,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
 
             // 정의 되어 있는 횟수 이상인가 확인 -- 0 인 경우에는 무제한
             if (srDataRequest.getDownloadLimit() !=0 && count >= srDataRequest.getDownloadLimit()) {
-                throw new IllegalArgumentException("이미 진행 중인 작업이 " + count + "개 있습니다. 잠시 후 다시 이용하시기 바랍니다.");
+                throw new IllegalArgumentException("이미 진행 중인 작업이 " + count + "개 있습니다. 잠시 후 다시 이용하시기 바랍니다. ("+srDataRequest.getDownloadLimitType().getDesc() + ")");
             }
             // 작업 추가
             List<SrDataRunningInfoCacheVo> cacheList = new ArrayList<>();
@@ -602,6 +603,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         excuteDto.setHtmlAllow(false);
         excuteDto.setAutoCommit(false);
         excuteDto.setUseCache(false);
+
         try{
             excuteDto.setIp(request.getRemoteAddr());
         } catch (Exception e){
@@ -610,19 +612,30 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
 
         MessageVo vo = dbClientManager.executeQuery(excuteDto);
         if(dto.isDebug()){
-            vo.setMessage(sql);
+            vo.setMessage(excuteDto.getQuery());
         }
 
 
         // 실행이 완료되면 작업 하나를 삭제 처리 한다.
         if(dto.isExcel()) {
             List<SrDataRunningInfoCacheVo> list = srDataRequestRunningCacheRepository.get(dto.getId());
-            logger.debug("SR Request Running count by Delete : {} ",list.size());
-// 지우지 않아도 알아서 제거 되니.. 지우지 말자.. (1일 주기)
-//            if(list.size()>0){
-//                list.remove(0);
-//                srDataRequestRunningCacheRepository.put(dto.getId(),list);
-//            }
+            logger.debug("SR Request Running count : {} ",list.size());
+
+            // 삭제 대상을 선별 한다.
+            List<SrDataRunningInfoCacheVo> removeList = new ArrayList<>();
+            for (SrDataRunningInfoCacheVo infoVo : list) {
+                // 이미 유효 시간이 지난 데이터들을 제거 한다.
+                logger.debug("SR Running Request Remove 대상 : {}", System.currentTimeMillis() - infoVo.getStartTime() > srDataRequest.getDownloadLimitType().getTime());
+                // 현재 시간에서 실행 시간을 빼고, 범위 보다 크면, 삭제 대상 이다.
+                if (System.currentTimeMillis() - infoVo.getStartTime() > srDataRequest.getDownloadLimitType().getTime()) {
+                    removeList.add(infoVo);
+                }
+            }
+            // 유효 시간이 지난 데이터 삭제 및 방금 실행이 완료된 데이터를 삭제 한다.
+            if(list.size()>0){
+                list.removeAll(removeList);
+                srDataRequestRunningCacheRepository.put(dto.getId(),list);
+            }
         }
         return vo;
     }
@@ -636,7 +649,6 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
             throw new IllegalArgumentException("일치하는 정보가 없습니다.");
         }
 
-        // 관리자 회원을 조회 한다.
         // 관리자 회원에게 메일 발송 하기 위해 조회
         MemberFindDto memberFindDto = new MemberFindDto();
         memberFindDto.setAuthType(AuthType.ADMIN);

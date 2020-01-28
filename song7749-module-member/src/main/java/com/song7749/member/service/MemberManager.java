@@ -1,5 +1,6 @@
 package com.song7749.member.service;
 
+import com.song7749.common.MessageVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -99,4 +100,11 @@ public interface MemberManager {
 	 * @return
 	 */
 	MemberVo renewApikeyByAdmin(String loginId);
+
+	/**
+	 * 패스워드를 메일로 전송 처리 한다.
+	 * @param loginId
+	 * @return
+	 */
+	MessageVo sendPassword(String loginId);
 }

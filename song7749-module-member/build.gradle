@@ -8,5 +8,6 @@ dependencies {
 	compile project(':song7749-module-utils')
 	compile project(':song7749-module-web')
 	compile project(':song7749-module-log')
+	compile project(':song7749-module-mail')
 	testCompile project(':song7749-module-test').sourceSets.test.output
 }

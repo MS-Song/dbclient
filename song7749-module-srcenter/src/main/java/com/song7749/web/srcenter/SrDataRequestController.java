@@ -159,8 +159,6 @@ public class SrDataRequestController {
         return new MessageVo(HttpStatus.OK.value(),"SR data Request 삭제가 완료 되었습니다.");
     }
 
-
-
     @ApiOperation(value = "SR Data Request List 조회"
             ,notes = "등록된 SR Data Request 리스트를 조회 한다."
             ,response=SrDataRequestVo.class)
@@ -240,7 +238,7 @@ public class SrDataRequestController {
 
     }
 
-        @ApiOperation(value = "SR Data Request 승인 요청"
+    @ApiOperation(value = "SR Data Request 승인 요청"
             ,notes = "SR Data Request 승인 요청 한다.<br/> 관리자로 등록된 모든 회원에게 승인 요청 메일이 발송된다."
             ,response=MessageVo.class)
     @Login({AuthType.DEVELOPER,AuthType.ADMIN})
@@ -253,5 +251,4 @@ public class SrDataRequestController {
         srDataReqeustService.confirmRequest(dto);
         return new MessageVo(HttpStatus.OK.value(), 1, dto.getConfirmYN().equals(YN.Y) ? "승인이 요청 되었습니다." : "승인 취소 요청 되었습니다.");
     }
-
 }
