@@ -22,5 +22,6 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description="회원 권한 타입")
 public enum AuthType {
 	@ApiModelProperty("관리자") ADMIN,
+	@ApiModelProperty("개발자") DEVELOPER,
 	@ApiModelProperty("일반") NORMAL
 }

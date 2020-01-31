@@ -7,12 +7,18 @@ import java.util.function.Function;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.song7749.common.MessageVo;
+import com.song7749.mail.service.EmailService;
+import com.song7749.member.task.MemberSendMailPassword;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +69,15 @@ public class MemberManagerImpl implements MemberManager {
 
 	@Autowired
 	ModelMapper mapper;
+
+	@Autowired
+	private EmailService emailService;
+
+	@Autowired
+	private ThreadPoolTaskScheduler taskScheduler;
+
+	@Autowired
+	private Environment environment;
 
 	@Validate
 	@Transactional
@@ -209,5 +224,26 @@ public class MemberManagerImpl implements MemberManager {
 		}
 		member.setApikey(cipherValue);
 		return memberRepository.saveAndFlush(member).getMemberVo(mapper);
+	}
+
+	@Validate
+	@Transactional
+	@Override
+	public MessageVo sendPassword(String loginId){
+		Member m = memberRepository.findByLoginId(loginId);
+		if(null==m){
+			throw new IllegalArgumentException("일치하는 회원 정보가 없습니다.");
+		}
+
+		// 메일을 발송 한다.
+		taskScheduler.getScheduledExecutor().execute(
+				new MemberSendMailPassword(
+						m,
+						emailService,
+						environment
+				)
+		);
+
+		return new MessageVo(HttpStatus.OK.value(),"패스워드가 메일로 전송되었습니다. 로그인 후에 변경 하시기 바랍니다.");
 	}
 }

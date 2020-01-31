@@ -8,6 +8,7 @@ webix.protoUI({
 		autofocus: true,
 		extraKeys: {
 			"Ctrl-Space": "autocomplete",
+			"Cmd-Enter": "autocomplete",
 			"Ctrl-Enter":function(){
 				// 컨트롤 엔터 입력시 쿼리 실행
 				event.preventDefault();
@@ -30,7 +31,7 @@ webix.protoUI({
 		    "Ctrl-9":function(cm){csvFileUploadForm();},
 		    "Ctrl-0":function(cm){killExecuteQuery();},
 		},
-		hintOptions: {tables: {}}		
+		hintOptions: {tables: {}}
 	},
 	$init:function(config){
 		this.$view.innerHTML = "<textarea style='width:100%;height:100%;'></textarea>";

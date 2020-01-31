@@ -49,30 +49,33 @@ webix.ready(function(){
 						margin:5,
 						body:{ 
 							rows:[{
-								cols:[{},{
-									id:"incident_alarm_list_page",
-									view: 'pager',
-									template: '{common.first()} {common.prev()} {common.pages()} {common.next()} {common.last()}',
-									master:false,
-									size: 20,
-									group: 5,
-									count: 1000,
-									align:'center',
-									on: { onItemClick: function(id, e, node) {
-										    $$('incident_alarm_search_page').setValue(id*1 + 1);
-										    incident_alarm_list_create();
-									}}
-								},{
-									id:"incident_alarm_job_add_button",
-									view:"button",
-									value:"알람 신규 등록",
-									width:150,
-									click:function(){
-										incident_alarm_popup();
-									}
-								},{
-									
-								}]
+								cols:[
+									{
+										id:"incident_alarm_job_add_button",
+										view:"button",
+										value:"알람 신규 등록",
+										width:150,
+										click:function(){
+											incident_alarm_popup();
+										}
+									},
+									{},
+									{
+										id:"incident_alarm_list_page",
+										view: 'pager',
+										template: '{common.first()} {common.prev()} {common.pages()} {common.next()} {common.last()}',
+										master:false,
+										size: 20,
+										group: 5,
+										count: 1000,
+										align:'center',
+										on: { onItemClick: function(id, e, node) {
+												$$('incident_alarm_search_page').setValue(id*1 + 1);
+												incident_alarm_list_create();
+										}}
+									},
+									{}
+								]
 							},{
 								view : "datatable", 
 								id:"incident_alarm_list_view", 						
@@ -82,7 +85,6 @@ webix.ready(function(){
 								select:"row",
 								resizeColumn:true,
 								scroll:true,
-								multiselect:true,
 								clipboard:"selection",
 								on:{"onItemClick":function(){
 									incident_alarm_popup(this.getSelectedItem());

@@ -32,8 +32,10 @@ subprojects {
 		mavenCentral()
 		maven { url "https://repo.spring.io/snapshot" }
 		maven { url "https://repo.spring.io/milestone" }
-		maven { url "https://code.lds.org/nexus/content/groups/main-repo" }
-		maven { url "https://repo.clojars.org" }
+		maven { url "http://repo.odysseusinc.com/artifactory/community-libs-release-local" }
+		maven { url "http://repo.clojars.org/" }
+
+
 	}
 
 	task initSourceFolders {
@@ -79,7 +81,7 @@ subprojects {
 		compile("org.apache.poi:poi-ooxml:3.17")
 	    compile('mysql:mysql-connector-java')
 		compile('org.mariadb.jdbc:mariadb-java-client:2.2.3')
-		compile('com.oracle:ojdbc6:11.2.0.3')
+		compile('com.oracle:ojdbc6:12.1.0.1')
 		compile('com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8')
 		compile('monetdb:monetdb-jdbc:2.28')
 		compile('com.h2database:h2')

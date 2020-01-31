@@ -31,10 +31,14 @@ spring:
     schemaName: PUBLIC
     host: jdbc:h2:file:~/dbclient
     port: 
- # 스프링 영속성을 Controller 까지 확대. http://kingbbode.tistory.com/27 참고 바람
+  # 스프링 영속성을 Controller 까지 확대. http://kingbbode.tistory.com/27 참고 바람
+  # JPA Time Zone 설정을 추가함 (JPA 의 시간은 계속 GMT 0 이다...) -- 별짓을 다 해봐도 변화가 없네...
   jpa: 
     open-in-view: true
-
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Seoul
 ##############################################################################
 # local 추가 환경 
 ##############################################################################
@@ -164,6 +168,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+#      ddl-auto: create-drop
+#      ddl-auto: create
 #      ddl-auto: validate
 #      ddl-auto: update
     properties:

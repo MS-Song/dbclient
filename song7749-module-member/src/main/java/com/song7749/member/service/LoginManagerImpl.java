@@ -111,7 +111,7 @@ public class LoginManagerImpl implements LoginManager{
 	/**
 	 * 로그인 쿠키를 생성한다.
 	 * 	-- 만료 기간 전에 로그인 쿠키 재생성에도 사용된다.
-	 * @param member
+	 * @param lav
 	 * @param request
 	 * @param response
 	 * @return
@@ -247,22 +247,41 @@ public class LoginManagerImpl implements LoginManager{
 
 	/**
 	 * 해당 회원이 접근 가능한 기능인가 검증
-	 * @param member
+	 * @param request
+	 * @param response
 	 * @param login
-	 * @return boolean
+	 * @return
 	 */
 	@Override
 	public boolean isAccese(HttpServletRequest request, HttpServletResponse response, Login login) {
+
+		boolean isAuth = false;
 		// 세션에 있는지 확인
 		if(loginSession.isLogin()
 				&& null != loginSession.getLogin().getAuthType()) {
 
+			// controller 에 정의되어 있는 로그인 가능 범위
 			for(AuthType at : login.value()){
+				// 권한이 매치되면 그냥 넘어 간다.
 				if(loginSession.getLogin().getAuthType().equals(at)){
 					return true;
 				}
+				// NORMAL - DEVELOPER - ADMIN 순으로 권한 상속
+				else { 	// 매치가 되지 않을 경우 상속으로 처리 되도록 한다.
+					// NORMAL 접근 가능 기능에는 NORMAL , DEVELOPER, ADMIN 접근 가능
+					if(at.equals(AuthType.NORMAL)){
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.NORMAL);
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.DEVELOPER);
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.ADMIN);
+					}
+					// DEVELOPER 접근 가능에는 DEVELOPER, ADMIN 접근 가능
+					if(at.equals(AuthType.DEVELOPER)){
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.DEVELOPER);
+						isAuth = isAuth || loginSession.getLogin().getAuthType().equals(AuthType.ADMIN);
+					}
+				}
 			}
 		}
-		return false;
+		return isAuth;
 	}
 }
