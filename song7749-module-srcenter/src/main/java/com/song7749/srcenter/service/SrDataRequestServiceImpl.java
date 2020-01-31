@@ -48,6 +48,8 @@ import org.springframework.util.CollectionUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.function.Function;
 
+import static com.song7749.util.LogMessageFormatter.format;
+
 /**
  * <pre>
  * Class Name : SrDataRequestServiceImpl
@@ -389,10 +391,12 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         for(SrDataConditionVo vo : conditionVos){
             // 배열 타입의 경우 데이터를 정리해서 넣는다.
             if(vo.getType().equals(DataType.ARRAY)){
+                logger.debug(format("{}","SR DATA Condition ARRAY DATA"),vo.getValue());
+
                 // 값이 있어야하고, 파싱이 가능한 상태인 경우에만 입력해야 한다.
                 if(StringUtils.isNotBlank(vo.getValue())){
                     // 입력 값을 | 로 분리 한다.
-                    String[] values = vo.getValue().split("|");
+                    String[] values = vo.getValue().split("\\|");
                     // 값이 있는 경우
                     if(ArrayUtils.isNotEmpty(values)){
                         // 파라메터를 생성 한다.
@@ -401,13 +405,14 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                             // 값이 있는 경우
                             if(StringUtils.isNotBlank(value)){
                                 // ^ 로 분리 한다.
-                                String[] param = value.split("^");
+                                String[] param = value.split("\\^");
                                 if(ArrayUtils.isNotEmpty(param)  && param.length > 1){
                                     parameters.add(new Parameter(param[0],param[1]));
                                 }
                             }
                         }
                         // 파라메터 셋팅
+                        logger.debug(format("{}","SR DATA Condition ARRAY DATA PARAMS Array"),parameters);
                         vo.setValues(parameters);
                     }
                 }
@@ -454,12 +459,12 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
 
                             List<Parameter> parameters = new ArrayList<>();
                             for(Map<String,String> data : contents){
-                                parameters.add(new Parameter(data.get("KEY"), data.get("VALUE")));
+                                parameters.add(new Parameter(data.get("NAME"), data.get("VALUE")));
                             }
                             vo.setValues(parameters);
                         }
                     } catch(Exception e){
-                        throw new IllegalArgumentException("Parameter Type SQL 인 경우 Select 구문을 KEY, VALUE 로 입력해야 합니다.(대문자) \n  또는 다음 메세지를 참조하세요 : "+e.getMessage());
+                        throw new IllegalArgumentException("Parameter Type SQL 인 경우 Select 구문을 NAME, VALUE 로 입력해야 합니다.(대문자) \n  또는 다음 메세지를 참조하세요 : "+e.getMessage());
                     }
                 }
             }

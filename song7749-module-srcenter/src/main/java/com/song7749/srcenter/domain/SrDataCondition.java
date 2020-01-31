@@ -60,7 +60,7 @@ public class SrDataCondition extends Entities {
 
     @NotBlank
     @Length(max = 200)
-    @Column(nullable = false)
+    @Column(name="condition_key", nullable = false)
     private String key;
 
     @NotNull

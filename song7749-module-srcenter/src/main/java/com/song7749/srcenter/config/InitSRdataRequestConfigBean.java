@@ -121,9 +121,9 @@ public class InitSRdataRequestConfigBean {
 				members);
 
 		List<SrDataCondition> conditions = Arrays.asList(
-			new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as KEY, '- database 선택 -' as VALUE union select database_id as KEY, host as VALUE  from database_info order by key ASC", YN.N, sdr),
+			new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as NAME, '- database 선택 -' as VALUE union select database_id as NAME, host as VALUE  from database_info order by NAME ASC", YN.N, sdr),
 			new SrDataCondition("and host like '%{host}%'", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr),
-			new SrDataCondition("and port='{port}'", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.N, sdr)
+			new SrDataCondition("and port='{port}'", "{wherePort}", "Port", "{Port}", DataType.ARRAY, "3306^MYSQL|1512^ORACLE", YN.N, sdr)
 		);
 
 		sdr.setSrDataConditions(conditions);
@@ -148,7 +148,7 @@ public class InitSRdataRequestConfigBean {
 		sdr2.setConfirmDate(new Date());
 
 		List<SrDataCondition> conditions2 = Arrays.asList(
-				new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as KEY, '- database 선택 -' as VALUE union select database_id as KEY, host as VALUE  from database_info order by key ASC", YN.N, sdr2),
+				new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as NAME, '- database 선택 -' as VALUE union select database_id as NAME, host as VALUE  from database_info order by NAME ASC", YN.N, sdr2),
 				new SrDataCondition("and host like '%{host}%'", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr2),
 				new SrDataCondition("and port='{port}'", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.N, sdr2)
 		);
@@ -172,7 +172,7 @@ public class InitSRdataRequestConfigBean {
 				members);
 
 		List<SrDataCondition> conditions3 = Arrays.asList(
-				new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as KEY, '- database 선택 -' as VALUE union select database_id as KEY, host as VALUE  from database_info order by key ASC", YN.N, sdr3),
+				new SrDataCondition("and database_id='{database_id}'", "{whereDatabaseId}", "DB번호", "{database_id}", DataType.SQL, "select null as NAME, '- database 선택 -' as VALUE union select database_id as NAME, host as VALUE  from database_info order by NAME ASC", YN.N, sdr3),
 				new SrDataCondition("and host like '%{host}%'", "{whereHost}", "host명", "{host}", DataType.STRING, null, YN.Y, sdr3),
 				new SrDataCondition("and port='{port}'", "{wherePort}", "Port", "{Port}", DataType.NUMBER, null, YN.N, sdr3)
 		);

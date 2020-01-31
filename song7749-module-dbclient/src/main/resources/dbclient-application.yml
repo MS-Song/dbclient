@@ -168,6 +168,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+#      ddl-auto: create-drop
+#      ddl-auto: create
 #      ddl-auto: validate
 #      ddl-auto: update
     properties:

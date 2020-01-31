@@ -83,7 +83,7 @@ public class SrDataRequestModifyBeforeConfirmDto extends AbstractDto {
     @ApiModelProperty( required=true, position=13, value="SQL 조건 변수 || where 에 바인딩 시킬 변수명 EX) {keyName} ")
     private List<String> conditionKey;
 
-    @ApiModelProperty( required=true, position=14, value="SQL 데이터 타입 || where 에 바인딩 시킬 변수의 타입  String, Number, Date <br /> Array 는 selectBox 형태로 키^값 형태로 넣는다. EX) 남현점^100|금천점^200, ... <br /> SQL 은 키, 값의 형태로 작성한다. EX) select store_nm key, store_id value from store_info")
+    @ApiModelProperty( required=true, position=14, value="SQL 데이터 타입 || where 에 바인딩 시킬 변수의 타입  String, Number, Date <br /> Array 는 selectBox 형태로 키^값 형태로 넣는다. EX) 100^남현점|200^금천점, ... <br /> SQL 은 키, 값의 형태로 작성한다. EX) select store_nm NAME, store_id VALUE from store_info")
     private List<DataType> conditionType;
 
     @ApiModelProperty(required=true, position=15, value="SQL 조건 필수 여부 || 필수가 아닌 경우에 값이 없으면, WHERE 구문을 제외하고, 필수이며 값이 없으면 에러 발생")
