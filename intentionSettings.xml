@@ -1,6 +1,0 @@
-<application>
-  <component name="IntentionManagerSettings">
-    <ignoreAction name="Java/Declaration/Split declaration" />
-    <ignoreAction name="Java/Declaration/Change Variable Type to Type of Initializer" />
-  </component>
-</application>
