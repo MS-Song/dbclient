@@ -279,7 +279,7 @@ let find_password = {
 								webix.message(data.json().message);
 								$$("find_password_popup").hide();
 							} else {
-								webix.message({ type:"error", text:response.message });
+								webix.message({ type:"error", text:data.json().message });
 							}
 						});
 					}},

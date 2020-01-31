@@ -8,7 +8,6 @@ test { useJUnit {} }
 
 dependencies {
 	compile project(':song7749-module-member')
-	compile project(':song7749-module-mail')
 	compile project(':song7749-module-common')
 	compile project(':song7749-module-utils')
 	compile project(':song7749-module-web')
