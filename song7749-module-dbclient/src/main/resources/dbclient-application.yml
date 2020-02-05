@@ -177,7 +177,7 @@ spring:
       hibernate : 
         format_sql: false
         use_sql_comments: false
-          show-sql: false
+        show-sql: false
   devtools:
     livereload:
       enabled: false
