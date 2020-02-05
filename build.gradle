@@ -32,10 +32,6 @@ subprojects {
 		mavenCentral()
 		maven { url "https://repo.spring.io/snapshot" }
 		maven { url "https://repo.spring.io/milestone" }
-		maven { url "http://repo.odysseusinc.com/artifactory/community-libs-release-local" }
-		maven { url "http://repo.clojars.org/" }
-
-
 	}
 
 	task initSourceFolders {
@@ -83,7 +79,6 @@ subprojects {
 		compile('org.mariadb.jdbc:mariadb-java-client:2.2.3')
 		compile('com.oracle:ojdbc6:12.1.0.1')
 		compile('com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8')
-		compile('monetdb:monetdb-jdbc:2.28')
 		compile('com.h2database:h2')
 		compile('org.webjars:sockjs-client:1.1.2')
 		compile('org.webjars:stomp-websocket:2.3.1')

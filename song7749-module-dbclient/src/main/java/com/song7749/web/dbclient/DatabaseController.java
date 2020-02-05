@@ -26,10 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.song7749.chakra.service.ChakraConfigManager;
-import com.song7749.chakra.value.ChakraConfigFindDto;
-import com.song7749.chakra.value.ChakraConfigSaveDto;
-import com.song7749.chakra.value.ChakraConfigVo;
 import com.song7749.common.MessageVo;
 import com.song7749.common.YN;
 import com.song7749.dbclient.service.DBClientMemberManager;
@@ -73,9 +69,6 @@ public class DatabaseController {
 
 	@Autowired
 	DBClientMemberManager dbClientMemberManager;
-
-	@Autowired
-	ChakraConfigManager chakraConfigManager;
 
 	@PostMapping("/add")
 	@ApiOperation(value = "데이터베이스 정보 입력", response = DatabaseVo.class)
@@ -208,29 +201,5 @@ public class DatabaseController {
 			@PageableDefault(page=0, size=500, direction=Direction.DESC, sort="id")
 			Pageable page){
 		return databaseManager.findDatabasePrivacyPolicyList(dto, page);
-	}
-
-	@GetMapping("/getChakraConfig")
-	@ApiOperation(value = "샤크라 연동 설정 조회", response = ChakraConfigVo.class)
-	@Login({AuthType.ADMIN })
-	public ChakraConfigVo getChakraConfig(HttpServletRequest request, HttpServletResponse response,
-			@Valid @ModelAttribute ChakraConfigFindDto dto) {
-		return chakraConfigManager.getChakraConfig(dto);
-	}
-
-	@PostMapping("/saveChakraConfig")
-	@ApiOperation(value = "샤크라 연동 설정 저장", response = MessageVo.class)
-	@Login({ AuthType.ADMIN })
-	public MessageVo saveChakraConfig(HttpServletRequest request, HttpServletResponse response,
-			@Valid @ModelAttribute ChakraConfigSaveDto dto) {
-		return chakraConfigManager.saveChakraConfig(dto);
-	}
-
-	@PostMapping("/chakraSyncNow")
-	@ApiOperation(value = "샤크라 연동 즉시 실행", response = MessageVo.class)
-	@Login({ AuthType.ADMIN })
-	public MessageVo chakraSyncNow(HttpServletRequest request, HttpServletResponse response,
-			@Valid @ModelAttribute ChakraConfigFindDto dto) {
-		return chakraConfigManager.syncChakraPrivacyPolicy(dto);
 	}
 }
