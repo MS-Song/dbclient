@@ -692,6 +692,10 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                         };
                     }
 
+                    if(null==f.get(dto)){
+                        throw new IllegalArgumentException("검색 조건이 하나도 없는 경우에는 메일링을 이용하시기 바랍니다. (조건 추가를 통해서 검색 조건을 추가 하세요");
+                    }
+
                     boolean ckeckLoop = loop!=0;
                     boolean checkSize = f.get(dto) instanceof List;
                     checkSize = checkSize && beforeLength != ((List)f.get(dto)).size();

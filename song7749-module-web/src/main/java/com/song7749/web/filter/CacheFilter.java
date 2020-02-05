@@ -1,5 +1,7 @@
 package com.song7749.web.filter;
 
+import org.springframework.core.annotation.Order;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -29,7 +31,12 @@ import javax.servlet.http.HttpServletResponse;
 * @since 2018. 2. 25.
 */
 
-@WebFilter(urlPatterns="/static/**")
+@WebFilter(
+        filterName = "cacheFilter",
+        urlPatterns={"/static/**"},
+        description= "static elements 가 캐시 되지 않도록 처리 한다. "
+)
+@Order(1)
 public class CacheFilter implements Filter {
 
     @Override

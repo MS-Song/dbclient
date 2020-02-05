@@ -166,6 +166,7 @@ spring:
     port: 4306
   # jpa 추가 설정
   jpa:
+    show-sql: false
     hibernate:
       ddl-auto: none
 #      ddl-auto: create-drop
@@ -176,6 +177,7 @@ spring:
       hibernate : 
         format_sql: false
         use_sql_comments: false
+          show-sql: false
   devtools:
     livereload:
       enabled: false

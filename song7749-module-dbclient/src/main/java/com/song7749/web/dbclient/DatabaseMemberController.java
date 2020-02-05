@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.song7749.common.WebSocketMessageVo;
+import com.song7749.member.value.LoginAuthVo;
 import org.castor.util.Base64Decoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.*;
 
 import com.song7749.common.MessageVo;
 import com.song7749.common.exception.AuthorityUserException;
@@ -80,6 +77,9 @@ public class DatabaseMemberController {
 
 	@Autowired
 	LoginSession session;
+
+	@Autowired
+	private SimpMessagingTemplate template;
 
 	@ApiOperation(value = "회원과 Database 간의 연결 추가/삭제 - 관리자"
 			,notes = "회원과 Database 간의 연결을 추가 한다"
@@ -169,5 +169,23 @@ public class DatabaseMemberController {
 		} else {
 			throw new AuthorityUserException("본인의 정보만 조회 가능 합니다.");
 		}
+	}
+
+
+	@ApiOperation(value = "공지사항 메세지 전송"
+			,notes = "시스템 공지 사항을 접속중인 모든 사용자에게 전송 한다."
+			,response=MessageVo.class)
+	@GetMapping("/sendNoticesMessage")
+	public MessageVo sendNoticesMessage(HttpServletRequest request,
+										HttpServletResponse response,
+										@RequestParam String buildNumber){
+
+		WebSocketMessageVo sendMessage = new WebSocketMessageVo();
+		sendMessage.setHttpStatus(HttpStatus.OK.value());
+		sendMessage.setContents(new LoginAuthVo("root@test.com",AuthType.ADMIN));
+		sendMessage.setMessage("Message to Jenkins System Deploy Work Running \n\n 시스템 반작업 : " + buildNumber+ " 번이 실행을 시작 하였습니다. \n반영 작업 주엥 약 1분간 시스템이 중지 되오니, 실행 중인 작업을 잠시 중단해 주시기 바랍니다.");
+		sendMessage.setProcessTime(System.currentTimeMillis());
+		template.convertAndSend("/topic/recieve", sendMessage);
+		return new MessageVo(HttpStatus.OK.value(), "관리자 공지사항 전송 완료");
 	}
 }

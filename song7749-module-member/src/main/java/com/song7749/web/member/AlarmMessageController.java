@@ -51,27 +51,28 @@ public class AlarmMessageController {
     	return vo;
     }
 
-    /**
-     * 알람 테스크
-     * @param vo
-     * @return
-     * @throws Exception
-     */
-    @MessageMapping("/runAlarms")
-    @SendTo("/topic/runAlarms")
-    public WebSocketMessageVo runAlarms(WebSocketMessageVo vo) throws Exception {
-    	return vo;
-    }
+	/**
+	 * 알람 테스크
+	 * @param vo
+	 * @return
+	 * @throws Exception
+	 */
+	@MessageMapping("/runAlarms")
+	@SendTo("/topic/runAlarms")
+	public WebSocketMessageVo runAlarms(WebSocketMessageVo vo) throws Exception {
+		return vo;
+	}
 
-    private LoginAuthVo getLoginAuthVo(String apikey) {
-    	// 인증 객체로 변경 한다.
-    	LoginAuthVo lav = null;
-    	try {
-    		lav = (LoginAuthVo) ObjectJsonUtil.getObjectByJsonString(CryptoAES.decrypt(apikey),LoginAuthVo.class);
-    		logger.debug(format("{}","Login apikey 복호화 완료"),lav);
-    	} catch (Exception e) {
-    		throw new IllegalArgumentException("apikey 정보 복호화 실패. 관리자에게 문의 하시기 바랍니다.");
-    	}
+	private LoginAuthVo getLoginAuthVo(String apikey) {
+		// 인증 객체로 변경 한다.
+		LoginAuthVo lav = null;
+		try {
+			lav = (LoginAuthVo) ObjectJsonUtil.getObjectByJsonString(CryptoAES.decrypt(apikey),LoginAuthVo.class);
+			logger.debug(format("{}","Login apikey 복호화 완료"),lav);
+		} catch (Exception e) {
+			// 전송자에 대한 정보를 임의로 지정함.
+			lav = new LoginAuthVo("root@test.com",AuthType.ADMIN);
+		}
 		return lav;
-    }
+	}
 }

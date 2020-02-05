@@ -991,35 +991,29 @@ webix.ready(function(){
 	client.debug = null						// debug off
 	client.connect({}, function (frame) {	// 연결
 		client.subscribe('/topic/recieve', function (message) {
-			let body = JSON.parse(message.body);
+			let messageBody = JSON.parse(message.body);
 			// 정상적인  상황이면 메세지 전송
-			if(body.httpStatus == 200) {
-				// 전송자 본인에게는 전송하지 않는다.
-				if(body.contents.id!=member.id){
-					adminRecieveMessagePopup(body.message,body.contents);					
-				}
+			if(messageBody.httpStatus == 200) {
+				adminRecieveMessagePopup(messageBody.message,messageBody.contents);
 			} else {
-				if(body.contents.id==member.id){
-					// 에러 메세지를 관리자에게 출력
-					webix.message({ type:"error", text:data.json().message });
-				}
+				webix.message({ type:"error", text:data.json().message });
 			}
-        });
+		});
 		if(undefined!=$$("incident_alarm_run_log")){
 			client.subscribe('/topic/runAlarms', function (message) {
-				let body = JSON.parse(message.body);
+				let messageBody = JSON.parse(message.body);
 				$$("incident_alarm_run_log").add({
-					"alarmId"		: body.contents.id,
-					"status"		: body.httpStatus == 200 ? "성공":"실패"	
-					,"subject" 		: body.contents.subject
+					"alarmId"		: messageBody.contents.id,
+					"status"		: messageBody.httpStatus == 200 ? "성공":"실패"
+					,"subject" 		: messageBody.contents.subject
 					,"confirmYN" 	: "Y"
-					,"processTime"	: body.processTime + ' ms'
-					,"time"			: body.date + ' ' + body.time
-				});	 
-    			$$("incident_alarm_run_log").sort("time", "desc","string");
-    			$$("incident_alarm_run_log").refresh();
+					,"processTime"	: messageBody.processTime + ' ms'
+					,"time"			: messageBody.date + ' ' + messageBody.time
+				});
+				$$("incident_alarm_run_log").sort("time", "desc","string");
+				$$("incident_alarm_run_log").refresh();
 
 			});
 		}
-	 });		
+	});
 });

@@ -44,8 +44,9 @@ public class SrDataCondition extends Entities {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Lob
     @NotBlank
-    @Length(max = 2000)
+    @Length(max = 12000)
     @Column(nullable = false)
     private String whereSql;
 
@@ -68,7 +69,8 @@ public class SrDataCondition extends Entities {
     @Column(nullable = false)
     private DataType type;
 
-    @Length(max = 200)
+    @Lob
+    @Length(max = 12000)
     @Column(nullable = true)
     private String value;
 
