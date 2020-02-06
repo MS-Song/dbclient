@@ -26,6 +26,10 @@
           <option name="url" value="http://github.com" />
           <option name="userName" value="song7749@gmail.com" />
         </UrlAndUserName>
+        <UrlAndUserName>
+          <option name="url" value="http://song7749@10.10.27.25:9000/Homeplus_Utils/DB-CLIENT" />
+          <option name="userName" value="" />
+        </UrlAndUserName>
       </list>
     </option>
     <option name="cloneParentDir" value="$USER_HOME$/git" />
