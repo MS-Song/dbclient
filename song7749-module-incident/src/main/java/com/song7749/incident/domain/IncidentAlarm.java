@@ -73,13 +73,13 @@ public class IncidentAlarm extends Entities {
 
 	@Lob
 	@NotBlank
-	@Length(max = 12000)
+	@Length(max = 30000)
 	@Column(nullable = false)
 	private String beforeSql;
 
 	@Lob
 	@NotBlank
-	@Length(max = 12000)
+	@Length(max = 30000)
 	@Column(nullable = false)
 	private String runSql;
 
@@ -131,7 +131,7 @@ public class IncidentAlarm extends Entities {
 
 	@NotNull
 	@ManyToOne(targetEntity=Member.class, fetch = FetchType.EAGER)
-	@JoinColumn(name = "resist_member_id", nullable = false, insertable = true, updatable = false)
+	@JoinColumn(name = "resist_member_id", nullable = false, insertable = true, updatable = true)
 	private Member resistMember;
 
 	@ManyToOne(targetEntity=Member.class, fetch = FetchType.EAGER)

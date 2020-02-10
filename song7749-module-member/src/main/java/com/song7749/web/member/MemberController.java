@@ -184,4 +184,16 @@ public class MemberController {
 		return new MessageVo(HttpStatus.OK.value(),
 				memberManager.renewApikeyByAdmin(loginId), "apikey가 갱신 되었습니다.");
 	}
+
+	@ApiOperation(value = "패스워드 메일 전송"
+			,notes = "회원의 패스워드를 재 생성하여 메일로 전송해 준다."
+			,response=MessageVo.class)
+	@GetMapping("/sendPassword")
+	public MessageVo sendPassword(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@RequestParam String loginId){
+
+		return memberManager.sendPassword(loginId);
+	}
 }

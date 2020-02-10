@@ -212,6 +212,57 @@ public class IncidentAlarmManagerImpl implements IncidentAlarmManager, Schedulin
 		return modifyIncidentAlarm(ia);
 	}
 
+	@Validate
+	@Transactional
+	@Override
+	public IncidentAlarmVo modifyIncidentAlarm(Long incidentAlarmId,  Long resistMemberId){
+
+		// 알람에 대한 변경 담당자가 존재 하는지 조회 한다.
+		Optional<Member> oMember = memberRepository.findById(resistMemberId);
+		if(!oMember.isPresent()) {
+			throw new IllegalArgumentException("등록 회원 정보가 일치하지 않습니다. memberId="+resistMemberId);
+		}
+
+		// 알람이 존재 하는지 조회 한다.
+		Optional<IncidentAlarm> oIncidentAlarm = incidentAlarmRepository.findById(incidentAlarmId);
+		if(!oIncidentAlarm.isPresent()) {
+			throw new IllegalArgumentException("존재하지 않는 작업입니다");
+		}
+		IncidentAlarm ia = oIncidentAlarm.get();
+
+		// 로그 기록을 위해 before / after user	 를 기록한다.
+		Member before  	= ia.getResistMember();
+		Member after 	= oMember.get();
+
+		// 업데이트 한다.
+		ia.setResistMember(after);
+		incidentAlarmRepository.saveAndFlush(ia);
+
+		// 로그를 기록 한다.
+		try {
+			// 로그를 기록 한다.
+			StringBuffer logBefore = new StringBuffer();
+			StringBuffer logAfter = new StringBuffer();
+
+			logBefore.append("before ResistMember Login Id: " 	+ 	before.getLoginId());
+			logAfter.append("after ResistMember Login Id: " 	+ 	after.getLoginId());
+
+			if(null!=loginSession && null!=loginSession.getLogin()) {
+				logAfter.append(", modify Login Id : " + 		loginSession.getLogin().getLoginId());
+			}
+
+			LogIncidentAlaramAddDto logDto = new LogIncidentAlaramAddDto(
+					"Not Support",
+					ia.getId(),
+					logBefore.toString(),
+					logAfter.toString());
+			logManager.addIncidentAlarmLog(logDto);
+		} catch (Exception e) {
+			logger.error("알람 로그 기록 실패 ID:" + ia.getId());
+		}
+		return mapper.map(ia, IncidentAlarmVo.class);
+	}
+
 	private IncidentAlarmVo modifyIncidentAlarm(IncidentAlarm modifySource) {
 		// crontab 검증
 		validateCrontabExpression(modifySource.getSchedule());

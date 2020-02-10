@@ -108,7 +108,6 @@ public class PrivacyPolicy  extends Entities {
 	 * @param fieldName
 	 * @param enableYN
 	 * @param comment
-	 * @param database
 	 * @param lastModifyMember
 	 */
 	public PrivacyPolicy(@Length(max = 255) @NotBlank String tableName,
@@ -129,7 +128,6 @@ public class PrivacyPolicy  extends Entities {
 	 * @param comment
 	 * @param createDate
 	 * @param updateDate
-	 * @param database
 	 * @param lastModifyMember
 	 */
 	public PrivacyPolicy(Long id, @Length(max = 255) @NotBlank String tableName,

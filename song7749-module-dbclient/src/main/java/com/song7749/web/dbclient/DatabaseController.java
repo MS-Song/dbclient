@@ -26,10 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.song7749.chakra.service.ChakraConfigManager;
-import com.song7749.chakra.value.ChakraConfigFindDto;
-import com.song7749.chakra.value.ChakraConfigSaveDto;
-import com.song7749.chakra.value.ChakraConfigVo;
 import com.song7749.common.MessageVo;
 import com.song7749.common.YN;
 import com.song7749.dbclient.service.DBClientMemberManager;
@@ -74,9 +70,6 @@ public class DatabaseController {
 	@Autowired
 	DBClientMemberManager dbClientMemberManager;
 
-	@Autowired
-	ChakraConfigManager chakraConfigManager;
-
 	@PostMapping("/add")
 	@ApiOperation(value = "데이터베이스 정보 입력", response = DatabaseVo.class)
 	@Login({ AuthType.ADMIN })
@@ -109,25 +102,21 @@ public class DatabaseController {
 
 	@GetMapping("/list")
 	@ApiOperation(value = "데이터베이스 정보 조회", response = DatabaseVo.class)
-	@Login({ AuthType.NORMAL, AuthType.ADMIN })
+	@Login({ AuthType.NORMAL, AuthType.DEVELOPER, AuthType.ADMIN })
 	public Page<DatabaseVo> getList(HttpServletRequest request, HttpServletResponse response,
 			@Valid @ModelAttribute DatabaseFindDto dto,
 			@PageableDefault(page=0, size=100, direction=Direction.DESC, sort="id")
 			Pageable page){
-
-
 		logger.trace(format("{}", "Database List Log"),dto);
-		// 권한 확인 후에 관리자가 아니면 database 확인 후 조회 하도록 처리 한다.
-		// 일반 회원인 경우 회원의 권한이 있는 DB만 조회 가능 하다
-		// 권한이 없는 경우에는 쿼리의 실행을 차단 했음으로, 리스트 조회를 강제로 할 수 있게 처리 함.
-		if(dto.isAccessAll()==false
-				&& session.getLogin().getAuthType().equals(AuthType.NORMAL)){
 
+		// 관리자만 전체 DB에 접근 가능하고, 나머지는 속해있는 DB 만 접근 가능하다. -- 정보성 조회의 경우에도 허용함.
+		boolean isAccessAllDatabases = session.getLogin().getAuthType().equals(AuthType.ADMIN) || dto.isAccessAll()==true;
+		if(isAccessAllDatabases){
+			return databaseManager.findDatabaseList(dto, page);
+		} else {
 			return dbClientMemberManager.findDatabaseListByMemberAllow(
 					new MemberDatabaseFindDto(
 							session.getLogin().getId()), page);
-		} else {
-			return databaseManager.findDatabaseList(dto, page);
 		}
 	}
 
@@ -212,29 +201,5 @@ public class DatabaseController {
 			@PageableDefault(page=0, size=500, direction=Direction.DESC, sort="id")
 			Pageable page){
 		return databaseManager.findDatabasePrivacyPolicyList(dto, page);
-	}
-
-	@GetMapping("/getChakraConfig")
-	@ApiOperation(value = "샤크라 연동 설정 조회", response = ChakraConfigVo.class)
-	@Login({AuthType.ADMIN })
-	public ChakraConfigVo getChakraConfig(HttpServletRequest request, HttpServletResponse response,
-			@Valid @ModelAttribute ChakraConfigFindDto dto) {
-		return chakraConfigManager.getChakraConfig(dto);
-	}
-
-	@PostMapping("/saveChakraConfig")
-	@ApiOperation(value = "샤크라 연동 설정 저장", response = MessageVo.class)
-	@Login({ AuthType.ADMIN })
-	public MessageVo saveChakraConfig(HttpServletRequest request, HttpServletResponse response,
-			@Valid @ModelAttribute ChakraConfigSaveDto dto) {
-		return chakraConfigManager.saveChakraConfig(dto);
-	}
-
-	@PostMapping("/chakraSyncNow")
-	@ApiOperation(value = "샤크라 연동 즉시 실행", response = MessageVo.class)
-	@Login({ AuthType.ADMIN })
-	public MessageVo chakraSyncNow(HttpServletRequest request, HttpServletResponse response,
-			@Valid @ModelAttribute ChakraConfigFindDto dto) {
-		return chakraConfigManager.syncChakraPrivacyPolicy(dto);
 	}
 }

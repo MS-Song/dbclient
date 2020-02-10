@@ -1,0 +1,11 @@
+apply plugin: 'application'
+mainClassName = 'com.song7749.ApplicationSRdataCenter'
+bootJar { enabled = true }
+jar { enabled = true }
+
+test { useJUnit {} }
+
+dependencies {
+	compile project(':song7749-module-incident')
+	testCompile project(':song7749-module-test').sourceSets.test.output
+}

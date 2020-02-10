@@ -9,8 +9,8 @@ var adminMenuLazyLoading = function(){
     			$$("menu").getBody().data.add({id: 5, value: null, 				icon: null, 			func: null},						4);
     			$$("menu").getBody().data.add({id: 6, value: " 관리자 메뉴", 		icon: "cog", 			func: null},						5);
         		$$("menu").getBody().data.add({id: 7, value: " Database 관리", 	icon: "database", 		func: "adminDatabaseListPopup"},	6);
-        		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 			icon: "user", 			func: "adminMemberListPopup"},		7);
-        		$$("menu").getBody().data.add({id: 9, value: " 메일서버 설정", 		icon: "send",			func: "adminConfigMailServerPopup"},8);       		
+        		$$("menu").getBody().data.add({id: 8, value: " 회원 관리", 		icon: "user", 			func: "adminMemberListPopup"},		7);
+        		$$("menu").getBody().data.add({id: 9, value: " 메일서버 설정", 		icon: "send",			func: "adminConfigMailServerPopup"},8);
         		$$("menu").getBody().data.add({id: 10,value: " 관리자 메세지 전송", 	icon: "mail-reply",		func: "adminSendMessagePopup"},		9);
     		}
 		}
@@ -98,17 +98,17 @@ var adminDatabaseListPopup = function(){
 			$$("admin_database_list_view").config.columns[loop].id = "modify_database";
 			$$("admin_database_list_view").config.columns[loop].header = "수정";
 			$$("admin_database_list_view").config.columns[loop].adjust = true;
-			$$("admin_database_list_view").config.columns[loop].template='<input type="button" value="수정" style="width:40px;" onClick="adminModifyDatabasePopup(#id#);"/>',
+			$$("admin_database_list_view").config.columns[loop].template='<input type="button" value="수정" class=".webixtype_base" onClick="adminModifyDatabasePopup(#id#);"/>',
 			$$("admin_database_list_view").config.columns[loop+1]={};
 			$$("admin_database_list_view").config.columns[loop+1].id = "delete_database";
 			$$("admin_database_list_view").config.columns[loop+1].header = "삭제";
 			$$("admin_database_list_view").config.columns[loop+1].adjust = true;
-			$$("admin_database_list_view").config.columns[loop+1].template='<input type="button" value="삭제" style="width:40px;" onClick="adminDeleteDatabase(#id#);"/>',
+			$$("admin_database_list_view").config.columns[loop+1].template='<input type="button" value="삭제" class=".webixtype_base" onClick="adminDeleteDatabase(#id#);"/>',
 			$$("admin_database_list_view").config.columns[loop+2]={};
 			$$("admin_database_list_view").config.columns[loop+2].id = "database_privacy_policy_popup";
 			$$("admin_database_list_view").config.columns[loop+2].header = "개인정보";
 			$$("admin_database_list_view").config.columns[loop+2].adjust = true;
-			$$("admin_database_list_view").config.columns[loop+2].template='<input type="button" value="수동정의" style="width:60px;" onClick="adminDatabasePrivacyPolicyPopup(#id#);"/>',
+			$$("admin_database_list_view").config.columns[loop+2].template='<input type="button" value="수동정의" class=".webixtype_base" onClick="adminDatabasePrivacyPolicyPopup(#id#);"/>',
 			
 			// 관리자 메뉴 추가 종료
 			$$("admin_database_list_view").refreshColumns();
@@ -139,20 +139,20 @@ var adminAddDatabasePopup=function(){
 			view:"form",
 			borderless:true,
 			elements: [
-				{ id:"host", 		view:"text", 	label:'host', 			name:"host", 		},
+				{ id:"host", 		view:"text", 	label:'host', 			name:"host", 		labelWidth:120},
 				{ view:"label", 	label:'Mysql/Oracle/Mssql = IP 또는 Domain, H2/SQLite = JDBC URL 입력'},
 				{ view:"label", 	label:'예시) 127.0.0.1 OR db.song7749.com OR jdbc:h2:file:~/xxx'},
-				{ id:"hostAlias", 	view:"text", 	label:'hostAlias', 		name:"hostAlias" 	},
+				{ id:"hostAlias", 	view:"text", 	label:'hostAlias', 		name:"hostAlias",	labelWidth:120},
 				{ view:"label", 	label:'local-oracle-test 등 DB 의 별칭을 입력'},
-				{ id:"schemaName", 	view:"text", 	label:'schemaName', 	name:"schemaName" 	},
+				{ id:"schemaName", 	view:"text", 	label:'schemaName', 	name:"schemaName",	labelWidth:120},
 				{ view:"label", 	label:'Mysql/H2 schema, Oracle SID(SERVICE_NAME)'},
-				{ id:"schemaOwner", view:"text", 	label:'schemaOwner', 	name:"schemaOwner" 	},
+				{ id:"schemaOwner", view:"text", 	label:'schemaOwner', 	name:"schemaOwner",	labelWidth:120},
 				{ view:"label", 	label:'Oracle 의 접속 계정과 Database 의 Owner 가 다를 경우에 추가 입력'},
-				{ id:"account", 	view:"text", 	label:'account', 		name:"account" 		},
-				{ id:"password", 	view:"text", 	label:'password', 		name:"password" 	},
-				{ id:"charset", 	view:"select", 	label:'charset', 		name:"charset",		options:charset	},
-        		{ id:"driver",		view:"select",	label:'driver',			name:"driver", 		options:drivers },
-				{ id:"port", 		view:"text", 	label:'port', 			name:"port" 		},
+				{ id:"account", 	view:"text", 	label:'account', 		name:"account",		labelWidth:120},
+				{ id:"password", 	view:"text", 	label:'password', 		name:"password",	labelWidth:120},
+				{ id:"charset", 	view:"select", 	label:'charset', 		name:"charset",		labelWidth:120,		options:charset	},
+        		{ id:"driver",		view:"select",	label:'driver',			name:"driver", 		labelWidth:120,		options:drivers },
+				{ id:"port", 		view:"text", 	label:'port', 			name:"port",		labelWidth:120},
 				{ view:"label", 	label:'port는 Embeded Database의 경우 생략'},
 				{
 					cols:[
@@ -194,7 +194,7 @@ var adminModifyDatabasePopup = function(id){
 	webix.ui({
 	    view:"window",
 	    id:"admin_modify_database_popup",
-	    width:400,
+	    width:500,
 	    position:"center",
 	    modal:true,
 	    head:{
@@ -208,20 +208,20 @@ var adminModifyDatabasePopup = function(id){
 			borderless:true,
 			elements: [
 				{ id:"id", 				view:"text", 	type:"hidden",			name:"id",			height:0		},
-				{ id:"host", 			view:"text", 	label:'host', 			name:"host" 		},
-				{ view:"label", 	label:'Mysql/Oracle/Mssql = IP 또는 Domain, H2/SQLite = JDBC URL 입력'},
-				{ view:"label", 	label:'예시) 127.0.0.1 OR db.song7749.com OR jdbc:h2:file:~/xxx'},
-				{ id:"hostAlias", 		view:"text", 	label:'hostAlias', 		name:"hostAlias" 	},
-				{ view:"label", 	label:'local-oracle-test 등 DB 의 별칭을 입력'},				
-				{ id:"schemaName", 		view:"text", 	label:'schemaName', 	name:"schemaName" 	},
-				{ view:"label", 	label:'Mysql/H2 schema, Oracle SID(SERVICE_NAME)'},				
-				{ id:"schemaOwner", view:"text", 	label:'schemaOwner', 	name:"schemaOwner" 		},
-				{ view:"label", 	label:'Oracle 의 접속 계정과 Database 의 Owner 가 다를 경우에 추가 입력'},
-				{ id:"account", 		view:"text", 	label:'account', 		name:"account" 		},
-				{ id:"password", 		view:"text", 	label:'password', 		name:"password" 	},
-				{ id:"driver",			view:"select",	label:'driver',			name:"driver", 		options:drivers },
-				{ id:"charset", 		view:"select", 	label:'charset', 		name:"charset",		options:charset	},
-				{ id:"port", 			view:"text", 	label:'port', 			name:"port" 		},
+				{ id:"host", 			view:"text", 	label:'host', 			name:"host", 		labelWidth:120	},
+				{ view:"label", 		label:'Mysql/Oracle/Mssql = IP 또는 Domain, H2/SQLite = JDBC URL 입력'		},
+				{ view:"label", 		label:'예시) 127.0.0.1 OR db.song7749.com OR jdbc:h2:file:~/xxx'}			,
+				{ id:"hostAlias", 		view:"text", 	label:'hostAlias', 		name:"hostAlias", 	labelWidth:120	},
+				{ view:"label", 		label:'local-oracle-test 등 DB 의 별칭을 입력'									},
+				{ id:"schemaName", 		view:"text", 	label:'schemaName', 	name:"schemaName", 	labelWidth:120	},
+				{ view:"label", 		label:'Mysql/H2 schema, Oracle SID(SERVICE_NAME)'							},
+				{ id:"schemaOwner", 	view:"text", 	label:'schemaOwner', 	name:"schemaOwner", labelWidth:120	},
+				{ view:"label", 		label:'Oracle 의 접속 계정과 Database 의 Owner 가 다를 경우에 추가 입력'},
+				{ id:"account", 		view:"text", 	label:'account', 		name:"account", 	labelWidth:120},
+				{ id:"password", 		view:"text", 	label:'password', 		name:"password", 	labelWidth:120},
+				{ id:"driver",			view:"select",	label:'driver',			name:"driver", 		labelWidth:120,	options:drivers},
+				{ id:"charset", 		view:"select", 	label:'charset', 		name:"charset",		labelWidth:120,	options:charset},
+				{ id:"port", 			view:"text", 	label:'port', 			name:"port", 		labelWidth:120},
 				{ view:"label", 	label:'port는 Embeded Database의 경우 생략'},
 				{
 					cols:[
@@ -482,7 +482,25 @@ var adminMemberListPopup = function(){
     						if(key==13) loadAdminMemberList();
     					}}
     				},
-    				{ 
+					{
+						id:"member_search_name",
+						view:"text",
+						placeholder:'name search',
+						name:"name",
+						on:{"onKeyPress":function(key,e){// 검색 실행
+								if(key==13) loadAdminMemberList();
+						}}
+					},
+					{
+						id:"member_search_team_name",
+						view:"text",
+						placeholder:'team name search',
+						name:"teamName",
+						on:{"onKeyPress":function(key,e){// 검색 실행
+								if(key==13) loadAdminMemberList();
+							}}
+					},
+					{
     					id:"admin_search_authType",	
     					view:"select",  	
     					name:"authType",
@@ -617,16 +635,16 @@ var adminModifyMemberPopup = function(memberId){
         				});
         			}}
         		]},
-        		{ id:"id", 						view:"text", 	type:"hidden",		height:0,		name:"id"										},
-        		{ id:"loginId", 				view:"text", 	label:'로그인ID', 	labelWidth:100, name:"loginId",	 		readonly:true			},
-        		{ id:"password", 				view:"text", 	label:'패스워드', 		labelWidth:100, name:"password",		type:"password"			},
+        		{ id:"id", 						view:"text", 	type:"hidden",		height:0,		name:"id"											},
+        		{ id:"loginId", 				view:"text", 	label:'로그인ID', 	labelWidth:100, name:"loginId",	 			readonly:true			},
+        		{ id:"password", 				view:"text", 	label:'패스워드', 	labelWidth:100, name:"password",			type:"password"			},
         		{ id:"password_repeat",			view:"text", 	label:'패스워드 재입력', labelWidth:100, name:"password_repeat",	type:"password"			},
-        		{ id:"teamName", 				view:"text", 	label:'팀명', 		labelWidth:100, name:"teamName" 								},
-        		{ id:"name", 					view:"text", 	label:'성명', 		labelWidth:100, name:"name" 									},
-        		{ id:"mobileNumber",			view:"text", 	label:'핸드폰 번호',	labelWidth:100, name:"mobileNumber" 							},
-        		{ id:"passwordQuestion", 		view:"text", 	label:'비밀번호질문', 	labelWidth:100, name:"passwordQuestion" 						},
-        		{ id:"passwordAnswer", 			view:"text", 	label:'비밀번호답변', 	labelWidth:100, name:"passwordAnswer" 							},
-        		{ id:"authType", 				view:"select",	label:'회원 권한', 		labelWidth:100, name:"authType",		options:authtypeList 	},
+        		{ id:"teamName", 				view:"text", 	label:'팀명', 		labelWidth:100, name:"teamName" 									},
+        		{ id:"name", 					view:"text", 	label:'성명', 		labelWidth:100, name:"name" 										},
+        		{ id:"mobileNumber",			view:"text", 	label:'핸드폰 번호',	labelWidth:100, name:"mobileNumber" 								},
+        		{ id:"passwordQuestion", 		view:"text", 	label:'비밀번호질문', 	labelWidth:100, name:"passwordQuestion" 							},
+        		{ id:"passwordAnswer", 			view:"text", 	label:'비밀번호답변', 	labelWidth:100, name:"passwordAnswer" 								},
+        		{ id:"authType", 				view:"select",	label:'회원 권한', 	labelWidth:100, name:"authType",			options:authtypeList 	},
         		{
                 	id:"select_database_use_member_database_view",
                 	view:"datatable",
@@ -645,7 +663,7 @@ var adminModifyMemberPopup = function(memberId){
 	    			select:"row",
 	    			resizeColumn:true,
 	    			autowidth:true,
-	    			autoheight:true,
+	    			height:300,
 					scroll:"y",
 	    			data:[],
 	    			on:{
@@ -973,35 +991,29 @@ webix.ready(function(){
 	client.debug = null						// debug off
 	client.connect({}, function (frame) {	// 연결
 		client.subscribe('/topic/recieve', function (message) {
-			let body = JSON.parse(message.body);
+			let messageBody = JSON.parse(message.body);
 			// 정상적인  상황이면 메세지 전송
-			if(body.httpStatus == 200) {
-				// 전송자 본인에게는 전송하지 않는다.
-				if(body.contents.id!=member.id){
-					adminRecieveMessagePopup(body.message,body.contents);					
-				}
+			if(messageBody.httpStatus == 200) {
+				adminRecieveMessagePopup(messageBody.message,messageBody.contents);
 			} else {
-				if(body.contents.id==member.id){
-					// 에러 메세지를 관리자에게 출력
-					webix.message({ type:"error", text:data.json().message });
-				}
+				webix.message({ type:"error", text:data.json().message });
 			}
-        });
+		});
 		if(undefined!=$$("incident_alarm_run_log")){
 			client.subscribe('/topic/runAlarms', function (message) {
-				let body = JSON.parse(message.body);
+				let messageBody = JSON.parse(message.body);
 				$$("incident_alarm_run_log").add({
-					"alarmId"		: body.contents.id,
-					"status"		: body.httpStatus == 200 ? "성공":"실패"	
-					,"subject" 		: body.contents.subject
+					"alarmId"		: messageBody.contents.id,
+					"status"		: messageBody.httpStatus == 200 ? "성공":"실패"
+					,"subject" 		: messageBody.contents.subject
 					,"confirmYN" 	: "Y"
-					,"processTime"	: body.processTime + ' ms'
-					,"time"			: body.date + ' ' + body.time
-				});	 
-    			$$("incident_alarm_run_log").sort("time", "desc","string");
-    			$$("incident_alarm_run_log").refresh();
+					,"processTime"	: messageBody.processTime + ' ms'
+					,"time"			: messageBody.date + ' ' + messageBody.time
+				});
+				$$("incident_alarm_run_log").sort("time", "desc","string");
+				$$("incident_alarm_run_log").refresh();
 
 			});
 		}
-	 });		
+	});
 });

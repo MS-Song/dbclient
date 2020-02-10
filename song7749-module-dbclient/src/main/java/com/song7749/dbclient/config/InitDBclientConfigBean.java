@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,8 @@ import com.song7749.member.value.MemberVo;
 * @since 2018. 3. 29.
 */
 @Profile("!test")
-@Component
+@Component("InitDBclientConfigBean")
+@DependsOn("InitMemberConfigBean")	// 회원 정보 입력 후 DB 정보 입력
 public class InitDBclientConfigBean {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -105,38 +107,20 @@ public class InitDBclientConfigBean {
 	@Transactional
 	@PostConstruct
     public void init(){
-		// TODO - member 에서 root 유저 입력을 하기 때문에 삭제 필요할듯
-		// root 회원에 대한 입력
-		Member member = new Member(
-				"root@test.com"
-				, "12345678"
-				, "Password Question?"
-				, "Password Answer?"
-				, "team name"
-				, "your name"
-				, AuthType.ADMIN);
-		Member aleadyMember = memberRepository.findByLoginId("root@test.com");
+		Member member = memberRepository.findByLoginId("root@test.com");
+
 		Database db=null;
-
-		if(null==aleadyMember) {
-			memberRepository.saveAndFlush(member);
-			MemberVo memberVo = memberManager.renewApikeyByAdmin(member.getLoginId());
-			logger.info(format("{}", "first Start Application with root user create"),memberVo);
-		} else {
-			logger.info(format("{}", "root user info"),aleadyMember.getMemberVo(mapper));
-		}
-
 		// h2 dbconnection add
 		logger.info(format("{}", "Database Datasource"),hikariCP);
 		if(null!=hikariCP) {
 			// 데이터베이스 드라이버 명칭을 검색 한다.
-			String DatabaseName = null;
+			String databaseName = null;
 
 			try {
-				DatabaseName=hikariCP.getConnection().getMetaData().getDatabaseProductName();
-				logger.trace(format("{}", "Database Name"),DatabaseName);
+				databaseName=hikariCP.getConnection().getMetaData().getDatabaseProductName();
+				logger.trace(format("{}", "Database Name"),databaseName);
 			} catch (SQLException e) {
-				logger.error(format("{}", "Database Name Fail"),DatabaseName);
+				logger.error(format("{}", "Database Name Fail"),databaseName);
 			}
 
 			if(logger.isTraceEnabled()) {
@@ -178,15 +162,17 @@ public class InitDBclientConfigBean {
 			logger.info(format("{}", "DBClient Database Add Complete"),map);
 
 
-			if("H2".endsWith(DatabaseName)) {
+			if("H2".endsWith(databaseName)) {
 				// comment 입력
 				String[] comments = {
 						 "COMMENT ON TABLE DATABASE_INFO IS 'Database 연결 정보'"
+						,"COMMENT ON TABLE DATABASE_PRIVACY_POLICY IS 'Database 개인정보 정의'"
 						,"COMMENT ON TABLE LOG IS '로그 마스터 정보'"
 						,"COMMENT ON TABLE LOG_LOGIN IS '로그인 로그 정보'"
-						,"COMMENT ON TABLE MEMBER_DATABASE IS '회원과 데이터베이스 간의 연결'"
 						,"COMMENT ON TABLE LOG_QUERY IS '쿼리 실행 로그'"
+						,"COMMENT ON TABLE MEMBER_DATABASE IS '회원과 데이터베이스 간의 연결'"
 						,"COMMENT ON TABLE MEMBER_SAVE_QUERY IS '회원의 저장된 쿼리'"
+						,"COMMENT ON TABLE MEMBER IS '회원'"
 						,"COMMENT ON TABLE MEMBER IS '회원'"
 				};
 				ExecuteQueryDto dto = new ExecuteQueryDto();

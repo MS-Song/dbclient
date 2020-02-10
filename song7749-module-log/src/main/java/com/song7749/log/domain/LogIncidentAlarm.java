@@ -39,13 +39,13 @@ public class LogIncidentAlarm extends Log {
 
 	@Lob
 	@NotBlank
-	@Size(max=12000)
+	@Size(max=30000)
 	@Column(name="befor_info", nullable = false, updatable = false)
 	private String before;
 
-	//@Lob
+	@Lob
 	@NotBlank
-	@Size(max=12000)
+	@Size(max=30000)
 	@Column(name="after_info", nullable = false, updatable = false)
 	private String after;
 

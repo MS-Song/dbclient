@@ -1,10 +1,10 @@
 package com.song7749.util.crypto;
 
-import static com.song7749.util.LogMessageFormatter.format;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.song7749.util.LogMessageFormatter.format;
 
 public class CryptoAESTest {
 	Logger logger = LoggerFactory.getLogger(getClass());

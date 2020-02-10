@@ -33,27 +33,46 @@ var login_form = {
 				}
 			}
 		},
-		{margin:5, cols:[
-			{ id:"login_button",view:"button", value:"Login" , type:"form", 
-				on:{"onItemClick":function(){// 로그인 실행
-					webix.ajax().post("/member/doLogin", this.getFormView().getValues(), function(text,data){
-						if(data.json().httpStatus==200){
-							webix.message(data.json().message);
-							reload();										
-						} else {
-							webix.message({ type:"error", text:data.json().message });
+		{margin:5,
+			rows:[{
+				cols: [
+					{
+						id: "login_button", view: "button", value: "Login", type: "form",
+						on: {
+							"onItemClick": function () {// 로그인 실행
+								webix.ajax().post("/member/doLogin", this.getFormView().getValues(), function (text, data) {
+									if (data.json().httpStatus == 200) {
+										webix.message(data.json().message);
+										reload();
+									} else {
+										webix.message({type: "error", text: data.json().message});
+									}
+								});
+							}
 						}
-					});
-				}
-			}},
-			{ view:"button", value:"Cancel", click:function(){ // 로그인 취소
-				$$("login_popup").hide();
-			},hotkey: "esc"},
-			{ view:"button", value:"회원가입", click:function(){// 회원 가입
-				$$("login_popup").hide();
-				resister_member_popup();
-			}}
-		]},
+					},
+					{
+						view: "button", value: "Cancel", click: function () { // 로그인 취소
+							$$("login_popup").hide();
+						}, hotkey: "esc"
+					}
+				]
+			},{
+				cols: [{
+						view: "button", value: "ID/비밀번호 찾기", click: function () {
+							$$("login_popup").hide();
+							find_password_popup();
+						}
+					},
+					{
+						view: "button", value: "회원가입", type: "form", click: function () {
+							$$("login_popup").hide();
+							resister_member_popup();
+						}
+					}
+				]
+			}]
+		}
 	],
 	elementsConfig:{
 		labelPosition:"top"
@@ -62,7 +81,7 @@ var login_form = {
 
 // 로그인 팝업
 var login_popup = function(){
-	if($$("admin_member_list_popup")==undefined){
+	if($$("login_popup")==undefined){
 	    webix.ui({
 	        view:"window",
 	        id:"login_popup",
@@ -72,10 +91,9 @@ var login_popup = function(){
 	        head:"Log In",
 	        body:webix.copy(login_form)
 	    }).show();
-		if($$("menu").isVisible()) $$("menu").hide();
 	    $$("login_id_input").focus();
 	} else {
-		$$("admin_member_list_popup").show();
+		$$("login_popup").show();
 	}
 }
 
@@ -107,18 +125,18 @@ var resister_member_form = {
 	view:"form",
 	borderless:true,
 	elements: [
-		{ view:"text", label:'로그인ID', 			name:"loginId", 		type:"email"	},
-		{ view:"text", label:'패스워드', 			name:"password",		type:"password"	},
-		{ view:"text", label:'패스워드 재입력', 		name:"password_repeat",	type:"password"	},
-		{ view:"text", label:'성명', 				name:"name" 							},
-		{ view:"text", label:'팀명', 				name:"teamName" 						},
-		{ view:"text", label:'핸드폰 번호',			name:"mobileNumber" 					},
-		{ view:"text", label:'비밀번호 찾기 질문', 	name:"passwordQuestion" 				},
-		{ view:"text", label:'비밀번호 찾기 답변', 	name:"passwordAnswer" 					},
+		{ view:"text", label:'로그인ID', 			name:"loginId", 		type:"email"		},
+		{ view:"text", label:'패스워드', 			name:"password",		type:"password"		},
+		{ view:"text", label:'패스워드 재입력', 	name:"password_repeat",	type:"password"		},
+		{ view:"text", label:'성명', 			name:"name" 								},
+		{ view:"text", label:'팀명', 			name:"teamName" 							},
+		{ view:"text", label:'핸드폰 번호',		name:"mobileNumber" 						},
+		{ view:"text", label:'비밀번호 찾기 질문', 	name:"passwordQuestion" 					},
+		{ view:"text", label:'비밀번호 찾기 답변', 	name:"passwordAnswer" 						},
 		{margin:5, cols:[
 			{ view:"button", value:"가입" , type:"form", click:function(){
 				// 패스워드 일치 여부 확인
-				var sendData = this.getFormView().getValues();
+				let sendData = this.getFormView().getValues();
 				if(sendData.password != sendData.password_repeat) {
 					webix.message({ type:"error", text:"패스워드와 재입력한 패스워드가 다릅니다. 패스워드를 확인해주세요"});
 					return;
@@ -182,10 +200,10 @@ var modify_member_form = {
 		{ view:"text", type:"hidden",			name:"id",				height:0		},
 		{ view:"text", label:'로그인ID', 			name:"loginId",			readonly:true	},
 		{ view:"text", label:'패스워드', 			name:"password",		type:"password"	},
-		{ view:"text", label:'패스워드 재입력', 		name:"password_repeat",	type:"password"	},
-		{ view:"text", label:'성명', 				name:"name" 							},
-		{ view:"text", label:'팀명', 				name:"teamName" 						},
-		{ view:"text", label:'핸드폰 번호',			name:"mobileNumber" 					},
+		{ view:"text", label:'패스워드 재입력', 	name:"password_repeat",	type:"password"	},
+		{ view:"text", label:'성명', 			name:"name" 							},
+		{ view:"text", label:'팀명', 			name:"teamName" 						},
+		{ view:"text", label:'핸드폰 번호',		name:"mobileNumber" 					},
 		{ view:"text", label:'비밀번호 찾기 질문', 	name:"passwordQuestion" 				},
 		{ view:"text", label:'비밀번호 찾기 답변', 	name:"passwordAnswer" 					},
 		{margin:5, cols:[
@@ -245,3 +263,45 @@ var modify_member_popup = function(){
     	passwordAnswer:member.passwordAnswer
     });
 };
+
+
+// 패스워드 찾기 form
+let find_password = {
+	id:"find_password_form",
+	view:"form",
+	borderless:true,
+	elements: [
+		{ view:"text", label:'로그인ID', 			name:"loginId", 		type:"email"		},
+		{margin:5, cols:[
+				{ view:"button", value:"메일 전송" , type:"form", click:function(){
+						webix.ajax().get("/member/sendPassword", this.getFormView().getValues(), function(text,data){
+							if(data.json().httpStatus ==200) {
+								webix.message(data.json().message);
+								$$("find_password_popup").hide();
+							} else {
+								webix.message({ type:"error", text:data.json().message });
+							}
+						});
+					}},
+				{ view:"button", value:"취소", click:function(){ // 가입취소
+						$$("find_password_popup").hide();
+					},hotkey: "esc"},
+			]},
+	],
+	elementsConfig:{
+		labelPosition:"top"
+	}
+};
+
+// 회원가입 팝업
+let find_password_popup = function(){
+	webix.ui({
+		view:"window",
+		id:"find_password_popup",
+		width:500,
+		position:"center",
+		modal:true,
+		head:"패스워드 찾기 - 패스워드가 메일로 전송 됩니다.",
+		body:webix.copy(find_password)
+	}).show();
+}
