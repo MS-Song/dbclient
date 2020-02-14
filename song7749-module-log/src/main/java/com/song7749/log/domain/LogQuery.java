@@ -61,7 +61,7 @@ public class LogQuery extends Log{
 	@Lob
 	@Column(nullable=false, updatable=false)
 	@NotBlank
-	@Size(max=12000)
+	@Size(max=50000)
 	private String query;
 
 	public LogQuery() {}

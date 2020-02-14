@@ -73,13 +73,13 @@ public class IncidentAlarm extends Entities {
 
 	@Lob
 	@NotBlank
-	@Length(max = 30000)
+	@Length(max = 50000)
 	@Column(nullable = false)
 	private String beforeSql;
 
 	@Lob
 	@NotBlank
-	@Length(max = 30000)
+	@Length(max = 50000)
 	@Column(nullable = false)
 	private String runSql;
 

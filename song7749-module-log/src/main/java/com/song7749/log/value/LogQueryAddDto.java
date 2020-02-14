@@ -36,7 +36,7 @@ public class LogQueryAddDto  extends AbstractDto {
 	private String account;
 
 	@NotBlank
-	@Size(max=12000)
+	@Size(max = 50000)
 	private String query;
 
 	public LogQueryAddDto() {}
@@ -54,7 +54,7 @@ public class LogQueryAddDto  extends AbstractDto {
 	public LogQueryAddDto(@NotBlank @Size(min = 8, max = 64) String ip,
 			@NotBlank @Size(min = 4, max = 20) String loginId, @NotNull Long databaseId, @NotBlank String host,
 			@NotBlank String hostAlias, @NotBlank String schemaName, @NotBlank String account,
-			@NotBlank @Size(max = 12000) String query) {
+			@NotBlank @Size(max = 50000) String query) {
 		this.ip = ip;
 		this.loginId = loginId;
 		this.databaseId = databaseId;

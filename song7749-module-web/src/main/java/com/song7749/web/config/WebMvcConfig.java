@@ -63,7 +63,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
       	.addResourceLocations("classpath:/static/");
 
 		registry.addResourceHandler("/static/**")
-	      	.addResourceLocations("classpath:/static/");
+	      	.addResourceLocations("classpath:/static/").setCachePeriod(0);
 
 	    /**
 	     * Swagger UI config

@@ -24,7 +24,7 @@ public class MemberSaveQueryAddDto extends AbstractDto {
 
 	@ApiModelProperty("Query 내용")
 	@NotBlank
-	@Size(min = 10, max=12000)
+	@Size(min = 10, max=50000)
 	private String query;
 
 	@ApiModelProperty

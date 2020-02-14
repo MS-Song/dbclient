@@ -1,5 +1,37 @@
 package com.song7749.srcenter.service;
 
+import static com.song7749.util.LogMessageFormatter.format;
+
+import java.lang.reflect.Field;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.castor.util.Base64Decoder;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
 import com.song7749.common.MessageVo;
 import com.song7749.common.Parameter;
 import com.song7749.common.YN;
@@ -20,35 +52,17 @@ import com.song7749.srcenter.repository.SrDataRequestRepository;
 import com.song7749.srcenter.repository.SrDataRequestRunningCacheRepository;
 import com.song7749.srcenter.task.SrDataRequestConfirmRequestTask;
 import com.song7749.srcenter.type.DataType;
-import com.song7749.srcenter.value.*;
-
-import java.lang.reflect.Field;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
+import com.song7749.srcenter.value.SrDataConditionVo;
+import com.song7749.srcenter.value.SrDataRequestAddDto;
+import com.song7749.srcenter.value.SrDataRequestConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestFindDto;
+import com.song7749.srcenter.value.SrDataRequestModifyAfterConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestModifyBeforeConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestRemoveDto;
+import com.song7749.srcenter.value.SrDataRequestRunDto;
+import com.song7749.srcenter.value.SrDataRequestVo;
+import com.song7749.srcenter.value.SrDataRunningInfoCacheVo;
 import com.song7749.util.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.castor.util.Base64Decoder;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.function.Function;
-
-import static com.song7749.util.LogMessageFormatter.format;
 
 /**
  * <pre>
@@ -517,7 +531,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
             try {
                 Date endDate = sdf.parse(end);
                 logger.debug("download end date : {}, now date : {}",endDate,now);
-                if(now.before(endDate)){
+                if(now.after(endDate)){
                     throw new IllegalArgumentException("다운로드 가능일이 지났습니다. 다운로드 가능일 변경을 원하시면 개발자에게 문의 하시기 바랍니다. 종료일 : " + end);
                 }
             } catch (ParseException e) {
@@ -579,11 +593,11 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
             // value 가 입력된 경우에만 where 를 추가 한다.
             if(StringUtils.isNotBlank(value)){
                 // where 를 해당 위치로 치환 한다.
-                sql = StringUtils.replacePatten("\\{"+ whereSqlKey.toLowerCase()+"\\}",sdc.getWhereSql().toLowerCase(), sql.toLowerCase());
+                sql = StringUtils.replacePatten("\\{"+ whereSqlKey+"\\}",sdc.getWhereSql(), sql);
                 // value 를 치환한다.
-                sql = StringUtils.replacePatten("\\{"+ key.toLowerCase()+"\\}",value, sql.toLowerCase());
+                sql = StringUtils.replacePatten("\\{"+ key+"\\}",value, sql);
             } else { // value 가 추가되지 않을 경우에는 whereKey 를 제거 한다.
-                sql = StringUtils.replacePatten("\\{"+ whereSqlKey.toLowerCase()+"\\}","", sql.toLowerCase());
+                sql = StringUtils.replacePatten("\\{"+ whereSqlKey+"\\}","", sql);
             }
         }
 

@@ -744,12 +744,13 @@ let sr_data_request_run_creator = function (requestItem){
 				if(value.type == 'ARRAY' || value.type == 'SQL'){
 					element.type 		= 	'select';
 					element.values 		=	[];
-					//console.log(value.values);
-					$.each(value.values,function(index,obj){
-						element.values.push({id:obj.name == null ? '' : obj.name , value:obj.value});
-					});
+					if(null!=value.values){
+						$.each(value.values,function(index,obj){
+							element.values.push({id:obj.name == null ? '' : obj.name , value:obj.value});
+						});
+					}				
 				} else if(value.type == 'DATE') {
-					element.type 		= 	value.type == 'DATE'
+					element.type = value.type;
 				}
 				searchFormElements.push(createWebForm(element,true,false));
 			});
