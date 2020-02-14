@@ -1,28 +1,22 @@
 package com.song7749.srcenter.service;
 
-import com.song7749.UnitTest;
-import com.song7749.common.YN;
-import com.song7749.dbclient.domain.Database;
-import com.song7749.dbclient.repository.DatabaseRepository;
-import com.song7749.dbclient.type.Charset;
-import com.song7749.dbclient.type.DatabaseDriver;
-import com.song7749.member.domain.Member;
-import com.song7749.member.repository.MemberRepository;
-import com.song7749.member.service.LoginSession;
-import com.song7749.member.service.MemberManager;
-import com.song7749.member.type.AuthType;
-import com.song7749.member.value.LoginAuthVo;
-import com.song7749.srcenter.type.DataType;
-import com.song7749.srcenter.type.DownloadLimitType;
-import com.song7749.srcenter.value.*;
+import static org.castor.util.Base64Encoder.encode;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
-import com.song7749.util.ProxyUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,15 +28,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
-import sun.util.calendar.LocalGregorianCalendar;
 
-import java.util.ArrayList;
-import java.util.Date;
-
-import static org.castor.util.Base64Encoder.encode;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
+import com.song7749.UnitTest;
+import com.song7749.common.YN;
+import com.song7749.dbclient.domain.Database;
+import com.song7749.dbclient.repository.DatabaseRepository;
+import com.song7749.dbclient.type.Charset;
+import com.song7749.dbclient.type.DatabaseDriver;
+import com.song7749.member.domain.Member;
+import com.song7749.member.repository.MemberRepository;
+import com.song7749.member.service.LoginSession;
+import com.song7749.member.type.AuthType;
+import com.song7749.member.value.LoginAuthVo;
+import com.song7749.srcenter.type.DataType;
+import com.song7749.srcenter.type.DownloadLimitType;
+import com.song7749.srcenter.value.SrDataRequestAddDto;
+import com.song7749.srcenter.value.SrDataRequestConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestFindDto;
+import com.song7749.srcenter.value.SrDataRequestModifyAfterConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestModifyBeforeConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestRemoveDto;
+import com.song7749.srcenter.value.SrDataRequestVo;
+import com.song7749.util.ProxyUtils;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SrDataRequestServiceImplTest extends UnitTest {

@@ -10,3 +10,14 @@ gradlew.bat
 out/
 .idea/
 /web/WEB-INF/applicationContext.xml
+/song7749-module-common/
+/song7749-module-dbclient/
+/song7749-module-incident/
+/song7749-module-log/
+/song7749-module-mail/
+/song7749-module-member/
+/song7749-module-resource/
+/song7749-module-srcenter/
+/song7749-module-test/
+/song7749-module-utils/
+/song7749-module-web/
