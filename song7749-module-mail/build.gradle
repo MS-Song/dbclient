@@ -7,5 +7,6 @@ dependencies {
 	compile project(':song7749-module-common')
 	compile project(':song7749-module-utils')
 	compile project(':song7749-module-web')
+	testCompile project(':song7749-module-test')
 	testCompile project(':song7749-module-test').sourceSets.test.output
 }

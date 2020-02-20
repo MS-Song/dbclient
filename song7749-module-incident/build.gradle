@@ -11,5 +11,6 @@ test { useJUnit {} }
 dependencies {
 	compile project(':song7749-module-dbclient')
 	compile project(':song7749-module-mail')
+	testCompile project(':song7749-module-test')
 	testCompile project(':song7749-module-test').sourceSets.test.output
 }
