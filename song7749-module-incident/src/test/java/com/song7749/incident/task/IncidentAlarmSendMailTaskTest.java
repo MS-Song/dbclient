@@ -8,17 +8,24 @@ import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
+import javax.transaction.Transactional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
-import com.song7749.UnitTest;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.common.SendMethod;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
@@ -36,7 +43,14 @@ import com.song7749.member.domain.Member;
 import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.type.AuthType;
 
-public class IncidentAlarmSendMailTaskTest extends UnitTest {
+
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Disabled
+public class IncidentAlarmSendMailTaskTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -80,26 +94,26 @@ public class IncidentAlarmSendMailTaskTest extends UnitTest {
 			, AuthType.ADMIN);
 
 
-//	Database database = new Database(
-//			"jdbc:h2:file:~/incidentAlertTest",
-//			"DB Client Local TEST H2 Database",
-//			"PUBLIC",
-//			"sa",
-//			"",
-//			DatabaseDriver.H2,
-//			Charset.UTF8,
-//			"");
-
 	Database database = new Database(
-		"local-dev"
-		, "oracle-local"
-		, "XE"
-		, "SONG7749"
-		, "12345678"
-		, DatabaseDriver.ORACLE
-		, Charset.UTF8
-		, "1521"
-		, null);
+			"jdbc:h2:mem:~/dbclient",
+			"DB Client Local TEST H2 Database",
+			"PUBLIC",
+			"sa",
+			"",
+			DatabaseDriver.H2,
+			Charset.UTF8,
+			"");
+
+//	Database database = new Database(
+//		"local-dev"
+//		, "oracle-local"
+//		, "XE"
+//		, "SONG7749"
+//		, "12345678"
+//		, DatabaseDriver.ORACLE
+//		, Charset.UTF8
+//		, "1521"
+//		, null);
 
 	List<Member> members = new ArrayList<Member>();
 
@@ -109,7 +123,7 @@ public class IncidentAlarmSendMailTaskTest extends UnitTest {
 			null,
 			null);
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		memberRepository.saveAndFlush(member);
 		databaseRepository.saveAndFlush(database);

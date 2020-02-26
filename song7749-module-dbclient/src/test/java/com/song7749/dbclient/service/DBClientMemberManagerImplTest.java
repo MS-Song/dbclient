@@ -5,21 +5,30 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Before;
-import org.junit.Test;
+import javax.transaction.Transactional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.song7749.UnitTest;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberDatabaseRepository;
@@ -43,10 +52,15 @@ import com.song7749.member.type.AuthType;
 import com.song7749.member.value.LoginAuthVo;
 import com.song7749.util.ProxyUtils;
 
-public class DBClientMemberManagerImplTest extends UnitTest {
+
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class DBClientMemberManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
-
 
 	@Autowired
 	MemberManager memberManager;
@@ -94,7 +108,7 @@ public class DBClientMemberManagerImplTest extends UnitTest {
 			, "3333"
 			, "");
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		loginSession = new LoginSession();
 		loginSession.setSesseion(new LoginAuthVo(m.getId(),m.getAuthType()));
@@ -108,6 +122,7 @@ public class DBClientMemberManagerImplTest extends UnitTest {
 	}
 
 	@Test
+	@Order(1)
 	public void testAddMemberSaveQuery() throws Exception {
 		// give
 		MemberSaveQueryAddDto dto = new MemberSaveQueryAddDto(
@@ -119,6 +134,7 @@ public class DBClientMemberManagerImplTest extends UnitTest {
 	}
 
 	@Test
+	@Order(2)
 	public void testModifyMemberSaveQuery() throws Exception {
 		// give
 		MemberSaveQueryAddDto dto = new MemberSaveQueryAddDto(
@@ -133,17 +149,20 @@ public class DBClientMemberManagerImplTest extends UnitTest {
 		assertNotSame(dto.getMemo(), msqv.getMemo());
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test
+	@Order(3)
 	public void testModifyMemberSaveQuery_not_data() throws Exception {
 		// give
 		MemberSaveQueryModifyDto modifyDto = new MemberSaveQueryModifyDto(
 				m.getId(), 1L , "메모변경", "select * from dual");
 		// when
-		dbClientMemberManager.modifyMemberSaveQuery(modifyDto);
-		// then
+		assertThrows(IllegalArgumentException.class, () -> {	
+			dbClientMemberManager.modifyMemberSaveQuery(modifyDto);
+		});
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test
+	@Order(4)
 	public void testModifyMemberSaveQuery_not_same_member() throws Exception {
 		// give
 		MemberSaveQueryAddDto dto = new MemberSaveQueryAddDto(
@@ -153,10 +172,13 @@ public class DBClientMemberManagerImplTest extends UnitTest {
 		MemberSaveQueryModifyDto modifyDto = new MemberSaveQueryModifyDto(
 				m.getId()+1L, msqv.getId(), "메모변경", "select * from dual");
 		// when
-		msqv = dbClientMemberManager.modifyMemberSaveQuery(modifyDto);
+		assertThrows(IllegalArgumentException.class, () -> {
+			dbClientMemberManager.modifyMemberSaveQuery(modifyDto);
+		});
 	}
 
 	@Test
+	@Order(5)
 	public void testRemoveMemberSaveQuery() throws Exception {
 		// give
 		MemberSaveQueryAddDto dto = new MemberSaveQueryAddDto(
@@ -171,6 +193,7 @@ public class DBClientMemberManagerImplTest extends UnitTest {
 	}
 
 	@Test
+	@Order(6)
 	public void testFindMemberSaveQueray() throws Exception {
 		// give
 		MemberSaveQueryAddDto dto = new MemberSaveQueryAddDto(
@@ -187,6 +210,7 @@ public class DBClientMemberManagerImplTest extends UnitTest {
 	}
 
 	@Test
+	@Order(7)
 	public void testAddMemberDatabase() throws Exception {
 		// give
 		MemberDatabaseAddOrModifyDto dto = new MemberDatabaseAddOrModifyDto(d.getId(), m.getId());
@@ -206,6 +230,7 @@ public class DBClientMemberManagerImplTest extends UnitTest {
 
 
 	@Test
+	@Order(8)
 	public void testFindMemberDatabaseList() throws Exception {
 		// give
 		MemberDatabaseAddOrModifyDto dto = new MemberDatabaseAddOrModifyDto(d.getId(), m.getId());

@@ -1,13 +1,50 @@
 package com.song7749.web.srcenter;
 
+import static org.castor.util.Base64Encoder.encode;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.transaction.Transactional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.repository.DatabaseRepository;
-import com.song7749.dbclient.service.DatabaseManager;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
-import com.song7749.dbclient.value.DatabaseAddDto;
-import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.member.service.MemberManager;
 import com.song7749.member.type.AuthType;
 import com.song7749.member.value.MemberAddDto;
@@ -15,51 +52,22 @@ import com.song7749.member.value.MemberModifyByAdminDto;
 import com.song7749.member.value.MemberModifyDto;
 import com.song7749.member.value.MemberVo;
 import com.song7749.srcenter.service.SrDataReqeustService;
-import com.song7749.srcenter.value.SrDataRequestFindDto;
 import com.song7749.srcenter.value.SrDataRequestVo;
-import com.song7749.util.LogMessageFormatter;
-import com.song7749.util.StringUtils;
-import com.song7749.web.ControllerTest;
-import org.castor.util.Base64Decoder;
-import org.castor.util.Base64Encoder;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import javax.servlet.http.Cookie;
-import javax.sql.DataSource;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static com.song7749.util.LogMessageFormatter.format;
-import static org.castor.util.Base64Encoder.encode;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
-public class SrDataRequestControllerTest extends ControllerTest {
+@SuppressWarnings("unchecked")
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class SrDataRequestControllerTest {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    private WebApplicationContext ctx;
+    
     @Autowired
     private MockMvc mvc;
 
@@ -94,10 +102,16 @@ public class SrDataRequestControllerTest extends ControllerTest {
     Cookie cookie;
     SrDataRequestVo srDataRequestVo;
 
-   @Before
+   @BeforeEach
    public void setup() throws Exception{
+		// Mock MVC 설정 추가
+       mvc = MockMvcBuilders.webAppContextSetup(ctx)
+       		.addFilters(new CharacterEncodingFilter("UTF-8", true))
+               .alwaysDo(print())
+               .build();
+
         database = new Database(
-                "jdbc:h2:file:~/dbclient_test",
+                "jdbc:h2:mem:~/dbclient",
                 "DB CLIENT DB",
                 "PUBLIC",
                 "sa",
@@ -128,21 +142,10 @@ public class SrDataRequestControllerTest extends ControllerTest {
                 .andReturn();
         // login cookie 생성
         cookie = new Cookie("cipher", result.getResponse().getCookie("cipher").getValue());
-
-        // 테스트 기본 데이터 적재
+        
+        // 기초 데이터 적재
         add();
    }
-
-    //@Test
-    public void allTests() throws Exception {
-       add();
-       modifyBeforeConfirm();
-       confirm();
-       list();
-       one();
-       modifyAfterConfirm();
-       runNow();
-    }
 
     @Test
     public void add() throws Exception{
@@ -195,19 +198,27 @@ public class SrDataRequestControllerTest extends ControllerTest {
         assertThat(responseObject.get("rowCount"), notNullValue());
         assertThat(responseObject.get("message"), equalTo("SR Data Request 등록이 완료되었습니다."));
         assertThat(responseObject.get("contents"), notNullValue());
+        
+        // ID 조회
+        drb=get("/srDataRequest/list").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA);
+        drb.cookie(cookie);
+        // when
+        result = mvc.perform(drb)
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+        responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
 
-       // 등록된 SR Request 를 조회
-       Pageable page = PageRequest.of(0, 10);
-       Page<SrDataRequestVo> voPages = srDataReqeustService.find(new SrDataRequestFindDto(), page);
-       srDataRequestVo = voPages.getContent().get(0);
-       logger.info(format("{}", "SrDAtaRequestVo Print"), voPages.getContent().get(0));
-
+        logger.debug("{}", ((Map)((List)((Map)responseObject.get("contents")).get("content")).get(0)).get("id") );
+        
+        srDataRequestVo = new SrDataRequestVo();
+        srDataRequestVo.setId(Long.valueOf((Integer) ((Map)((List)((Map)responseObject.get("contents")).get("content")).get(0)).get("id")));
     }
 
     @Test
     public void modifyBeforeConfirm() throws Exception {
 
-        String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 {SQL1} {SQL2} {SQL3}","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
+    	String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 {SQL1} {SQL2} {SQL3}","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
         String[] conditionWhereSqls = {
                 new String(encode(URLEncoder.encode("AND member_id='{member_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
                 new String(encode(URLEncoder.encode("AND name='{name}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
@@ -317,7 +328,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
 
     @Test
     public void list() throws Exception {
-        String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
+//        String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
         drb=get("/srDataRequest/list").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("id",                    srDataRequestVo.getId().toString())
 //                .param("subject",               "상품 데이터 추출 일자별")
@@ -378,6 +389,7 @@ public class SrDataRequestControllerTest extends ControllerTest {
         assertThat(responseObject.get("contents"), notNullValue());
     }
 
+    @Disabled
     @Test
     public void searchFromCreate() throws Exception {
         drb=get("/srDataRequest/searchFromCreate").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
@@ -395,14 +407,13 @@ public class SrDataRequestControllerTest extends ControllerTest {
 
         responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
 
-
-
         // then
         assertThat(responseObject.get("httpStatus"), equalTo(200));
 //        assertThat(responseObject.get("rowCount"), equalTo(1));
 //        assertThat(responseObject.get("contents"), notNullValue());
     }
 
+    @Disabled
     @Test
     public void runNow() throws Exception {
         drb=get("/srDataRequest/runNow").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)

@@ -4,20 +4,32 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.Test;
+import javax.transaction.Transactional;
+
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
-import com.song7749.UnitTest;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.log.domain.Log;
 import com.song7749.log.repository.LogRepository;
 import com.song7749.log.value.LogIncidentAlaramAddDto;
 import com.song7749.log.value.LogLoginAddDto;
 import com.song7749.log.value.LogQueryAddDto;
 
-public class LogManagerImplTest extends UnitTest {
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class LogManagerImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 

@@ -5,18 +5,31 @@ import static com.song7749.util.LogMessageFormatter.format;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
+import javax.transaction.Transactional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
-import com.song7749.UnitTest;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.mail.domain.MailConfig;
 import com.song7749.mail.repository.MailConfigRepository;
 import com.song7749.mail.value.MailMessageVo;
 
-public class EmailServiceImplTest extends UnitTest {
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class EmailServiceImplTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -34,7 +47,7 @@ public class EmailServiceImplTest extends UnitTest {
 			25, // TLS 587 // SSL 465
 			null,
 			null);
-	@Before
+	@BeforeEach
 	public void setup() {
 
 		mailConfig.setAuth(false);
@@ -44,6 +57,7 @@ public class EmailServiceImplTest extends UnitTest {
 		mailConfigRepository.saveAndFlush(mailConfig);
 	}
 
+	@Disabled
 	@Test
 	public void testSendMessage() throws Exception {
 		// give

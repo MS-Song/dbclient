@@ -102,13 +102,15 @@ public class DatabaseController {
 
 	@GetMapping("/list")
 	@ApiOperation(value = "데이터베이스 정보 조회", response = DatabaseVo.class)
-	@Login({ AuthType.NORMAL, AuthType.DEVELOPER, AuthType.ADMIN })
+	@Login({ AuthType.NORMAL, AuthType.ADMIN })
 	public Page<DatabaseVo> getList(HttpServletRequest request, HttpServletResponse response,
 			@Valid @ModelAttribute DatabaseFindDto dto,
 			@PageableDefault(page=0, size=100, direction=Direction.DESC, sort="id")
 			Pageable page){
-		logger.trace(format("{}", "Database List Log"),dto);
-
+		
+		
+		logger.trace(format("{}", "Database List Session Log "),session.getLogin());
+		
 		// 관리자만 전체 DB에 접근 가능하고, 나머지는 속해있는 DB 만 접근 가능하다. -- 정보성 조회의 경우에도 허용함.
 		boolean isAccessAllDatabases = session.getLogin().getAuthType().equals(AuthType.ADMIN) || dto.isAccessAll()==true;
 		if(isAccessAllDatabases){

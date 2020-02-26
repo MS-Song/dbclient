@@ -16,6 +16,9 @@ spring:
   banner:
     charset: utf-8
     location: classpath:config/dbclient-banner.txt
+  # Boot 2.1 부터 프로젝트 상속 관계인 경우 bean 이 2중 생성되는 문제로 overwrite 옵션을 켜야 한다.
+  main:
+    allow-bean-definition-overriding: true
   # cache 
   cache:
     ehcache:
@@ -23,13 +26,13 @@ spring:
   
   # datasource    
   datasource:
-    url:  jdbc:h2:file:~/dbclient  
+    url:  jdbc:h2:mem:~/dbclient  
     username: sa
     password: 
     driver-class-name: org.h2.Driver
     databaseName: DB Client Local Database
     schemaName: PUBLIC
-    host: jdbc:h2:file:~/dbclient
+    host: jdbc:h2:mem:~/dbclient
     port: 
   # 스프링 영속성을 Controller 까지 확대. http://kingbbode.tistory.com/27 참고 바람
   # JPA Time Zone 설정을 추가함 (JPA 의 시간은 계속 GMT 0 이다...) -- 별짓을 다 해봐도 변화가 없네...
@@ -49,7 +52,7 @@ spring:
   profiles: local
   # 기초 데이터 로딩
   datasource:
-    data:
+   data:
     - classpath:./initDatabase.sql
   # jpa 추가 설정
   jpa:
@@ -156,7 +159,7 @@ spring:
   profiles: mariadb
   # datasource    
   datasource:
-    url: jdbc:mariadb://local-dev:4306/dbClient?autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding=UTF8&useSSL=false  
+    url: jdbc:mariadb://local-dev:4306/dbClient?autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia/Seoul  
     username: dbclient
     password: 12345678
     driver-class-name: org.mariadb.jdbc.Driver

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -17,19 +18,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * <pre>
  * Class Name : WebMvcConfig.java
  * Description : Spring MVC Interceptor Configure
+ * 
 *
 *
 *  Modification Information
 *  Modify Date 		Modifier				Comment
 *  -----------------------------------------------
 *  2018. 2. 14.		song7749@gmail.com		NEW
-*
+*  2020. 2. 26.		song7749@gmail.com		SpringBoot 2.1 이후 부터는 2개의 support bean 등록이 불가능하여 member 에서 
+*  											override 한 객체를 사용하고, 본 객체는 골격만 유지하게 변경 함
+*  
+*  
 * </pre>
 *
 * @author song7749@gmail.com
 * @since 2018. 2. 14.
 */
-@Configuration
+//@Configuration("webMvcConfig")
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 	@Autowired

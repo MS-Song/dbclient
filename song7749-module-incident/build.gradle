@@ -6,7 +6,14 @@ jar { enabled = true }
 //apply plugin: 'war'
 //war { baseName = 'ROOT'}
 
-test { useJUnit {} }
+test {
+	useJUnitPlatform {
+      includeTags "fast", "smoke & feature-a" //@Tag("대응")
+      // excludeTags "slow", "ci"
+      includeEngines "junit-jupiter"
+      // excludeEngines "junit-vintage"
+	}
+}
 
 dependencies {
 	compile project(':song7749-module-dbclient')

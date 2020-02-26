@@ -13,23 +13,28 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import javax.transaction.Transactional;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.song7749.UnitTest;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.repository.DatabaseRepository;
@@ -51,8 +56,12 @@ import com.song7749.srcenter.value.SrDataRequestRemoveDto;
 import com.song7749.srcenter.value.SrDataRequestVo;
 import com.song7749.util.ProxyUtils;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SrDataRequestServiceImplTest extends UnitTest {
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class SrDataRequestServiceImplTest {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -105,7 +114,7 @@ public class SrDataRequestServiceImplTest extends UnitTest {
 
     SrDataRequestVo vo = null;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         memberRepository.saveAndFlush(member);
         databaseRepository.saveAndFlush(database);
@@ -130,20 +139,8 @@ public class SrDataRequestServiceImplTest extends UnitTest {
         add();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
-    }
-
-//    @Ignore
-//    @Test
-    public void allTests() throws UnsupportedEncodingException {
-        add();
-        modifyBeforeConfirm();
-        confirm();
-        modifyAfterConfirm();
-        testFindOne();
-        testFindAll();
-        removeRequest();
     }
 
     @Test

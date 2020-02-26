@@ -12,18 +12,29 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
+import javax.transaction.Transactional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.dbclient.service.DatabaseManager;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
@@ -35,10 +46,15 @@ import com.song7749.member.value.MemberAddDto;
 import com.song7749.member.value.MemberModifyByAdminDto;
 import com.song7749.member.value.MemberModifyDto;
 import com.song7749.member.value.MemberVo;
-import com.song7749.web.ControllerTest;
 
 @SuppressWarnings("unchecked")
-public class DatabaseMemberControllerTest extends ControllerTest {
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class DatabaseMemberControllerTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -46,7 +62,10 @@ public class DatabaseMemberControllerTest extends ControllerTest {
 	private MockMvc mvc;
 
 	private MockHttpServletRequestBuilder drb;
-
+    
+	@Autowired
+    private WebApplicationContext ctx;
+    
 	MvcResult result;
 	Map<String, Object> responseObject;
 
@@ -81,8 +100,14 @@ public class DatabaseMemberControllerTest extends ControllerTest {
 	DatabaseVo dv;
 	Cookie cookie;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception{
+		// Mock MVC 설정 추가
+        mvc = MockMvcBuilders.webAppContextSetup(ctx)
+        		.addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .alwaysDo(print())
+                .build();
+        
 		// 테스트를 위한 회원 등록
 		vo = memberManager.addMemeber(dto);
 		// 테스트를 위한 databae 등록

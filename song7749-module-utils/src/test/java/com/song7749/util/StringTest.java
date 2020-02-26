@@ -3,13 +3,13 @@ package com.song7749.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class StringTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -67,14 +67,11 @@ public class StringTest {
 			if(startSelectIndex<0) break;
 		}
 
-		List<String> colums = new ArrayList<String>();
 		for(String sqlPart : selectList) {
 			String[] part = sqlPart.replace("\r", "").replace("\n", "").split(",");
 			for(String column : part) {
 				logger.debug(column.trim());
 			}
-
 		}
-
 	}
 }

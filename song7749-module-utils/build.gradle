@@ -1,4 +1,11 @@
 bootJar { enabled = false }
 jar { enabled = true }
 
-test { useJUnit {} }
+test {
+	useJUnitPlatform {
+      includeTags "fast", "smoke & feature-a" //@Tag("대응")
+      // excludeTags "slow", "ci"
+      includeEngines "junit-jupiter"
+      // excludeEngines "junit-vintage"
+	}
+}

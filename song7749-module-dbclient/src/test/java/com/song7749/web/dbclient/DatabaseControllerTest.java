@@ -15,18 +15,31 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
+import javax.transaction.Transactional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.dbclient.service.DatabaseManager;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
@@ -37,10 +50,15 @@ import com.song7749.member.type.AuthType;
 import com.song7749.member.value.MemberAddDto;
 import com.song7749.member.value.MemberModifyByAdminDto;
 import com.song7749.member.value.MemberVo;
-import com.song7749.web.ControllerTest;
 
 @SuppressWarnings("unchecked")
-public class DatabaseControllerTest extends ControllerTest{
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class DatabaseControllerTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -49,6 +67,9 @@ public class DatabaseControllerTest extends ControllerTest{
 
 	private MockHttpServletRequestBuilder drb;
 
+    @Autowired
+    private WebApplicationContext ctx;
+	
 	MvcResult result;
 	Map<String, Object> responseObject;
 
@@ -83,14 +104,18 @@ public class DatabaseControllerTest extends ControllerTest{
 	DatabaseVo dv;
 	Cookie cookie;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception{
+		// Mock MVC 설정 추가
+        mvc = MockMvcBuilders.webAppContextSetup(ctx)
+        		.addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .alwaysDo(print())
+                .build();
+		
 		// 테스트를 위한 회원 등록
 		vo = memberManager.addMemeber(dto);
-		MemberModifyByAdminDto modifyDto = new MemberModifyByAdminDto();
-		modifyDto.setId(vo.getId());
-		modifyDto.setAuthType(AuthType.ADMIN);
-		memberManager.modifyMember(modifyDto);
+		// 관리자로 업데이트
+		memberManager.modifyMember(new MemberModifyByAdminDto(vo.getId(),AuthType.ADMIN));
 
 		// 테스트를 위한 databae 등록
 		dv = databaseManager.addDatabase(dad);
@@ -110,6 +135,8 @@ public class DatabaseControllerTest extends ControllerTest{
 
 
 	@Test
+	@Order(1)
+	@DisplayName("Datebase Controller Database 추가 - 회원 미로그인 상태 - 실패 테스트")
 	public void testDatabaseAdd_No_Login() throws Exception {
 
 		// give
@@ -123,7 +150,9 @@ public class DatabaseControllerTest extends ControllerTest{
 				.param("driver", dad.getDriver().toString())
 				.param("charset", dad.getCharset().toString())
 				;
-
+		// 로그인 정보 제거
+		//drb.cookie(new Cookie("cipher", ""));
+		
 		// when
 		result = mvc.perform(drb)
 				.andExpect(status().isOk())
@@ -139,6 +168,8 @@ public class DatabaseControllerTest extends ControllerTest{
 	}
 
 	@Test
+	@Order(2)
+	@DisplayName("Datebase Controller Database 추가")
 	public void testDatabaseAdd() throws Exception {
 
 		// give
@@ -174,6 +205,8 @@ public class DatabaseControllerTest extends ControllerTest{
 
 
 	@Test
+	@Order(3)
+	@DisplayName("Datebase Controller Database 수정")
 	public void testModifyDatabase() throws Exception {
 
 		// give
@@ -210,6 +243,8 @@ public class DatabaseControllerTest extends ControllerTest{
 
 
 	@Test
+	@Order(4)
+	@DisplayName("Datebase Controller Database 삭제")
 	public void testDeleteDatabase() throws Exception {
 
 		// give
@@ -245,6 +280,8 @@ public class DatabaseControllerTest extends ControllerTest{
 
 
 	@Test
+	@Order(5)
+	@DisplayName("Datebase Controller Database 조회")
 	public void testGetList() throws Exception {
 
 		// give

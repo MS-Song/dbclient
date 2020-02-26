@@ -10,16 +10,20 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
-import com.song7749.UnitTest;
+import com.song7749.ApplicationIncidentAlarm;
 import com.song7749.common.SendMethod;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
@@ -32,8 +36,12 @@ import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.type.AuthType;
 
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class IncidentAlarmRepositoryTest extends UnitTest {
+@ActiveProfiles("test")
+@SpringBootTest(classes = ApplicationIncidentAlarm.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class IncidentAlarmRepositoryTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -71,7 +79,7 @@ public class IncidentAlarmRepositoryTest extends UnitTest {
 			,"");
 
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		memberRepository.saveAndFlush(member);
 		databaseRepository.saveAndFlush(database);

@@ -129,8 +129,6 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
         // 모델 mapper 를 사용한 자동매핑 후에 매핑되지 않는 것들을 처리 한다.
         SrDataRequest sdr = mapper.map(dto, SrDataRequest.class);
 
-        logger.debug("Login Session : {}",loginSession.getLogin());
-
         // 회원 정보를 획득
         Optional<Member> oMember = memberRepository.findById(loginSession.getLogin().getId());
         if(!oMember.isPresent()){
@@ -297,7 +295,6 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
 
         // 로그 기록을 위해 기존 정보를 저장
         SrDataRequest sr = oSrDataRequest.get();
-        Member beforeMember = sr.getResistMember();
         Member afterMember  = oMember.get();
 
         // 업데이트
@@ -353,6 +350,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
     @Transactional(readOnly = true)
     @Override
     public Page<SrDataRequestVo> find(SrDataRequestFindDto dto, Pageable page) {
+    	
         // user 세션 등록
         dto.setRunMemberId(loginSession.getLogin().getId());
 

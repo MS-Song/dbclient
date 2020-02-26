@@ -1,28 +1,5 @@
 package com.song7749.web.incident;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.song7749.member.service.MemberManager;
-import com.song7749.member.type.AuthType;
-import com.song7749.member.value.MemberAddDto;
-import com.song7749.member.value.MemberModifyByAdminDto;
-import com.song7749.member.value.MemberVo;
-import com.song7749.web.ControllerTest;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-
-import javax.servlet.http.Cookie;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -31,11 +8,56 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class EmailConfigControllerTest extends ControllerTest{
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.transaction.Transactional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.song7749.ModuleCommonApplicationTests;
+import com.song7749.member.service.MemberManager;
+import com.song7749.member.type.AuthType;
+import com.song7749.member.value.MemberAddDto;
+import com.song7749.member.value.MemberModifyByAdminDto;
+import com.song7749.member.value.MemberVo;
+
+
+@SuppressWarnings("unchecked")
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class EmailConfigControllerTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    private WebApplicationContext ctx;
+	
 	@Autowired
 	private MockMvc mvc;
 
@@ -60,8 +82,14 @@ public class EmailConfigControllerTest extends ControllerTest{
 	MemberVo vo;
 	Cookie cookie;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception{
+		// Mock MVC 설정 추가
+        mvc = MockMvcBuilders.webAppContextSetup(ctx)
+        		.addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .alwaysDo(print())
+                .build();
+		
 		// 테스트를 위한 회원 등록
 		MemberVo vo = memberManager.addMemeber(dto);
 		// 관리자 권한 부여
@@ -82,7 +110,7 @@ public class EmailConfigControllerTest extends ControllerTest{
 
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void testMailTest() throws Exception {
 		// give

@@ -11,6 +11,5 @@ import com.song7749.dbclient.domain.Database;
 
 @Repository
 public interface DatabaseRepository extends JpaRepository<Database, Long> {
-
 	Page<Database> findByIdIn(List<Long> ids, Pageable page);
 }

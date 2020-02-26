@@ -17,7 +17,9 @@ spring:
   banner:
     charset: utf-8
     location: classpath:config/incident-banner.txt
-
+  # Boot 2.1 부터 프로젝트 상속 관계인 경우 bean 이 2중 생성되는 문제로 overwrite 옵션을 켜야 한다.
+  main:
+    allow-bean-definition-overriding: true
 ##############################################################################
 # local 추가 환경 
 ##############################################################################

@@ -1,24 +1,15 @@
 package com.song7749.web.srcenter;
 
-import com.song7749.common.MessageVo;
-import com.song7749.common.YN;
-import com.song7749.incident.value.IncidentAlarmConfirmDto;
-import com.song7749.member.annotation.Login;
-import com.song7749.member.service.LoginSession;
-import com.song7749.member.type.AuthType;
-import com.song7749.srcenter.service.SrDataReqeustService;
-import com.song7749.srcenter.type.DataType;
-import com.song7749.srcenter.value.*;
-import com.song7749.srcenter.view.ExcelDownloadView;
-import com.song7749.util.LogMessageFormatter;
-import com.song7749.util.StringUtils;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.castor.util.Base64Decoder;
+import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,21 +17,34 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+import com.song7749.common.MessageVo;
+import com.song7749.common.YN;
+import com.song7749.member.annotation.Login;
+import com.song7749.member.service.LoginSession;
+import com.song7749.member.type.AuthType;
+import com.song7749.srcenter.service.SrDataReqeustService;
+import com.song7749.srcenter.value.SrDataRequestAddDto;
+import com.song7749.srcenter.value.SrDataRequestConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestFindDto;
+import com.song7749.srcenter.value.SrDataRequestModifyAfterConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestModifyBeforeConfirmDto;
+import com.song7749.srcenter.value.SrDataRequestRemoveDto;
+import com.song7749.srcenter.value.SrDataRequestRunDto;
+import com.song7749.srcenter.value.SrDataRequestVo;
+import com.song7749.srcenter.view.ExcelDownloadView;
 
-import static com.song7749.util.LogMessageFormatter.format;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * <pre>
@@ -229,7 +233,7 @@ public class SrDataRequestController {
         dto.setExcel(true);     // 엑셀 다운 로드 설정
 
         MessageVo vo = srDataReqeustService.runSql(dto,request);
-        if(CollectionUtils.isEmpty((List)vo.getContents())){
+        if(CollectionUtils.isEmpty((Collection<?>)vo.getContents())){
             throw new IllegalArgumentException("결과가 없어 엑셀파일 생성에 실패했습니다. ");
         }
 

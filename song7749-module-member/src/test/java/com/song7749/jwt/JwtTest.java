@@ -8,10 +8,11 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.JOSEException;
@@ -28,7 +29,8 @@ import com.song7749.member.value.LoginAuthJWTVo;
 import com.song7749.util.ObjectJsonUtil;
 import com.song7749.util.crypto.CryptoAES;
 
-@RunWith(SpringRunner.class)
+@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
 public class JwtTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());

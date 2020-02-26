@@ -1,6 +1,29 @@
 package com.song7749.srcenter.repository;
 
-import com.song7749.UnitTest;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.repository.DatabaseRepository;
@@ -13,27 +36,14 @@ import com.song7749.srcenter.domain.SrDataCondition;
 import com.song7749.srcenter.domain.SrDataRequest;
 import com.song7749.srcenter.type.DataType;
 import com.song7749.srcenter.type.DownloadLimitType;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
-
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SrDataRequestRepositoryTest extends UnitTest {
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class SrDataRequestRepositoryTest {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -70,14 +80,14 @@ public class SrDataRequestRepositoryTest extends UnitTest {
             , "3333"
             ,"");
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         memberRepository.saveAndFlush(member);
         databaseRepository.saveAndFlush(database);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
 
     }

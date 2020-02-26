@@ -15,28 +15,45 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
+import javax.transaction.Transactional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.member.service.MemberManager;
 import com.song7749.member.type.AuthType;
 import com.song7749.member.value.MemberAddDto;
 import com.song7749.member.value.MemberModifyByAdminDto;
 import com.song7749.member.value.MemberVo;
-import com.song7749.web.ControllerTest;
 
 @SuppressWarnings("unchecked")
-public class MemberLoginCotrollerTest extends ControllerTest{
-
+@ActiveProfiles("test")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class)
+@TestPropertySource(locations = "classpath:test.properties")
+@Transactional
+@AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class MemberLoginCotrollerTest { 
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -45,6 +62,9 @@ public class MemberLoginCotrollerTest extends ControllerTest{
 
 	private MockHttpServletRequestBuilder drb;
 
+    @Autowired
+    private WebApplicationContext ctx;
+	
 	MvcResult result;
 	Map<String, Object> responseObject;
 
@@ -60,17 +80,31 @@ public class MemberLoginCotrollerTest extends ControllerTest{
 			"teamName",
 			"name",
 			"123-123-1234");
-
-	@Before
+	
+	@BeforeEach
 	public void setup(){
+		// Mock MVC 설정 추가
+        mvc = MockMvcBuilders.webAppContextSetup(ctx)
+        		.addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .alwaysDo(print())
+                .build();
+
 		// 테스트를 위한 회원 등록
-		MemberVo vo = memberManager.addMemeber(dto);
+        MemberVo vo = memberManager.findMember(dto.getLoginId());
+		if(null==vo) {
+			vo = memberManager.addMemeber(dto);			
+		}
+
 		// 관리자 권한 부여
-		MemberModifyByAdminDto adminDto = new MemberModifyByAdminDto(vo.getId(), AuthType.ADMIN);
-		memberManager.modifyMember(adminDto);
+		if(!AuthType.ADMIN.equals(vo.getAuthType())) {
+			memberManager.modifyMember(new MemberModifyByAdminDto(vo.getId(), AuthType.ADMIN));	
+		}
+		
 	}
 
 	@Test
+	@Order(1)
+	@DisplayName("Member Login Controller 로그인 기능 이메일 주소 실패 테스트")
 	public void testDoLogin_fail_login_email() throws Exception {
 		// give
 		drb=post("/member/doLogin").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
@@ -95,6 +129,8 @@ public class MemberLoginCotrollerTest extends ControllerTest{
 	}
 
 	@Test
+	@Order(2)
+	@DisplayName("Member Login Controller 로그인 기능 틀린 패스워드 실패 테스트")
 	public void testDoLogin_fail_wrong_password() throws Exception {
 		// give
 		drb=post("/member/doLogin").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
@@ -119,6 +155,8 @@ public class MemberLoginCotrollerTest extends ControllerTest{
 	}
 
 	@Test
+	@Order(3)
+	@DisplayName("Member Login Controller 로그인 성공 테스트")
 	public void testDoLogin() throws Exception {
 		// give
 		drb=post("/member/doLogin").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
@@ -145,6 +183,8 @@ public class MemberLoginCotrollerTest extends ControllerTest{
 	}
 
 	@Test
+	@Order(4)
+	@DisplayName("Member Login Controller 로그 아웃 성공")
 	public void testDoLogout() throws Exception {
 		// give - 로그인 실행
 		drb=post("/member/doLogin").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
@@ -172,6 +212,8 @@ public class MemberLoginCotrollerTest extends ControllerTest{
 	}
 
 	@Test
+	@Order(5)
+	@DisplayName("Member Login Controller 로그인 성공 후 정보 조회")
 	public void testGetLogin() throws Exception {
 		// give - 로그인 실행
 		drb=post("/member/doLogin").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
