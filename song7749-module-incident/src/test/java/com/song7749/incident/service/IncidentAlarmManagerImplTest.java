@@ -13,9 +13,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.modelmapper.ModelMapper;
@@ -30,7 +28,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import com.song7749.ModuleCommonApplicationTests;
-import com.song7749.UnitTest;
 import com.song7749.common.SendMethod;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
