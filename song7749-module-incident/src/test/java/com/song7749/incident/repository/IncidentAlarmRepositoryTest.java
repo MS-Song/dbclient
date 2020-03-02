@@ -24,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import com.song7749.ApplicationIncidentAlarm;
+import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.common.SendMethod;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
@@ -37,8 +38,8 @@ import com.song7749.member.type.AuthType;
 
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = ApplicationIncidentAlarm.class)
-@TestPropertySource(locations = "classpath:test.properties")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class
+	, properties = "spring.config.location=classpath:/incident-application.yml")
 @Transactional
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class IncidentAlarmRepositoryTest {

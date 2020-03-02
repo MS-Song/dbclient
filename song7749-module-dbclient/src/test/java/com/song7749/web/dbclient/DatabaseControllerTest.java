@@ -53,8 +53,7 @@ import com.song7749.member.value.MemberVo;
 
 @SuppressWarnings("unchecked")
 @ActiveProfiles("test")
-@SpringBootTest(classes = ModuleCommonApplicationTests.class)
-@TestPropertySource(locations = "classpath:test.properties")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/dbclient-application.yml")
 @Transactional
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

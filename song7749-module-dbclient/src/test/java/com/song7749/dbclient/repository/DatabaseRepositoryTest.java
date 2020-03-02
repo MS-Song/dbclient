@@ -28,8 +28,7 @@ import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = ModuleCommonApplicationTests.class)
-@TestPropertySource(locations = "classpath:test.properties")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/dbclient-application.yml")
 @Transactional
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DatabaseRepositoryTest {

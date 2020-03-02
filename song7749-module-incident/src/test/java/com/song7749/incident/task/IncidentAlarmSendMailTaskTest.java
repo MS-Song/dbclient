@@ -45,8 +45,8 @@ import com.song7749.member.type.AuthType;
 
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = ModuleCommonApplicationTests.class)
-@TestPropertySource(locations = "classpath:test.properties")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class
+			, properties = "spring.config.location=classpath:/incident-application.yml")
 @Transactional
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Disabled
