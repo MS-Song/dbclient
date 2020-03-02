@@ -41,6 +41,7 @@ public class ProfileEnvironment {
 	public ProfileEnvironment(Environment environment) {
 		profile = ArrayUtils.isNotEmpty(environment.getActiveProfiles()) ? environment.getActiveProfiles()[0] : null;
 		logger.info(format("{}", "Active Profile"),profile);
+		logger.info(format("{}", "EVN allow-bean-definition-overriding Loading"), environment.getProperty("spring.main.allow-bean-definition-overriding"));
 	}
 
 	/**

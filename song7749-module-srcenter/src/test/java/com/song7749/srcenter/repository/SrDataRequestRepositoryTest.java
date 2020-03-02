@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.common.YN;
@@ -39,8 +38,8 @@ import com.song7749.srcenter.type.DownloadLimitType;
 
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/srcenter-application.yml")
 @Transactional
+@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/srcenter-application.yml")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SrDataRequestRepositoryTest {
 
