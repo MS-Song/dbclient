@@ -10,3 +10,4 @@ gradlew.bat
 out/
 /bin/
 .vscode/settings.json
+/.externalToolBuilders/
