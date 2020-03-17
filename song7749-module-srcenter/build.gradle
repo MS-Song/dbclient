@@ -6,7 +6,7 @@ jar { enabled = true }
 test { useJUnit {} }
 
 dependencies {
-	compile project(':song7749-module-incident')
-	testCompile project(':song7749-module-test')	
-	testCompile project(':song7749-module-test').sourceSets.test.output
+	implementation project(':song7749-module-incident')
+	testImplementation project(':song7749-module-test')	
+	testImplementation project(':song7749-module-test').sourceSets.test.output
 }
