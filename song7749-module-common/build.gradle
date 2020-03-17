@@ -5,5 +5,5 @@ jar { enabled = true }
 test { useJUnit {} }
 
 dependencies {
-	compile project(':song7749-module-utils')
+	implementation project(':song7749-module-utils')
 }

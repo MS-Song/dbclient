@@ -5,7 +5,7 @@ test { useJUnit {} }
 	
 	
 dependencies {
-	compile project(':song7749-module-utils')
-	compile project(':song7749-module-common')
-	testCompile project(':song7749-module-test').sourceSets.test.output
+	implementation project(':song7749-module-utils')
+	implementation project(':song7749-module-common')
+	testImplementation project(':song7749-module-test').sourceSets.test.output
 }
