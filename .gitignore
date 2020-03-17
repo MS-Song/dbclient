@@ -11,3 +11,4 @@ out/
 /bin/
 .vscode/settings.json
 /.externalToolBuilders/
+.vscode/launch.json
