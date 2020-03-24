@@ -14,10 +14,19 @@ cache:
     - '$HOME/.m2/repository'
     - '$HOME/.gradle'
 
-# clean 후 Build (Build시 자동으로 test 수행)
 script: 
   #- ./gradlew clean build
+  # docker build
+  - docker build -t db-client:latest --build-arg JAR_FILE=song7749-module-dbclient/build/libs/song7749-module-dbclient.jar ./
+  - docker build -t incident:latest  --build-arg JAR_FILE=song7749-module-incident/build/libs/song7749-module-incident.jar ./
+  - docker build -t srcenter:latest  --build-arg JAR_FILE=song7749-module-srcenter/build/libs/song7749-module-srcenter.jar ./
+  # docker login
   - docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} 
-  - ./gradlew dockerPush song7749/db-client:latest
-  - ./gradlew dockerPush song7749/incident:latest
-  - ./gradlew dockerPush song7749/srcenter:latest  
+  # docker tag
+  - docker tag db-client:latest song7749/db-client:latest
+  - docker tag incident:latest  song7749/incident:latest
+  - docker tag srcenter:latest  song7749/srcenter:latest  
+  # docker push
+  - docker push song7749/db-client:latest
+  - docker push song7749/incident:latest
+  - docker push song7749/srcenter:latest  
