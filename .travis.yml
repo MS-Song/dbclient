@@ -1,10 +1,12 @@
 language: java
-jdk:
-  - openjdk8
+jdk: openjdk8
 
 branches:
   only:
     - master
+
+services:
+  - docker
 
 # Travis CI 서버의 Cache 활성화
 cache:
@@ -13,4 +15,9 @@ cache:
     - '$HOME/.gradle'
 
 # clean 후 Build (Build시 자동으로 test 수행)
-script: "./gradlew clean build"
+script: 
+  - ./gradlew clean build
+  - docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} 
+  - docker push song7749/db-client:latest
+  - docker push song7749/incident:latest
+  - docker push song7749/srcenter:latest  

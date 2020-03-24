@@ -34,7 +34,7 @@ dependencies {
 
 docker {
     name "song7749/incident"
-    tags "${project.version}", "1.0"
+    tags "${project.version}", "latest"
     files tasks.bootJar.outputs.files
     buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
 }
