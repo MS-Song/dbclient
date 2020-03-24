@@ -31,7 +31,7 @@ ext {
 
 docker {
     name "song7749/db-client"
-    tags "${project.version}", "latest"
+    tags BUILD_VERSION, "latest"
     files tasks.bootJar.outputs.files
     buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
 }

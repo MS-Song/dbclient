@@ -26,9 +26,13 @@ dependencies {
 	testImplementation project(':song7749-module-test').sourceSets.test.output
 }
 
+ext {
+    BUILD_VERSION = new Date().format("yyyyMMddHHmmss") // 빌드한 시간을 Image Tag 로 표시하기 위하여 사용한다.
+}
+
 docker {
     name "song7749/srcenter"
-    tags "${project.version}", "latest"
+    tags BUILD_VERSION, "latest"
     files tasks.bootJar.outputs.files
     buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
 }
