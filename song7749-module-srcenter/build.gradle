@@ -1,9 +1,15 @@
 apply plugin: 'application'
 mainClassName = 'com.song7749.ApplicationSRdataCenter'
-bootJar { enabled = true }
-jar { enabled = true }
 
-test { useJUnit {} }
+bootJar.enabled = true
+jar.enabled = true
+
+test {
+	useJUnitPlatform {
+      includeTags "fast", "smoke & feature-a" //@Tag("대응")
+      includeEngines "junit-jupiter"
+	}
+}
 
 dependencies {
 	implementation project(':song7749-module-incident')

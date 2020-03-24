@@ -1,17 +1,19 @@
 apply plugin: 'application'
 mainClassName = 'com.song7749.ApplicationIncidentAlarm'
-bootJar { enabled = true }
-jar { enabled = true }
 
+bootJar.enabled = true
+jar.enabled = true
+
+// war 배포 시에 jar 관련 설정을 off 하고 war 로 변경 한다. 
 //apply plugin: 'war'
-//war { baseName = 'ROOT'}
+//war.baseName = 'ROOT'
+//bootWar.enabled=true
+//war.enabled=false
 
 test {
 	useJUnitPlatform {
       includeTags "fast", "smoke & feature-a" //@Tag("대응")
-      // excludeTags "slow", "ci"
       includeEngines "junit-jupiter"
-      // excludeEngines "junit-vintage"
 	}
 }
 
