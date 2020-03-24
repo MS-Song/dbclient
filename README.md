@@ -6,9 +6,9 @@
 * 버그가 있으면 issue 또는 request 에 올려주세요
 * docker base 로 변경 되었습니다. 아래 명령어로 실행 가능 합니다.  
 
-{code}
+
 docker run -it -p 9009:9009 --name dbclient  song7749/db-client:latest
-{code}
+
  
 # 기능 요약
 * 데이터베이스 등록 기능 
