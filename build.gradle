@@ -15,6 +15,10 @@ buildscript {
 
  // buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'no' }
 
+// docker 배포를 위한 플러그인 지정
+plugins {
+    id 'com.palantir.docker' version '0.25.0'
+}
 
 subprojects {
 	apply plugin: 'java'
@@ -24,9 +28,12 @@ subprojects {
 	
 	group = 'com.song7749'
 	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
 
-
-	test { useJUnit {} }
+	// gralde 버전 지정
+	task wrapper(type: Wrapper) { 
+		gradleVersion = "6.0" 
+	}
 
 	repositories {
 		mavenLocal()

@@ -1,3 +1,5 @@
+
+apply plugin: 'com.palantir.docker'
 apply plugin: 'application'
 mainClassName = 'com.song7749.ApplicationIncidentAlarm'
 
@@ -18,8 +20,21 @@ test {
 }
 
 dependencies {
-	implementation project(':song7749-module-dbclient')
+	implementation project(':song7749-module-common')
+	implementation project(':song7749-module-utils')
+	implementation project(':song7749-module-web')
+	implementation project(':song7749-module-member')
+	implementation project(':song7749-module-log')
+	implementation project(':song7749-module-resource')
 	implementation project(':song7749-module-mail')
+	implementation project(':song7749-module-dbclient')
 	testImplementation project(':song7749-module-test')
 	testImplementation project(':song7749-module-test').sourceSets.test.output
+}
+
+docker {
+    name "song7749/incident"
+    tags "${project.version}", "1.0"
+    files tasks.bootJar.outputs.files
+    buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
 }

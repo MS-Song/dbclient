@@ -1,3 +1,5 @@
+
+apply plugin: 'com.palantir.docker'
 apply plugin: 'application'
 mainClassName = 'com.song7749.ApplicationDBClient'
 
@@ -12,6 +14,7 @@ test {
 }
 
 dependencies {
+	//classpath ("com.palantir.gradle.docker:gradle-docker:0.25.0")
 	implementation project(':song7749-module-common')
 	implementation project(':song7749-module-utils')
 	implementation project(':song7749-module-web')
@@ -20,4 +23,15 @@ dependencies {
 	implementation project(':song7749-module-resource')
 	testImplementation project(':song7749-module-test')
 	testImplementation project(':song7749-module-test').sourceSets.test.output
+}
+
+ext {
+    BUILD_VERSION = new Date().format("yyyyMMddHHmmss") // 빌드한 시간을 Image Tag 로 표시하기 위하여 사용한다.
+}
+
+docker {
+    name "song7749/db-client"
+    tags "${project.version}", "1.0"
+    files tasks.bootJar.outputs.files
+    buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
 }
