@@ -9,16 +9,30 @@ buildscript {
 		maven { url "http://www.datanucleus.org/downloads/maven2" }
 	}
 	dependencies {
+		// spring repo
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		// code coverage report repo
+		classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.10.1")	
 	}
 }
-
- // buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'no' }
-
+ 
 // docker 배포를 위한 플러그인 지정
 plugins {
     id 'com.palantir.docker' version '0.25.0'
 }
+
+// code coverage 리포트 plugin
+apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'jacoco'
+
+// 리포트 설정
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
 
 subprojects {
 	apply plugin: 'java'
