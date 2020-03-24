@@ -5,14 +5,12 @@ import static com.song7749.util.LogMessageFormatter.format;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import com.song7749.common.WebSocketMessageVo;
-import com.song7749.member.value.LoginAuthVo;
-import org.castor.util.Base64Decoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +20,17 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.song7749.common.MessageVo;
+import com.song7749.common.WebSocketMessageVo;
 import com.song7749.common.exception.AuthorityUserException;
 import com.song7749.dbclient.service.DBClientMemberManager;
 import com.song7749.dbclient.value.MemberDatabaseAddOrModifyDto;
@@ -38,6 +44,7 @@ import com.song7749.member.annotation.Login;
 import com.song7749.member.service.LoginManager;
 import com.song7749.member.service.LoginSession;
 import com.song7749.member.type.AuthType;
+import com.song7749.member.value.LoginAuthVo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -119,11 +126,10 @@ public class DatabaseMemberController {
 
 		// 본인 확인
 		if(session.getLogin().getId().equals(dto.getMemberId())){
-
 			dto.setQuery(
 					URLDecoder.decode(
 						new String(
-							Base64Decoder.decode(dto.getQuery())
+								Base64.getDecoder().decode(dto.getQuery())
 							,Charset.forName("UTF-8"))
 					, "UTF-8"));
 			logger.debug(format("{}", "DECODE URL QUERY"),dto.getQuery());

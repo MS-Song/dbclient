@@ -5,6 +5,7 @@ import static com.song7749.util.LogMessageFormatter.format;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.castor.util.Base64Decoder;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -304,7 +304,7 @@ public class DatabaseSchemaController {
 		dto.setQuery(
 			URLDecoder.decode(
 				new String(
-					Base64Decoder.decode(dto.getQuery())
+						Base64.getDecoder().decode(dto.getQuery())
 					,Charset.forName("UTF-8"))
 			, "UTF-8"));
 		logger.debug(format("{}", "DECODE URL QUERY"),dto.getQuery());
@@ -337,7 +337,7 @@ public class DatabaseSchemaController {
 		dto.setQuery(
 				URLDecoder.decode(
 					new String(
-						Base64Decoder.decode(dto.getQuery())
+							Base64.getDecoder().decode(dto.getQuery())
 						,Charset.forName("UTF-8"))
 				, "UTF-8"));
 		logger.debug(format("{}", "DECODE URL QUERY"),dto.getQuery());

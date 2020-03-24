@@ -5,6 +5,7 @@ import static com.song7749.util.LogMessageFormatter.format;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.castor.util.Base64Decoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +96,7 @@ public class IncidentAlarmController {
 		dto.setBeforeSql(
 				URLDecoder.decode(
 					new String(
-						Base64Decoder.decode(dto.getBeforeSql())
+							Base64.getDecoder().decode(dto.getBeforeSql())
 						,Charset.forName("UTF-8"))
 				, "UTF-8"));
 		logger.debug(format("{}", "DECODE URL BEFORE SQL"),dto.getBeforeSql());
@@ -104,7 +104,7 @@ public class IncidentAlarmController {
 		dto.setRunSql(
 				URLDecoder.decode(
 					new String(
-						Base64Decoder.decode(dto.getRunSql())
+							Base64.getDecoder().decode(dto.getRunSql())
 						,Charset.forName("UTF-8"))
 				, "UTF-8"));
 		logger.debug(format("{}", "DECODE URL RUN SQL"),dto.getRunSql());
@@ -137,7 +137,7 @@ public class IncidentAlarmController {
 			dto.setBeforeSql(
 					URLDecoder.decode(
 						new String(
-							Base64Decoder.decode(dto.getBeforeSql())
+								Base64.getDecoder().decode(dto.getBeforeSql())
 							,Charset.forName("UTF-8"))
 					, "UTF-8"));
 			logger.debug(format("{}", "DECODE URL BEFORE SQL"),dto.getBeforeSql());
@@ -145,7 +145,7 @@ public class IncidentAlarmController {
 			dto.setRunSql(
 					URLDecoder.decode(
 						new String(
-							Base64Decoder.decode(dto.getRunSql())
+								Base64.getDecoder().decode(dto.getRunSql())
 							,Charset.forName("UTF-8"))
 					, "UTF-8"));
 			logger.debug(format("{}", "DECODE URL RUN SQL"),dto.getRunSql());
@@ -241,7 +241,7 @@ public class IncidentAlarmController {
 			dto.setBeforeSql(
 					URLDecoder.decode(
 						new String(
-							Base64Decoder.decode(dto.getBeforeSql())
+								Base64.getDecoder().decode(dto.getBeforeSql())
 							,Charset.forName("UTF-8"))
 					, "UTF-8"));
 			logger.debug(format("{}", "DECODE URL BEFORE SQL"),dto.getBeforeSql());

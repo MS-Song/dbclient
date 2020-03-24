@@ -15,6 +15,10 @@ buildscript {
 
  // buildScan { licenseAgreementUrl = 'https://gradle.com/terms-of-service'; licenseAgree = 'no' }
 
+// docker 배포를 위한 플러그인 지정
+plugins {
+    id 'com.palantir.docker' version '0.25.0'
+}
 
 subprojects {
 	apply plugin: 'java'
@@ -24,9 +28,12 @@ subprojects {
 	
 	group = 'com.song7749'
 	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
 
-
-	test { useJUnit {} }
+	// gralde 버전 지정
+	task wrapper(type: Wrapper) { 
+		gradleVersion = "6.0" 
+	}
 
 	repositories {
 		mavenLocal()
@@ -56,36 +63,43 @@ subprojects {
 	}
 	
 	dependencies {
+		// Spring
 		implementation('org.springframework.boot:spring-boot-starter-aop')
 		implementation('org.springframework.boot:spring-boot-starter-cache')
 		implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 		implementation('org.springframework.boot:spring-boot-starter-mail')
 		implementation('org.springframework.boot:spring-boot-starter-validation')
 		implementation('org.springframework.boot:spring-boot-starter-web')
-		implementation('org.springframework.boot:spring-boot-starter-websocket')
-		implementation("org.springframework.boot:spring-boot-devtools")
+		// lang
 		implementation('org.apache.commons:commons-lang3')
-		implementation('org.codehaus.castor:castor:1.2'){ 
-	        exclude group: 'commons-logging', module: 'commons-logging'
-	    }
-	    implementation('io.springfox:springfox-swagger2:2.8.0')
-	    implementation('io.springfox:springfox-swagger-ui:2.8.0')
+		// model mapper
 	    implementation('org.modelmapper:modelmapper:1.1.2')
+		// jaxb
 		implementation('javax.xml.bind:jaxb-api:2.2.11')
+		// ehcach
 		implementation('net.sf.ehcache:ehcache:2.10.3')
+		// jwt
 		implementation("com.nimbusds:nimbus-jose-jwt:5.9")
+		// excel
 		implementation("org.apache.poi:poi:3.17")
 		implementation("org.apache.poi:poi-ooxml:3.17")
+		// database 
 	    implementation('mysql:mysql-connector-java')
 		implementation('org.mariadb.jdbc:mariadb-java-client:2.2.3')
 		implementation('oracle:ojdbc6:11.2.0.3')
 		implementation('com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8')
 		implementation('com.h2database:h2')
+		// web-socket
+		implementation('org.springframework.boot:spring-boot-starter-websocket')
 		implementation('org.webjars:sockjs-client:1.1.2')
 		implementation('org.webjars:stomp-websocket:2.3.1')
 		implementation('org.webjars:webjars-locator:0.30')
+		// swagger
+	    implementation('io.springfox:springfox-swagger2:2.8.0')
+	    implementation('io.springfox:springfox-swagger-ui:2.8.0')
+		// test & dev tools
+		implementation("org.springframework.boot:spring-boot-devtools")
 		testImplementation('org.springframework.boot:spring-boot-starter-test')
 		testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
-
 	}
 }

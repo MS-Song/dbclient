@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,6 @@ import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.castor.util.Base64Decoder;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -350,7 +350,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
     @Transactional(readOnly = true)
     @Override
     public Page<SrDataRequestVo> find(SrDataRequestFindDto dto, Pageable page) {
-    	
+
         // user 세션 등록
         dto.setRunMemberId(loginSession.getLogin().getId());
 
@@ -744,7 +744,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                     String encode = (String) f.get(dto);
                     String decode = URLDecoder.decode(
                             new String(
-                                    Base64Decoder.decode(encode)
+                            		Base64.getDecoder().decode(encode)
                                     , Charset.forName("UTF-8"))
                             , "UTF-8");
                     f.set(dto, decode);
@@ -776,7 +776,7 @@ public class SrDataRequestServiceImpl implements SrDataReqeustService {
                         if(StringUtils.isNotEmpty(encode)){
                             decode = URLDecoder.decode(
                                 new String(
-                                    Base64Decoder.decode(encode)
+                                		Base64.getDecoder().decode(encode)
                                     , Charset.forName("UTF-8"))
                                 , "UTF-8");
                         }
