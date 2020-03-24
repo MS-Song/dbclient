@@ -1,6 +1,5 @@
 package com.song7749.srcenter.service;
 
-import static org.castor.util.Base64Encoder.encode;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -10,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +31,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.song7749.ModuleCommonApplicationTests;
@@ -117,11 +116,11 @@ public class SrDataRequestServiceImplTest {
     public void setUp() throws Exception {
         memberRepository.saveAndFlush(member);
         databaseRepository.saveAndFlush(database);
-        whereSqls.add(new String(encode(URLEncoder.encode("and a=#{key}","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
+        whereSqls.add(new String(Base64.getEncoder().encode(URLEncoder.encode("and a=#{key}","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
         whereSqlKeys.add("${Key}");
         names.add("검색");
         keys.add("변수명");
-        values.add(new String(encode(URLEncoder.encode("value1","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
+        values.add(new String(Base64.getEncoder().encode(URLEncoder.encode("value1","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
         types.add(DataType.DATE);
         requireds.add(YN.Y);
         srDataAlowMemberIds.add(new Long(member.getId()));
@@ -148,7 +147,7 @@ public class SrDataRequestServiceImplTest {
         // give
         SrDataRequestAddDto dto = new SrDataRequestAddDto(
                 "제목입니다제목입니다제목입니다제목입니다",
-                new String(encode(URLEncoder.encode("select sysdate from dual","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+                new String(Base64.getEncoder().encode(URLEncoder.encode("select sysdate from dual","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
                 0,
                 DownloadLimitType.HOURLY,
                 new Date(),
@@ -176,18 +175,18 @@ public class SrDataRequestServiceImplTest {
     @Test
     public void modifyBeforeConfirm() throws UnsupportedEncodingException {
         // give
-        whereSqls.add(new String(encode(URLEncoder.encode("and a=#{key2}","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
+        whereSqls.add(new String(Base64.getEncoder().encode(URLEncoder.encode("and a=#{key2}","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
         whereSqlKeys.add("${Key}");
         names.add("검색2");
         keys.add("변수명2");
-        values.add(new String(encode(URLEncoder.encode("value2","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
+        values.add(new String(Base64.getEncoder().encode(URLEncoder.encode("value2","UTF-8").getBytes(String.valueOf(Charset.UTF8)))));
         types.add(DataType.DATE);
         requireds.add(YN.Y);
         srDataAlowMemberIds.add(member.getId());
         SrDataRequestModifyBeforeConfirmDto beforeDto = new SrDataRequestModifyBeforeConfirmDto(
                 vo.getId(),
                 "검색으로변경합니다.검색으로변경합니다.검색으로변경합니다.",
-                new String(encode(URLEncoder.encode("select sysdate from dual","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+                new String(Base64.getEncoder().encode(URLEncoder.encode("select sysdate from dual","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
                 YN.Y,
                 0,
                 DownloadLimitType.DAILY,
