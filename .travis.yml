@@ -16,8 +16,8 @@ cache:
 
 # clean 후 Build (Build시 자동으로 test 수행)
 script: 
-  - ./gradlew clean build
+  #- ./gradlew clean build
   - docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} 
-  - docker push song7749/db-client:latest
-  - docker push song7749/incident:latest
-  - docker push song7749/srcenter:latest  
+  - ./gradlew dockerPush song7749/db-client:latest
+  - ./gradlew dockerPush song7749/incident:latest
+  - ./gradlew dockerPush song7749/srcenter:latest  
