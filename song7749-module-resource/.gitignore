@@ -3,5 +3,5 @@
 /bin/*
 /build/*
 /.settings/*
-/gradle.properties
+/gralde/*
 /.settings/
