@@ -12,18 +12,18 @@ buildscript {
 		// spring repo
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		// code coverage report repo
-		classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.10.1")	
+		classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2")	
 	}
 }
  
-// docker 배포를 위한 플러그인 지정
+// 플러그인 지정
 plugins {
     id 'com.palantir.docker' version '0.25.0'
 }
 
-// code coverage 리포트 plugin
-apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'java'
 apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'	
 
 // 리포트 설정
 jacocoTestReport {
@@ -33,13 +33,14 @@ jacocoTestReport {
     }
 }
 
-
 subprojects {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
 	apply plugin: 'org.springframework.boot'
 	apply plugin: 'io.spring.dependency-management'
-	
+    apply plugin: 'jacoco'
+    apply plugin: 'com.github.kt3k.coveralls'	
+
 	group = 'com.song7749'
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
@@ -70,10 +71,6 @@ subprojects {
 	            it.mkdirs()
 	        }
 	    }
-	}
-
-	configurations {
-		providedRuntime
 	}
 	
 	dependencies {
