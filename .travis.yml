@@ -22,6 +22,3 @@ script:
   - ./gradlew "song7749-module-dbclient:dockerPush"
   - ./gradlew "song7749-module-incident:dockerPush"
   - ./gradlew "song7749-module-srcenter:dockerPush"  
-  
-after_success:
-- ./gradlew jacocoTestReport coveralls  
