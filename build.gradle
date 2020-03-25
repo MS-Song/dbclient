@@ -21,15 +21,14 @@ plugins {
     id 'com.palantir.docker' version '0.25.0'
 }
 
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'com.github.kt3k.coveralls'	
-
-// 리포트 설정
-jacocoTestReport {
-    reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
+// 테스트 리포팅 설정
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.github.kt3k.coveralls'
+    
+    repositories {
+        jcenter()
     }
 }
 
@@ -48,6 +47,14 @@ subprojects {
 	// gralde 버전 지정
 	task wrapper(type: Wrapper) { 
 		gradleVersion = "6.0" 
+	}
+
+	// 리포트 생성
+	jacocoTestReport {
+	    reports {
+	        xml.enabled = true // coveralls plugin depends on xml format report
+	        html.enabled = true
+	    }
 	}
 
 	repositories {
@@ -112,5 +119,24 @@ subprojects {
 		implementation("org.springframework.boot:spring-boot-devtools")
 		testImplementation('org.springframework.boot:spring-boot-starter-test')
 		testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
+	}
+	
+	// 각 서브모듈들의 JacocoReport 취합
+	task jacocoRootReport(type: JacocoReport) {
+	    description = 'Generates an aggregate report from all subprojects'
+	    dependsOn = subprojects.test
+	    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+	    classDirectories =  files(subprojects.sourceSets.main.output)
+	    executionData = files(subprojects.jacocoTestReport.executionData)
+	    reports {
+	        html.enabled = true // 개발자 확인용
+	        xml.enabled = true // coveralls 전송용
+	    }
+	}
+	
+	// coveralls Task로 jacocoRootReport 로 취합된 결과만 전송 
+	coveralls {
+	    sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+	    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 	}
 }

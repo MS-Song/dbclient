@@ -24,4 +24,4 @@ script:
   - ./gradlew "song7749-module-srcenter:dockerPush"  
   
 after_success:
-- ./gradlew jacocoTestReport coveralls  
+- ./gradlew jacocoRootReport coveralls  
