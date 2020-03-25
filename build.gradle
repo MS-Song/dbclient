@@ -21,24 +21,13 @@ plugins {
     id 'com.palantir.docker' version '0.25.0'
 }
 
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'com.github.kt3k.coveralls'	
-
-// 리포트 생성
-jacocoTestReport {
-    reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
-    }
-}
-
-
 subprojects {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
 	apply plugin: 'org.springframework.boot'
 	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'jacoco'
+	apply plugin: 'com.github.kt3k.coveralls'	
 
 	group = 'com.song7749'
 	sourceCompatibility = 1.8
@@ -47,6 +36,14 @@ subprojects {
 	// gralde 버전 지정
 	task wrapper(type: Wrapper) { 
 		gradleVersion = "6.0" 
+	}
+
+	// 리포트 생성
+	jacocoTestReport {
+	    reports {
+	        xml.enabled = true // coveralls plugin depends on xml format report
+	        html.enabled = true
+	    }
 	}
 
 	repositories {
