@@ -1,6 +1,5 @@
 package com.song7749.web.srcenter;
 
-import static org.castor.util.Base64Encoder.encode;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -11,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,7 +31,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -66,7 +65,7 @@ public class SrDataRequestControllerTest {
 
     @Autowired
     private WebApplicationContext ctx;
-    
+
     @Autowired
     private MockMvc mvc;
 
@@ -141,23 +140,23 @@ public class SrDataRequestControllerTest {
                 .andReturn();
         // login cookie 생성
         cookie = new Cookie("cipher", result.getResponse().getCookie("cipher").getValue());
-        
+
         // 기초 데이터 적재
         add();
    }
 
     @Test
     public void add() throws Exception{
-       String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 {SQL1} {SQL2} {SQL3} ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
+       String runSQL = new String(Base64.getEncoder().encode(URLEncoder.encode("select * from member where 1=1 {SQL1} {SQL2} {SQL3} ","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
        String[] conditionWhereSqls = {
-               new String(encode(URLEncoder.encode("AND member_id='{member_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
-               new String(encode(URLEncoder.encode("AND name='{name}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
-               new String(encode(URLEncoder.encode("AND login_id='{login_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
+               new String(Base64.getEncoder().encode(URLEncoder.encode("AND member_id='{member_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+               new String(Base64.getEncoder().encode(URLEncoder.encode("AND name='{name}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+               new String(Base64.getEncoder().encode(URLEncoder.encode("AND login_id='{login_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
        };
         String[] conditionValues = {
                 new String(""),
-                new String(encode(URLEncoder.encode("1^송민수|2^송민수","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
-                new String(encode(URLEncoder.encode("select member_id as KEY, login_id as VALUE from member","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
+                new String(Base64.getEncoder().encode(URLEncoder.encode("1^송민수|2^송민수","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+                new String(Base64.getEncoder().encode(URLEncoder.encode("select member_id as KEY, login_id as VALUE from member","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
         };
 
         drb=post("/srDataRequest/add").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
@@ -197,7 +196,7 @@ public class SrDataRequestControllerTest {
         assertThat(responseObject.get("rowCount"), notNullValue());
         assertThat(responseObject.get("message"), equalTo("SR Data Request 등록이 완료되었습니다."));
         assertThat(responseObject.get("contents"), notNullValue());
-        
+
         // ID 조회
         drb=get("/srDataRequest/list").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA);
         drb.cookie(cookie);
@@ -209,7 +208,7 @@ public class SrDataRequestControllerTest {
         responseObject = new ObjectMapper().readValue(result.getResponse().getContentAsString(), HashMap.class);
 
         logger.debug("{}", ((Map)((List)((Map)responseObject.get("contents")).get("content")).get(0)).get("id") );
-        
+
         srDataRequestVo = new SrDataRequestVo();
         srDataRequestVo.setId(Long.valueOf((Integer) ((Map)((List)((Map)responseObject.get("contents")).get("content")).get(0)).get("id")));
     }
@@ -217,16 +216,16 @@ public class SrDataRequestControllerTest {
     @Test
     public void modifyBeforeConfirm() throws Exception {
 
-    	String runSQL = new String(encode(URLEncoder.encode("select * from member where 1=1 {SQL1} {SQL2} {SQL3}","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
+    	String runSQL = new String(Base64.getEncoder().encode(URLEncoder.encode("select * from member where 1=1 {SQL1} {SQL2} {SQL3}","UTF-8").getBytes(String.valueOf(Charset.UTF8))));
         String[] conditionWhereSqls = {
-                new String(encode(URLEncoder.encode("AND member_id='{member_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
-                new String(encode(URLEncoder.encode("AND name='{name}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
-                new String(encode(URLEncoder.encode("AND login_id='{login_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
+                new String(Base64.getEncoder().encode(URLEncoder.encode("AND member_id='{member_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+                new String(Base64.getEncoder().encode(URLEncoder.encode("AND name='{name}'","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+                new String(Base64.getEncoder().encode(URLEncoder.encode("AND login_id='{login_id}'","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
         };
         String[] conditionValues = {
                 new String(""),
-                new String(encode(URLEncoder.encode("1^송민수|2^송민수","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
-                new String(encode(URLEncoder.encode("select member_id as KEY, login_id as VALUE from member","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
+                new String(Base64.getEncoder().encode(URLEncoder.encode("1^송민수|2^송민수","UTF-8").getBytes(String.valueOf(Charset.UTF8)))),
+                new String(Base64.getEncoder().encode(URLEncoder.encode("select member_id as KEY, login_id as VALUE from member","UTF-8").getBytes(String.valueOf(Charset.UTF8))))
         };
         drb=put("/srDataRequest/modifyBeforeConfirm").accept(MediaType.APPLICATION_JSON).locale(Locale.KOREA)
                 .param("id",                    srDataRequestVo.getId().toString())

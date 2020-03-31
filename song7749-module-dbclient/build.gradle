@@ -1,24 +1,37 @@
+
+apply plugin: 'com.palantir.docker'
 apply plugin: 'application'
 mainClassName = 'com.song7749.ApplicationDBClient'
 
-bootJar { enabled = true }
-jar { enabled = true }
+bootJar.enabled = true
+jar.enabled = true
 
 test {
 	useJUnitPlatform {
       includeTags "fast", "smoke & feature-a" //@Tag("대응")
-      // excludeTags "slow", "ci"
       includeEngines "junit-jupiter"
-      // excludeEngines "junit-vintage"
 	}
 }
 
 dependencies {
+	//classpath ("com.palantir.gradle.docker:gradle-docker:0.25.0")
 	implementation project(':song7749-module-common')
 	implementation project(':song7749-module-utils')
 	implementation project(':song7749-module-web')
 	implementation project(':song7749-module-member')
+	implementation project(':song7749-module-log')
 	implementation project(':song7749-module-resource')
 	testImplementation project(':song7749-module-test')
 	testImplementation project(':song7749-module-test').sourceSets.test.output
+}
+
+ext {
+    BUILD_VERSION = new Date().format("yyyyMMddHHmmss") // 빌드한 시간을 Image Tag 로 표시하기 위하여 사용한다.
+}
+
+docker {
+    name "song7749/db-client"
+    tags BUILD_VERSION, "latest"
+    files tasks.bootJar.outputs.files
+    buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
 }

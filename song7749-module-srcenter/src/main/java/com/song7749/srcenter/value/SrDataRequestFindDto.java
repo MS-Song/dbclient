@@ -1,31 +1,33 @@
 package com.song7749.srcenter.value;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.StringUtils;
+
 import com.song7749.common.AbstractDto;
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.member.domain.Member;
 import com.song7749.srcenter.domain.SrDataRequest;
-import com.song7749.srcenter.type.DataType;
-import com.song7749.srcenter.type.DownloadLimitType;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.castor.util.Base64Decoder;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.util.StringUtils;
-
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.criteria.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.List;
-
-import static com.song7749.util.LogMessageFormatter.format;
 
 /**
  * <pre>
@@ -295,7 +297,7 @@ public class SrDataRequestFindDto extends AbstractDto implements Specification<S
                 convRunSQL =
                         URLDecoder.decode(
                                 new String(
-                                        Base64Decoder.decode(runSql)
+                                		Base64.getDecoder().decode(runSql)
                                         , Charset.forName("UTF-8"))
                                 , "UTF-8");
             } catch (UnsupportedEncodingException e) {
