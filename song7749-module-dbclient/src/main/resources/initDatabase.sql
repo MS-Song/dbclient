@@ -6,7 +6,7 @@
 --INSERT INTO database_info (database_id,host,host_alias,schema_name,account,password,driver,charset,port,create_date,modify_date,schema_owner) VALUES(nextval('hibernate_sequence'),'local-dev','oracle-local','XE','SYSTEM','UAcPWTLIT6M0Yw40N6iMcQ==','ORACLE','UTF8','1521',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'SONG7749');
 
 -- mail config 
-INSERT INTO MAIL_CONFIG (MAIL_CONFIG_ID,AUTH,CREATE_DATE,DEBUG,ENABLESSL,HOST,MODIFY_DATE,PASSWORD,PORT,PROTOCOL,QUITWAIT,SOCKET_FACTORY_CLASS,SOCKET_FACTORY_FALLBACK,STARTTLS,USERNAME)VALUES(nextval('hibernate_sequence'),'false',CURRENT_TIMESTAMP(),'false','false','smtp.homeplusnet.co.kr',CURRENT_TIMESTAMP(),'',25,'smtp','false','javax.net.ssl.SSLSocketFactory','false','false','');
+INSERT INTO MAIL_CONFIG (MAIL_CONFIG_ID,AUTH,CREATE_DATE,DEBUG,ENABLESSL,HOST,MODIFY_DATE,PASSWORD,PORT,PROTOCOL,QUITWAIT,SOCKET_FACTORY_CLASS,SOCKET_FACTORY_FALLBACK,STARTTLS,USERNAME)VALUES(nextval('hibernate_sequence'),'false',CURRENT_TIMESTAMP(),'false','false','smtp.test.com',CURRENT_TIMESTAMP(),'',25,'smtp','false','javax.net.ssl.SSLSocketFactory','false','false','');
 
 -- test member add
 INSERT INTO MEMBER (MEMBER_ID,APIKEY,AUTH_TYPE,CREATE_DATE,LAST_LOGIN_DATE,LOGIN_ID,MODIFY_DATE,NAME,PASSWORD,PASSWORD_ANSWER,PASSWORD_QUESTION,TEAM_NAME) VALUES(nextval('hibernate_sequence'),null,'DEVELOPER',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'developer@test.com',CURRENT_TIMESTAMP(),'developer','Hg4wBsGlYDlKGTP1G5mgCQ==','passwordAnswer','passwordQuestion','testTeam1');
