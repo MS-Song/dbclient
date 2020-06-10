@@ -48,7 +48,7 @@ import com.song7749.member.type.AuthType;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = ModuleCommonApplicationTests.class
-			, properties = "spring.config.location=classpath:/incident-application.yml")
+			, properties = "spring.config.location=classpath:/application.yml")
 @Transactional
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class IncidentAlarmManagerImplTest {

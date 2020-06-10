@@ -15,10 +15,10 @@ cache:
     - '$HOME/.gradle'
 
 script: 
-  #- ./gradlew clean build
+  - ./gradlew clean cleanTest jacocoRootReport build
   # docker login
   - docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} 
   # docker push
-  - ./gradlew "song7749-module-dbclient:dockerPush"
-  - ./gradlew "song7749-module-incident:dockerPush"
-  - ./gradlew "song7749-module-srcenter:dockerPush"  
+  - ./gradlew "song7749-service-dbclient:dockerPush"
+  - ./gradlew "song7749-service-incident:dockerPush"
+  - ./gradlew "song7749-service-srcenter:dockerPush"  

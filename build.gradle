@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.2.4.RELEASE'
+		springBootVersion = '2.2.5.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -19,8 +19,22 @@ plugins {
     id 'com.palantir.docker' version '0.25.0'
 }
 
+allprojects {
+    apply plugin: 'jacoco'
+    jacoco {
+        toolVersion = '0.8.2'
+    }
+	
+	repositories {
+		mavenCentral()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+	}
+}
+
 subprojects {
 	apply plugin: 'java'
+	apply plugin: 'jacoco'
 	apply plugin: 'eclipse'
 	apply plugin: 'org.springframework.boot'
 	apply plugin: 'io.spring.dependency-management'
@@ -42,6 +56,23 @@ subprojects {
 		maven { url "http://www.datanucleus.org/downloads/maven2" }
 
 	}
+
+	test {
+		useJUnitPlatform {
+//			includeTags "fast", "smoke & feature-a" //@Tag("대응")
+			includeEngines "junit-jupiter"
+		}
+		reports.html.enabled = false
+	}
+	
+    jacocoTestReport {
+        reports {
+            html.enabled = true
+            xml.enabled = true
+            csv.enabled = false
+        }
+    }
+    check.dependsOn jacocoTestReport
 
 	task initSourceFolders {
 	    sourceSets*.java.srcDirs*.each {
@@ -96,5 +127,38 @@ subprojects {
 		implementation("org.springframework.boot:spring-boot-devtools")
 		testImplementation('org.springframework.boot:spring-boot-starter-test')
 		testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
+		// junit5
+		testImplementation('org.junit.jupiter:junit-jupiter-api:5.5.2')
+		testRuntimeOnly ('org.junit.jupiter:junit-jupiter-engine:5.5.2')
+		testImplementation ('org.junit.platform:junit-platform-launcher:1.5.2')
+		// lombok
+		compileOnly	('org.projectlombok:lombok:1.18.8')
+		annotationProcessor ('org.projectlombok:lombok:1.18.8')
+		testAnnotationProcessor ('org.projectlombok:lombok:1.18.8')
+		testCompileOnly ('org.projectlombok:lombok:1.18.8')
+		testImplementation('org.springframework.security:spring-security-test:5.2.2.RELEASE')
 	}
+}
+
+task jacocoRootReport(type: JacocoReport) {
+    dependsOn = subprojects.test
+
+    getAdditionalSourceDirs().setFrom(files(subprojects.sourceSets.main.allSource.srcDirs))
+    getSourceDirectories().setFrom(files(subprojects.sourceSets.main.allSource.srcDirs))
+    getClassDirectories().setFrom(files(subprojects.sourceSets.main.output))
+    getExecutionData().setFrom(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
+    onlyIf = {
+        true
+    }
+    doFirst {
+        getExecutionData().setFrom(files(executionData.findAll {
+            it.exists()
+        }))
+    }
 }

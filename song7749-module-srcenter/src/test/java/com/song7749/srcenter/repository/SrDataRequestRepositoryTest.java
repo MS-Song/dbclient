@@ -39,7 +39,7 @@ import com.song7749.srcenter.type.DownloadLimitType;
 
 @ActiveProfiles("test")
 @Transactional
-@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/srcenter-application.yml")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/application.yml")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SrDataRequestRepositoryTest {
 

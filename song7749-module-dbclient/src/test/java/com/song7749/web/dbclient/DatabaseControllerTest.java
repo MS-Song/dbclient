@@ -1,6 +1,7 @@
 package com.song7749.web.dbclient;
 
 import static com.song7749.util.LogMessageFormatter.format;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -53,7 +54,7 @@ import com.song7749.member.value.MemberVo;
 
 @SuppressWarnings("unchecked")
 @ActiveProfiles("test")
-@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/dbclient-application.yml")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/application.yml")
 @Transactional
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

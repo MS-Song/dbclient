@@ -56,7 +56,7 @@ import com.song7749.srcenter.value.SrDataRequestVo;
 import com.song7749.util.ProxyUtils;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/srcenter-application.yml")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/application.yml")
 @Transactional
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SrDataRequestServiceImplTest {

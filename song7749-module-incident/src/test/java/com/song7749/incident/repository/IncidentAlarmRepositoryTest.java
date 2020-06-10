@@ -21,9 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
-import com.song7749.ApplicationIncidentAlarm;
 import com.song7749.ModuleCommonApplicationTests;
 import com.song7749.common.SendMethod;
 import com.song7749.common.YN;
@@ -39,7 +37,7 @@ import com.song7749.member.type.AuthType;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = ModuleCommonApplicationTests.class
-	, properties = "spring.config.location=classpath:/incident-application.yml")
+	, properties = "spring.config.location=classpath:/application.yml")
 @Transactional
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class IncidentAlarmRepositoryTest {

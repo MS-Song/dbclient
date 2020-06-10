@@ -1,4 +1,9 @@
-jar.enabled = true
+
+apply plugin: 'com.palantir.docker'
+apply plugin: 'application'
+mainClassName = 'com.song7749.Application'
+
+bootJar.enabled = true
 
 dependencies {
 	implementation project(':song7749-module-utils')
@@ -9,6 +14,18 @@ dependencies {
 	implementation project(':song7749-module-mail')
 	implementation project(':song7749-module-resource')
 	implementation project(':song7749-module-dbclient')
+	implementation project(':song7749-module-incident')
 	testImplementation project(':song7749-module-test')
 	testImplementation project(':song7749-module-test').sourceSets.test.output
+}
+
+ext {
+    BUILD_VERSION = new Date().format("yyyyMMddHHmmss") // 빌드한 시간을 Image Tag 로 표시하기 위하여 사용한다.
+}
+
+docker {
+    name "song7749/incident"
+    tags BUILD_VERSION, "latest"
+    files tasks.bootJar.outputs.files
+    buildArgs(['JAR_FILE': tasks.bootJar.outputs.files.singleFile.name])
 }

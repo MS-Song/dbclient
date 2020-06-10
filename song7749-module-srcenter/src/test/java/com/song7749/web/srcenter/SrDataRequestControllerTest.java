@@ -55,7 +55,7 @@ import com.song7749.srcenter.value.SrDataRequestVo;
 
 @SuppressWarnings("unchecked")
 @ActiveProfiles("test")
-@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/srcenter-application.yml")
+@SpringBootTest(classes = ModuleCommonApplicationTests.class, properties = "spring.config.location=classpath:/application.yml")
 @Transactional
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
