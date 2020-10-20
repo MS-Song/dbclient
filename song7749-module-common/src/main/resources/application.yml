@@ -200,13 +200,13 @@ spring:
   profiles: database-h2-file-mysql
   # datasource    
   datasource:
-    url:  jdbc:h2:mem:~/dbclient;Mode=MYSQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1  
+    url:  jdbc:h2:file:~/dbclient;Mode=MYSQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1  
     username: sa
     password: 
     driver-class-name: org.h2.Driver
     databaseName: DB Client Local Database
     schemaName: PUBLIC
-    host: jdbc:h2:mem:~/dbclient
+    host: jdbc:h2:file:~/dbclient
     port: 
   
 ---
