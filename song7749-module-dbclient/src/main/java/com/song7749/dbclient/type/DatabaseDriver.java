@@ -43,7 +43,7 @@ public enum DatabaseDriver {
 			// driverName
 			"com.mysql.jdbc.Driver",
 			// connect url
-			"jdbc:mysql://{host}:{port}/{schemaName}?autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding={charset}&useSSL=false",
+			"jdbc:mysql://{host}:{port}/{schemaName}?serverTimezone=Asia/Seoul&autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding={charset}&useSSL=false",
 			// validate query
 			"select 1 ",
 			// table list
