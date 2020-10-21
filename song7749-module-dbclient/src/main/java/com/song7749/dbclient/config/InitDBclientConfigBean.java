@@ -10,17 +10,6 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Example;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.service.DBclientManager;
@@ -31,8 +20,17 @@ import com.song7749.dbclient.value.ExecuteQueryDto;
 import com.song7749.member.domain.Member;
 import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.service.MemberManager;
-import com.song7749.member.type.AuthType;
-import com.song7749.member.value.MemberVo;
+
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <pre>

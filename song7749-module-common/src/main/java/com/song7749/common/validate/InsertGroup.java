@@ -1,7 +1,5 @@
 package com.song7749.common.validate;
 
-import javax.validation.groups.Default;
-
 /**
  * <pre>
  * Class Name : InsertGroup.java
@@ -19,4 +17,4 @@ import javax.validation.groups.Default;
  * @since 2014. 4. 21.
  */
 
-public interface InsertGroup extends BaseGroup, Default {}
+public interface InsertGroup extends BaseGroup {}

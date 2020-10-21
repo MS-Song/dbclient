@@ -41,7 +41,7 @@ public enum DatabaseDriver {
 			// dbms
 			"mysql",
 			// driverName
-			"com.mysql.jdbc.Driver",
+			"com.mysql.cj.jdbc.Driver",
 			// connect url
 			"jdbc:mysql://{host}:{port}/{schemaName}?serverTimezone=Asia/Seoul&autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding={charset}&useSSL=false",
 			// validate query

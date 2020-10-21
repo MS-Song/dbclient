@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;

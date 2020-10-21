@@ -1,43 +1,33 @@
 package com.song7749.srcenter.config;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import com.song7749.common.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.MemberDatabase;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.repository.MemberDatabaseRepository;
-import com.song7749.dbclient.service.DBclientManager;
-import com.song7749.dbclient.service.DBclientManagerImpl;
-import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
-import com.song7749.dbclient.value.ExecuteQueryDto;
 import com.song7749.member.domain.Member;
 import com.song7749.member.repository.MemberRepository;
-import com.song7749.member.service.MemberManager;
 import com.song7749.member.type.AuthType;
-import com.song7749.member.value.MemberVo;
 import com.song7749.srcenter.domain.SrDataCondition;
 import com.song7749.srcenter.domain.SrDataRequest;
 import com.song7749.srcenter.repository.SrDataRequestRepository;
 import com.song7749.srcenter.type.DataType;
 import com.song7749.srcenter.type.DownloadLimitType;
-import org.modelmapper.ModelMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.*;
-
-import static com.song7749.util.LogMessageFormatter.format;
 
 /**
  * <pre>

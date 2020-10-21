@@ -1,7 +1,6 @@
 package com.song7749.web.dbclient;
 
 import static com.song7749.util.LogMessageFormatter.format;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -18,6 +17,19 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.song7749.ModuleCommonApplicationTests;
+import com.song7749.dbclient.service.DatabaseManager;
+import com.song7749.dbclient.type.Charset;
+import com.song7749.dbclient.type.DatabaseDriver;
+import com.song7749.dbclient.value.DatabaseAddDto;
+import com.song7749.dbclient.value.DatabaseVo;
+import com.song7749.member.service.MemberManager;
+import com.song7749.member.type.AuthType;
+import com.song7749.member.value.MemberAddDto;
+import com.song7749.member.value.MemberModifyByAdminDto;
+import com.song7749.member.value.MemberVo;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -31,26 +43,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.song7749.ModuleCommonApplicationTests;
-import com.song7749.dbclient.service.DatabaseManager;
-import com.song7749.dbclient.type.Charset;
-import com.song7749.dbclient.type.DatabaseDriver;
-import com.song7749.dbclient.value.DatabaseAddDto;
-import com.song7749.dbclient.value.DatabaseVo;
-import com.song7749.member.service.MemberManager;
-import com.song7749.member.type.AuthType;
-import com.song7749.member.value.MemberAddDto;
-import com.song7749.member.value.MemberModifyByAdminDto;
-import com.song7749.member.value.MemberVo;
 
 @SuppressWarnings("unchecked")
 @ActiveProfiles("test")

@@ -1,21 +1,17 @@
 package com.song7749.srcenter.value;
 
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.song7749.common.AbstractVo;
 import com.song7749.common.YN;
-import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.value.DatabaseVo;
-import com.song7749.member.domain.Member;
 import com.song7749.member.value.MemberVo;
 import com.song7749.srcenter.type.DownloadLimitType;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
-import java.util.List;
 
 /**
  * <pre>

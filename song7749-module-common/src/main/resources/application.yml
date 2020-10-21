@@ -10,7 +10,7 @@ spring:
   # profile active
   profiles:
     active:
-    - local 
+    - local
   # banner
   banner:
     charset: utf-8
@@ -68,7 +68,7 @@ spring:
   profiles: dev
   profiles.include:
   # 추가 환경 구성을 include 한다. 
-    - database-h2-file-mysql
+    - database-mysql-prd
   # jpa 추가 설정
   jpa:
     hibernate:
@@ -143,38 +143,6 @@ spring:
       restart:
         enabled: false
         
-        
-##############################################################################
-# mariadb 추가 환경 
-##############################################################################
-
----
-spring:
-  # profile 설정
-  profiles: mariadb
-  # jpa 추가 설정
-  jpa:
-    show-sql: false
-    hibernate:
-      ddl-auto: none
-#      ddl-auto: create-drop
-#      ddl-auto: create
-#      ddl-auto: validate
-#      ddl-auto: update
-    properties:
-      hibernate : 
-        format_sql: false
-        use_sql_comments: false
-        show-sql: false
-  devtools:
-    livereload:
-      enabled: false
-    restart:
-      enabled: false
-    remote:
-      restart:
-        enabled: false
- 
 ##############################################################################
 # Database 환경 설정 
 ##############################################################################
@@ -215,7 +183,7 @@ spring:
   profiles: database-mariadb-dev
    # datasource    
   datasource:
-    url: jdbc:mariadb://local-dev:4306/dbClient?autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia/Seoul  
+    url: jdbc:mariadb://local-dev:4306/dbclient?autoReconnect=true&useUnicode=true&createDatabaseIfNotExist=true&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia/Seoul  
     username: dbclient
     password: 12345678
     driver-class-name: org.mariadb.jdbc.Driver
@@ -223,3 +191,18 @@ spring:
     schemaName: dbClient
     host: local-dev
     port: 4306
+
+---
+spring:
+  # profile 설정
+  profiles: database-mysql-prd
+   # datasource    
+  datasource:
+    url: jdbc:mysql://local-dev:3306/dbclient?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
+    username: dbclient
+    password: 12345678
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    databaseName: DB Client Local Database
+    schemaName: dbclient
+    host: local-dev
+    port: 39212    

@@ -1,16 +1,18 @@
 package com.song7749.srcenter.value;
 
-import com.song7749.common.AbstractDto;
-import com.song7749.common.YN;
-import com.song7749.member.domain.Member;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import org.springframework.format.annotation.DateTimeFormat;
+import java.util.Date;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+
+import com.song7749.common.AbstractDto;
+import com.song7749.common.YN;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * <pre>
