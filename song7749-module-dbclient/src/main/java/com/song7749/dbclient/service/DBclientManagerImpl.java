@@ -120,8 +120,8 @@ public class DBclientManagerImpl implements DBclientManager {
 			hDataSource.setUsername(database.getAccount());
 			hDataSource.setPassword(database.getPassword());
 			hDataSource.setAutoCommit(false);
-			hDataSource.setMaximumPoolSize(20);
-			hDataSource.setMinimumIdle(10);
+			hDataSource.setMaximumPoolSize(4);
+			hDataSource.setMinimumIdle(4);
 			hDataSource.setIdleTimeout(60000);
 			hDataSource.setMaxLifetime(90000);
 			hDataSource.setLoginTimeout(3);
