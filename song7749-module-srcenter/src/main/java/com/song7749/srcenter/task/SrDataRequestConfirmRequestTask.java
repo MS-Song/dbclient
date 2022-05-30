@@ -1,19 +1,21 @@
 package com.song7749.srcenter.task;
 
-import com.song7749.common.YN;
+import static com.song7749.util.LogMessageFormatter.format;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.mail.MessagingException;
+
+import com.song7749.common.base.YN;
 import com.song7749.mail.service.EmailService;
 import com.song7749.mail.value.MailMessageVo;
 import com.song7749.member.domain.Member;
 import com.song7749.srcenter.domain.SrDataRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
-
-import javax.mail.MessagingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.song7749.util.LogMessageFormatter.format;
 
 /**
  * <pre>

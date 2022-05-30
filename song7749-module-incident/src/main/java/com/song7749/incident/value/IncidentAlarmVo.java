@@ -3,9 +3,9 @@ package com.song7749.incident.value;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.song7749.common.AbstractVo;
-import com.song7749.common.SendMethod;
-import com.song7749.common.YN;
+import com.song7749.common.base.AbstractVo;
+import com.song7749.common.base.SendMethod;
+import com.song7749.common.base.YN;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

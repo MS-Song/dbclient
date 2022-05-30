@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import com.song7749.common.AbstractDto;
+import com.song7749.common.base.AbstractDto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -21,17 +21,17 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.song7749.common.base.Entities;
+import com.song7749.common.base.SendMethod;
+import com.song7749.common.base.YN;
+import com.song7749.dbclient.domain.Database;
+import com.song7749.member.domain.Member;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SelectBeforeUpdate;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import com.song7749.common.Entities;
-import com.song7749.common.SendMethod;
-import com.song7749.common.YN;
-import com.song7749.dbclient.domain.Database;
-import com.song7749.member.domain.Member;
 
 /**
  * <pre>

@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import com.song7749.common.YN;
+import com.song7749.common.base.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.MemberDatabase;
 import com.song7749.dbclient.repository.DatabaseRepository;

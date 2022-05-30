@@ -7,11 +7,11 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.Length;
+import com.song7749.common.base.AbstractDto;
+import com.song7749.common.base.SendMethod;
+import com.song7749.common.base.YN;
 
-import com.song7749.common.AbstractDto;
-import com.song7749.common.SendMethod;
-import com.song7749.common.YN;
+import org.hibernate.validator.constraints.Length;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

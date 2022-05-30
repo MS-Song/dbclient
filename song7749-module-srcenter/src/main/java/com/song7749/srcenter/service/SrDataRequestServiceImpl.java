@@ -18,23 +18,9 @@ import java.util.function.Function;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
-import com.song7749.common.MessageVo;
-import com.song7749.common.Parameter;
-import com.song7749.common.YN;
+import com.song7749.common.base.MessageVo;
+import com.song7749.common.base.Parameter;
+import com.song7749.common.base.YN;
 import com.song7749.common.validate.Validate;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.repository.DatabaseRepository;
@@ -63,6 +49,20 @@ import com.song7749.srcenter.value.SrDataRequestRunDto;
 import com.song7749.srcenter.value.SrDataRequestVo;
 import com.song7749.srcenter.value.SrDataRunningInfoCacheVo;
 import com.song7749.util.StringUtils;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  * <pre>

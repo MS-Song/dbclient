@@ -6,8 +6,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
-import com.song7749.common.AbstractDto;
-import com.song7749.common.YN;
+import com.song7749.common.base.AbstractDto;
+import com.song7749.common.base.YN;
 
 import org.springframework.format.annotation.DateTimeFormat;
 

@@ -5,7 +5,7 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import com.song7749.common.AbstractDto;
+import com.song7749.common.base.AbstractDto;
 import com.song7749.dbclient.type.Charset;
 import com.song7749.dbclient.type.DatabaseDriver;
 

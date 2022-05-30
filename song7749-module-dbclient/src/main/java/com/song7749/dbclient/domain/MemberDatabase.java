@@ -12,11 +12,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
-import org.modelmapper.ModelMapper;
-
-import com.song7749.common.Entities;
+import com.song7749.common.base.Entities;
 import com.song7749.dbclient.value.MemberDatabaseVo;
 import com.song7749.member.domain.Member;
+
+import org.modelmapper.ModelMapper;
 
 /**
  * <pre>

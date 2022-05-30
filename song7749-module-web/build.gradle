@@ -1,8 +1,0 @@
-bootJar.enabled = false
-jar.enabled = true
-	
-dependencies {
-	implementation project(':song7749-module-utils')
-	implementation project(':song7749-module-common')
-	testImplementation project(':song7749-module-test').sourceSets.test.output
-}

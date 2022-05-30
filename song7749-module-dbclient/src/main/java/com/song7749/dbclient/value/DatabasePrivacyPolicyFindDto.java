@@ -5,14 +5,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.StringUtils;
-
-import com.song7749.common.AbstractDto;
-import com.song7749.common.Compare;
-import com.song7749.common.YN;
+import com.song7749.common.base.AbstractDto;
+import com.song7749.common.base.Compare;
+import com.song7749.common.base.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.DatabasePrivacyPolicy;
+
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

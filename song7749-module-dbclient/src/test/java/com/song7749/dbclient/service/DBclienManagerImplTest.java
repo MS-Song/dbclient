@@ -14,21 +14,8 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-
 import com.song7749.ModuleCommonApplicationTests;
-import com.song7749.common.MessageVo;
+import com.song7749.common.base.MessageVo;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.repository.DatabaseRepository;
 import com.song7749.dbclient.type.Charset;
@@ -42,6 +29,18 @@ import com.song7749.dbclient.value.ViewVo;
 import com.song7749.member.domain.Member;
 import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.type.AuthType;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 
 @ActiveProfiles("test")

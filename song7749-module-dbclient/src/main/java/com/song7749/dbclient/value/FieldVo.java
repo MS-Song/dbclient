@@ -1,7 +1,7 @@
 package com.song7749.dbclient.value;
 
 
-import com.song7749.common.AbstractVo;
+import com.song7749.common.base.AbstractVo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

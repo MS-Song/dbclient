@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
-import com.song7749.common.MessageVo;
+import com.song7749.common.base.MessageVo;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.domain.DatabasePrivacyPolicy;
 import com.song7749.dbclient.repository.DatabasePrivacyPolicyRepository;

@@ -1,15 +1,14 @@
 package com.song7749.srcenter.value;
 
-import com.song7749.common.AbstractVo;
-import com.song7749.common.Parameter;
-import com.song7749.common.YN;
+import java.util.List;
+
+import com.song7749.common.base.AbstractVo;
+import com.song7749.common.base.Parameter;
+import com.song7749.common.base.YN;
 import com.song7749.srcenter.type.DataType;
 
-import java.util.List;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * <pre>

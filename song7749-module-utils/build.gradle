@@ -1,9 +1,0 @@
-bootJar.enabled = false
-jar.enabled = true
-
-test {
-	useJUnitPlatform {
-      includeTags "fast", "smoke & feature-a" //@Tag("대응")
-      includeEngines "junit-jupiter"
-	}
-}

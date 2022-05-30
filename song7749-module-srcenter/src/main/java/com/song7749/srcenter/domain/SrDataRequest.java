@@ -23,15 +23,8 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SelectBeforeUpdate;
-import org.hibernate.validator.constraints.Length;
-import org.modelmapper.ModelMapper;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import com.song7749.common.Entities;
-import com.song7749.common.YN;
+import com.song7749.common.base.Entities;
+import com.song7749.common.base.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.member.domain.Member;
@@ -39,6 +32,13 @@ import com.song7749.member.value.MemberVo;
 import com.song7749.srcenter.type.DownloadLimitType;
 import com.song7749.srcenter.value.SrDataConditionVo;
 import com.song7749.srcenter.value.SrDataRequestVo;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SelectBeforeUpdate;
+import org.hibernate.validator.constraints.Length;
+import org.modelmapper.ModelMapper;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * <pre>

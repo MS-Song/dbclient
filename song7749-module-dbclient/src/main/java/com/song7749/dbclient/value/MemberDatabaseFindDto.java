@@ -1,6 +1,6 @@
 package com.song7749.dbclient.value;
 
-import com.song7749.common.AbstractDto;
+import com.song7749.common.base.AbstractDto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

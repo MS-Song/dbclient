@@ -3,10 +3,10 @@ package com.song7749.dbclient.value;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-import org.hibernate.validator.constraints.Length;
+import com.song7749.common.base.BaseObject;
+import com.song7749.common.base.Dto;
 
-import com.song7749.common.BaseObject;
-import com.song7749.common.Dto;
+import org.hibernate.validator.constraints.Length;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

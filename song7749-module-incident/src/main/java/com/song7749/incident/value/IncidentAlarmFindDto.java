@@ -12,16 +12,16 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.util.StringUtils;
-
-import com.song7749.common.AbstractDto;
-import com.song7749.common.SendMethod;
-import com.song7749.common.YN;
+import com.song7749.common.base.AbstractDto;
+import com.song7749.common.base.SendMethod;
+import com.song7749.common.base.YN;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.incident.domain.IncidentAlarm;
 import com.song7749.member.domain.Member;
+
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

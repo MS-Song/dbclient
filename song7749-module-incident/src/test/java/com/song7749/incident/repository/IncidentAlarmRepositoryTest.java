@@ -12,6 +12,18 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import com.song7749.ModuleCommonApplicationTests;
+import com.song7749.common.base.SendMethod;
+import com.song7749.common.base.YN;
+import com.song7749.dbclient.domain.Database;
+import com.song7749.dbclient.repository.DatabaseRepository;
+import com.song7749.dbclient.type.Charset;
+import com.song7749.dbclient.type.DatabaseDriver;
+import com.song7749.incident.domain.IncidentAlarm;
+import com.song7749.member.domain.Member;
+import com.song7749.member.repository.MemberRepository;
+import com.song7749.member.type.AuthType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -21,18 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import com.song7749.ModuleCommonApplicationTests;
-import com.song7749.common.SendMethod;
-import com.song7749.common.YN;
-import com.song7749.dbclient.domain.Database;
-import com.song7749.dbclient.repository.DatabaseRepository;
-import com.song7749.dbclient.type.Charset;
-import com.song7749.dbclient.type.DatabaseDriver;
-import com.song7749.incident.domain.IncidentAlarm;
-import com.song7749.member.domain.Member;
-import com.song7749.member.repository.MemberRepository;
-import com.song7749.member.type.AuthType;
 
 
 @ActiveProfiles("test")

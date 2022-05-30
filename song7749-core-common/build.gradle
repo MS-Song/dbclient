@@ -1,0 +1,7 @@
+bootJar.enabled = false
+jar.enabled = true 
+
+dependencies {
+	testImplementation project(':song7749-core-test')
+	testImplementation project(':song7749-core-test').sourceSets.test.output
+}

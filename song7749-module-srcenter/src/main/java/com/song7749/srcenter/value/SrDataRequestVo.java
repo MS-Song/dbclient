@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.song7749.common.AbstractVo;
-import com.song7749.common.YN;
+import com.song7749.common.base.AbstractVo;
+import com.song7749.common.base.YN;
 import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.member.value.MemberVo;
 import com.song7749.srcenter.type.DownloadLimitType;

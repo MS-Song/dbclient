@@ -3,8 +3,8 @@ package com.song7749.dbclient.value;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.song7749.common.AbstractVo;
-import com.song7749.common.YN;
+import com.song7749.common.base.AbstractVo;
+import com.song7749.common.base.YN;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import com.song7749.common.MessageVo;
+import com.song7749.common.base.MessageVo;
 import com.song7749.dbclient.domain.Database;
 import com.song7749.dbclient.value.DatabaseAddDto;
 import com.song7749.dbclient.value.DatabaseDdlVo;

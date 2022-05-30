@@ -5,14 +5,14 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
-import org.hibernate.validator.constraints.Length;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.song7749.common.AbstractVo;
-import com.song7749.common.SendMethod;
-import com.song7749.common.YN;
+import com.song7749.common.base.AbstractVo;
+import com.song7749.common.base.SendMethod;
+import com.song7749.common.base.YN;
 import com.song7749.dbclient.value.DatabaseVo;
 import com.song7749.member.value.MemberVo;
+
+import org.hibernate.validator.constraints.Length;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

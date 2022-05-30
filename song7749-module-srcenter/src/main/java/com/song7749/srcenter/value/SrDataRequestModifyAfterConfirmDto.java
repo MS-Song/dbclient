@@ -8,8 +8,8 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.song7749.common.AbstractDto;
-import com.song7749.common.YN;
+import com.song7749.common.base.AbstractDto;
+import com.song7749.common.base.YN;
 import com.song7749.srcenter.type.DownloadLimitType;
 
 import org.springframework.format.annotation.DateTimeFormat;

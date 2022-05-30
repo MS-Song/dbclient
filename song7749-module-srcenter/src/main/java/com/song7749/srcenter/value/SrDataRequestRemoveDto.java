@@ -1,10 +1,11 @@
 package com.song7749.srcenter.value;
 
-import com.song7749.common.AbstractDto;
+import javax.validation.constraints.NotNull;
+
+import com.song7749.common.base.AbstractDto;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * <pre>
