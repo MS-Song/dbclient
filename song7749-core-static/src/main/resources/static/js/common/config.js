@@ -19,4 +19,3 @@ let getSwaggerApiDocsLazyLoading = function(){
         getSwaggerApiDocs();
     }
 }
-

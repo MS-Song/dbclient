@@ -43,7 +43,7 @@ webix.ready(function(){
 				}
 			});
 		}}
-	},3);
+	},4);
 
 });
 

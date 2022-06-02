@@ -7,7 +7,7 @@ webix.UIManager.tabControl = false;
 webix.ready(function(){
 	webix.ui({
 		rows:[{	// 상단 타이틀 구성 및 sidemenu 제어
-				view: "toolbar", id:"toolbar", elements:[
+			view: "toolbar", id:"toolbar", elements:[
 				{ id:"menu_left_icon", view: "icon", icon: "bars", click: function(){
 						if( $$("menu").config.hidden) 
 							$$("menu").show();
@@ -15,7 +15,8 @@ webix.ready(function(){
 							$$("menu").hide();
 					}
 				},
-				{ id:"logo", view: "label", label: "Incident Alert"},
+				{ id:"logo", 	view: "label", label: "Incident Alert", 	width:100,	align:"left"},
+				{ id:"version", view: "label", label: "", 	width:80,  	align:"left"},				
 				{ id:"toolbar_cache_remove"},
 				{ id:"menu_right_icon", view: "icon", icon: "bars", click: function(){
 						if( $$("menu_right").config.hidden) 

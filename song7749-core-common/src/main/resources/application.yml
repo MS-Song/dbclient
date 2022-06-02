@@ -1,6 +1,16 @@
 ##############################################################################
 # 공통 실행 환경 
 ##############################################################################
+# version define
+config:
+  versions:
+    - name: dbclient
+      version: v5.1.0
+    - name: incident
+      version: v1.3.2
+    - name: srcenter
+      version: v1.2.1
+
 # server define
 server:
   port: 9009

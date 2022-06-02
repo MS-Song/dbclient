@@ -15,7 +15,8 @@ webix.ready(function(){
 							$$("menu").hide();
 					}
 				},
-				{ id:"logo", view: "label", label: "DB CLient"},
+				{ id:"logo", 	view: "label", label: "DB CLient", 	width:80,	align:"left"},
+				{ id:"version", view: "label", label: "", 	width:80,  	align:"left"},				
 				{ id:"toolbar_notices"},
 				{ id:"database_developer_combo_prepare_style"},
 				{ id:"toolbar_cache_remove"},

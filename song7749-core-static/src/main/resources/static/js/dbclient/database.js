@@ -106,8 +106,9 @@ var select_database_popup=function(){
 	    			$$("toolbar").addView({
 	    				id:"toolbar_notices",
 	    				view: "label", 
-	    				label: database.hostAlias+" ["+database.host+"] 선택"
-	    			},2);
+	    				label: database.hostAlias+" ["+database.host+"] 선택",
+						align: "center"
+	    			},3);
 
     				// SQL Bind Style 정의한다.
 	    			$$("toolbar").removeView("database_developer_combo_prepare_style");
@@ -118,7 +119,7 @@ var select_database_popup=function(){
 						value:"#{field}",
 						options:["?", ":field", "#{field}","${field}"],
 						tooltip:"prepare 스타일을 정의 한다.<br/>?,:field,#{field},${field} 정의 가능"
-					},3);
+					},4);
 	    			// 캐시 삭제 버튼을 노출 한다.
 	    			$$("toolbar").removeView("toolbar_cache_remove");
 	    			$$("toolbar").addView({id:"toolbar_cache_remove",
@@ -137,7 +138,7 @@ var select_database_popup=function(){
 	    						}
 	    					});
 	    				}}
-	    			},4);
+	    			},5);
 	    			// 선택된 데이터베이스의 정보를 읽는다.
 	    			database_info_data_load();
 	            }}

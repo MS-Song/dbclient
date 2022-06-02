@@ -1,4 +1,4 @@
-package com.song7749.web.member;
+package com.song7749.web.controller;
 
 import static com.song7749.util.LogMessageFormatter.format;
 

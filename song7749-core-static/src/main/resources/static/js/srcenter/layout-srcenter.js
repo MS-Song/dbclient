@@ -15,7 +15,8 @@ webix.ready(function(){
 							$$("menu").hide();
 					}
 				},
-				{ id:"logo", view: "label", label: "SR Data Center"},
+				{ id:"logo", 	view: "label", label: "SR Data Center", 	width:120,	align:"left"},
+				{ id:"version", view: "label", label: "", 	width:80,  	align:"left"},		
 				{ id:"toolbar_cache_remove"},
 				{ id:"menu_right_icon", view: "icon", icon: "bars", click: function(){
 						if( $$("menu_right").config.hidden) 

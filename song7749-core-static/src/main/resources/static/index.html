@@ -31,5 +31,11 @@
 	<script src="/static/js/dbclient/databaseUtils.js" 		type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/dbclient/javaUtils.js" 			type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/dbclient/admin.js" 				type="text/javascript" charset="utf-8"></script>
+	<script src="/static/js/util/version.js" 				type="text/javascript" charset="utf-8"></script>
+	<script>
+		webix.ready(function(){
+			getVersion("dbclient");
+		});
+	</script>
 </body>
 </html>
