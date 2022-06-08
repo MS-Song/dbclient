@@ -102,15 +102,14 @@ public class CSVFileDataManagerImpl implements CSVFileDataManager{
 
 								dto.setQuery(createTableSql);
 								dbclientManager.executeQuery(dto);
-
-					    		// insert 하기 위해 insert 구문 생성
-					    		insertSql="insert into " + tableName ;
-					    		// values column 생성
-					    		column= new String[values.length];
-				    			for(int i=0; i<values.length;i++) {
-				    				column[i] = values[i].replaceAll("[^A-Za-z0-9]","");
-				    			}
-				    		}
+							} //  테이블 생성 완료
+							// insert 하기 위해 insert 구문 생성
+							insertSql="insert into " + tableName ;
+							// values column 생성
+							column= new String[values.length];
+							for(int i=0; i<values.length;i++) {
+								column[i] = values[i].replaceAll("[^A-Za-z0-9]","");
+							}
 				    	} else {
 				    		// 필드를 기준으로 없는 데이터는 생성하여 넣는다.
 				    		String[] insertColumn = new String[values.length];
