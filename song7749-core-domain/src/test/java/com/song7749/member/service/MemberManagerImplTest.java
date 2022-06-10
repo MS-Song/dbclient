@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mock;
@@ -98,6 +99,7 @@ public class MemberManagerImplTest {
 
 	@Test
 	@Order(1)
+	@Tag("exclude")
 	@DisplayName("회원 추가 시에 이메일을 null 로 전달 하면 Exception 이 발생 해야 함 -- assertThrows 이용")
 	public void testAddMemeberGivenLoginIdIsNull() throws Exception {
 		// give
