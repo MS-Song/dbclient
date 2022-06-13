@@ -17,6 +17,5 @@ package com.song7749.common.base;
 * @since 2018. 1. 15.
 */
 public abstract class AbstractVo extends BaseObject implements Vo {
-
 	private static final long serialVersionUID = -8005676524782732033L;
 }

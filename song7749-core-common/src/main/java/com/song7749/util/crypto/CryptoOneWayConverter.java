@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
  * <pre>
  * Class Name : CryptoOneWayConverter.java
  * Description : 단방양 암호화 converter
- * TODO 사용하지 말 것. JPA Cache 로 인해 조회시에 암호화된 값을 조회하지 못하고, 입력된 값을 가져오는 문제가 있음.
 *
 *
 *  Modification Information

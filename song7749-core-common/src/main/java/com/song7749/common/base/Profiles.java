@@ -41,18 +41,7 @@ public enum Profiles {
     /**
      * 운영 배포용
      */
-    PRODUCTION(Constants.PRODUCTION),
-
-
-    /**
-     * Open Source 배포
-     */
-    OPENSOURCE(Constants.OPENSOURCE),
-
-    /**
-     * 마리아 DB 용
-     */
-    MARIADB(Constants.MARIADB);
+    PRODUCTION(Constants.PRODUCTION);
 
 
     private final String name;
@@ -86,12 +75,5 @@ public enum Profiles {
 
         /** The Constant PRODUCTION. */
         public static final String PRODUCTION = "production";
-
-        /** The Constant Open Source. */
-        public static final String OPENSOURCE = "opensource";
-
-        /** The Constant Mariadb. */
-        public static final String MARIADB = "mariadb";
-
     }
 }

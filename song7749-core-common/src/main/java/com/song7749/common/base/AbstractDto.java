@@ -1,7 +1,9 @@
 package com.song7749.common.base;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * <pre>
@@ -19,51 +21,28 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @author song7749@gmail.com
  * @since 2018. 1. 15.
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class AbstractDto extends BaseObject implements Dto, Cacheable {
 
 	private static final long serialVersionUID = 8863605294397638654L;
 
 	private boolean useCache = false;
-
 	private String apiAuthkey;
-
-	public AbstractDto() {
+	
+	/**
+	 * @param useCache
+	 */
+	public AbstractDto(boolean useCache) {
+		this.useCache = useCache;
 	}
 
+	/**
+	 * @param apiAuthkey
+	 */
 	public AbstractDto(String apiAuthkey) {
 		this.apiAuthkey = apiAuthkey;
-	}
-
-	public AbstractDto(boolean useCache, String apiAuthkey) {
-		this.useCache = useCache;
-		this.apiAuthkey = apiAuthkey;
-	}
-
-	@Override
-	public boolean isUseCache() {
-		return useCache;
-	}
-
-	@Override
-	public void setUseCache(boolean useCache) {
-		this.useCache = useCache;
-	}
-
-	public String getApiAuthkey() {
-		return apiAuthkey;
-	}
-
-	public void setApiAuthkey(String apiAuthkey) {
-		this.apiAuthkey = apiAuthkey;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		return EqualsBuilder.reflectionEquals(this, o);
-	}
-
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
 	}
 }

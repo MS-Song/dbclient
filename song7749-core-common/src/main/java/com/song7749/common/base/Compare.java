@@ -19,9 +19,9 @@ package com.song7749.common.base;
 
 public enum Compare {
 	GRAETE(">"),
+	GRAETE_EQUAL(">="),
 	LESS("<"),
-	EQUAL_GRAETE(">="),
-	EQUAL_LESS("<="),
+	LESS_EQUAL("<="),
 	EQUAL("="),
 	LIKE ("like");
 
