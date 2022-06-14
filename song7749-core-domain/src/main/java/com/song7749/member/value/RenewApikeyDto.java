@@ -3,14 +3,24 @@ package com.song7749.member.value;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.song7749.common.base.BaseObject;
 import com.song7749.common.base.Dto;
 
-import org.hibernate.validator.constraints.Length;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @ApiModel("API 인증키를 발급 받거나 갱신한다.")
 public class RenewApikeyDto extends BaseObject implements Dto{
 
@@ -25,31 +35,4 @@ public class RenewApikeyDto extends BaseObject implements Dto{
 	@Length(min = 8, max = 20)
 	@NotBlank
 	private String password;
-
-	public RenewApikeyDto() {}
-
-	/**
-	 * @param loginId
-	 * @param password
-	 */
-	public RenewApikeyDto(@Email @NotBlank String loginId, @Length(min = 8, max = 20) String password) {
-		this.loginId = loginId;
-		this.password = password;
-	}
-
-	public String getLoginId() {
-		return loginId;
-	}
-
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 }

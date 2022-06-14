@@ -6,7 +6,17 @@ import com.song7749.common.base.AbstractDto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @ApiModel("회원수정")
 public class MemberModifyDto  extends AbstractDto {
 
@@ -34,8 +44,6 @@ public class MemberModifyDto  extends AbstractDto {
 	@ApiModelProperty("핸드폰 번호")
 	private String mobileNumber;
 
-	public MemberModifyDto() {}
-
 	/**
 	 * @param id
 	 */
@@ -50,82 +58,5 @@ public class MemberModifyDto  extends AbstractDto {
 	public MemberModifyDto(@NotNull Long id, String password) {
 		this.id = id;
 		this.password = password;
-	}
-
-	/**
-	 * @param id
-	 * @param password
-	 * @param passwordQuestion
-	 * @param passwordAnswer
-	 * @param teamName
-	 * @param name
-	 * @param mobileNumber
-	 */
-	public MemberModifyDto(@NotNull Long id, String password, String passwordQuestion, String passwordAnswer,
-			String teamName, String name, String mobileNumber) {
-		super();
-		this.id = id;
-		this.password = password;
-		this.passwordQuestion = passwordQuestion;
-		this.passwordAnswer = passwordAnswer;
-		this.teamName = teamName;
-		this.name = name;
-		this.mobileNumber = mobileNumber;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getPasswordQuestion() {
-		return passwordQuestion;
-	}
-
-	public void setPasswordQuestion(String passwordQuestion) {
-		this.passwordQuestion = passwordQuestion;
-	}
-
-	public String getPasswordAnswer() {
-		return passwordAnswer;
-	}
-
-	public void setPasswordAnswer(String passwordAnswer) {
-		this.passwordAnswer = passwordAnswer;
-	}
-
-	public String getTeamName() {
-		return teamName;
-	}
-
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
 	}
 }

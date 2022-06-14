@@ -8,6 +8,11 @@ import com.song7749.common.base.AbstractDto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * <pre>
@@ -24,6 +29,12 @@ import io.swagger.annotations.ApiModelProperty;
 * @author song7749
 * @since 2015. 5. 13.
 */
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @ApiModel
 public class LoginDoDto  extends AbstractDto {
 
@@ -38,22 +49,4 @@ public class LoginDoDto  extends AbstractDto {
 	@Size(min=8,max=20)
 	@ApiModelProperty(value="비밀번호",required=true)
 	private String password;
-
-	public LoginDoDto() {}
-
-	public String getLoginId() {
-		return loginId;
-	}
-
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 }

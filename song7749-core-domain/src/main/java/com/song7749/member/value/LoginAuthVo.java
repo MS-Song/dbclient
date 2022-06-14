@@ -2,10 +2,16 @@ package com.song7749.member.value;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.song7749.common.base.AbstractVo;
 import com.song7749.member.type.AuthType;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * <pre>
@@ -23,6 +29,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 * @author song7749@gmail.com
 * @since 2018. 3. 9.
 */
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class LoginAuthVo extends AbstractVo {
 
 	private static final long serialVersionUID = -4016069181069163117L;
@@ -40,8 +52,6 @@ public class LoginAuthVo extends AbstractVo {
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date refresh;
-
-	public LoginAuthVo() {}
 
 	/**
 	 * @param id
@@ -80,72 +90,5 @@ public class LoginAuthVo extends AbstractVo {
 		this.loginId = loginId;
 		this.authType = authType;
 		this.create = create;
-	}
-
-	/**
-	 * @param id
-	 * @param loginId
-	 * @param ip
-	 * @param authType
-	 * @param create
-	 * @param refresh
-	 */
-	public LoginAuthVo(Long id, String loginId, String ip, AuthType authType, Date create, Date refresh) {
-		this.id = id;
-		this.loginId = loginId;
-		this.ip = ip;
-		this.authType = authType;
-		this.create = create;
-		this.refresh = refresh;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getLoginId() {
-		return loginId;
-	}
-
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
-	public String getIp() {
-		return ip;
-	}
-
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-
-	public AuthType getAuthType() {
-		if(null==authType)
-			throw new IllegalArgumentException("권한 부여가 되지 않아 접근이 불가능 합니다.");
-		return authType;
-	}
-
-	public void setAuthType(AuthType authType) {
-		this.authType = authType;
-	}
-
-	public Date getCreate() {
-		return create;
-	}
-
-	public void setCreate(Date create) {
-		this.create = create;
-	}
-
-	public Date getRefresh() {
-		return refresh;
-	}
-
-	public void setRefresh(Date refresh) {
-		this.refresh = refresh;
 	}
 }

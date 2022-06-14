@@ -4,6 +4,11 @@ import com.song7749.member.type.AuthType;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * <pre>
@@ -23,6 +28,10 @@ import io.swagger.annotations.ApiModelProperty;
  * @since 2018. 3. 9.
  */
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ApiModel("관리자 회원 수정 객체")
 public class MemberModifyByAdminDto extends MemberModifyDto {
 
@@ -30,8 +39,6 @@ public class MemberModifyByAdminDto extends MemberModifyDto {
 
 	@ApiModelProperty("권한")
 	private AuthType authType;
-
-	public MemberModifyByAdminDto() {}
 
 	public MemberModifyByAdminDto(Long id, AuthType authType) {
 		super(id);
@@ -52,13 +59,5 @@ public class MemberModifyByAdminDto extends MemberModifyDto {
 			String passwordAnswer, String teamName, String name, AuthType authType, String mobileNumber) {
 		super(id, password, passwordQuestion, passwordAnswer, teamName, name, mobileNumber);
 		this.authType=authType;
-	}
-
-	public AuthType getAuthType() {
-		return authType;
-	}
-
-	public void setAuthType(AuthType authType) {
-		this.authType = authType;
 	}
 }
