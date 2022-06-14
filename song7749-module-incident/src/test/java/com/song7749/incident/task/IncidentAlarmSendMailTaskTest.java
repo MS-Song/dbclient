@@ -31,6 +31,7 @@ import com.song7749.member.type.AuthType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mock;
@@ -48,6 +49,7 @@ import org.springframework.test.context.ActiveProfiles;
 			, properties = "spring.config.location=classpath:/application.yml")
 @Transactional
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Tag("exclude")
 @Disabled
 public class IncidentAlarmSendMailTaskTest {
 
@@ -83,14 +85,15 @@ public class IncidentAlarmSendMailTaskTest {
 	/**
 	 * fixture
 	 */
-	Member member = new Member(
-			"song7749@homeplus.co.kr"
-			, "12345678"
-			, "패스워드질문은?"
-			, "패스워드답변은?"
-			, "제일잘나가는팀"
-			, "song7749"
-			, AuthType.ADMIN);
+	Member member = Member.builder()
+		.loginId("song7749@test.com")
+		.password("12345678")
+		.passwordQuestion("패스워드질문은?")
+		.passwordAnswer("패스워드답변은?")
+		.teamName("제일잘나가는팀")
+		.name("song7749")
+		.authType(AuthType.ADMIN)
+		.build();
 
 
 	Database database = new Database(
@@ -116,11 +119,12 @@ public class IncidentAlarmSendMailTaskTest {
 
 	List<Member> members = new ArrayList<Member>();
 
-	MailConfig mailConfig = new MailConfig(
-			"smtp.homeplusnet.co.kr",
-			25, // TLS 587 // SSL 465
-			null,
-			null);
+	MailConfig mailConfig = MailConfig.builder()
+		.host("mail.test.co.kr")
+		.port(465)// TLS 587 // SSL 465 // NO 25
+		.username("song7749")
+		.password("12312313")
+		.build();;
 
 	@BeforeEach
 	public void setup() {

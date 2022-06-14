@@ -48,14 +48,15 @@ public class MemberRepositoryTest {
 	@DisplayName("기초 회원 데이터 입력")
 	public void setup() throws Exception {
 		// 회원 기초 데이터 입력 
-		memberRepository.saveAndFlush(
-				new Member("song7749@gmail.com"
-				, "12345678"
-				, "패스워드질문은?"
-				, "패스워드답변은?"
-				, "제일잘나가는팀"
-				, "song7749"
-				, AuthType.ADMIN));
+		memberRepository.saveAndFlush(Member.builder()
+			.loginId("song7749@gmail.com")
+			.password("12345678")
+			.passwordQuestion("패스워드질문은?")
+			.passwordAnswer("패스워드답변은?")
+			.teamName("제일잘나가는팀")
+			.name("song7749")
+			.authType(AuthType.ADMIN)
+			.build());
 	}
 	
 	@Test
@@ -63,13 +64,15 @@ public class MemberRepositoryTest {
 	@DisplayName("회원 입력/수정 테스트")
 	public void tesetSave() {
 		//give
-		Member member = new Member("song7749@test.com"
-				, "12345678"
-				, "패스워드질문은?"
-				, "패스워드답변은?"
-				, "제일잘나가는팀"
-				, "song7749"
-				, AuthType.ADMIN);
+		Member member = Member.builder()
+			.loginId("song7749@test.com")
+			.password("12345678")
+			.passwordQuestion("패스워드질문은?")
+			.passwordAnswer("패스워드답변은?")
+			.teamName("제일잘나가는팀")
+			.name("song7749")
+			.authType(AuthType.ADMIN)
+			.build();
 		//when
 		Member m1 = memberRepository.saveAndFlush(member);
 		//then

@@ -6,12 +6,16 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 import org.modelmapper.ModelMapper;
 
 import com.song7749.log.type.LogType;
 import com.song7749.log.value.LogLoginVo;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * <pre>
@@ -29,8 +33,12 @@ import com.song7749.log.value.LogLoginVo;
  * @since 2016. 2. 22.
  */
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@DiscriminatorValue(LogType.LOGIN)
+@DiscriminatorValue(LogType.Constants.LOGIN)
 public class LogLogin extends Log {
 
 	private static final long serialVersionUID = -5741549743951708157L;
@@ -43,33 +51,6 @@ public class LogLogin extends Log {
 	@NotBlank
 	@Column(nullable = false, updatable = false)
 	private String cipher;
-
-	public LogLogin() {}
-
-	/**
-	 * @param loginId
-	 * @param cipher
-	 */
-	public LogLogin(@NotBlank @Size(min = 4, max = 20) String loginId, @NotBlank String cipher) {
-		this.loginId = loginId;
-		this.cipher = cipher;
-	}
-
-	public String getLoginId() {
-		return loginId;
-	}
-
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
-	public String getCipher() {
-		return cipher;
-	}
-
-	public void setCipher(String cipher) {
-		this.cipher = cipher;
-	}
 
 	public LogLoginVo getLogLoginVo(ModelMapper mapper) {
 		return mapper.map(this, LogLoginVo.class);

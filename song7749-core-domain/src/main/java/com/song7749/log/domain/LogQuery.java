@@ -13,6 +13,11 @@ import org.modelmapper.ModelMapper;
 import com.song7749.log.type.LogType;
 import com.song7749.log.value.LogQueryVo;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * <pre>
  * Class Name : LogQuery.java
@@ -28,8 +33,13 @@ import com.song7749.log.value.LogQueryVo;
 * @author song7749
 * @since 2016. 2. 22.
 */
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@DiscriminatorValue(LogType.QUERY)
+@DiscriminatorValue(LogType.Constants.QUERY)
 public class LogQuery extends Log{
 
 	private static final long serialVersionUID = 240902778616234461L;
@@ -63,85 +73,6 @@ public class LogQuery extends Log{
 	@NotBlank
 	@Size(max=50000)
 	private String query;
-
-	public LogQuery() {}
-
-	/**
-	 * @param loginId
-	 * @param databaseId
-	 * @param host
-	 * @param hostAlias
-	 * @param schemaName
-	 * @param account
-	 * @param query
-	 */
-	public LogQuery(@NotBlank @Size(min = 4, max = 20) String loginId, @NotBlank Long databaseId, @NotBlank String host,
-			@NotBlank String hostAlias, @NotBlank String schemaName, @NotBlank String account,
-			@NotBlank @Size(max = 12000) String query) {
-		this.loginId = loginId;
-		this.databaseId = databaseId;
-		this.host = host;
-		this.hostAlias = hostAlias;
-		this.schemaName = schemaName;
-		this.account = account;
-		this.query = query;
-	}
-
-	public Long getDatabaseId() {
-		return databaseId;
-	}
-
-	public void setDatabaseId(Long databaseId) {
-		this.databaseId = databaseId;
-	}
-
-	public String getLoginId() {
-		return loginId;
-	}
-
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public String getHostAlias() {
-		return hostAlias;
-	}
-
-	public void setHostAlias(String hostAlias) {
-		this.hostAlias = hostAlias;
-	}
-
-	public String getSchemaName() {
-		return schemaName;
-	}
-
-	public void setSchemaName(String schemaName) {
-		this.schemaName = schemaName;
-	}
-
-	public String getAccount() {
-		return account;
-	}
-
-	public void setAccount(String account) {
-		this.account = account;
-	}
-
-	public String getQuery() {
-		return query;
-	}
-
-	public void setQuery(String query) {
-		this.query = query;
-	}
 
 	public LogQueryVo getLogLoginVo(ModelMapper mapper) {
 		return mapper.map(this, LogQueryVo.class);

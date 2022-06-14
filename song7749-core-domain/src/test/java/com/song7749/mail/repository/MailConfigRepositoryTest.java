@@ -36,11 +36,13 @@ public class MailConfigRepositoryTest {
 	@Test
 	public void testSaveAndRead() {
 		// give
-		MailConfig mailConfig = new MailConfig(
-				"mail.gmail.co.kr",
-				465, // TLS 587 // SSL 465 // NO 25
-				"song7749",
-				"12312313");
+		MailConfig mailConfig = MailConfig.builder()
+			.host("mail.test.co.kr")
+			.port(465)// TLS 587 // SSL 465 // NO 25
+			.username("song7749")
+			.password("12312313")
+			.build();
+
 		// when
 		mailConfigRepository.saveAndFlush(mailConfig);
 		// then

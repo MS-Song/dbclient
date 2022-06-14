@@ -15,6 +15,7 @@ import com.song7749.mail.value.MailMessageVo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
@@ -42,11 +43,13 @@ public class EmailServiceImplTest {
 	/**
 	 * fixture
 	 */
-	MailConfig mailConfig = new MailConfig(
-			"smtp.homeplusnet.co.kr",
-			25, // TLS 587 // SSL 465
-			null,
-			null);
+	MailConfig mailConfig = MailConfig.builder()
+		.host("mail.test.co.kr")
+		.port(465)// TLS 587 // SSL 465 // NO 25
+		.username("song7749")
+		.password("12312313")
+		.build();
+;
 	@BeforeEach
 	public void setup() {
 
@@ -57,15 +60,16 @@ public class EmailServiceImplTest {
 		mailConfigRepository.saveAndFlush(mailConfig);
 	}
 
+	@Tag("exclude")
 	@Disabled
 	@Test
 	public void testSendMessage() throws Exception {
 		// give
 		MailMessageVo vo = new MailMessageVo(
-				"song7749@homeplus.co.kr",
-				new ArrayList<String>(Arrays.asList("song7749@homeplus.co.kr")),
-				new ArrayList<String>(Arrays.asList("song7749@homeplus.co.kr")),
-				new ArrayList<String>(Arrays.asList("song7749@homeplus.co.kr")),
+				"song7749@test.co.kr",
+				new ArrayList<String>(Arrays.asList("song7749@test.co.kr")),
+				new ArrayList<String>(Arrays.asList("song7749@test.co.kr")),
+				new ArrayList<String>(Arrays.asList("song7749@test.co.kr")),
 				"이메일 테스트 코드",
 				"<html><span>테스트 이메일 입니다.</span></html>",
 				null);

@@ -1,6 +1,7 @@
 package com.song7749.member.domain;
 
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -11,23 +12,27 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-
-import com.song7749.common.base.Entities;
-import com.song7749.member.type.AuthType;
-import com.song7749.member.value.MemberVo;
-import com.song7749.util.crypto.CryptoTwoWayConverter;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.song7749.common.base.Entities;
+import com.song7749.member.type.AuthType;
+import com.song7749.member.value.MemberVo;
+import com.song7749.util.crypto.CryptoTwoWayConverter;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * <pre>
@@ -46,8 +51,16 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @since 2018. 1. 23.
  */
 
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = "loginId", name = "UK_MEMBER_LOGIN_ID") })
+@Table(uniqueConstraints = { 
+	@UniqueConstraint(columnNames = "loginId", name = "UK_MEMBER_LOGIN_ID") 
+})
 @DynamicUpdate(true)
 public class Member extends Entities {
 
@@ -106,21 +119,16 @@ public class Member extends Entities {
 	@Column(nullable = false, updatable = false)
 	@CreationTimestamp
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 
 	@Column(nullable = true)
 	//@UpdateTimestamp
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifyDate;
 
 	@Column(nullable = true)
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastLoginDate;
-
-	public Member() {}
 
 	/**
 	 * @param id
@@ -129,175 +137,34 @@ public class Member extends Entities {
 		this.id = id;
 	}
 
-	/**
-	 * @param loginId
-	 * @param password
-	 * @param passwordQuestion
-	 * @param passwordAnswer
-	 * @param teamName
-	 * @param name
-	 * @param authType
-	 */
-	public Member(@Email @NotBlank String loginId, @Length(min = 8, max = 20) @NotBlank String password,
-			@NotBlank @Size(min = 6, max = 120) String passwordQuestion,
-			@NotBlank @Size(min = 6, max = 120) String passwordAnswer, @Length(max = 60) @NotBlank String teamName,
-			@Length(max = 60) @NotBlank String name, AuthType authType) {
-		this.loginId = loginId;
-		this.password = password;
-		this.passwordQuestion = passwordQuestion;
-		this.passwordAnswer = passwordAnswer;
-		this.teamName = teamName;
-		this.name = name;
-		this.authType = authType;
-	}
-
-	/**
-	 * @param loginId
-	 * @param password
-	 */
-	public Member(@Email @NotBlank String loginId, @Length(min = 8, max = 20) @NotBlank String password) {
-		this.loginId = loginId;
-		this.password = password;
-	}
-
-	/**
-	 * @param certificationKey
-	 */
-	public Member(String apikey) {
-		this.apikey = apikey;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getLoginId() {
-		return loginId;
-	}
-
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getPasswordQuestion() {
-		return passwordQuestion;
-	}
-
-	public void setPasswordQuestion(String passwordQuestion) {
-		this.passwordQuestion = passwordQuestion;
-	}
-
-	public String getPasswordAnswer() {
-		return passwordAnswer;
-	}
-
-	public void setPasswordAnswer(String passwordAnswer) {
-		this.passwordAnswer = passwordAnswer;
-	}
-
-	public String getTeamName() {
-		return teamName;
-	}
-
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public AuthType getAuthType() {
-		return authType;
-	}
-
-	public void setAuthType(AuthType authType) {
-		this.authType = authType;
-	}
-
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
-
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-
-	public Date getModifyDate() {
-		return modifyDate;
-	}
-
-	public void setModifyDate(Date modifyDate) {
-		this.modifyDate = modifyDate;
-	}
-
-	public Date getLastLoginDate() {
-		return lastLoginDate;
-	}
-
-	public void setLastLoginDate(Date lastLoginDate) {
-		this.lastLoginDate = lastLoginDate;
-	}
-
-	public String getApikey() {
-		return apikey;
-	}
-
-	public void setApikey(String apikey) {
-		this.apikey = apikey;
-	}
-
 	public MemberVo getMemberVo(ModelMapper mapper) {
 		return mapper.map(this, MemberVo.class);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return Objects.hash(id);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		Member other = (Member) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+		return Objects.equals(id, other.id);
 	}
+
 
 }

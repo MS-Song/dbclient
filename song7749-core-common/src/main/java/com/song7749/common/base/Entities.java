@@ -21,16 +21,5 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 *
 */
 public abstract class Entities extends BaseObject{
-
 	private static final long serialVersionUID = 8467296254940035942L;
-
-	@Override
-	public boolean equals(Object o) {
-		return EqualsBuilder.reflectionEquals(this, o);
-	}
-
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
-	}
 }

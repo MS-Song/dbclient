@@ -10,6 +10,11 @@ import javax.validation.constraints.Size;
 
 import com.song7749.log.type.LogType;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * <pre>
  * Class Name : LogIncidentAlarm.java
@@ -27,8 +32,12 @@ import com.song7749.log.type.LogType;
 * @since 2018. 5. 30.
 */
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@DiscriminatorValue(LogType.INCIDENT_ALARM)
+@DiscriminatorValue(LogType.Constants.INCIDENT_ALARM)
 public class LogIncidentAlarm extends Log {
 
 	private static final long serialVersionUID = -6885750899178286611L;
@@ -48,41 +57,4 @@ public class LogIncidentAlarm extends Log {
 	@Size(max=50000)
 	@Column(name="after_info", nullable = false, updatable = false)
 	private String after;
-
-	public LogIncidentAlarm() {}
-
-	/**
-	 * @param incidentAlarmId
-	 * @param before
-	 * @param after
-	 */
-	public LogIncidentAlarm(@NotNull Long incidentAlarmId, @NotBlank String before, @NotBlank String after) {
-		this.incidentAlarmId = incidentAlarmId;
-		this.before = before;
-		this.after = after;
-	}
-
-	public Long getIncidentAlarmId() {
-		return incidentAlarmId;
-	}
-
-	public void setIncidentAlarmId(Long incidentAlarmId) {
-		this.incidentAlarmId = incidentAlarmId;
-	}
-
-	public String getBefore() {
-		return before;
-	}
-
-	public void setBefore(String before) {
-		this.before = before;
-	}
-
-	public String getAfter() {
-		return after;
-	}
-
-	public void setAfter(String after) {
-		this.after = after;
-	}
 }

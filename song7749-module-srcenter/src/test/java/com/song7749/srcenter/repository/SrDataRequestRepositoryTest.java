@@ -60,13 +60,15 @@ public class SrDataRequestRepositoryTest {
     /**
      * fixture
      */
-    Member member = new Member("song7749@incident.com"
-            , "12345678"
-            , "패스워드질문은?"
-            , "패스워드답변은?"
-            , "제일잘나가는팀"
-            , "song7749"
-            , AuthType.ADMIN);
+    Member member = Member.builder()
+        .loginId("song7749@test.com")
+        .password("12345678")
+        .passwordQuestion("패스워드질문은?")
+        .passwordAnswer("패스워드답변은?")
+        .teamName("제일잘나가는팀")
+        .name("song7749")
+        .authType(AuthType.ADMIN)
+        .build();
 
     Database database = new Database("10.10.10.10"
             , "test server"

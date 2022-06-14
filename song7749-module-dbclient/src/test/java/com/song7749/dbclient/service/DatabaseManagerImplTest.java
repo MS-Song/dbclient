@@ -235,13 +235,15 @@ public class DatabaseManagerImplTest {
 	@DisplayName("데이터베이스 개인정보 정의 입력")
 	public void testAddDatabaseDatabasePrivacyPolicyAddDto() throws Exception {
 		// give
-		Member member = new Member("song7749@gmail.com"
-				, "12345678"
-				, "패스워드질문은?"
-				, "패스워드답변은?"
-				, "제일잘나가는팀"
-				, "song7749"
-				, AuthType.ADMIN);
+		Member member = Member.builder()
+			.loginId("song7749@test.com")
+			.password("12345678")
+			.passwordQuestion("패스워드질문은?")
+			.passwordAnswer("패스워드답변은?")
+			.teamName("제일잘나가는팀")
+			.name("song7749")
+			.authType(AuthType.ADMIN)
+			.build();
 		memberRepository.saveAndFlush(member);
 		given(loginSession.getLogin()).willReturn(new LoginAuthVo(member.getId()));
 		

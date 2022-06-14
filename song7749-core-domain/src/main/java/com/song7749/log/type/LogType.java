@@ -1,5 +1,8 @@
 package com.song7749.log.type;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * <pre>
  * Class Name : LogType.java
@@ -16,68 +19,25 @@ package com.song7749.log.type;
 * @author song7749@gmail.com
 * @since 2018. 2. 27.
 */
+
+
+@Getter
+@AllArgsConstructor
 public enum LogType {
-	// 로그 정의
-	LOG("QUERY", "LOGIN","MEMBER","DATABASE","INCIDENT_ALARM");
 
-	// 테이블 명칭에 사용됨
-	public static final String QUERY 	= "QUERY";
-	public static final String LOGIN 	= "LOGIN";
-	public static final String MEMBER 	= "MEMBER";
-	public static final String DATABASE = "DATABASE";
-	public static final String INCIDENT_ALARM = "INCIDENT_ALARM";
+	QUERY(Constants.QUERY)
+	, LOGIN(Constants.LOGIN)
+	, MEMBER(Constants.MEMBER)
+	, DATABASE(Constants.DATABASE)
+	, INCIDENT_ALARM(Constants.INCIDENT_ALARM);
 
-	private String query;
-	private String login;
-	private String member;
-	private String database;
-	private String incidentAlarm;
-
-	LogType(String query, String login, String member, String database, String incidentAlarm) {
-		this.query=query;
-		this.login=login;
-		this.member=member;
-		this.database=database;
-		this.database=incidentAlarm;
-	}
-
-	public String getQuery() {
-		return query;
-	}
-
-	public void setQuery(String query) {
-		this.query = query;
-	}
-
-	public String getLogin() {
-		return login;
-	}
-
-	public void setLogin(String login) {
-		this.login = login;
-	}
-
-	public String getMember() {
-		return member;
-	}
-
-	public void setMember(String member) {
-		this.member = member;
-	}
-
-	public String getDatabase() {
-		return database;
-	}
-
-	public void setDatabase(String database) {
-		this.database = database;
-	}
-
-	public String getIncidentAlarm() {
-		return incidentAlarm;
-	}
-
-	public void setIncidentAlarm(String incidentAlarm) {
-		this.incidentAlarm = incidentAlarm;
+	private String name;
+	
+    public static class Constants {
+		public static final String QUERY 	= "QUERY";
+		public static final String LOGIN 	= "LOGIN";
+		public static final String MEMBER 	= "MEMBER";
+		public static final String DATABASE = "DATABASE";
+		public static final String INCIDENT_ALARM = "INCIDENT_ALARM";
 	}
 }

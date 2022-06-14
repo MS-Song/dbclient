@@ -2,13 +2,9 @@ package com.song7749.mail.service;
 
 import javax.transaction.Transactional;
 
-import com.song7749.ModuleCommonApplicationTests;
-import com.song7749.common.base.MessageVo;
-import com.song7749.mail.type.EmailProtocol;
-import com.song7749.mail.value.MailConfigDto;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
@@ -17,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+
+import com.song7749.ModuleCommonApplicationTests;
+import com.song7749.common.base.MessageVo;
+import com.song7749.mail.type.EmailProtocol;
+import com.song7749.mail.value.MailConfigDto;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = ModuleCommonApplicationTests.class)
@@ -31,6 +32,7 @@ public class EmailConfigServiceImplTest {
 	@Autowired
 	EmailConfigService emailConfigService;
 
+	@Tag("exclude")
 	@Disabled
 	@Test
 	public void testTestMailConfig() throws Exception {
@@ -51,12 +53,14 @@ public class EmailConfigServiceImplTest {
 		// then
 	}
 
+	@Tag("exclude")
 	@Disabled
 	@Test
 	public void testSaveMailConfig() throws Exception {
 		throw new RuntimeException("not yet implemented");
 	}
 
+	@Tag("exclude")
 	@Disabled
 	@Test
 	public void testFindMailConfig() throws Exception {

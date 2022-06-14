@@ -5,11 +5,8 @@ import static com.song7749.util.LogMessageFormatter.format;
 import javax.annotation.PostConstruct;
 
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +15,8 @@ import com.song7749.member.repository.MemberRepository;
 import com.song7749.member.service.MemberManager;
 import com.song7749.member.type.AuthType;
 import com.song7749.member.value.MemberVo;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <pre>
@@ -40,11 +39,10 @@ import com.song7749.member.value.MemberVo;
 * @since 2018. 3. 29.
 */
 
+@Slf4j
 @Profile("!test")
 @Component("InitMemberConfigBean")
 public class InitMemberConfigBean {
-
-	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	MemberRepository memberRepository;
@@ -59,21 +57,23 @@ public class InitMemberConfigBean {
 	@PostConstruct
     public void init(){
 		// root 회원에 대한 입력
-		Member member = new Member(
-				"root@test.com"
-				, "12345678"
-				, "Password Question?"
-				, "Password Answer?"
-				, "team name"
-				, "your name"
-				, AuthType.ADMIN);
+		Member member = Member.builder()
+			.loginId("root@test.com")
+			.password("12345678")
+			.passwordQuestion("Password Question?")
+			.passwordAnswer("Password Answer?")
+			.teamName("default team")
+			.name("root user")
+			.authType(AuthType.ADMIN)
+			.build();
+
 		Member aleadyMember = memberRepository.findByLoginId(member.getLoginId());
 		if(null==aleadyMember) {
 			memberRepository.saveAndFlush(member);
 			MemberVo memberVo = memberManager.renewApikeyByAdmin(member.getLoginId());
-			logger.info(format("{}", "first Start Application with root user create"),memberVo);
+			log.info(format("{}", "first Start Application with root user create"),memberVo);
 		} else {
-			logger.info(format("{}", "root user info"),aleadyMember.getMemberVo(mapper));
+			log.info(format("{}", "root user info"),aleadyMember.getMemberVo(mapper));
 		}
     }
 }

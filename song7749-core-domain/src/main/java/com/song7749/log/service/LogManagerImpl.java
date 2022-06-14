@@ -1,11 +1,6 @@
 package com.song7749.log.service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -20,13 +15,8 @@ import com.song7749.log.value.LogQueryAddDto;
 @Service("logManager")
 public class LogManagerImpl implements LogManager {
 
-	Logger logger = LoggerFactory.getLogger(getClass());
-
 	@Autowired
 	private LogRepository logRepository;
-
-	@PersistenceContext
-	private EntityManager em;
 
 	@Autowired
 	ModelMapper mapper;

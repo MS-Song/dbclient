@@ -88,14 +88,15 @@ public class DBClientMemberManagerImplTest {
 	/**
 	 * fixture
 	 */
-	Member m = new Member(
-			"song7749@gmail.com"
-			, "12345678"
-			, "패스워드질문은?"
-			, "패스워드답변은?"
-			, "제일잘나가는팀"
-			, "song7749"
-			, AuthType.ADMIN);
+	Member m = Member.builder()
+		.loginId("song7749@test.com")
+		.password("12345678")
+		.passwordQuestion("패스워드질문은?")
+		.passwordAnswer("패스워드답변은?")
+		.teamName("제일잘나가는팀")
+		.name("song7749")
+		.authType(AuthType.ADMIN)
+		.build();
 
 	Database d = new Database("10.10.10.10"
 			, "test server"
