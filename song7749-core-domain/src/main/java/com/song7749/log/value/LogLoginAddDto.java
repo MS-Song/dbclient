@@ -1,14 +1,13 @@
 package com.song7749.log.value;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
 import org.modelmapper.ModelMapper;
 
 import com.song7749.common.base.AbstractDto;
 import com.song7749.log.domain.LogLogin;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +31,7 @@ public class LogLoginAddDto extends AbstractDto {
 	@NotBlank
 	private String cipher;
 
+	
 	public LogLogin getLogLogin(ModelMapper mapper) {
 		return mapper.map(this, LogLogin.class);
 	}

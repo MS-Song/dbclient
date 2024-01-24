@@ -106,6 +106,8 @@ subprojects {
 		implementation('org.mariadb.jdbc:mariadb-java-client:2.2.3')
 		implementation('oracle:ojdbc6:11.2.0.3')
 		implementation('com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8')
+		implementation ('org.postgresql:postgresql:42.6.0')
+
 		implementation('com.h2database:h2')
 
 		// web-socket

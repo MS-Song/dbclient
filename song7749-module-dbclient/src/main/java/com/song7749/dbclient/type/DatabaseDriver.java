@@ -97,7 +97,7 @@ public enum DatabaseDriver {
 
 	MARIADB(
 			// dbms
-			"mysql",
+			"mariadb",
 			// driverName
 			"org.mariadb.jdbc.Driver",
 			// connect url
@@ -332,17 +332,17 @@ public enum DatabaseDriver {
 			"insert,update,delete,create,drop,truncate,alter,kill,comment on"),
 
 	@ApiModelProperty
-	MONETDB(
+	POSTGRESQL(
 			// dbms
-			"monetdb",
+			"postgresql",
 			// driverName
-			"nl.cwi.monetdb.jdbc.MonetDriver",
+			"org.postgresql.Driver",
 			// url
-			"jdbc:monetdb://{host}:{port}/{schemaName}?so_timeout=7000&treat_clob_as_varchar=true",
+			"jdbc:postgresql://{host}:{port}/{schemaName}?user={account}&password={password}&ssl=false",
 			// validate query
 			"select '1'",
 			// table list
-			"select name TABLE_NAME, '' TABLE_COMMENT from sys.tables where schema_id=(select id from sys.schemas where name='{schemaName}') order by name",
+			"SELECT PS.RELNAME AS TABLE_NAME ,PD.DESCRIPTION AS TABLE_COMMENT FROM PG_STAT_USER_TABLES PS ,PG_DESCRIPTION  PD, pg_tables PT WHERE PS.RELNAME=PT.TABLENAME AND PS.RELID=PD.OBJOID AND PD.OBJSUBID=0 AND PT.SCHEMANAME='{schemaName}' order by PT.TABLENAME",
 			// field list
 			"select id COLUMN_ID, name COLUMN_NAME, null NULLABLE, '' COLUMN_KEY, type DATA_TYPE, type_digits DATA_LENGTH, ''  CHARACTER_SET, '' EXTRA, '' DEFAULT_VALUE, '' COMMENTS from sys.columns where table_id=(select id from sys.tables where schema_id=(select id from sys.schemas where name='{schemaName}') and name='{name}')",
 			// index list

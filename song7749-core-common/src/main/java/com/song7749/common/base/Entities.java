@@ -1,8 +1,5 @@
 package com.song7749.common.base;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 /**
  * <pre>
  * Class Name : Entities.java
