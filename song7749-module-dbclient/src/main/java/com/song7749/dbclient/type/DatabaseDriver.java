@@ -344,7 +344,7 @@ public enum DatabaseDriver {
 			// table list
 			"SELECT PS.RELNAME AS TABLE_NAME ,PD.DESCRIPTION AS TABLE_COMMENT FROM PG_STAT_USER_TABLES PS ,PG_DESCRIPTION  PD, pg_tables PT WHERE PS.RELNAME=PT.TABLENAME AND PS.RELID=PD.OBJOID AND PD.OBJSUBID=0 AND PT.SCHEMANAME='{schemaName}' order by PT.TABLENAME",
 			// field list
-			"select id COLUMN_ID, name COLUMN_NAME, null NULLABLE, '' COLUMN_KEY, type DATA_TYPE, type_digits DATA_LENGTH, ''  CHARACTER_SET, '' EXTRA, '' DEFAULT_VALUE, '' COMMENTS from sys.columns where table_id=(select id from sys.tables where schema_id=(select id from sys.schemas where name='{schemaName}') and name='{name}')",
+			"SELECT '' AS COLUMN_ID ,PA.ATTNAME  AS COLUMN_NAME, '' AS NULLABLE, '' AS COLUMN_KEY,  '' AS DATA_TYPE, '' AS DATA_LENGTH, '' AS CHARACTER_SET, '' AS EXTRA, '' AS DEFAULT_VALUE ,PD.DESCRIPTION AS COLUMN_COMMENT FROM PG_STAT_ALL_TABLES PS ,PG_DESCRIPTION  PD ,PG_ATTRIBUTE PA WHERE PS.SCHEMANAME = '{schemaName}' AND PS.RELNAME  = '{name}' AND PS.RELID   = PD.OBJOID  AND PD.OBJSUBID <> 0   AND PD.OBJOID    = PA.ATTRELID   AND PD.OBJSUBID  = PA.ATTNUM  ORDER BY PS.RELNAME, PD.OBJSUBID",
 			// index list
 			null,
 			// explain
