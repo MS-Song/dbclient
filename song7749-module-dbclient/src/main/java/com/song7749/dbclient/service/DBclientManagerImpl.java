@@ -213,7 +213,7 @@ public class DBclientManagerImpl implements DBclientManager {
 
 		int seq=0;
 		for(Map<String,String> map:resultList){
-			if("monetdb".equals(database.getDriver().getDbms())){
+			if("postgresql".equals(database.getDriver().getDbms()) || "monetdb".equals(database.getDriver().getDbms())){
 				list.add(new TableVo(
 						++seq,
 						map.get("table_name"),
@@ -245,7 +245,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		logger.trace(format("{}", "Log Message"),resultList);
 
 		for(Map<String,String> map:resultList){
-			if("monetdb".equals(database.getDriver().getDbms())){
+			if("postgresql".equals(database.getDriver().getDbms()) || "monetdb".equals(database.getDriver().getDbms())){
 				list.add(new FieldVo(
 					database.getName(),
 					map.get("column_id"),
@@ -291,7 +291,7 @@ public class DBclientManagerImpl implements DBclientManager {
 		}
 
 		for(Map<String,String> map:resultList){
-			if("monetdb".equals(database.getDriver().getDbms())){
+			if("postgresql".equals(database.getDriver().getDbms()) || "monetdb".equals(database.getDriver().getDbms())){
 				list.add(new IndexVo(
 					map.get("owner") ,
 					map.get("index_name") ,
@@ -334,14 +334,23 @@ public class DBclientManagerImpl implements DBclientManager {
 
 		int seq=0;
 		for(Map<String,String> map:resultList){
-			list.add(
-				new ViewVo(
-					++seq,
-					map.get("NAME"),
-					map.get("COMMENTS"),
-					map.get("LAST_UPDATE_TIME"),
-					map.get("STATUS"))
-			);
+			if("postgresql".equals(database.getDriver().getDbms())) {
+				list.add(
+						new ViewVo(
+								++seq,
+								map.get("name"),
+								map.get("comments"),
+								map.get("last_update_time"),
+								map.get("status")));
+			} else {
+				list.add(
+						new ViewVo(
+								++seq,
+								map.get("NAME"),
+								map.get("COMMENTS"),
+								map.get("LAST_UPDATE_TIME"),
+								map.get("STATUS")));
+			}
 		}
 		return list;
 	}
@@ -386,6 +395,9 @@ public class DBclientManagerImpl implements DBclientManager {
 			} else if("h2".equals(database.getDriver().getDbms())) {
 				addSoruce="";
 				text=map.get("VIEW_DEFINITION");
+			} else if("postgresql".equals(database.getDriver().getDbms())) {
+				addSoruce = "CREATE OR REPLACE VIEW " + map.get("name") + " AS ";
+				text = map.get("text");
 			}
 
 			ViewVo vv = new ViewVo(text,addSoruce);
@@ -412,12 +424,21 @@ public class DBclientManagerImpl implements DBclientManager {
 
 		int seq=0;
 		for(Map<String,String> map:resultList){
-			list.add(
-				new ProcedureVo(
-					++seq,
-					map.get("NAME"),
-					map.get("STATUS"),
-					map.get("LAST_UPDATE_TIME")));
+			if("postgresql".equals(database.getDriver().getDbms())) {
+				list.add(
+						new ProcedureVo(
+								++seq,
+								map.get("name"),
+								map.get("status"),
+								map.get("last_update_time")));
+			} else {
+				list.add(
+						new ProcedureVo(
+								++seq,
+								map.get("NAME"),
+								map.get("STATUS"),
+								map.get("LAST_UPDATE_TIME")));
+			}
 		}
 		return list;
 	}
@@ -463,6 +484,9 @@ public class DBclientManagerImpl implements DBclientManager {
 			} else if("h2".equals(database.getDriver().getDbms())) {
 				addSoruce="CREATE ALIAS " + map.get("NAME") + " AS $$";
 				text=map.get("TEXT") + " $$;";
+			} else if("postgresql".equals(database.getDriver().getDbms())) {
+				addSoruce="CREATE OR REPLACE " + database.getSchemaName() + "." + map.get("name"); //Create Procedure
+				text = map.get("text");
 			}
 			ProcedureVo pv = new ProcedureVo(text,addSoruce);
 			list.add(pv);
@@ -487,12 +511,21 @@ public class DBclientManagerImpl implements DBclientManager {
 
 		int seq=0;
 		for(Map<String,String> map:resultList){
-			list.add(
-				new FunctionVo(
-					++seq,
-					map.get("NAME"),
-					map.get("STATUS"),
-					map.get("LAST_UPDATE_TIME")));
+			if("postgresql".equals(database.getDriver().getDbms())) {
+				list.add(
+						new FunctionVo(
+								++seq,
+								map.get("name"),
+								map.get("status"),
+								map.get("last_update_time")));
+			} else {
+				list.add(
+						new FunctionVo(
+								++seq,
+								map.get("NAME"),
+								map.get("STATUS"),
+								map.get("LAST_UPDATE_TIME")));
+			}
 		}
 		return list;
 	}
@@ -536,6 +569,9 @@ public class DBclientManagerImpl implements DBclientManager {
 			} else if("h2".equals(database.getDriver().getDbms())) {
 				addSoruce="CREATE ALIAS " + map.get("NAME") + " AS $$";
 				text=map.get("TEXT") + " $$;";
+			} else if("postgresql".equals(database.getDriver().getDbms())) {
+				addSoruce = "CREATE OR REPLACE " + database.getSchemaName() + "." + map.get("name");
+				text = map.get("text");
 			}
 
 			FunctionVo fv = new FunctionVo(text,addSoruce);
@@ -562,12 +598,22 @@ public class DBclientManagerImpl implements DBclientManager {
 
 		int seq=0;
 		for(Map<String,String> map:resultList){
-			list.add(
-				new TriggerVo(
-					++seq,
-					map.get("NAME"),
-					map.get("STATUS"),
-					map.get("LAST_UPDATE_TIME")));
+			if("postgresql".equals(database.getDriver().getDbms())) {
+				list.add(
+						new TriggerVo(
+								++seq,
+								map.get("name"),
+								map.get("status"),
+								map.get("last_update_time")));
+			} else {
+				list.add(
+						new TriggerVo(
+								++seq,
+								map.get("NAME"),
+								map.get("STATUS"),
+								map.get("LAST_UPDATE_TIME")));
+			}
+
 		}
 		return list;
 
@@ -614,9 +660,12 @@ public class DBclientManagerImpl implements DBclientManager {
 			} else if("mysql".equals(database.getDriver().getDbms())){
 				text=map.get("SQL Original Statement");
 				addSoruce="";
-			}  else if("h2".equals(database.getDriver().getDbms())) {
+			} else if("h2".equals(database.getDriver().getDbms())) {
 				addSoruce="";
 				text=map.get("TEXT");
+			} else if("postgresql".equals(database.getDriver().getDbms())) {
+				addSoruce="";
+				text=map.get("trg_source");
 			}
 
 			TriggerVo tv = new TriggerVo(text,addSoruce);
@@ -643,13 +692,23 @@ public class DBclientManagerImpl implements DBclientManager {
 
 		int seq=0;
 		for(Map<String,String> map:resultList){
-			list.add(new SequenceVo(
-					++seq,
-					map.get("NAME"),
-					map.get("CURRENT_VALUE"),
-					map.get("MIN_VALUE"),
-					map.get("MAX_VALUE"),
-					map.get("INCREMENT_BY")));
+			if("postgresql".equals(database.getDriver().getDbms())) {
+				list.add(new SequenceVo(
+						++seq,
+						map.get("name"),
+						map.get("current_value"),
+						map.get("min_value"),
+						map.get("max_value"),
+						map.get("increment_by")));
+			} else {
+				list.add(new SequenceVo(
+						++seq,
+						map.get("NAME"),
+						map.get("CURRENT_VALUE"),
+						map.get("MIN_VALUE"),
+						map.get("MAX_VALUE"),
+						map.get("INCREMENT_BY")));
+			}
 		}
 		return list;
 	}
@@ -681,16 +740,19 @@ public class DBclientManagerImpl implements DBclientManager {
 			throw new IllegalArgumentException(e.getMessage());
 		}
 
+		//예외설정 - postgresql 은 pg_dump 에서 조회가능함
 		for(Map<String,String> map:resultList){
-
 			if("oracle".equals(database.getDriver().getDbms())
 					|| "h2".equals(database.getDriver().getDbms())){
 				list.add(new DatabaseDdlVo(map.get("CREATE_TALBE")));
 
 			} else if("mysql".equals(database.getDriver().getDbms())){
 				list.add(new DatabaseDdlVo(map.get("Create Table")));
+			} else if("postgresql".equals(database.getDriver().getDbms())) {
+				list.add(new DatabaseDdlVo(map.get("table_ddl")));
 			}
 		}
+
 
 		return list;
 	}

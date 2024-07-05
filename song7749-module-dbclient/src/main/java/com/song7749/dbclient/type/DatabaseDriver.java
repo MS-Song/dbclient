@@ -35,7 +35,67 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel
 public enum DatabaseDriver {
-
+	@ApiModelProperty
+	POSTGRESQL(
+			// dbms
+			"postgresql",
+			// driverName
+			"org.postgresql.Driver",
+			// connect url
+			"jdbc:postgresql://{host}:{port}/{schemaName}?serverTimezone=UTC+9&characterEncoding={charset}",
+			// validate query
+			"select 1",
+			// table list
+			"SELECT C.RELNAME as TABLE_NAME, OBJ_DESCRIPTION(C.OID) as TABLE_COMMENT FROM PG_CATALOG.PG_CLASS C INNER JOIN PG_CATALOG.PG_NAMESPACE N ON C.RELNAMESPACE=N.OID WHERE C.RELKIND = 'r' AND NSPNAME = '{schemaName}'",
+			//null,
+			// field list
+			"select col.ordinal_position as COLUMN_ID, col.column_name  as COLUMN_NAME, case when col.is_nullable = 'NO' then 'N' else 'Y' end as nullable, RA.constraint_type as COLUMN_KEY, col.udt_name as DATA_TYPE, concat(col.udt_name, (case when col.numeric_precision > 0 then  concat('(', CAST(col.numeric_precision AS text), ',' ,CAST(col.numeric_scale AS text), ')') when col.character_maximum_length > 0 then concat('(', CAST(col.character_maximum_length AS text), ')') else null end)) as DATA_LENGTH, db.datctype as CHARACTER_SET, '' as EXTRA, col.column_default as DEFAULT_VALUE, PD.DESCRIPTION as comments from pg_database db join INFORMATION_SCHEMA.columns col on col.table_schema = db.datname join PG_STAT_ALL_TABLES PS on ps.schemaname = col.table_schema and ps.relname = col.table_name left outer join (select r1.OBJOID, OBJSUBID, r2.attname, R1.description from PG_DESCRIPTION R1 join PG_ATTRIBUTE R2 on R1.OBJOID = R2.ATTRELID and R1.OBJSUBID = R2.ATTNUM) PD on PD.OBJOID = PS.RELID and PD.OBJSUBID <> 0 and pd.attname = col.column_name left outer join (SELECT A.TABLE_CATALOG, A.table_name, A.constraint_type, b.column_name, b.constraint_name FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS A , INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE B where A.TABLE_CATALOG   = B.TABLE_CATALOG AND A.TABLE_SCHEMA    = B.TABLE_SCHEMA AND A.TABLE_NAME = B.TABLE_NAME AND A.CONSTRAINT_NAME = B.CONSTRAINT_NAME) RA on RA.table_catalog = col.table_schema and RA.table_name = col.table_name and RA.column_name = col.column_name where PS.SCHEMANAME = '{schemaName}' and PS.RELNAME = '{name}'",
+			//null,
+            // index list
+			"select tablename as owner, indexname as INDEX_NAME, '' as INDEX_TYPE, (case when POSITION('UNIQUE' in indexdef) > 0 then 'UNIQUE' else 'NOT_UNIQUE' end) as UNIQUENESS, '' cardinality, '' as COLUMN_NAME, '' COLUMN_POSITION, 'ASC' as DESCEND from pg_indexes where schemaname = '{schemaName}' and tablename = '{name}'",
+			// explain
+			"EXPLAIN (ANALYSE) select * from {name}",
+			// view list
+			"SELECT TABLE_NAME AS NAME, 'view' AS COMMENTS, '' as LAST_UPDATE_TIME, 'VALID' as STATUS FROM INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA='{schemaName}'",
+			// view detail
+			"select TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, VIEW_DEFINITION, CHECK_OPTION, '' as IS_UPDATABLE, '' as SECURITY_TYPE, '' as CHARACTER_SET_CLIENT, '' as COLLATION_CONNECTION from INFORMATION_SCHEMA.views where table_schema = '{schemaName}' AND TABLE_NAME='{name}'",
+			// view source
+			"select table_name as NAME, view_definition as text from information_schema.views where table_schema = '{schemaName}' and table_name = '{name}'",
+			// procedure list
+			"select SPECIFIC_NAME as NAME, LAST_ALTERED as LAST_UPDATE_TIME, 'VALID' as STATUS from INFORMATION_SCHEMA.routines where specific_catalog = '{schemaName}' and specific_schema = '{schemaName}' and ROUTINE_TYPE = 'PROCEDURE'",
+			// procedure detail
+			"select SPECIFIC_NAME, ROUTINE_CATALOG, ROUTINE_SCHEMA, ROUTINE_NAME, ROUTINE_TYPE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, CHARACTER_OCTET_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, DATETIME_PRECISION, CHARACTER_SET_NAME, COLLATION_NAME, DTD_IDENTIFIER, ROUTINE_BODY, ROUTINE_DEFINITION, EXTERNAL_NAME, EXTERNAL_LANGUAGE, PARAMETER_STYLE, IS_DETERMINISTIC, SQL_DATA_ACCESS, SQL_PATH, SECURITY_TYPE, CREATED, LAST_ALTERED, '' as SQL_MODE, '' as ROUTINE_COMMENT, '' as definer, '' as CHARACTER_SET_CLIENT, '' as COLLATION_CONNECTION, '' as DATABASE_COLLATION from INFORMATION_SCHEMA.routines where ROUTINE_TYPE = 'PROCEDURE' and ROUTINE_SCHEMA = '{schemaName}' and SPECIFIC_NAME = '{name}'",
+			// procedure source
+			"select routine_name as name, routine_definition as text from INFORMATION_SCHEMA.routines where ROUTINE_TYPE = 'PROCEDURE' and ROUTINE_SCHEMA = '{schemaName}' and SPECIFIC_NAME = '{name}'",
+			// function list
+			"select SPECIFIC_NAME as NAME, LAST_ALTERED as LAST_UPDATE_TIME, 'VALID' as STATUS from INFORMATION_SCHEMA.routines where specific_catalog = '{schemaName}' and specific_schema = '{schemaName}' and ROUTINE_TYPE = 'FUNCTION'",
+			// function detail
+			"select SPECIFIC_NAME, ROUTINE_CATALOG, ROUTINE_SCHEMA, ROUTINE_NAME, ROUTINE_TYPE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, CHARACTER_OCTET_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, DATETIME_PRECISION, CHARACTER_SET_NAME, COLLATION_NAME, DTD_IDENTIFIER, ROUTINE_BODY, ROUTINE_DEFINITION, EXTERNAL_NAME, EXTERNAL_LANGUAGE, PARAMETER_STYLE, IS_DETERMINISTIC, SQL_DATA_ACCESS, SQL_PATH, SECURITY_TYPE, CREATED, LAST_ALTERED, '' as SQL_MODE, '' as ROUTINE_COMMENT, '' as definer, '' as CHARACTER_SET_CLIENT, '' as COLLATION_CONNECTION, '' as DATABASE_COLLATION from INFORMATION_SCHEMA.routines where ROUTINE_TYPE = 'FUNCTION' and ROUTINE_SCHEMA = '{schemaName}' and SPECIFIC_NAME = '{name}'",
+			// function source
+			"select routine_name as name, routine_definition as text from INFORMATION_SCHEMA.routines where ROUTINE_TYPE = 'FUNCTION' and ROUTINE_SCHEMA = '{schemaName}' and SPECIFIC_NAME = '{name}'",
+			// trigger list
+			"SELECT  TRIGGER_NAME as NAME, '' as LAST_UPDATE_TIME, 'VALID' as  STATUS FROM INFORMATION_SCHEMA.TRIGGERS WHERE  EVENT_OBJECT_SCHEMA='{schemaName}'",
+			// trigger detail
+			"SELECT TRIGGER_CATALOG,TRIGGER_SCHEMA,TRIGGER_NAME,EVENT_MANIPULATION,EVENT_OBJECT_CATALOG,EVENT_OBJECT_SCHEMA,EVENT_OBJECT_TABLE,ACTION_ORDER,ACTION_CONDITION,ACTION_ORIENTATION,ACTION_TIMING,ACTION_REFERENCE_OLD_TABLE,ACTION_REFERENCE_NEW_TABLE, ACTION_REFERENCE_OLD_ROW,ACTION_REFERENCE_NEW_ROW, CREATED, '' as SQL_MODE, '' as DEFINER, '' as CHARACTER_SET_CLIENT, '' as COLLATION_CONNECTION, '' as DATABASE_COLLATION  FROM INFORMATION_SCHEMA.TRIGGERS WHERE  EVENT_OBJECT_SCHEMA='{schemaName}' AND TRIGGER_NAME='{name}'",
+			// trigger source
+			"select pg_get_triggerdef(trig.oid) as trg_source from INFORMATION_SCHEMA.TRIGGERS r1 join pg_catalog.pg_trigger trig on trig.tgname = r1.trigger_name JOIN pg_catalog.pg_proc proc ON trig.tgfoid = proc.oid where r1.EVENT_OBJECT_SCHEMA = '{schemaName}' and trig.tgname='{name}'",
+			// sequence list
+			"SELECT CL.RELNAME AS NAME, COALESCE(PG_SEQUENCE_LAST_VALUE(CL.OID), 0) AS CURRENT_VALUE, SQ.MINIMUM_VALUE AS MIN_VALUE, SQ.MAXIMUM_VALUE AS MAX_VALUE, SQ.INCREMENT AS INCREMENT_BY FROM PG_CLASS AS CL JOIN PG_NAMESPACE NS ON CL.RELNAMESPACE = NS.OID JOIN INFORMATION_SCHEMA.SEQUENCES SQ ON SQ.SEQUENCE_SCHEMA = NS.NSPNAME AND SQ.SEQUENCE_NAME = CL.RELNAME WHERE CL.RELKIND = 'S' AND NS.NSPNAME NOT IN ('hint_plan') AND SQ.SEQUENCE_SCHEMA = '{schemaName}' ORDER BY 1,2 DESC",
+			// sequence detail
+			"SELECT CL.RELNAME AS NAME, COALESCE(PG_SEQUENCE_LAST_VALUE(CL.OID), 0) AS CURRENT_VALUE, SQ.MINIMUM_VALUE AS MIN_VALUE, SQ.MAXIMUM_VALUE AS MAX_VALUE, SQ.INCREMENT AS INCREMENT_BY FROM PG_CLASS AS CL JOIN PG_NAMESPACE NS ON CL.RELNAMESPACE = NS.OID JOIN INFORMATION_SCHEMA.SEQUENCES SQ ON SQ.SEQUENCE_SCHEMA = NS.NSPNAME AND SQ.SEQUENCE_NAME = CL.RELNAME WHERE CL.RELKIND = 'S' AND NS.NSPNAME NOT IN ('hint_plan') AND SQ.SEQUENCE_SCHEMA = '{schemaName}' and CL.RELNAME = '{name}' ORDER BY 1,2 DESC",
+			// process list
+			"SELECT pid as ID, query as INFO FROM pg_stat_activity",
+			// kill connection
+			"SELECT pg_cancel_backend({id})",
+			// create table query
+			"select string_agg(ddl_txt::text, E'\n') as table_ddl from ((select 'CREATE TABLE ' || 'public.test_info' || '(' || string_agg(pa.attname || ' ' || pg_catalog.format_type(pa.atttypid, pa.atttypmod) || coalesce((select ' DEFAULT ' || substring(pg_get_expr(paf.adbin, paf.adrelid) for 128) from pg_attrdef paf where paf.adrelid = pa.attrelid and paf.adnum = pa.attnum and pa.atthasdef), '') || case when pa.attnotnull = true then ' NOT NULL' else '' end, E'\n, ') || coalesce((select E'\n, ' || 'CONSTRAINT' || ' ' || conindid::regclass::varchar || ' ' || pg_get_constraintdef(oid) from pg_constraint where connamespace::regnamespace::varchar = '{schemaName}' and conrelid::regclass::varchar = '{name}' and contype = 'p'), '') || E'\n);' as ddl_txt from pg_attribute pa join pg_class pc on pa.attrelid = pc.oid where pc.relnamespace::regnamespace::varchar = '{schemaName}' and pc.relname::varchar = '{name}' and pa.attnum > 0 and not pa.attisdropped and pc.relkind = 'r' group by pa.attrelid) union all (select string_agg(indexdef || ';' ::text, E'\n') as ddl_txt from pg_indexes where schemaname = '{schemaName}' and tablename = '{name}')) as t",
+			// 자동완성용 테이블/필드 전체 리스트 조회
+			"select col.table_name, col.column_name  as COLUMN_NAME, PD.DESCRIPTION as COLUMN_COMMENT from pg_database db join INFORMATION_SCHEMA.columns col on col.table_schema = db.datname join PG_STAT_ALL_TABLES PS on ps.schemaname = col.table_schema and ps.relname = col.table_name join PG_DESCRIPTION PD on PD.OBJOID = PS.RELID and PD.OBJSUBID <> 0 join PG_ATTRIBUTE PA on pa.attname = col.column_name and PD.OBJOID = PA.ATTRELID and PD.OBJSUBID = PA.ATTNUM left outer join (SELECT A.TABLE_CATALOG, A.table_name, A.constraint_type, b.column_name, b.constraint_name FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS A , INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE B where A.TABLE_CATALOG   = B.TABLE_CATALOG AND A.TABLE_SCHEMA    = B.TABLE_SCHEMA AND A.TABLE_NAME = B.TABLE_NAME AND A.CONSTRAINT_NAME = B.CONSTRAINT_NAME) RA on RA.table_catalog = col.table_schema and RA.table_name = col.table_name and RA.column_name = col.column_name WHERE TABLE_SCHEMA='{schemaName}'",
+			// 한정자 추가
+			//"select * from (select * from (select row_number() over() as ROW_NUM, A.* from (\n {sqlBody} \n) A ) ra where ra.ROW_NUM <= {end} ) rb where rb.ROW_NUM > {start}",
+			"select rc.* from (select rb.* from (select row_number() over() as rnum, ra.* from (\n {sqlBody}\n) ra ) rb where rb.rnum <= {end}+{start} ) rc where rc.rnum > {start}",
+			// Affected Row 를 발생시키는 명령어
+			"insert,update,delete,create,drop,truncate,alter,kill"),
 	@ApiModelProperty
 	MYSQL(
 			// dbms
@@ -75,7 +135,7 @@ public enum DatabaseDriver {
 			// trigger list
 			"SELECT  TRIGGER_NAME as NAME, '' as LAST_UPDATE_TIME, 'VALID' as  STATUS FROM INFORMATION_SCHEMA.TRIGGERS WHERE  EVENT_OBJECT_SCHEMA='{schemaName}'",
 			// trigger detail
-			"SELECT TRIGGER_CATALOG,TRIGGER_SCHEMA,TRIGGER_NAME,EVENT_MANIPULATION,EVENT_OBJECT_CATALOG,EVENT_OBJECT_SCHEMA,EVENT_OBJECT_TABLE,ACTION_ORDER,ACTION_CONDITION,ACTION_ORIENTATION,ACTION_TIMING,ACTION_REFERENCE_OLD_TABLE,ACTION_REFERENCE_NEW_TABLE, ACTION_REFERENCE_OLD_ROW,ACTION_REFERENCE_NEW_ROW,                   CREATED,SQL_MODE,DEFINER,CHARACTER_SET_CLIENT,COLLATION_CONNECTION,DATABASE_COLLATION  FROM INFORMATION_SCHEMA.TRIGGERS WHERE  EVENT_OBJECT_SCHEMA='{schemaName}' AND TRIGGER_NAME='{name}'",
+			"SELECT TRIGGER_CATALOG,TRIGGER_SCHEMA,TRIGGER_NAME,EVENT_MANIPULATION,EVENT_OBJECT_CATALOG,EVENT_OBJECT_SCHEMA,EVENT_OBJECT_TABLE,ACTION_ORDER,ACTION_CONDITION,ACTION_ORIENTATION,ACTION_TIMING,ACTION_REFERENCE_OLD_TABLE,ACTION_REFERENCE_NEW_TABLE, ACTION_REFERENCE_OLD_ROW,ACTION_REFERENCE_NEW_ROW, CREATED,SQL_MODE,DEFINER,CHARACTER_SET_CLIENT,COLLATION_CONNECTION,DATABASE_COLLATION  FROM INFORMATION_SCHEMA.TRIGGERS WHERE  EVENT_OBJECT_SCHEMA='{schemaName}' AND TRIGGER_NAME='{name}'",
 			// trigger source
 			"show create trigger {name}",
 			// sequence list

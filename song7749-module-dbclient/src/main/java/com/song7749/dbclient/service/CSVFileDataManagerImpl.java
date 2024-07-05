@@ -59,6 +59,9 @@ public class CSVFileDataManagerImpl implements CSVFileDataManager{
 
 		    		// 테이블 사이즈 정의
 		    		switch(database.getDriver()) {
+					case POSTGRESQL:
+						columnType=" varchar(2000) ";
+						break;
 		    		case ORACLE :
 		    			columnType=" varchar2(2000) ";
 		    			break;
