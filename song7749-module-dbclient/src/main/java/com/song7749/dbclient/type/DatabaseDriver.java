@@ -51,7 +51,7 @@ public enum DatabaseDriver {
 			// field list
 			"select col.ordinal_position as COLUMN_ID, col.column_name  as COLUMN_NAME, case when col.is_nullable = 'NO' then 'N' else 'Y' end as nullable, RA.constraint_type as COLUMN_KEY, col.udt_name as DATA_TYPE, concat(col.udt_name, (case when col.numeric_precision > 0 then  concat('(', CAST(col.numeric_precision AS text), ',' ,CAST(col.numeric_scale AS text), ')') when col.character_maximum_length > 0 then concat('(', CAST(col.character_maximum_length AS text), ')') else null end)) as DATA_LENGTH, db.datctype as CHARACTER_SET, '' as EXTRA, col.column_default as DEFAULT_VALUE, PD.DESCRIPTION as comments from pg_database db join INFORMATION_SCHEMA.columns col on col.table_schema = db.datname join PG_STAT_ALL_TABLES PS on ps.schemaname = col.table_schema and ps.relname = col.table_name left outer join (select r1.OBJOID, OBJSUBID, r2.attname, R1.description from PG_DESCRIPTION R1 join PG_ATTRIBUTE R2 on R1.OBJOID = R2.ATTRELID and R1.OBJSUBID = R2.ATTNUM) PD on PD.OBJOID = PS.RELID and PD.OBJSUBID <> 0 and pd.attname = col.column_name left outer join (SELECT A.TABLE_CATALOG, A.table_name, A.constraint_type, b.column_name, b.constraint_name FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS A , INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE B where A.TABLE_CATALOG   = B.TABLE_CATALOG AND A.TABLE_SCHEMA    = B.TABLE_SCHEMA AND A.TABLE_NAME = B.TABLE_NAME AND A.CONSTRAINT_NAME = B.CONSTRAINT_NAME) RA on RA.table_catalog = col.table_schema and RA.table_name = col.table_name and RA.column_name = col.column_name where PS.SCHEMANAME = '{schemaName}' and PS.RELNAME = '{name}'",
 			//null,
-            // index list
+			// index list
 			"select tablename as owner, indexname as INDEX_NAME, '' as INDEX_TYPE, (case when POSITION('UNIQUE' in indexdef) > 0 then 'UNIQUE' else 'NOT_UNIQUE' end) as UNIQUENESS, '' cardinality, '' as COLUMN_NAME, '' COLUMN_POSITION, 'ASC' as DESCEND from pg_indexes where schemaname = '{schemaName}' and tablename = '{name}'",
 			// explain
 			"EXPLAIN (ANALYSE) select * from {name}",
@@ -88,7 +88,7 @@ public enum DatabaseDriver {
 			// kill connection
 			"SELECT pg_cancel_backend({id})",
 			// create table query
-			"select string_agg(ddl_txt::text, E'\n') as table_ddl from ((select 'CREATE TABLE ' || 'public.test_info' || '(' || string_agg(pa.attname || ' ' || pg_catalog.format_type(pa.atttypid, pa.atttypmod) || coalesce((select ' DEFAULT ' || substring(pg_get_expr(paf.adbin, paf.adrelid) for 128) from pg_attrdef paf where paf.adrelid = pa.attrelid and paf.adnum = pa.attnum and pa.atthasdef), '') || case when pa.attnotnull = true then ' NOT NULL' else '' end, E'\n, ') || coalesce((select E'\n, ' || 'CONSTRAINT' || ' ' || conindid::regclass::varchar || ' ' || pg_get_constraintdef(oid) from pg_constraint where connamespace::regnamespace::varchar = '{schemaName}' and conrelid::regclass::varchar = '{name}' and contype = 'p'), '') || E'\n);' as ddl_txt from pg_attribute pa join pg_class pc on pa.attrelid = pc.oid where pc.relnamespace::regnamespace::varchar = '{schemaName}' and pc.relname::varchar = '{name}' and pa.attnum > 0 and not pa.attisdropped and pc.relkind = 'r' group by pa.attrelid) union all (select string_agg(indexdef || ';' ::text, E'\n') as ddl_txt from pg_indexes where schemaname = '{schemaName}' and tablename = '{name}')) as t",
+			"select string_agg(ddl_txt::text, E'\n') as table_ddl from ((select 'CREATE TABLE ' || 'public.test_info' || '(' || string_agg(pa.attname || ' ' || pg_catalog.format_type(pa.atttypid, pa.atttypmod) || coalesce((select\t' DEFAULT ' || substring(pg_get_expr(paf.adbin, paf.adrelid) for 128) from pg_attrdef paf where\tpaf.adrelid = pa.attrelid and paf.adnum = pa.attnum\tand pa.atthasdef), '') || case when pa.attnotnull = true then ' NOT NULL' else '' end, E'\n, ') || coalesce((select E'\n, ' || 'CONSTRAINT' || ' ' || conindid::regclass::varchar || ' ' || pg_get_constraintdef(oid) from pg_constraint where connamespace::regnamespace::varchar = '{schemaName}' and conrelid::regclass::varchar = '{name}' and contype = 'p'), '') || E'\n);' as ddl_txt from pg_attribute pa join pg_class pc on pa.attrelid = pc.oid where\tpc.relnamespace::regnamespace::varchar = '{schemaName}' and pc.relname::varchar = '{name}' and pa.attnum > 0\tand not pa.attisdropped\tand pc.relkind = 'r' group by pa.attrelid) union all (select string_agg(indexdef || ';' ::text, E'\n') as ddl_txt from pg_indexes where schemaname = '{schemaName}' and tablename = '{name}')) as t",
 			// 자동완성용 테이블/필드 전체 리스트 조회
 			"select col.table_name, col.column_name  as COLUMN_NAME, PD.DESCRIPTION as COLUMN_COMMENT from pg_database db join INFORMATION_SCHEMA.columns col on col.table_schema = db.datname join PG_STAT_ALL_TABLES PS on ps.schemaname = col.table_schema and ps.relname = col.table_name join PG_DESCRIPTION PD on PD.OBJOID = PS.RELID and PD.OBJSUBID <> 0 join PG_ATTRIBUTE PA on pa.attname = col.column_name and PD.OBJOID = PA.ATTRELID and PD.OBJSUBID = PA.ATTNUM left outer join (SELECT A.TABLE_CATALOG, A.table_name, A.constraint_type, b.column_name, b.constraint_name FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS A , INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE B where A.TABLE_CATALOG   = B.TABLE_CATALOG AND A.TABLE_SCHEMA    = B.TABLE_SCHEMA AND A.TABLE_NAME = B.TABLE_NAME AND A.CONSTRAINT_NAME = B.CONSTRAINT_NAME) RA on RA.table_catalog = col.table_schema and RA.table_name = col.table_name and RA.column_name = col.column_name WHERE TABLE_SCHEMA='{schemaName}'",
 			// 한정자 추가
@@ -482,34 +482,34 @@ public enum DatabaseDriver {
 	private String affectedRowCommands;
 
 	DatabaseDriver(
-		String dbms,
-		String driverName,
-		String url,
-		String validateQuery,
-		String tableListQuery,
-		String fieldListQuery,
-		String indexListQuery,
-		String explainQuery,
-		String viewListQuery,
-		String viewDetailQuery,
-		String viewSourceQuery,
-		String procedureListQuery,
-		String procedureDetailQuery,
-		String procedureSourceQuery,
-		String functionListQuery,
-		String functionDetailQuery,
-		String functionSourceQuery,
-		String triggerListQuery,
-		String triggerDetailQuery,
-		String triggerSourceQuery,
-		String sequenceListQuery,
-		String sequenceDetailQuery,
-		String processListQuery,
-		String killProcessQuery,
-		String showCreateQuery,
-		String autoCompleteQuery,
-		String addRangeOperator,
-		String affectedRowCommands) {
+			String dbms,
+			String driverName,
+			String url,
+			String validateQuery,
+			String tableListQuery,
+			String fieldListQuery,
+			String indexListQuery,
+			String explainQuery,
+			String viewListQuery,
+			String viewDetailQuery,
+			String viewSourceQuery,
+			String procedureListQuery,
+			String procedureDetailQuery,
+			String procedureSourceQuery,
+			String functionListQuery,
+			String functionDetailQuery,
+			String functionSourceQuery,
+			String triggerListQuery,
+			String triggerDetailQuery,
+			String triggerSourceQuery,
+			String sequenceListQuery,
+			String sequenceDetailQuery,
+			String processListQuery,
+			String killProcessQuery,
+			String showCreateQuery,
+			String autoCompleteQuery,
+			String addRangeOperator,
+			String affectedRowCommands) {
 
 		this.dbms					= dbms;
 		this.driverName				= driverName;
