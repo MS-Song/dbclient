@@ -740,7 +740,6 @@ public class DBclientManagerImpl implements DBclientManager {
             throw new IllegalArgumentException(e.getMessage());
         }
 
-        //예외설정 - postgresql 은 pg_dump 에서 조회가능함
         for(Map<String,String> map:resultList){
             if("oracle".equals(database.getDriver().getDbms())
                     || "h2".equals(database.getDriver().getDbms())){
@@ -748,6 +747,8 @@ public class DBclientManagerImpl implements DBclientManager {
 
             } else if("mysql".equals(database.getDriver().getDbms())){
                 list.add(new DatabaseDdlVo(map.get("Create Table")));
+            } else if("postgresql".equals(database.getDriver().getDbms())) {
+                list.add(new DatabaseDdlVo(map.get("table_ddl")));
             }
         }
 
