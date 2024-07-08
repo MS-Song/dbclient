@@ -156,8 +156,6 @@ public class Database extends Entities {
 	 * @param driver
 	 * @param charset
 	 * @param port
-	 * @param createDate
-	 * @param modifyDate
 	 * @param name
 	 */
 	public Database(@Length(max = 120) @NotBlank String host, @Length(max = 120) @NotBlank String hostAlias,
