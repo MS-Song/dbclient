@@ -449,14 +449,14 @@ public class IncidentAlarmSendMailTask implements Runnable {
 	private String generateEmailHtml(List<Map<String,String>> contents) {
 		StringBuffer sendMessageBuffer = new StringBuffer();
 		if(null!=contents) {
-			sendMessageBuffer.append("<table class=\"tg\">");
+			sendMessageBuffer.append("<table style=\"border-collapse:collapse;border-spacing:0;\">");
 			for(int i=0; i < contents.size(); i++) {
 				// table head 만들기
 				if(i==0) {
 					sendMessageBuffer.append("<thead>");
 					sendMessageBuffer.append("<tr>");
 					for(String head : contents.get(i).keySet()) {
-						sendMessageBuffer.append("<th class=\"tg-3mv2\">");
+						sendMessageBuffer.append("<th style=\"font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;background-color:#96fffb;border-color:inherit;vertical-align:top\">");
 						sendMessageBuffer.append(head);
 						sendMessageBuffer.append("</th>");
 					}
@@ -467,7 +467,7 @@ public class IncidentAlarmSendMailTask implements Runnable {
 				if(i>0) sendMessageBuffer.append("<tbody>");
 				sendMessageBuffer.append("<tr>");
 				for(String head : contents.get(i).keySet()) {
-					sendMessageBuffer.append("<td class=\"tg-us36\">");
+					sendMessageBuffer.append("<td style=\"font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;border-color:inherit;vertical-align:top\">");
 					sendMessageBuffer.append(contents.get(i).get(head));
 					sendMessageBuffer.append("</td>");
 				}
@@ -476,7 +476,7 @@ public class IncidentAlarmSendMailTask implements Runnable {
 			}
 			sendMessageBuffer.append("</table>");
 		} else {
-			sendMessageBuffer.append("<table class=\"tg\"><tr><td class=\"tg-us36\">데이터가 없습니다</td></tr></table>");
+			sendMessageBuffer.append("<table style=\"border-collapse:collapse;border-spacing:0;\"><tr><td style=\"border-color:inherit;vertical-align:top\">데이터가 없습니다</td></tr></table>");
 		}
 		return sendMessageBuffer.toString();
 	}
